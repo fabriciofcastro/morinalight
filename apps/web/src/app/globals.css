@@ -1,0 +1,154 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: var(--lh-base);
+    letter-spacing: var(--tracking-normal);
+    font-weight: var(--fw-regular);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: var(--r-lg);
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --tracking-normal: 0;
+  --tracking-wide: 0.28em;
+  --motion-duration-short: 0.2s;
+  --motion-duration-base: 0.4s;
+  --motion-duration-slow: 0.8s;
+  --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --card: color-mix(in oklab, var(--surface-muted) 90%, transparent);
+  --card-foreground: var(--fg);
+  --popover: color-mix(in oklab, var(--surface-muted) 92%, transparent);
+  --popover-foreground: var(--fg);
+  --primary: var(--primary);
+  --primary-foreground: var(--primary-contrast);
+  --secondary: color-mix(in oklab, var(--surface-muted) 78%, var(--primary) 22%);
+  --secondary-foreground: var(--fg);
+  --muted: color-mix(in oklab, var(--surface-muted) 82%, transparent);
+  --muted-foreground: color-mix(in oklab, var(--muted) 70%, var(--fg) 30%);
+  --accent: color-mix(in oklab, var(--primary) 60%, transparent);
+  --accent-foreground: var(--primary-contrast);
+  --destructive: var(--danger);
+  --border: var(--border);
+  --input: var(--border);
+  --ring: color-mix(in oklab, var(--primary) 35%, transparent);
+  --chart-1: color-mix(in oklab, var(--primary) 80%, transparent);
+  --chart-2: color-mix(in oklab, var(--success) 75%, transparent);
+  --chart-3: color-mix(in oklab, var(--warning) 80%, transparent);
+  --chart-4: color-mix(in oklab, var(--danger) 80%, transparent);
+  --chart-5: color-mix(in oklab, var(--muted) 75%, transparent);
+  --sidebar: color-mix(in oklab, var(--surface-muted) 94%, transparent);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-contrast);
+  --sidebar-accent: color-mix(in oklab, var(--primary) 45%, transparent);
+  --sidebar-accent-foreground: var(--primary-contrast);
+  --sidebar-border: var(--border);
+  --sidebar-ring: color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
+.dark {
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --card: color-mix(in oklab, var(--surface-muted) 88%, transparent);
+  --card-foreground: var(--fg);
+  --popover: color-mix(in oklab, var(--surface-muted) 90%, transparent);
+  --popover-foreground: var(--fg);
+  --primary: var(--primary);
+  --primary-foreground: var(--primary-contrast);
+  --secondary: color-mix(in oklab, var(--surface-muted) 70%, var(--primary) 20%);
+  --secondary-foreground: var(--fg);
+  --muted: color-mix(in oklab, var(--surface-muted) 70%, transparent);
+  --muted-foreground: color-mix(in oklab, var(--muted) 65%, var(--fg) 35%);
+  --accent: color-mix(in oklab, var(--primary) 55%, transparent);
+  --accent-foreground: var(--primary-contrast);
+  --destructive: var(--danger);
+  --border: var(--border);
+  --input: var(--border);
+  --ring: color-mix(in oklab, var(--primary) 30%, transparent);
+  --chart-1: color-mix(in oklab, var(--primary) 80%, transparent);
+  --chart-2: color-mix(in oklab, var(--success) 75%, transparent);
+  --chart-3: color-mix(in oklab, var(--warning) 80%, transparent);
+  --chart-4: color-mix(in oklab, var(--danger) 80%, transparent);
+  --chart-5: color-mix(in oklab, var(--muted) 75%, transparent);
+  --sidebar: color-mix(in oklab, var(--surface-muted) 92%, transparent);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-contrast);
+  --sidebar-accent: color-mix(in oklab, var(--primary) 45%, transparent);
+  --sidebar-accent-foreground: var(--primary-contrast);
+  --sidebar-border: var(--border);
+  --sidebar-ring: color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  .glass-motion {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.08)
+    );
+    opacity: 0.6;
+    filter: blur(12px) saturate(140%);
+  }
+}

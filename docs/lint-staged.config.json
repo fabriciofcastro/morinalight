@@ -1,0 +1,4 @@
+{
+  "*.{ts,tsx,js,jsx}": ["pnpm biome check --write", "pnpm typecheck -w --if-present --noEmit"],
+  "*.{md,mdx}": ["pnpm prettier --write"]
+}

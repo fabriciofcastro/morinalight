@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductStatus {
+  rascunho
+  aguardando_aprovacao
+  ativo
+  inativo
+}
+
+model Product {
+  id           String        @id @default(uuid())
+  orgId        String
+  name         String
+  description  String?       @db.VarChar(1024)
+  status       ProductStatus @default(rascunho)
+  createdBy    String
+  updatedBy    String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  auditLogs ProductAuditLog[]
+
+  @@unique([orgId, name])
+  @@index([orgId, status])
+}
+
+model ProductAuditLog {
+  id         String   @id @default(uuid())
+  productId  String
+  orgId      String
+  action     String
+  actorId    String
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, createdAt])
+  @@index([orgId, createdAt])
+}
+
+model CompanySettings {
+  id             String   @id @default(uuid())
+  companyId      String   @unique
+  logoUrl        String?
+  primaryColor   String?  @db.VarChar(16)
+  secondaryColor String?  @db.VarChar(16)
+  themeMode      String?  @db.VarChar(10)
+  videoLink      String?  @db.VarChar(2048)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+

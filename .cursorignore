@@ -1,0 +1,47 @@
+# Node/TS/Javascript
+node_modules/
+dist/
+.build/
+.next/
+.out/
+coverage/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Ambiente/secret
+.env
+.env.*
+!.env.example
+
+# Artefatos e binários
+*.log
+*.sqlite
+tmp/
+.cache/
+.DS_Store
+Thumbs.db
+
+# Front caches
+.vercel/
+.storybook-static/
+
+# Prisma & DB dumps
+prisma/migrations/*/steps.json
+*.dump
+*.sql
+
+# Docs pesados e exportações
+docs/export/**
+design/**/renders/**
+assets/raw/**
+
+# Testes e snapshots volumosos
+__snapshots__/
+playwright-report/
+test-results/
+
+# Conteúdo gerado
+*.map
+*.min.*
+
