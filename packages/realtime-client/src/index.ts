@@ -90,26 +90,46 @@ export function createRealtimeClient(options: RealtimeClientOptions) {
 
   async function fetchToken(): Promise<string> {
     const fetcher = options.fetchImpl ?? fetch;
-    const response = await fetcher(`${options.apiUrl}/realtime/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-org-id": options.orgId,
-        "x-actor-id": options.actorId,
-      },
-      body: JSON.stringify({}),
-    });
+    
+    try {
+      // Usar rota relativa para passar pelo BFF do Next.js
+      const tokenUrl = options.apiUrl 
+        ? `${options.apiUrl}/api/realtime/token`
+        : "/api/realtime/token";
+      
+      const response = await fetcher(tokenUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-org-id": options.orgId,
+          "x-actor-id": options.actorId,
+        },
+        body: JSON.stringify({}),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Falha ao obter token realtime: ${response.status}`);
+      if (!response.ok) {
+        const errorText = await response.text().catch(() => "Erro desconhecido");
+        throw new Error(`Falha ao obter token realtime: ${response.status} - ${errorText}`);
+      }
+
+      const data = (await response.json()) as { token: string };
+      if (!data.token) {
+        throw new Error("Token realtime ausente na resposta");
+      }
+
+      return data.token;
+    } catch (error) {
+      // Melhorar mensagem de erro para debugging
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        const tokenUrl = options.apiUrl 
+          ? `${options.apiUrl}/api/realtime/token`
+          : "/api/realtime/token";
+        throw new Error(
+          `Não foi possível conectar ao servidor. Verifique se a API está rodando e acessível em ${tokenUrl}`,
+        );
+      }
+      throw error;
     }
-
-    const data = (await response.json()) as { token: string };
-    if (!data.token) {
-      throw new Error("Token realtime ausente na resposta");
-    }
-
-    return data.token;
   }
 
   function scheduleReconnect() {

@@ -1,0 +1,117 @@
+{
+  "info": {
+    "name": "Morina Light",
+    "_postman_id": "0f6f4d8b-6c76-4ce0-9f45-collection",
+    "version": "0.1.0",
+    "description": "Coleção de chamadas principais da API Morina Light.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Healthcheck",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "Criar Produto",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "x-org-id", "value": "{{orgId}}" },
+          { "key": "x-actor-id", "value": "{{actorId}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nome\": \"Produto Demo\",\n  \"descricao\": \"Criado via Postman\"\n}"
+        },
+        "url": "{{baseUrl}}/catalogo/produtos"
+      }
+    },
+    {
+      "name": "Listar Produtos",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-org-id", "value": "{{orgId}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/catalogo/produtos?status=ativo",
+          "host": ["{{baseUrl}}/catalogo/produtos"],
+          "query": [
+            { "key": "status", "value": "ativo" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Feed Auditoria",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-org-id", "value": "{{orgId}}" }
+        ],
+        "url": "{{baseUrl}}/catalogo/auditoria/feed"
+      }
+    },
+    {
+      "name": "Feed Notificações",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-org-id", "value": "{{orgId}}" }
+        ],
+        "url": "{{baseUrl}}/notifications/feed"
+      }
+    },
+    {
+      "name": "Company Settings - GET",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-org-id", "value": "{{orgId}}" }
+        ],
+        "url": "{{baseUrl}}/company-settings"
+      }
+    },
+    {
+      "name": "Company Settings - PUT",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "x-org-id", "value": "{{orgId}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"logoUrl\": \"https://cdn.morina.ai/logo.svg\",\n  \"primaryColor\": \"#112233\",\n  \"secondaryColor\": \"#445566\",\n  \"themeMode\": \"dark\",\n  \"videoLink\": \"https://youtu.be/demo\"\n}"
+        },
+        "url": "{{baseUrl}}/company-settings"
+      }
+    },
+    {
+      "name": "Realtime - Gerar Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orgId\": \"{{orgId}}\",\n  \"actorId\": \"{{actorId}}\"\n}"
+        },
+        "url": "{{baseUrl}}/realtime/token"
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3333" },
+    { "key": "orgId", "value": "demo-org" },
+    { "key": "actorId", "value": "demo-actor" }
+  ]
+}
+

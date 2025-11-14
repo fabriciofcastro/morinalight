@@ -14,7 +14,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     <label
       ref={ref}
       className={cn(
-        "text-[var(--fs-xs)] font-medium uppercase tracking-[var(--tracking-wide)] text-[color-mix(in_oklab,var(--muted)_72%,var(--fg)_28%)]",
+        "text-[var(--fs-xs)] font-medium uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 72%,var(--fg) 28%)]",
         className,
       )}
       htmlFor={htmlFor}

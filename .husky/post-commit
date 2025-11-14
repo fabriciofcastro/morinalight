@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Reindexa documentos canônicos se arquivos relevantes foram modificados
+node scripts/git-hook-index-docs.mjs
+

@@ -2,11 +2,13 @@ import { Produto } from "@morina/catalogo-domain";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
+import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 import { InMemoryProdutoRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto.repository";
 import { InMemoryProdutoAuditoriaRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto-auditoria.repository";
 
 const repository = new InMemoryProdutoRepository();
 const auditoriaRepository = new InMemoryProdutoAuditoriaRepository();
+const organizationAuditRepository = new InMemoryOrganizationAuditLogRepository();
 const actorId = "user-test";
 const orgId = "org-test";
 
@@ -25,6 +27,14 @@ describe("Catálogo HTTP", () => {
     app = await createServer({
       modules: {
         catalogo: { produtoRepository: repository, auditoriaRepository, eventBus: fakeEventBus },
+        notifications: {
+          produtoRepository: repository,
+          auditoriaRepository,
+          organizationAuditRepository,
+        },
+        organizations: {
+          auditRepository: organizationAuditRepository,
+        },
       },
     });
   });
@@ -137,5 +147,64 @@ describe("Catálogo HTTP", () => {
     const body = response.json();
     expect(body.produto.produtoId).toBe(criado.produtoId);
     expect(body.auditoria.itens.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("lista produtos da organização com filtros", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/catalogo/produtos?status=ativo",
+      headers: { "x-org-id": orgId },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as { itens: Array<{ status: string }>; proximoCursor: string | null };
+    expect(body.itens.every((item) => item.status === "ativo")).toBe(true);
+  });
+
+  it("recupera detalhes de um produto específico", async () => {
+    const listResponse = await app.inject({
+      method: "GET",
+      url: "/catalogo/produtos",
+      headers: { "x-org-id": orgId },
+    });
+    const lista = listResponse.json() as { itens: Array<{ produtoId: string }> };
+    const produtoId = lista.itens[0]?.produtoId;
+    expect(produtoId).toBeDefined();
+
+    const response = await app.inject({
+      method: "GET",
+      url: `/catalogo/produtos/${produtoId}`,
+      headers: { "x-org-id": orgId },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.produtoId).toBe(produtoId);
+  });
+
+  it("retorna feed consolidado de auditoria", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/catalogo/auditoria/feed",
+      headers: { "x-org-id": orgId },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as { itens: Array<{ produto: { nome: string } | null }> };
+    expect(body.itens.length).toBeGreaterThanOrEqual(1);
+    expect(body.itens.at(0)?.produto).toBeDefined();
+  });
+
+  it("expõe feed de notificações unificado", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/notifications/feed",
+      headers: { "x-org-id": orgId },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json() as { itens: Array<{ tipo: string }> };
+    expect(body.itens.length).toBeGreaterThanOrEqual(1);
+    expect(body.itens[0]?.tipo).toBeDefined();
   });
 });

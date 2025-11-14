@@ -9,11 +9,11 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-[color-mix(in_oklab,var(--primary)_45%,transparent)] bg-[color-mix(in_oklab,var(--primary)_28%,transparent)] text-[var(--primary-contrast)]",
+          "border-[color-mix(in oklab,var(--primary-color) 45%,transparent)] bg-[color-mix(in oklab,var(--primary-color) 28%,transparent)] text-[var(--primary-contrast)]",
         secondary:
-          "border-[color-mix(in_oklab,var(--muted)_55%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] text-[color-mix(in_oklab,var(--muted)_65%,var(--fg)_35%)]",
+          "border-[color-mix(in oklab,var(--muted-soft) 55%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 95%,transparent)] text-[color-mix(in oklab,var(--muted-soft) 65%,var(--fg) 35%)]",
         outline:
-          "border-[color-mix(in_oklab,var(--primary)_35%,transparent)] text-[color-mix(in_oklab,var(--primary)_80%,var(--fg)_20%)]",
+          "border-[color-mix(in oklab,var(--primary-color) 35%,transparent)] text-[color-mix(in oklab,var(--primary-color) 80%,var(--fg) 20%)]",
       },
     },
     defaultVariants: {

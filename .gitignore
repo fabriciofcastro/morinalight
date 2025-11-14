@@ -9,3 +9,37 @@ coverage/
 .DS_Store
 Thumbs.db
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Secrets
+secrets/
+*.secret
+*.key
+*.pem
+
+# Backups
+backups/
+*.tar.gz
+*.sql
+*.dump
+
+# SSL certificates
+deploy/nginx/ssl/
+*.crt
+*.cert
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

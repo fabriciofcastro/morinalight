@@ -1,4 +1,3 @@
-import type { SocketStream } from "@fastify/websocket";
 import websocket from "@fastify/websocket";
 import fastify, { type FastifyRequest } from "fastify";
 import jwt from "jsonwebtoken";
@@ -7,10 +6,7 @@ import { z } from "zod";
 
 import { env } from "../config/env";
 import { RealtimeHub } from "../hub/realtime-hub";
-
-type SocketConnection = SocketStream & {
-  socket: WebSocket;
-};
+import { setupMetricsRoute } from "../observability/metrics";
 
 const connectionSchema = z.object({
   token: z.string(),
@@ -29,7 +25,10 @@ export async function createServer() {
     logger: true,
   });
 
-  const hub = new RealtimeHub(env.REDIS_URL, env.REALTIME_STREAM, app.log);
+  const hub = new RealtimeHub(env.REDIS_URL, env.REALTIME_STREAM, app.log, {
+    pendingAlertThreshold: env.REALTIME_PENDING_ALERT_THRESHOLD,
+    pendingAlertIntervalMs: env.REALTIME_PENDING_ALERT_INTERVAL_MS,
+  });
   await hub.start();
 
   await app.register(websocket, {
@@ -38,24 +37,27 @@ export async function createServer() {
     },
   });
 
+  setupMetricsRoute(app);
+
   app.get("/health", async () => ({
     status: "ok",
     service: "realtime",
     timestamp: new Date().toISOString(),
   }));
 
-  app.get("/ws", { websocket: true }, (connection: SocketConnection, request: FastifyRequest) => {
+  app.get("/ws", { websocket: true }, (connection: unknown, request: FastifyRequest) => {
     try {
       const query = connectionSchema.parse(request.query);
       const payload = verifyToken(query.token);
 
       if (payload.type !== "realtime") {
-        connection.socket.close(4403, "Invalid token type");
+        (connection as { socket: WebSocket }).socket.close(4403, "Invalid token type");
         return;
       }
 
-      hub.addConnection(payload.orgId, payload.actorId, connection.socket);
-      connection.socket.send(
+      const socket = (connection as { socket: WebSocket }).socket;
+      hub.addConnection(payload.orgId, payload.actorId, socket);
+      socket.send(
         JSON.stringify({
           type: "connected",
           orgId: payload.orgId,
@@ -63,7 +65,7 @@ export async function createServer() {
       );
     } catch (error: unknown) {
       app.log.warn({ err: error }, "Erro na conexão WS");
-      connection.socket.close(4401, "Unauthorized");
+      (connection as { socket: WebSocket }).socket.close(4401, "Unauthorized");
     }
   });
 

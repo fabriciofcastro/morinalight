@@ -11,6 +11,8 @@ const EnvSchema = z.object({
   REDIS_URL: z.string().url(),
   REALTIME_SECRET: z.string().min(16),
   REALTIME_STREAM: z.string().default("realtime.catalogo"),
+  REALTIME_PENDING_ALERT_THRESHOLD: z.coerce.number().int().min(1).default(100),
+  REALTIME_PENDING_ALERT_INTERVAL_MS: z.coerce.number().int().min(1000).default(30000),
 });
 
 const env = EnvSchema.parse(process.env);

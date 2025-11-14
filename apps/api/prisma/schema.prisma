@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -15,31 +15,195 @@ enum ProductStatus {
   inativo
 }
 
-model Product {
-  id           String        @id @default(uuid())
-  orgId        String
-  name         String
-  description  String?       @db.VarChar(1024)
-  status       ProductStatus @default(rascunho)
-  createdBy    String
-  updatedBy    String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+enum OrganizationRole {
+  owner
+  admin
+  manager
+  member
+  viewer
+}
 
-  auditLogs ProductAuditLog[]
+enum UserStatus {
+  pending
+  active
+  suspended
+}
+
+enum PrefichaStatus {
+  rascunho
+  pendente_aprovacao
+  aprovado
+  rejeitado
+}
+
+enum ClienteStatus {
+  ativo
+  inativo
+  bloqueado
+}
+
+enum RepresentanteStatus {
+  ativo
+  inativo
+  suspenso
+}
+
+enum ContratoStatus {
+  rascunho
+  pendente_assinatura
+  vigente
+  encerrado
+  cancelado
+}
+
+enum ComissaoStatus {
+  pendente
+  calculada
+  paga
+  cancelada
+}
+
+enum DepartmentStatus {
+  ativo
+  inativo
+  arquivado
+}
+
+enum SectorStatus {
+  ativo
+  inativo
+  arquivado
+}
+
+enum PositionStatus {
+  ativo
+  inativo
+  arquivado
+}
+
+model Organization {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.VarChar(2048)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products              Product[]
+  prefichas             Preficha[]
+  settings              CompanySettings?
+  memberships           OrganizationMembership[]
+  invites               UserInvite[]
+  auditLogs             OrganizationAuditLog[]
+  suppliers             Supplier[]
+  categories            Category[]
+  clientes              Cliente[]
+  representantes        Representante[]
+  contratos             Contrato[]
+  vendas                Venda[]
+  comissoes             Comissao[]
+  departments           Department[]
+  structureAuditLogs    OrganizationalStructureAuditLog[]
+  departmentMemberships DepartmentMembership[]            @relation("OrganizationDepartmentMemberships")
+  sectorMemberships     SectorMembership[]                @relation("OrganizationSectorMemberships")
+  positionMemberships   PositionMembership[]              @relation("OrganizationPositionMemberships")
+  Sector                Sector[]
+  Position              Position[]
+  positionPermissions   PositionPermission[]
+  sectorPermissions     SectorPermission[]
+  departmentPermissions DepartmentPermission[]
+  permissionAuditLogs   PermissionAuditLog[]
+  permissionTemplates   PermissionTemplate[]
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  displayName  String?
+  avatarUrl    String?    @db.VarChar(2048)
+  passwordHash String?
+  status       UserStatus @default(pending)
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  memberships           OrganizationMembership[]
+  invitesAuthored       UserInvite[]             @relation("InviteAuthor")
+  acceptedInvites       UserInvite[]             @relation("AcceptedUser")
+  departmentMemberships DepartmentMembership[]   @relation("UserDepartmentMemberships")
+  sectorMemberships     SectorMembership[]       @relation("UserSectorMemberships")
+  positionMemberships   PositionMembership[]     @relation("UserPositionMemberships")
+}
+
+model OrganizationMembership {
+  id             String           @id @default(uuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole @default(member)
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+}
+
+model UserInvite {
+  id             String           @id @default(uuid())
+  organizationId String
+  email          String
+  role           OrganizationRole @default(member)
+  token          String           @unique
+  invitedById    String
+  acceptedUserId String?
+  status         String           @default("pending")
+  expiresAt      DateTime?
+  createdAt      DateTime         @default(now())
+  acceptedAt     DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy    User         @relation("InviteAuthor", fields: [invitedById], references: [id], onDelete: Cascade)
+  acceptedUser User?        @relation("AcceptedUser", fields: [acceptedUserId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, email], name: "unique_invite_per_org_email")
+  @@index([organizationId])
+}
+
+model Product {
+  id          String        @id @default(uuid())
+  orgId       String
+  name        String
+  description String?       @db.VarChar(1024)
+  sku         String?       @db.VarChar(100)
+  status      ProductStatus @default(rascunho)
+  categoryId  String?
+  createdBy   String
+  updatedBy   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  organization Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  category     Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  auditLogs    ProductAuditLog[]
+  prefichas    Preficha[]
+  variants     ProductVariant[]
 
   @@unique([orgId, name])
+  @@unique([orgId, sku], name: "unique_sku_per_org")
   @@index([orgId, status])
+  @@index([orgId, sku])
+  @@index([categoryId])
 }
 
 model ProductAuditLog {
-  id         String   @id @default(uuid())
-  productId  String
-  orgId      String
-  action     String
-  actorId    String
-  payload    Json?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  productId String
+  orgId     String
+  action    String
+  actorId   String
+  payload   Json?
+  createdAt DateTime @default(now())
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
@@ -47,9 +211,23 @@ model ProductAuditLog {
   @@index([orgId, createdAt])
 }
 
+model OrganizationAuditLog {
+  id        String   @id @default(uuid())
+  orgId     String
+  action    String
+  actorId   String
+  targetId  String?
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, createdAt])
+}
+
 model CompanySettings {
   id             String   @id @default(uuid())
-  companyId      String   @unique
+  orgId          String   @unique
   logoUrl        String?
   primaryColor   String?  @db.VarChar(16)
   secondaryColor String?  @db.VarChar(16)
@@ -57,5 +235,581 @@ model CompanySettings {
   videoLink      String?  @db.VarChar(2048)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 }
 
+model Preficha {
+  id        String         @id @default(uuid())
+  orgId     String
+  produtoId String
+  status    PrefichaStatus @default(rascunho)
+  createdBy String
+  updatedBy String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  organization Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  product      Product              @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  aprovadores  PrefichaAprovador[]
+  comentarios  PrefichaComentario[]
+  auditLogs    PrefichaAuditLog[]
+
+  @@unique([orgId, produtoId], name: "unique_preficha_per_product")
+  @@index([orgId, status])
+  @@index([produtoId])
+}
+
+model PrefichaAprovador {
+  id         String    @id @default(uuid())
+  prefichaId String
+  userId     String
+  aprovado   Boolean   @default(false)
+  aprovadoEm DateTime?
+  comentario String?   @db.VarChar(512)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  preficha Preficha @relation(fields: [prefichaId], references: [id], onDelete: Cascade)
+
+  @@unique([prefichaId, userId], name: "prefichaId_userId")
+  @@index([prefichaId])
+  @@index([userId])
+}
+
+model PrefichaComentario {
+  id         String   @id @default(uuid())
+  prefichaId String
+  userId     String
+  comentario String   @db.VarChar(1024)
+  createdAt  DateTime @default(now())
+
+  preficha Preficha @relation(fields: [prefichaId], references: [id], onDelete: Cascade)
+
+  @@index([prefichaId, createdAt])
+}
+
+model PrefichaAuditLog {
+  id         String   @id @default(uuid())
+  prefichaId String
+  orgId      String
+  action     String
+  actorId    String
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  preficha Preficha @relation(fields: [prefichaId], references: [id], onDelete: Cascade)
+
+  @@index([prefichaId, createdAt])
+  @@index([orgId, createdAt])
+}
+
+model ProductVariant {
+  id        String   @id @default(uuid())
+  productId String
+  orgId     String
+  sku       String   @db.VarChar(100)
+  nome      String   @db.VarChar(180)
+  atributos Json // { tamanho: 'M', cor: 'azul', material: 'algodão' }
+  preco     Decimal? @db.Decimal(10, 2)
+  estoque   Int?     @default(0)
+  ativo     Boolean  @default(true)
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, sku], name: "unique_variant_sku_per_org")
+  @@index([productId])
+  @@index([orgId, sku])
+  @@index([orgId, ativo])
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  orgId       String
+  name        String
+  slug        String
+  description String?  @db.VarChar(512)
+  parentId    String?
+  ordem       Int      @default(0)
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parent       Category?    @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children     Category[]   @relation("CategoryTree")
+  products     Product[]
+
+  @@unique([orgId, slug], name: "unique_category_slug_per_org")
+  @@index([orgId, parentId])
+  @@index([orgId, ativo])
+  @@index([parentId])
+}
+
+model Supplier {
+  id        String   @id @default(uuid())
+  orgId     String
+  name      String
+  email     String?
+  phone     String?
+  document  String?  @db.VarChar(20)
+  address   String?  @db.VarChar(512)
+  city      String?  @db.VarChar(100)
+  state     String?  @db.VarChar(2)
+  zipCode   String?  @db.VarChar(10)
+  status    String   @default("ativo")
+  notes     String?  @db.VarChar(1024)
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, name])
+  @@index([orgId, status])
+}
+
+model Cliente {
+  id          String        @id @default(uuid())
+  orgId       String
+  nome        String
+  razaoSocial String?       @db.VarChar(255)
+  tipo        String        @default("fisica") // fisica, juridica
+  documento   String        @db.VarChar(20) // CPF ou CNPJ
+  email       String?       @db.VarChar(255)
+  telefone    String?       @db.VarChar(20)
+  celular     String?       @db.VarChar(20)
+  endereco    String?       @db.VarChar(512)
+  cidade      String?       @db.VarChar(100)
+  estado      String?       @db.VarChar(2)
+  cep         String?       @db.VarChar(10)
+  status      ClienteStatus @default(ativo)
+  observacoes String?       @db.VarChar(2048)
+  createdBy   String
+  updatedBy   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  organization  Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  representante Representante?
+  vendas        Venda[]
+  comissoes     Comissao[]
+
+  @@unique([orgId, documento], name: "unique_cliente_documento")
+  @@index([orgId, status])
+  @@index([orgId, nome])
+}
+
+model Representante {
+  id                 String              @id @default(uuid())
+  orgId              String
+  clienteId          String              @unique
+  nome               String
+  documento          String              @db.VarChar(20)
+  email              String?             @db.VarChar(255)
+  telefone           String?             @db.VarChar(20)
+  celular            String?             @db.VarChar(20)
+  endereco           String?             @db.VarChar(512)
+  cidade             String?             @db.VarChar(100)
+  estado             String?             @db.VarChar(2)
+  cep                String?             @db.VarChar(10)
+  percentualComissao Decimal             @db.Decimal(5, 2) // Ex: 5.50 = 5.5%
+  status             RepresentanteStatus @default(ativo)
+  observacoes        String?             @db.VarChar(2048)
+  createdBy          String
+  updatedBy          String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  cliente      Cliente      @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  contratos    Contrato[]
+  comissoes    Comissao[]
+
+  @@index([orgId, status])
+  @@index([clienteId])
+}
+
+model Contrato {
+  id                 String         @id @default(uuid())
+  orgId              String
+  representanteId    String
+  numero             String         @db.VarChar(50)
+  dataInicio         DateTime
+  dataFim            DateTime?
+  percentualComissao Decimal        @db.Decimal(5, 2)
+  valorMinimo        Decimal?       @db.Decimal(12, 2)
+  valorMaximo        Decimal?       @db.Decimal(12, 2)
+  termos             String?        @db.Text
+  status             ContratoStatus @default(rascunho)
+  assinadoEm         DateTime?
+  assinadoPor        String?
+  encerradoEm        DateTime?
+  observacoes        String?        @db.VarChar(2048)
+  createdBy          String
+  updatedBy          String
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  organization  Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  representante Representante @relation(fields: [representanteId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, numero], name: "unique_contrato_numero")
+  @@index([orgId, representanteId])
+  @@index([orgId, status])
+  @@index([representanteId, status])
+}
+
+model Venda {
+  id                  String    @id @default(uuid())
+  orgId               String
+  clienteId           String
+  numeroPedido        String    @db.VarChar(100)
+  numeroNotaFiscal    String?   @db.VarChar(100)
+  dataVenda           DateTime
+  dataPagamento       DateTime?
+  valorTotal          Decimal   @db.Decimal(12, 2)
+  valorComissao       Decimal   @db.Decimal(12, 2)
+  status              String    @default("pendente") // pendente, confirmada, cancelada
+  observacoes         String?   @db.VarChar(1024)
+  // Campos de sincronização com e-millennium
+  emillenniumPedidoId String?   @db.VarChar(100)
+  emillenniumSyncAt   DateTime?
+  createdBy           String
+  updatedBy           String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  cliente      Cliente      @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  comissoes    Comissao[]
+
+  @@unique([orgId, numeroPedido], name: "unique_venda_numero_pedido")
+  @@index([orgId, clienteId])
+  @@index([orgId, dataVenda])
+  @@index([clienteId, dataVenda])
+  @@index([emillenniumPedidoId])
+}
+
+model Comissao {
+  id                   String         @id @default(uuid())
+  orgId                String
+  representanteId      String
+  clienteId            String
+  vendaId              String
+  valorComissao        Decimal        @db.Decimal(12, 2)
+  percentualAplicado   Decimal        @db.Decimal(5, 2)
+  dataVenda            DateTime
+  dataCalculo          DateTime       @default(now())
+  dataPagamento        DateTime?
+  status               ComissaoStatus @default(pendente)
+  observacoes          String?        @db.VarChar(1024)
+  // Rastreamento de assinatura
+  assinadoEm           DateTime?
+  assinadoPor          String?
+  // Campos de pagamento
+  numeroPagamento      String?        @db.VarChar(100)
+  comprovantePagamento String?        @db.VarChar(512)
+  createdBy            String
+  updatedBy            String
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  organization  Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  representante Representante @relation(fields: [representanteId], references: [id], onDelete: Cascade)
+  cliente       Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  venda         Venda         @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, representanteId, status])
+  @@index([orgId, status])
+  @@index([representanteId, status])
+  @@index([vendaId])
+  @@index([dataVenda])
+}
+
+// Estrutura Organizacional Correta (conforme docs/estrutura-organizacional.md)
+// Hierarquia: Empresa → Departamento → Setor → Cargo
+
+model Department {
+  id          String           @id @default(uuid())
+  orgId       String
+  name        String
+  code        String           @db.VarChar(50) // Código único (ex: "DPT-001")
+  description String?          @db.VarChar(1024)
+  parentId    String? // Hierarquia: departamentos podem ter departamentos pai (subdivisões)
+  status      DepartmentStatus @default(ativo)
+  ordem       Int              @default(0)
+  metadata    Json? // Dados adicionais flexíveis
+  createdBy   String
+  updatedBy   String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  organization Organization           @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  parent       Department?            @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     Department[]           @relation("DepartmentHierarchy")
+  sectors      Sector[] // Setores pertencem a departamentos
+  memberships  DepartmentMembership[]
+  permissions  DepartmentPermission[]
+
+  @@unique([orgId, code], name: "unique_department_code_per_org")
+  @@index([orgId, parentId])
+  @@index([orgId, status])
+  @@index([parentId])
+}
+
+model Sector {
+  id           String       @id @default(uuid())
+  orgId        String
+  departmentId String // Setor pertence a um departamento
+  name         String
+  code         String       @db.VarChar(50) // Código único (ex: "SEC-001")
+  description  String?      @db.VarChar(1024)
+  parentId     String? // Hierarquia: setores podem ter setores pai
+  status       SectorStatus @default(ativo)
+  ordem        Int          @default(0)
+  metadata     Json? // Dados adicionais flexíveis
+  createdBy    String
+  updatedBy    String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  organization Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  department   Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  parent       Sector?            @relation("SectorHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     Sector[]           @relation("SectorHierarchy")
+  positions    Position[]
+  memberships  SectorMembership[]
+  permissions  SectorPermission[]
+
+  @@unique([orgId, code], name: "unique_sector_code_per_org")
+  @@index([orgId, departmentId])
+  @@index([orgId, parentId])
+  @@index([orgId, status])
+  @@index([departmentId])
+  @@index([parentId])
+}
+
+model Position {
+  id                String         @id @default(uuid())
+  orgId             String
+  sectorId          String // Cargo pertence a um setor
+  name              String // Nome do cargo (ex: "Gerente de Vendas", "Analista de Marketing")
+  code              String         @db.VarChar(50) // Código único (ex: "POS-001")
+  description       String?        @db.VarChar(1024)
+  responsabilidades String?        @db.Text // Responsabilidades do cargo
+  requisitos        String?        @db.Text // Requisitos para ocupar o cargo
+  salarioMin        Decimal?       @db.Decimal(12, 2)
+  salarioMax        Decimal?       @db.Decimal(12, 2)
+  status            PositionStatus @default(ativo)
+  ordem             Int            @default(0)
+  metadata          Json? // Dados adicionais flexíveis
+  createdBy         String
+  updatedBy         String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  organization Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  sector       Sector               @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  memberships  PositionMembership[]
+  permissions  PositionPermission[]
+
+  @@unique([orgId, code], name: "unique_position_code_per_org")
+  @@index([orgId, sectorId])
+  @@index([orgId, status])
+  @@index([sectorId])
+}
+
+// Membros da estrutura organizacional
+
+model DepartmentMembership {
+  id           String           @id @default(uuid())
+  orgId        String
+  departmentId String
+  userId       String
+  role         OrganizationRole @default(member) // Papel no departamento
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  organization Organization @relation("OrganizationDepartmentMemberships", fields: [orgId], references: [id], onDelete: Cascade)
+  department   Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserDepartmentMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, userId], name: "unique_department_membership")
+  @@index([orgId, departmentId])
+  @@index([userId])
+}
+
+model SectorMembership {
+  id        String           @id @default(uuid())
+  orgId     String
+  sectorId  String
+  userId    String
+  role      OrganizationRole @default(member) // Papel no setor
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  organization Organization @relation("OrganizationSectorMemberships", fields: [orgId], references: [id], onDelete: Cascade)
+  sector       Sector       @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserSectorMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sectorId, userId], name: "unique_sector_membership")
+  @@index([orgId, sectorId])
+  @@index([userId])
+}
+
+model PositionMembership {
+  id         String           @id @default(uuid())
+  orgId      String
+  positionId String
+  userId     String
+  role       OrganizationRole @default(member) // Papel no cargo
+  dataInicio DateTime? // Data de início no cargo
+  dataFim    DateTime? // Data de término no cargo (se houver)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  organization Organization @relation("OrganizationPositionMemberships", fields: [orgId], references: [id], onDelete: Cascade)
+  position     Position     @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserPositionMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([positionId, userId], name: "unique_position_membership")
+  @@index([orgId, positionId])
+  @@index([userId])
+  @@index([dataInicio])
+  @@index([dataFim])
+}
+
+// Audit logs para estrutura organizacional
+
+model OrganizationalStructureAuditLog {
+  id         String   @id @default(uuid())
+  orgId      String
+  entityType String // "department" | "sector" | "position"
+  entityId   String
+  action     String // "created" | "updated" | "deleted" | "member_added" | "member_removed"
+  actorId    String
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, createdAt])
+  @@index([orgId, entityType, entityId])
+  @@index([entityType, entityId])
+}
+
+// Permissões por cargo (Matriz de Permissões RBAC)
+model PositionPermission {
+  id         String   @id @default(uuid())
+  orgId      String
+  positionId String
+  permissionId String // Referência à permissão
+  granted    Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String
+  updatedBy  String
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  position     Position     @relation(fields: [positionId], references: [id], onDelete: Cascade)
+
+  @@unique([positionId, permissionId], name: "unique_position_permission")
+  @@index([orgId, positionId])
+  @@index([positionId])
+  @@index([permissionId])
+}
+
+// Permissões por setor (Matriz de Permissões RBAC)
+model SectorPermission {
+  id         String   @id @default(uuid())
+  orgId      String
+  sectorId   String
+  permissionId String // Referência à permissão
+  granted    Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String
+  updatedBy  String
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  sector        Sector       @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+
+  @@unique([sectorId, permissionId], name: "unique_sector_permission")
+  @@index([orgId, sectorId])
+  @@index([sectorId])
+  @@index([permissionId])
+}
+
+// Permissões por departamento (Matriz de Permissões RBAC)
+model DepartmentPermission {
+  id         String   @id @default(uuid())
+  orgId      String
+  departmentId String
+  permissionId String // Referência à permissão
+  granted    Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String
+  updatedBy  String
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  department    Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@unique([departmentId, permissionId], name: "unique_department_permission")
+  @@index([orgId, departmentId])
+  @@index([departmentId])
+  @@index([permissionId])
+}
+
+// Auditoria de mudanças de permissões
+model PermissionAuditLog {
+  id           String   @id @default(uuid())
+  orgId        String
+  entityType   String   // "position" | "sector" | "department" | "user"
+  entityId     String   // ID do cargo, setor, departamento ou usuário
+  permissionId String   // ID ou chave da permissão (ex: "products:view")
+  action       String   // "granted" | "denied" | "removed"
+  granted      Boolean? // true = concedido, false = negado, null = removido
+  previousValue Boolean? // Valor anterior (para rastreamento)
+  actorId      String   // ID do usuário que fez a mudança
+  reason       String?  @db.VarChar(512) // Motivo da mudança (opcional)
+  metadata     Json?    // Dados adicionais flexíveis
+  createdAt    DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, entityType, entityId])
+  @@index([orgId, entityType])
+  @@index([orgId, createdAt])
+  @@index([entityId])
+  @@index([permissionId])
+  @@index([actorId])
+}
+
+// Templates de permissões (conjuntos predefinidos)
+model PermissionTemplate {
+  id          String   @id @default(uuid())
+  orgId       String
+  name        String   @db.VarChar(200)
+  description String?  @db.VarChar(500)
+  entityType  String   // "position" | "sector" | "department" | "all"
+  permissions Json     // Array de { permissionId: string, granted: boolean }
+  isDefault   Boolean  @default(false) // Template padrão para o tipo de entidade
+  isSystem    Boolean  @default(false) // Template do sistema (não pode ser editado/deletado)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String
+  updatedBy   String
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, entityType])
+  @@index([orgId, isDefault])
+  @@unique([orgId, name, entityType], name: "unique_template_name_per_entity")
+}

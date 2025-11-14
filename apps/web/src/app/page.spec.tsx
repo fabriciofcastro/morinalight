@@ -11,7 +11,14 @@ describe("Home", () => {
         name: /futuro operacional sem o peso do erp monolítico/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/morina light acelera módulos críticos/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /conferir blueprint/i })).toBeInTheDocument();
+    expect(
+      screen.getByText(/o morina light entrega módulos essenciais/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /explorar status operacional/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", { name: /personalizar cockpit/i }).length,
+    ).toBeGreaterThanOrEqual(1);
   });
 });

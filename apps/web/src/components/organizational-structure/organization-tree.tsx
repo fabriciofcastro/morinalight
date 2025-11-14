@@ -1,0 +1,212 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { Building2, FolderTree, Briefcase, Users, Edit, Trash2, Plus } from "lucide-react";
+import { TreeViewContainer, type TreeNode } from "@morina/ui";
+import { Button } from "@morina/ui";
+import { cn } from "@morina/ui";
+
+export type DepartmentNode = {
+  id: string;
+  name: string;
+  code: string;
+  status: "ativo" | "inativo" | "arquivado";
+  sectors?: SectorNode[];
+};
+
+export type SectorNode = {
+  id: string;
+  name: string;
+  code: string;
+  status: "ativo" | "inativo" | "arquivado";
+  departmentId: string;
+  positions?: PositionNode[];
+};
+
+export type PositionNode = {
+  id: string;
+  name: string;
+  code: string;
+  status: "ativo" | "inativo" | "arquivado";
+  sectorId: string;
+};
+
+type OrganizationTreeProps = {
+  departments: DepartmentNode[];
+  selectedId?: string;
+  onSelect?: (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => void;
+  onEdit?: (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => void;
+  onDelete?: (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => void;
+  onAddChild?: (parentType: "department" | "sector", parentId: string) => void;
+  expanded?: Set<string>;
+  onToggleExpand?: (id: string) => void;
+  className?: string;
+};
+
+export function OrganizationTree({
+  departments,
+  selectedId,
+  onSelect,
+  onEdit,
+  onDelete,
+  onAddChild,
+  expanded = new Set(),
+  onToggleExpand,
+  className,
+}: OrganizationTreeProps) {
+  const buildTreeNodes = (): TreeNode[] => {
+    return departments.map((dept) => {
+      const sectorNodes: TreeNode[] =
+        dept.sectors?.map((sector) => {
+          const positionNodes: TreeNode[] =
+            sector.positions?.map((position) => ({
+              id: `position-${position.id}`,
+              label: position.name,
+              data: { ...position, type: "position" as const },
+              icon: <Briefcase className="h-4 w-4" />,
+              badge: position.code,
+              actions: (
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit?.({ type: "position", id: position.id, data: position });
+                    }}
+                    className="h-7 w-7 p-0"
+                  >
+                    <Edit className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete?.({ type: "position", id: position.id, data: position });
+                    }}
+                    className="h-7 w-7 p-0 text-[var(--danger)] hover:text-[var(--danger)]"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ),
+            })) || [];
+
+          return {
+            id: `sector-${sector.id}`,
+            label: sector.name,
+            data: { ...sector, type: "sector" as const },
+            icon: <FolderTree className="h-4 w-4" />,
+            badge: sector.code,
+            children: positionNodes,
+            actions: (
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddChild?.("sector", sector.id);
+                  }}
+                  className="h-7 w-7 p-0"
+                  title="Adicionar Cargo"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.({ type: "sector", id: sector.id, data: sector });
+                  }}
+                  className="h-7 w-7 p-0"
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.({ type: "sector", id: sector.id, data: sector });
+                  }}
+                  className="h-7 w-7 p-0 text-[var(--danger)] hover:text-[var(--danger)]"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            ),
+          };
+        }) || [];
+
+      return {
+        id: `department-${dept.id}`,
+        label: dept.name,
+        data: { ...dept, type: "department" as const },
+        icon: <Building2 className="h-4 w-4" />,
+        badge: dept.code,
+        children: sectorNodes,
+        actions: (
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddChild?.("department", dept.id);
+              }}
+              className="h-7 w-7 p-0"
+              title="Adicionar Setor"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.({ type: "department", id: dept.id, data: dept });
+              }}
+              className="h-7 w-7 p-0"
+            >
+              <Edit className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete?.({ type: "department", id: dept.id, data: dept });
+              }}
+              className="h-7 w-7 p-0 text-[var(--danger)] hover:text-[var(--danger)]"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        ),
+      };
+    });
+  };
+
+  const handleSelect = (node: TreeNode) => {
+    const data = node.data as DepartmentNode | SectorNode | PositionNode & { type: "department" | "sector" | "position" };
+    if (data?.type) {
+      onSelect?.({ type: data.type, id: data.id, data });
+    }
+  };
+
+  return (
+    <TreeViewContainer
+      nodes={buildTreeNodes()}
+      selectedId={selectedId}
+      onSelect={handleSelect}
+      expanded={expanded}
+      onToggleExpand={onToggleExpand}
+      className={cn("min-h-[400px]", className)}
+      emptyMessage="Nenhuma estrutura organizacional encontrada. Comece criando um departamento."
+    />
+  );
+}
+

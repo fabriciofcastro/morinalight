@@ -1,0 +1,80 @@
+# CURSOR RULES - MORINA
+## Diretrizes Oficiais para Desenvolvimento
+
+## 📌 PRIORIDADE MÁXIMA: Estrutura Organizacional Base
+
+**SEMPRE CONSULTAR ANTES DE CRIAR QUALQUER MÓDULO:**
+
+1. **docs/estrutura-organizacional.md** - Fundação organizacional corporativa
+   - Hierarquia: Empresa → Departamento → Subdepartamento → Setor → Cargo
+   - Priorizar construção da base antes de módulos funcionais
+   - Seguir DDD, eventos de domínio e RBAC corporativo
+
+2. **docs/PLANO_REESTRUTURACAO.md** - Plano completo de reestruturação
+   - Fases de implementação
+   - Design system
+   - Critérios de qualidade
+
+## 🧭 Ordem Obrigatória de Construção
+
+1. Cadastro de Empresa (com busca por CNPJ)
+2. Configurações da Empresa
+3. Tema da Empresa (logo, cores, vídeo)
+4. Cadastro de Departamentos
+5. Cadastro de Subdepartamentos
+6. Cadastro de Setores
+7. Cadastro de Cargos
+8. Cadastro de Permissões (RBAC base)
+9. Cadastro de Usuários/Funcionários (com busca por CPF)
+10. Matriz de Permissões
+11. Auditoria e Versionamento
+12. Eventos Base do Domínio
+13. **SOMENTE DEPOIS** → Módulos funcionais (PCP, Corte, Produção, etc.)
+
+## ⚠️ REGRAS RÍGIDAS
+
+### Estrutura Organizacional
+- **NUNCA** criar módulos avançados sem validar a fundação organizacional
+- **SEMPRE** seguir a hierarquia correta: Empresa → Departamento → Subdepartamento → Setor → Cargo
+- **NUNCA** usar estruturas antigas (OrganizationalUnit, Team, etc)
+- **SEMPRE** usar os novos modelos: Department, Subdepartment, Sector, Position
+
+### Design System
+- **NUNCA** usar cores hardcoded
+- **SEMPRE** usar design tokens
+- **SEMPRE** manter consistência visual entre páginas
+- **SEMPRE** aplicar glass morphism e efeitos modernos
+
+### Arquitetura
+- **SEMPRE** seguir DDD (Domain-Driven Design)
+- **SEMPRE** criar eventos de domínio para ações importantes
+- **SEMPRE** implementar RBAC granular
+- **SEMPRE** adicionar auditoria em ações críticas
+- **SEMPRE** validar com Zod
+
+### Código
+- **SEMPRE** usar TypeScript strict mode
+- **NUNCA** fazer mudanças sem necessidade
+- **SEMPRE** criar componentes reutilizáveis
+- **SEMPRE** documentar código complexo
+
+## 📚 Documentos de Referência
+
+- `docs/MANIFESTO.md` - Princípios MORINA
+- `docs/DOCS_STANDARDS.md` - Padrões de documentação
+- `docs/CURSOR_START.md` - Regras básicas do Cursor
+- `docs/estrutura-organizacional.md` - **FUNDAÇÃO ORGANIZACIONAL** (leia primeiro!)
+- `docs/PLANO_REESTRUTURACAO.md` - Plano completo de implementação
+
+## 🎯 Resultado Esperado
+
+Com estas regras aplicadas, o Cursor deve:
+
+✅ Construir base corporativa sólida primeiro
+✅ Criar módulos sem retrabalho
+✅ Manter consistência visual e arquitetural
+✅ Garantir escalabilidade multiempresa
+✅ Implementar auditoria e rastreabilidade completa
+
+**Este arquivo é carregado automaticamente pelo Cursor para orientar todo desenvolvimento.**
+

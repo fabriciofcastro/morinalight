@@ -5,6 +5,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
+    "dev:stack": "docker compose up --build",
     "lint": "turbo run lint",
     "test": "pnpm -r --parallel test",
     "test:e2e": "pnpm --filter web test:e2e",
@@ -12,6 +13,9 @@
     "prepush": "pnpm lint && pnpm typecheck && pnpm test && pnpm -w commit:guard",
     "commit:guard": "commitlint -E HUSKY_GIT_PARAMS || echo 'commitlint ok'",
     "docs:index": "node scripts/index-docs.mjs",
+    "docs:watch": "node scripts/watch-canonical-docs.mjs",
+    "mcp:validate": "node scripts/validate-mcp.mjs",
+    "demo:catalogo": "node scripts/catalogo-demo.mjs",
     "prepare": "husky",
     "biome": "biome",
     "prettier": "prettier"

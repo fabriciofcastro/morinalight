@@ -113,27 +113,27 @@ export function PersonalizationPanel() {
 
   return (
     <section className="flex flex-col gap-[var(--space-6)]">
-      <GlassCard glow className="bg-[color-mix(in_oklab,var(--surface-muted)_94%,transparent)]/70">
+      <GlassCard glow className="bg-[color-mix(in oklab,var(--surface-color) 94%,transparent)]/70">
         <header className="flex flex-col gap-[var(--space-2)]">
-          <span className="text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+          <span className="text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
             Identidade Visual
           </span>
           <h2 className="text-[var(--fs-xl)] font-semibold leading-[var(--lh-tight)] text-[var(--fg)]">
             Personalização AlphaSysCore
           </h2>
-          <p className="text-[var(--fs-sm)] leading-[var(--lh-base)] text-[color-mix(in_oklab,var(--muted)_72%,var(--fg)_28%)]">
+          <p className="text-[var(--fs-sm)] leading-[var(--lh-base)] text-[color-mix(in oklab,var(--muted-soft) 72%,var(--fg) 28%)]">
             Ajuste logo, cores, vídeo institucional e modo padrão. Tudo é aplicado em tempo real na
             camada visual do cockpit.
           </p>
         </header>
 
-        <div className="mt-[var(--space-6)] grid gap-[var(--space-6)] md:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
+        <div className="mt-[var(--space-6)] grid gap-[var(--space-6)] lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
           <div className="flex flex-col gap-[var(--space-4)]">
             <div className="flex flex-col gap-[var(--space-3)]">
               <Label htmlFor="logo-upload">Identidade (logo)</Label>
-              <div className="flex flex-col items-center gap-[var(--space-3)] rounded-[var(--r-lg)] border border-dashed border-[color-mix(in_oklab,var(--border-strong)_75%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_92%,transparent)]/65 p-[var(--space-5)] text-center">
+              <div className="flex flex-col items-center gap-[var(--space-3)] rounded-[var(--r-lg)] border border-dashed border-[color-mix(in oklab,var(--border-color) 75%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)]/65 p-[var(--space-5)] text-center">
                 {watchedValues?.logoUrl ? (
-                  <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-[var(--r-md)] bg-[color-mix(in_oklab,var(--surface-muted)_88%,transparent)] shadow-[var(--shadow-soft)]">
+                  <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-[var(--r-md)] bg-[color-mix(in oklab,var(--surface-color) 88%,transparent)] shadow-[var(--shadow-soft)]">
                     <Image
                       src={watchedValues.logoUrl || ""}
                       alt="Logo da empresa"
@@ -142,7 +142,7 @@ export function PersonalizationPanel() {
                     />
                   </div>
                 ) : (
-                  <div className="flex h-24 w-24 items-center justify-center rounded-[var(--r-md)] border border-[color-mix(in_oklab,var(--border)_80%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_90%,transparent)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  <div className="flex h-24 w-24 items-center justify-center rounded-[var(--r-md)] border border-[color-mix(in oklab,var(--border-color) 80%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)] text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
                     Sem logo
                   </div>
                 )}
@@ -151,7 +151,7 @@ export function PersonalizationPanel() {
                   type="file"
                   accept="image/*"
                   onChange={handleLogoUpload}
-                  className="cursor-pointer border-none bg-transparent text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] file:mr-3 file:cursor-pointer file:rounded-[var(--r-md)] file:border-none file:bg-[color-mix(in_oklab,var(--primary)_85%,var(--fg)_15%)] file:px-[var(--space-4)] file:py-[var(--space-2)] file:text-[var(--fs-xs)] file:font-medium file:uppercase file:tracking-[var(--tracking-wide)] file:text-[var(--primary-contrast)] hover:file:opacity-90"
+                  className="cursor-pointer border-none bg-transparent text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] file:mr-3 file:cursor-pointer file:rounded-[var(--r-md)] file:border-none file:bg-[color-mix(in oklab,var(--primary-color) 85%,var(--fg) 15%)] file:px-[var(--space-4)] file:py-[var(--space-2)] file:text-[var(--fs-xs)] file:font-medium file:uppercase file:tracking-[var(--tracking-wide)] file:text-[var(--primary-contrast)] hover:file:opacity-90"
                 />
                 {watchedValues?.logoUrl && (
                   <Button
@@ -159,7 +159,7 @@ export function PersonalizationPanel() {
                     variant="ghost"
                     size="sm"
                     onClick={handleLogoRemove}
-                    className="text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_65%,var(--fg)_35%)] hover:text-[color-mix(in_oklab,var(--primary)_70%,var(--fg)_30%)]"
+                    className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 65%,var(--fg) 35%)] hover:text-[color-mix(in oklab,var(--primary-color) 70%,var(--fg) 30%)]"
                   >
                     Remover logo
                   </Button>
@@ -171,7 +171,8 @@ export function PersonalizationPanel() {
               <Label htmlFor="themeMode">Modo do tema</Label>
               <select
                 id="themeMode"
-                className="rounded-[var(--r-md)] border border-[color-mix(in_oklab,var(--border)_82%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_92%,transparent)] p-[var(--space-3)] text-[var(--fs-sm)] text-[var(--fg)] outline-none transition focus:border-[color-mix(in_oklab,var(--primary)_50%,transparent)] focus:shadow-[0_0_0_2px_rgba(40,85,255,0.25)]"
+                aria-describedby="themeMode-description"
+                className="rounded-[var(--r-md)] border border-[color-mix(in oklab,var(--border-color) 82%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)] p-[var(--space-3)] text-[var(--fs-sm)] text-[var(--fg)] outline-none transition focus:border-[color-mix(in oklab,var(--primary-color) 50%,transparent)] focus:shadow-[0_0_0_2px_rgba(40,85,255,0.25)]"
                 {...form.register("themeMode")}
               >
                 {THEME_OPTIONS.map((option) => (
@@ -180,6 +181,12 @@ export function PersonalizationPanel() {
                   </option>
                 ))}
               </select>
+              <span
+                id="themeMode-description"
+                className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]"
+              >
+                Escolha entre modo claro, escuro ou automático (baseado no sistema)
+              </span>
             </div>
           </div>
 
@@ -188,7 +195,7 @@ export function PersonalizationPanel() {
             className="flex flex-col gap-[var(--space-5)]"
             noValidate
           >
-            <div className="grid gap-[var(--space-4)] md:grid-cols-2">
+            <div className="grid gap-[var(--space-4)] sm:grid-cols-2">
               <div className="flex flex-col gap-[var(--space-2)]">
                 <Label htmlFor="primaryColor">Cor primária</Label>
                 <Input
@@ -231,13 +238,14 @@ export function PersonalizationPanel() {
 
             {feedback && (
               <div
+                role="status"
                 aria-live="polite"
                 aria-atomic="true"
                 className={cn(
                   "rounded-[var(--r-md)] border px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-xs)]",
                   feedback.kind === "success"
-                    ? "border-[color-mix(in_oklab,var(--success)_45%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_90%,var(--success)_12%)] text-[color-mix(in_oklab,var(--success)_65%,var(--fg)_35%)]"
-                    : "border-[color-mix(in_oklab,var(--danger)_45%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_90%,var(--danger)_12%)] text-[color-mix(in_oklab,var(--danger)_70%,var(--fg)_30%)]",
+                    ? "border-[color-mix(in oklab,var(--success-color) 45%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 90%,var(--success-color) 12%)] text-[color-mix(in oklab,var(--success-color) 65%,var(--fg) 35%)]"
+                    : "border-[color-mix(in oklab,var(--danger-color) 45%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 90%,var(--danger-color) 12%)] text-[color-mix(in oklab,var(--danger-color) 70%,var(--fg) 30%)]",
                 )}
               >
                 {feedback.message}
@@ -252,7 +260,7 @@ export function PersonalizationPanel() {
               >
                 {saving ? "Salvando..." : "Salvar personalização"}
               </Button>
-              <span className="text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_75%,var(--fg)_25%)]">
+              <span className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
                 Alterações são aplicadas em tempo real e persistidas ao salvar.
               </span>
             </div>

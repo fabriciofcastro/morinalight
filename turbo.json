@@ -15,6 +15,11 @@
     "typecheck": {
       "outputs": []
     },
+    "test:e2e": {
+      "outputs": [],
+      "cache": false,
+      "dependsOn": ["^build", "build"]
+    },
     "dev": {
       "cache": false
     }

@@ -1,0 +1,485 @@
+openapi: 3.1.0
+info:
+  title: Morina Light API
+  version: 0.1.0
+  description: |
+    Catálogo, personalização de marca e notificações em tempo real.
+servers:
+  - url: http://localhost:3333
+    description: Desenvolvimento local
+tags:
+  - name: Health
+  - name: Catálogo
+  - name: Auditoria
+  - name: Notificações
+  - name: Personalização
+  - name: Realtime
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Verifica status da API
+      responses:
+        "200":
+          description: Serviço ativo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: api
+                  timestamp:
+                    type: string
+                    format: date-time
+  /catalogo/produtos:
+    post:
+      tags: [Catálogo]
+      summary: Cria um produto
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/ActorIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateInput"
+      responses:
+        "201":
+          description: Produto criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductView"
+    get:
+      tags: [Catálogo]
+      summary: Lista produtos da organização
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/StatusQuery"
+        - $ref: "#/components/parameters/BuscaQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimiteQuery"
+      responses:
+        "200":
+          description: Página de produtos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductListResponse"
+  /catalogo/produtos/{produtoId}:
+    get:
+      tags: [Catálogo]
+      summary: Detalha um produto
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/ProdutoIdParam"
+      responses:
+        "200":
+          description: Produto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductView"
+  /catalogo/produtos/{produtoId}/aprovar:
+    post:
+      tags: [Catálogo]
+      summary: Aprova um produto aguardando revisão
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/ActorIdHeader"
+        - $ref: "#/components/parameters/ProdutoIdParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                motivo:
+                  type: string
+                  maxLength: 512
+      responses:
+        "200":
+          description: Produto aprovado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductView"
+  /catalogo/produtos/{produtoId}/reprovar:
+    post:
+      tags: [Catálogo]
+      summary: Reprova um produto aguardando revisão
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/ActorIdHeader"
+        - $ref: "#/components/parameters/ProdutoIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [motivo]
+              properties:
+                motivo:
+                  type: string
+                  minLength: 3
+                  maxLength: 512
+      responses:
+        "200":
+          description: Produto reprovado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductView"
+  /catalogo/produtos/{produtoId}/auditoria:
+    get:
+      tags: [Auditoria]
+      summary: Consulta auditoria de um produto
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/ProdutoIdParam"
+        - $ref: "#/components/parameters/AcaoQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimiteQuery"
+        - $ref: "#/components/parameters/InicioQuery"
+        - $ref: "#/components/parameters/FimQuery"
+      responses:
+        "200":
+          description: Logs do produto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductAuditResponse"
+  /catalogo/auditoria/feed:
+    get:
+      tags: [Auditoria]
+      summary: Feed consolidado de auditoria
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/AcaoQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimiteQuery"
+        - $ref: "#/components/parameters/InicioQuery"
+        - $ref: "#/components/parameters/FimQuery"
+      responses:
+        "200":
+          description: Auditoria agrupada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditFeedResponse"
+  /notifications/feed:
+    get:
+      tags: [Notificações]
+      summary: Feed para painéis de notificações
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+        - $ref: "#/components/parameters/AcaoQuery"
+        - $ref: "#/components/parameters/CursorQuery"
+        - $ref: "#/components/parameters/LimiteQuery"
+        - $ref: "#/components/parameters/InicioQuery"
+        - $ref: "#/components/parameters/FimQuery"
+      responses:
+        "200":
+          description: Lista resumida pronta para UI
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  itens:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        tipo:
+                          type: string
+                        criadoEm:
+                          type: string
+                          format: date-time
+                        actorId:
+                          type: string
+                        payload:
+                          type: object
+                          nullable: true
+                          additionalProperties: true
+                        produto:
+                          nullable: true
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            nome:
+                              type: string
+                            status:
+                              type: string
+                  proximoCursor:
+                    type: string
+                    nullable: true
+  /company-settings:
+    get:
+      tags: [Personalização]
+      summary: Obtém configurações de marca
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+      responses:
+        "200":
+          description: Configurações vigentes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanySettings"
+    put:
+      tags: [Personalização]
+      summary: Atualiza configurações de marca
+      parameters:
+        - $ref: "#/components/parameters/OrgIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanySettingsInput"
+      responses:
+        "200":
+          description: Configurações persistidas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanySettings"
+        "400":
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+  /realtime/token:
+    post:
+      tags: [Realtime]
+      summary: Gera token JWT para gateway realtime
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orgId, actorId]
+              properties:
+                orgId:
+                  type: string
+                actorId:
+                  type: string
+      responses:
+        "201":
+          description: Token gerado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+components:
+  parameters:
+    OrgIdHeader:
+      name: x-org-id
+      in: header
+      required: true
+      schema:
+        type: string
+    ActorIdHeader:
+      name: x-actor-id
+      in: header
+      required: true
+      schema:
+        type: string
+    ProdutoIdParam:
+      name: produtoId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    StatusQuery:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [rascunho, aguardando_aprovacao, ativo, inativo]
+    BuscaQuery:
+      name: busca
+      in: query
+      schema:
+        type: string
+    CursorQuery:
+      name: cursor
+      in: query
+      schema:
+        type: string
+    LimiteQuery:
+      name: limite
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+    AcaoQuery:
+      name: acao
+      in: query
+      schema:
+        type: string
+    InicioQuery:
+      name: inicio
+      in: query
+      schema:
+        type: string
+        format: date-time
+    FimQuery:
+      name: fim
+      in: query
+      schema:
+        type: string
+        format: date-time
+  schemas:
+    ProductCreateInput:
+      type: object
+      required: [nome]
+      properties:
+        nome:
+          type: string
+          minLength: 3
+          maxLength: 180
+        descricao:
+          type: string
+          nullable: true
+    ProductView:
+      type: object
+      properties:
+        produtoId:
+          type: string
+          format: uuid
+        orgId:
+          type: string
+        nome:
+          type: string
+        descricao:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [rascunho, aguardando_aprovacao, ativo, inativo]
+        criadoPor:
+          type: string
+        atualizadoPor:
+          type: string
+        criadoEm:
+          type: string
+          format: date-time
+        atualizadoEm:
+          type: string
+          format: date-time
+    ProductListResponse:
+      type: object
+      properties:
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductView"
+        proximoCursor:
+          type: string
+          nullable: true
+    AuditEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        produtoId:
+          type: string
+          format: uuid
+        orgId:
+          type: string
+        acao:
+          type: string
+        actorId:
+          type: string
+        payload:
+          type: object
+          nullable: true
+          additionalProperties: true
+        criadoEm:
+          type: string
+          format: date-time
+    ProductAuditResponse:
+      type: object
+      properties:
+        produto:
+          $ref: "#/components/schemas/ProductView"
+        auditoria:
+          type: object
+          properties:
+            itens:
+              type: array
+              items:
+                $ref: "#/components/schemas/AuditEntry"
+            proximoCursor:
+              type: string
+              nullable: true
+    AuditFeedResponse:
+      type: object
+      properties:
+        itens:
+          type: array
+          items:
+            allOf:
+              - $ref: "#/components/schemas/AuditEntry"
+              - type: object
+                properties:
+                  produto:
+                    oneOf:
+                      - $ref: "#/components/schemas/ProductView"
+                      - type: "null"
+        proximoCursor:
+          type: string
+          nullable: true
+    CompanySettings:
+      type: object
+      properties:
+        logoUrl:
+          type: string
+          nullable: true
+        primaryColor:
+          type: string
+          nullable: true
+        secondaryColor:
+          type: string
+          nullable: true
+        themeMode:
+          type: string
+          enum: [light, dark, system]
+          nullable: true
+        videoLink:
+          type: string
+          nullable: true
+    CompanySettingsInput:
+      allOf:
+        - $ref: "#/components/schemas/CompanySettings"
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties: true
+

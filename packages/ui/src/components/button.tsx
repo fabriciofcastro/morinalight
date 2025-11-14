@@ -11,11 +11,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "border-[color-mix(in_oklab,var(--primary)_45%,transparent)] bg-[linear-gradient(135deg,rgba(91,138,255,0.94),rgba(91,138,255,0.68))] text-[var(--primary-contrast)] shadow-[var(--shadow-soft)] hover:translate-y-[2px] hover:shadow-[var(--shadow-strong)] focus-visible:outline-[color-mix(in_oklab,var(--primary)_70%,transparent)]",
+          "border-[color-mix(in oklab,var(--primary-color) 45%,transparent)] bg-[linear-gradient(135deg,rgba(91,138,255,0.94),rgba(91,138,255,0.68))] text-[var(--primary-contrast)] shadow-[var(--shadow-soft)] hover:translate-y-[2px] hover:shadow-[var(--shadow-strong)] focus-visible:outline-[color-mix(in oklab,var(--primary-color) 70%,transparent)]",
         secondary:
-          "border-[var(--border)] bg-[color-mix(in_oklab,var(--surface-muted)_88%,transparent)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:border-[var(--border-strong)] hover:text-[var(--fg)] focus-visible:outline-[color-mix(in_oklab,var(--primary)_55%,transparent)]",
+          "border-[var(--border-color)] bg-[color-mix(in oklab,var(--surface-color) 88%,transparent)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] hover:border-[color-mix(in oklab,var(--primary-color) 40%,transparent)] hover:text-[var(--fg)] focus-visible:outline-[color-mix(in oklab,var(--primary-color) 55%,transparent)]",
         ghost:
-          "border-transparent bg-transparent text-[color-mix(in_oklab,var(--primary)_78%,var(--fg)_22%)] hover:text-[var(--primary)]",
+          "border-transparent bg-transparent text-[color-mix(in oklab,var(--primary-color) 78%,var(--fg) 22%)] hover:text-[var(--primary-color)]",
       },
       size: {
         md: "px-[var(--space-6)] py-[var(--space-3)] text-[var(--fs-sm)]",

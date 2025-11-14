@@ -30,6 +30,8 @@ export class CriarProdutoUseCase {
       orgId: input.orgId,
       nome: input.nome,
       descricao: input.descricao,
+      sku: input.sku ?? null,
+      categoryId: input.categoryId ?? null,
       criadoPor: this.deps.actorId,
       atualizadoPor: this.deps.actorId,
     });
@@ -76,6 +78,8 @@ export class CriarProdutoUseCase {
       orgId: produto.dados.orgId,
       nome: produto.dados.nome,
       descricao: produto.dados.descricao ?? null,
+      sku: produto.dados.sku ?? null,
+      categoryId: produto.dados.categoryId ?? null,
       status: produto.dados.status,
       criadoPor: produto.dados.criadoPor,
       atualizadoPor: produto.dados.atualizadoPor,

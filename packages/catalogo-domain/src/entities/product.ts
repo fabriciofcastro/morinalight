@@ -6,6 +6,8 @@ export type ProdutoProps = {
   orgId: string;
   nome: string;
   descricao?: string | null;
+  sku?: string | null;
+  categoryId?: string | null;
   status: ProdutoStatus;
   criadoPor: string;
   atualizadoPor: string;
@@ -85,6 +87,33 @@ Reprovação: ${motivo}`.trim();
     }
 
     this.props.status = "aguardando_aprovacao";
+    this.props.atualizadoPor = actorId;
+    this.props.atualizadoEm = new Date();
+  }
+
+  atualizarNome(nome: string, actorId: string) {
+    if (!nome || nome.trim().length === 0) {
+      throw new Error("Nome do produto não pode ser vazio");
+    }
+    this.props.nome = nome;
+    this.props.atualizadoPor = actorId;
+    this.props.atualizadoEm = new Date();
+  }
+
+  atualizarDescricao(descricao: string | null, actorId: string) {
+    this.props.descricao = descricao;
+    this.props.atualizadoPor = actorId;
+    this.props.atualizadoEm = new Date();
+  }
+
+  atualizarSku(sku: string | null, actorId: string) {
+    this.props.sku = sku;
+    this.props.atualizadoPor = actorId;
+    this.props.atualizadoEm = new Date();
+  }
+
+  atualizarCategoria(categoryId: string | null, actorId: string) {
+    this.props.categoryId = categoryId;
     this.props.atualizadoPor = actorId;
     this.props.atualizadoEm = new Date();
   }

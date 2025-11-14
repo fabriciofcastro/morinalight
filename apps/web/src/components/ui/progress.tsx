@@ -15,7 +15,7 @@ export function Progress({ value = 0, className, ...props }: ProgressProps) {
       aria-valuemax={100}
       aria-valuenow={Math.round(bounded)}
       className={cn(
-        "relative h-2 w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--surface)_92%,transparent)]",
+        "relative h-2 w-full overflow-hidden rounded-full bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)]",
         className,
       )}
       {...props}

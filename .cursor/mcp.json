@@ -1,0 +1,38 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/fabricio/projects/morina2"]
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git"]
+    },
+    "http": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-http"]
+    },
+    "openapi": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-openapi"],
+      "env": {
+        "OPENAPI_SPEC_URL": "file:///home/fabricio/projects/morina2/docs/openapi/morina-openapi.yaml"
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://morina:morina@localhost:5432/morina"
+      }
+    },
+    "redis": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-redis"],
+      "env": {
+        "REDIS_URL": "redis://localhost:6379"
+      }
+    }
+  }
+}
+

@@ -4,10 +4,9 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-const headersSchema = z.object({
-  "x-org-id": z.string().min(1),
-  "x-actor-id": z.string().min(1),
-});
+import { getTenant } from "../../../core/tenant/tenant.utils";
+
+const bodySchema = criarProdutoInputSchema.omit({ orgId: true });
 
 type CatalogoHttpDeps = {
   produtoRepository: ProdutoRepository;
@@ -16,20 +15,19 @@ type CatalogoHttpDeps = {
 };
 
 export async function registerCreateProductRoute(app: FastifyInstance, deps: CatalogoHttpDeps) {
-  const bodySchema = criarProdutoInputSchema.omit({ orgId: true });
-
   app.post("/catalogo/produtos", async (request, reply) => {
-    const { "x-org-id": orgId, "x-actor-id": actorId } = headersSchema.parse(request.headers);
+    // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
+    const tenant = getTenant(request);
     const body = bodySchema.parse(request.body);
 
     const useCase = new CriarProdutoUseCase({
       produtoRepository: deps.produtoRepository,
-      actorId,
+      actorId: tenant.userId,
       eventBus: deps.eventBus,
       auditoriaRepository: deps.auditoriaRepository,
     });
 
-    const resultado = await useCase.execute({ orgId, ...body });
+    const resultado = await useCase.execute({ orgId: tenant.orgId, ...body });
 
     return reply.status(201).send(resultado);
   });

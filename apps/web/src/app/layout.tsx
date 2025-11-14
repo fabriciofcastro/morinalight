@@ -1,19 +1,22 @@
 import { cn } from "@morina/ui";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
+import { ThemeProvider } from "next-themes";
 
 import { ThemeShell } from "@/components/theme-shell";
+import { ConnectionProviders } from "@/components/connection-providers";
 
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const interSans = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const poppinsDisplay = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,12 +30,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-profile="web" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={cn(geistSans.variable, geistMono.variable, "antialiased")}
+        className={cn(interSans.variable, poppinsDisplay.variable, "antialiased")}
       >
-        <ThemeShell>{children}</ThemeShell>
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+          enableColorScheme={false}
+        >
+          <ThemeShell>{children}</ThemeShell>
+          <ConnectionProviders />
+        </ThemeProvider>
       </body>
     </html>
   );

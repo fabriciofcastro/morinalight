@@ -1,11 +1,23 @@
 import { randomUUID } from "node:crypto";
-import type { FastifyBaseLogger } from "fastify";
 import { Redis } from "ioredis";
 import type { WebSocket } from "ws";
+
+import type { FastifyBaseLogger } from "fastify";
+import {
+  broadcastCounter,
+  connectionsGauge,
+  connectionsPerOrgGauge,
+  pendingMessagesGauge,
+} from "../observability/metrics";
 
 type Connection = {
   socket: WebSocket;
   actorId: string;
+};
+
+type RealtimeHubOptions = {
+  pendingAlertThreshold?: number;
+  pendingAlertIntervalMs?: number;
 };
 
 export class RealtimeHub {
@@ -15,14 +27,20 @@ export class RealtimeHub {
   private readonly group = "realtime-consumers";
   private readonly consumerId = `consumer:${randomUUID()}`;
   private polling = false;
+  private readonly pendingAlertThreshold: number;
+  private readonly pendingAlertIntervalMs: number;
+  private pendingTimer?: NodeJS.Timeout;
 
   constructor(
     redisUrl: string,
     stream: string,
     private readonly logger: FastifyBaseLogger,
+    options: RealtimeHubOptions = {},
   ) {
     this.redis = new Redis(redisUrl, { lazyConnect: true });
     this.stream = stream;
+    this.pendingAlertThreshold = options.pendingAlertThreshold ?? 100;
+    this.pendingAlertIntervalMs = options.pendingAlertIntervalMs ?? 30000;
   }
 
   async start() {
@@ -30,17 +48,27 @@ export class RealtimeHub {
     await this.ensureGroup();
     this.polling = true;
     void this.poll();
+    this.schedulePendingMonitor();
   }
 
   async stop() {
     this.polling = false;
+    if (this.pendingTimer) {
+      clearInterval(this.pendingTimer);
+      this.pendingTimer = undefined;
+    }
     await this.redis.quit();
+    this.connections.clear();
+    connectionsGauge.set(0);
+    connectionsPerOrgGauge.reset();
+    pendingMessagesGauge.set({ stream: this.stream, consumer_group: this.group }, 0);
   }
 
   addConnection(orgId: string, actorId: string, socket: WebSocket) {
     const group = this.connections.get(orgId) ?? new Set<Connection>();
     group.add({ socket, actorId });
     this.connections.set(orgId, group);
+    this.updateConnectionMetrics(orgId);
 
     socket.on("close", () => {
       group.forEach((connection) => {
@@ -50,7 +78,13 @@ export class RealtimeHub {
       });
       if (group.size === 0) {
         this.connections.delete(orgId);
+        try {
+          connectionsPerOrgGauge.remove({ org_id: orgId });
+        } catch {
+          // gauge remove may throw if not registered; ignore
+        }
       }
+      this.updateConnectionMetrics(orgId);
     });
   }
 
@@ -103,8 +137,9 @@ export class RealtimeHub {
             try {
               const payload = JSON.parse(payloadRaw) as {
                 metadata: { orgId: string };
+                name?: string;
               };
-              this.broadcast(payload.metadata.orgId, payloadRaw);
+              this.broadcast(payload.metadata.orgId, payloadRaw, payload.name);
             } catch (error) {
               this.logger.error({ err: error }, "Falha ao processar evento realtime");
             } finally {
@@ -119,7 +154,7 @@ export class RealtimeHub {
     }
   }
 
-  private broadcast(orgId: string, message: string) {
+  private broadcast(orgId: string, message: string, eventName?: string) {
     const connections = this.connections.get(orgId);
     if (!connections) return;
 
@@ -128,5 +163,66 @@ export class RealtimeHub {
         socket.send(message);
       }
     });
+    broadcastCounter.inc({ event_name: eventName ?? "unknown" }, connections.size);
+  }
+
+  private updateConnectionMetrics(orgId?: string) {
+    const total = Array.from(this.connections.values()).reduce((acc, set) => acc + set.size, 0);
+    connectionsGauge.set(total);
+
+    if (orgId) {
+      const size = this.connections.get(orgId)?.size ?? 0;
+      if (size === 0) {
+        try {
+          connectionsPerOrgGauge.remove({ org_id: orgId });
+        } catch {
+          // ignore
+        }
+      } else {
+        connectionsPerOrgGauge.labels(orgId).set(size);
+      }
+    } else {
+      for (const [id, set] of this.connections.entries()) {
+        connectionsPerOrgGauge.labels(id).set(set.size);
+      }
+    }
+  }
+
+  private schedulePendingMonitor() {
+    if (this.pendingTimer) {
+      return;
+    }
+
+    this.pendingTimer = setInterval(() => {
+      void this.checkPendingMessages();
+    }, this.pendingAlertIntervalMs);
+    // Evita manter o processo ativo só por causa do timer
+    this.pendingTimer.unref();
+  }
+
+  private async checkPendingMessages() {
+    try {
+      await this.ensureConnection();
+      const result = (await this.redis.xpending(this.stream, this.group)) as
+        | [string, string | null, string | null, Array<[string, string]>]
+        | undefined;
+
+      const pendingRaw = Array.isArray(result) ? result[0] : "0";
+      const pending = typeof pendingRaw === "number" ? pendingRaw : Number(pendingRaw ?? 0);
+
+      pendingMessagesGauge.set(
+        { stream: this.stream, consumer_group: this.group },
+        Number.isFinite(pending) ? pending : 0,
+      );
+
+      if (pending > this.pendingAlertThreshold) {
+        this.logger.warn(
+          { pending, stream: this.stream, group: this.group },
+          "Mensagens pendentes acima do limite configurado",
+        );
+      }
+    } catch (error) {
+      this.logger.error({ err: error }, "Falha ao verificar mensagens pendentes no stream realtime");
+    }
   }
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { faker } from "@faker-js/faker";
 
 import { GlassCard } from "@morina/ui";
@@ -41,28 +42,28 @@ const milestones = [
 
 export function ProjectOverview() {
   return (
-    <section className="grid gap-[var(--space-6)] rounded-[var(--r-xl)] border border-[color-mix(in_oklab,var(--border)_88%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_92%,transparent)]/88 p-[var(--space-8)] backdrop-blur-xl">
-      <div className="grid gap-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+    <section className="grid gap-[var(--space-6)] rounded-[var(--r-xl)] border border-[color-mix(in oklab,var(--border-color) 88%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)]/88 p-[var(--space-8)] backdrop-blur-xl">
+      <div className="grid gap-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
         <span>Telemetria atualizada com dados simulados (faker)</span>
         <div className="grid gap-[var(--space-4)] md:grid-cols-3">
-          <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in_oklab,var(--surface-muted)_90%,transparent)]/85 p-[var(--space-4)]">
+        <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
             <span>Casos de aprovação prontos</span>
             <strong className="text-2xl text-[var(--fg)]">{telemetry.approvalsReady}</strong>
-            <p className="text-xs normal-case text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+          <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
               Fluxos de aprovação com RBAC aplicados aguardando backend.
             </p>
           </GlassCard>
-          <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in_oklab,var(--surface-muted)_90%,transparent)]/85 p-[var(--space-4)]">
+        <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
             <span>Variantes em QA</span>
             <strong className="text-2xl text-[var(--fg)]">{telemetry.variantsInQA}</strong>
-            <p className="text-xs normal-case text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+          <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
               MatrixGrade preparado para testes com dados gerados.
             </p>
           </GlassCard>
-          <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in_oklab,var(--surface-muted)_90%,transparent)]/85 p-[var(--space-4)]">
+        <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
             <span>ETA próxima release</span>
-            <strong className="text-2xl text-[var(--primary)]">{telemetry.releaseEta}</strong>
-            <p className="text-xs normal-case text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+            <strong className="text-2xl text-[var(--primary-color)]">{telemetry.releaseEta}</strong>
+          <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
               Dependência: integração Postgres/Redis em andamento por outra frente.
             </p>
           </GlassCard>
@@ -70,14 +71,14 @@ export function ProjectOverview() {
       </div>
 
       <header className="flex flex-col gap-[var(--space-3)]">
-        <span className="inline-flex max-w-max items-center gap-[var(--space-2)] rounded-full border border-[color-mix(in_oklab,var(--primary)_35%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_95%,transparent)] px-[var(--space-4)] py-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in_oklab,var(--muted)_75%,var(--fg)_25%)]">
+      <span className="inline-flex max-w-max items-center gap-[var(--space-2)] rounded-full border border-[color-mix(in oklab,var(--primary-color) 35%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 95%,transparent)] px-[var(--space-4)] py-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
           Status do Projeto
         </span>
         <div className="flex flex-col gap-2">
           <h3 className="text-[var(--fs-xl)] font-semibold text-[var(--fg)] leading-[var(--lh-tight)]">
             Roadmap visível para o comitê
           </h3>
-          <p className="text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in_oklab,var(--muted)_80%,var(--fg)_20%)]">
+          <p className="text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 80%,var(--fg) 20%)]">
             Transparência total das entregas. Tudo reforça que eliminamos planilhas frágeis e
             estamos prontos para integrar auditoria real assim que o backend liberar.
           </p>
@@ -88,7 +89,7 @@ export function ProjectOverview() {
         {milestones.map((item) => (
           <GlassCard
             key={item.title}
-            className="flex h-full flex-col gap-[var(--space-4)] bg-[color-mix(in_oklab,var(--surface-muted)_88%,transparent)]/85"
+            className="flex h-full flex-col gap-[var(--space-4)] bg-[color-mix(in oklab,var(--surface-color) 88%,transparent)]/85"
           >
             <div className="flex items-center justify-between gap-2">
               <h4 className="text-[var(--fs-lg)] font-semibold text-[var(--fg)] leading-[var(--lh-tight)]">
@@ -106,29 +107,32 @@ export function ProjectOverview() {
                 {item.status}
               </Badge>
             </div>
-            <p className="text-[var(--fs-sm)] leading-[var(--lh-base)] text-[color-mix(in_oklab,var(--muted)_80%,var(--fg)_20%)]">
+            <p className="text-[var(--fs-sm)] leading-[var(--lh-base)] text-[color-mix(in oklab,var(--muted-soft) 80%,var(--fg) 20%)]">
               {item.description}
             </p>
             <div className="space-y-2">
               <Progress value={item.progress} className="h-2" />
-              <p className="text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+              <p className="text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
                 {item.progress}% concluído
               </p>
             </div>
-            <p className="text-[var(--fs-xs)] leading-[var(--lh-snug)] text-[color-mix(in_oklab,var(--muted)_75%,var(--fg)_25%)]">
+            <p className="text-[var(--fs-xs)] leading-[var(--lh-snug)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
               {item.highlight}
             </p>
           </GlassCard>
         ))}
       </div>
 
-      <footer className="flex flex-wrap items-center gap-[var(--space-3)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-        <span className="rounded-full border border-[color-mix(in_oklab,var(--primary)_35%,transparent)] px-[var(--space-4)] py-[var(--space-2)]">
+      <footer className="flex flex-wrap items-center gap-[var(--space-3)] text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+        <span className="rounded-full border border-[color-mix(in oklab,var(--primary-color) 35%,transparent)] px-[var(--space-4)] py-[var(--space-2)]">
           Próxima checkpoint: Demo executiva + integração eventos auth.*
         </span>
-        <span className="rounded-full border border-[color-mix(in_oklab,var(--primary)_35%,transparent)] px-[var(--space-4)] py-[var(--space-2)]">
-          Documentação viva em docs/usage e docs/decisions
-        </span>
+        <Link
+          href="/docs"
+          className="rounded-full border border-[color-mix(in oklab,var(--primary-color) 35%,transparent)] px-[var(--space-4)] py-[var(--space-2)] text-[color-mix(in oklab,var(--primary-color) 80%,var(--fg) 20%)] transition hover:border-[color-mix(in oklab,var(--primary-color) 55%,transparent)] hover:text-[var(--primary-color)]"
+        >
+          Documentação viva no cockpit
+        </Link>
       </footer>
     </section>
   );

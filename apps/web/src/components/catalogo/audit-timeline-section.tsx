@@ -25,7 +25,7 @@ export function AuditTimelineSection({ produtoId }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <GlassCard className="flex flex-col gap-3 border border-[color-mix(in_oklab,var(--primary)_25%,transparent)]">
+      <GlassCard className="flex flex-col gap-3 border border-[color-mix(in oklab,var(--primary-color) 25%,transparent)]">
         <form
           className="grid grid-cols-1 gap-3 md:grid-cols-12 md:items-end"
           onSubmit={(event) => {
@@ -46,21 +46,21 @@ export function AuditTimelineSection({ produtoId }: Props) {
             });
           }}
         >
-          <label className="flex flex-col gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] md:col-span-6">
+          <label className="flex flex-col gap-2 text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:col-span-6">
             Produto ID
             <input
               value={inputValue}
               onChange={(event) => setInputValue(event.target.value)}
               placeholder="00000000-0000-0000-0000-000000000000"
-              className="w-full rounded-lg border border-[color-mix(in_oklab,var(--border)_80%,transparent)] bg-[color-mix(in_oklab,var(--surface)_96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in_oklab,var(--primary)_55%,transparent)] focus:outline-none"
+              className="w-full rounded-lg border border-[color-mix(in oklab,var(--border-color) 80%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in oklab,var(--primary-color) 55%,transparent)] focus:outline-none"
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] md:col-span-2">
+          <label className="flex flex-col gap-2 text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:col-span-2">
             Ação
             <select
               value={actionFilter}
               onChange={(event) => setActionFilter(event.target.value)}
-              className="w-full rounded-lg border border-[color-mix(in_oklab,var(--border)_80%,transparent)] bg-[color-mix(in_oklab,var(--surface)_96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in_oklab,var(--primary)_55%,transparent)] focus:outline-none"
+              className="w-full rounded-lg border border-[color-mix(in oklab,var(--border-color) 80%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in oklab,var(--primary-color) 55%,transparent)] focus:outline-none"
             >
               <option value="all">Todas</option>
               <option value="produto_criado">Criado</option>
@@ -68,33 +68,33 @@ export function AuditTimelineSection({ produtoId }: Props) {
               <option value="produto_reprovado">Reprovado</option>
             </select>
           </label>
-          <label className="flex flex-col gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] md:col-span-2">
+          <label className="flex flex-col gap-2 text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:col-span-2">
             Início
             <input
               type="date"
               value={startFilter}
               onChange={(event) => setStartFilter(event.target.value)}
-              className="w-full rounded-lg border border-[color-mix(in_oklab,var(--border)_80%,transparent)] bg-[color-mix(in_oklab,var(--surface)_96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in_oklab,var(--primary)_55%,transparent)] focus:outline-none"
+              className="w-full rounded-lg border border-[color-mix(in oklab,var(--border-color) 80%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in oklab,var(--primary-color) 55%,transparent)] focus:outline-none"
             />
           </label>
-          <label className="flex flex-col gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] md:col-span-2">
+          <label className="flex flex-col gap-2 text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:col-span-2">
             Fim
             <input
               type="date"
               value={endFilter}
               onChange={(event) => setEndFilter(event.target.value)}
-              className="w-full rounded-lg border border-[color-mix(in_oklab,var(--border)_80%,transparent)] bg-[color-mix(in_oklab,var(--surface)_96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in_oklab,var(--primary)_55%,transparent)] focus:outline-none"
+              className="w-full rounded-lg border border-[color-mix(in oklab,var(--border-color) 80%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 96%,transparent)] px-3 py-2 text-sm text-[var(--fg)] focus:border-[color-mix(in oklab,var(--primary-color) 55%,transparent)] focus:outline-none"
             />
           </label>
           <button
             type="submit"
-            className="inline-flex items-center justify-center rounded-lg bg-[color-mix(in_oklab,var(--primary)_90%,transparent)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[color-mix(in_oklab,var(--primary)_100%,transparent)] disabled:opacity-60 md:col-span-12 md:w-auto"
+            className="inline-flex items-center justify-center rounded-lg bg-[color-mix(in oklab,var(--primary-color) 90%,transparent)] px-4 py-2 text-sm font-semibold text-[var(--primary-contrast)] transition hover:bg-[color-mix(in oklab,var(--primary-color) 100%,transparent)] disabled:opacity-60 md:col-span-12 md:w-auto"
             disabled={!inputValue.trim()}
           >
             Aplicar
           </button>
         </form>
-        <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+        <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
           O ID pode ser encontrado na resposta da API de catálogo ou no painel de produtos. Eventos
           recentes serão carregados automaticamente via socket.
         </p>
@@ -108,7 +108,7 @@ export function AuditTimelineSection({ produtoId }: Props) {
           fim={appliedFilters.fim}
         />
       ) : (
-        <GlassCard className="text-sm text-[color-mix(in_oklab,var(--muted)_75%,var(--fg)_25%)]">
+        <GlassCard className="text-sm text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
           Informe um identificador de produto para carregar a linha do tempo.
         </GlassCard>
       )}

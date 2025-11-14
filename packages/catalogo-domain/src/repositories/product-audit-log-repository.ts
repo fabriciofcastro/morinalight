@@ -20,4 +20,5 @@ export interface ProdutoAuditoriaRepository {
     produtoId: string,
     filtro?: ProdutoAuditoriaFiltro,
   ): Promise<ProdutoAuditoriaPagina>;
+  listarFeed(orgId: string, filtro?: ProdutoAuditoriaFiltro): Promise<ProdutoAuditoriaPagina>;
 }

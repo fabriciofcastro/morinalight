@@ -1,0 +1,365 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  LayoutDashboard,
+  Package,
+  Users,
+  ShoppingCart,
+  Settings,
+  FileText,
+  Building2,
+  DollarSign,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+  UserCog,
+  BarChart3,
+  Home,
+} from "lucide-react";
+import { cn } from "@morina/ui";
+import { useHasPermission } from "@/hooks/use-permissions";
+
+type NavItem = {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  permission?: string;
+  badge?: number;
+  children?: NavItem[];
+};
+
+const navItems: NavItem[] = [
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: Home,
+    permission: "dashboard:view",
+  },
+  {
+    label: "Produtos",
+    href: "/products",
+    icon: Package,
+    permission: "products:view",
+  },
+  {
+    label: "Catálogo",
+    href: "/catalogo/auditoria",
+    icon: FileText,
+    permission: "catalog:view",
+  },
+  {
+    label: "Clientes",
+    href: "/clientes",
+    icon: Users,
+    permission: "clients:view",
+  },
+  {
+    label: "Representantes",
+    href: "/representantes",
+    icon: UserCog,
+    permission: "representatives:view",
+  },
+  {
+    label: "Comissões",
+    href: "/comissoes",
+    icon: DollarSign,
+    permission: "commissions:view",
+  },
+  {
+    label: "Fornecedores",
+    href: "/suppliers",
+    icon: Building2,
+    permission: "suppliers:view",
+  },
+  {
+    label: "Vendas",
+    href: "/sales",
+    icon: ShoppingCart,
+    permission: "sales:view",
+  },
+  {
+    label: "Relatórios",
+    href: "/reports",
+    icon: BarChart3,
+    permission: "reports:view",
+  },
+  {
+    label: "Configurações",
+    href: "/settings",
+    icon: Settings,
+    permission: "settings:view",
+    children: [
+      {
+        label: "Empresa",
+        href: "/settings/company",
+        icon: Building2,
+        permission: "settings:company:view",
+      },
+      {
+        label: "Equipe",
+        href: "/settings/team",
+        icon: Users,
+        permission: "settings:team:view",
+      },
+      {
+        label: "Permissões",
+        href: "/settings/permissions",
+        icon: UserCog,
+        permission: "settings:permissions:view",
+      },
+      {
+        label: "Estrutura Organizacional",
+        href: "/settings/organizational-structure",
+        icon: Building2,
+        permission: "settings:organizational-structure:view",
+      },
+    ],
+  },
+];
+
+type AppSidebarProps = {
+  collapsed: boolean;
+  onToggle: () => void;
+};
+
+export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
+  const pathname = usePathname();
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  const toggleExpand = (href: string) => {
+    const newExpanded = new Set(expandedItems);
+    if (newExpanded.has(href)) {
+      newExpanded.delete(href);
+    } else {
+      newExpanded.add(href);
+    }
+    setExpandedItems(newExpanded);
+  };
+
+  return (
+    <motion.aside
+      initial={false}
+      animate={{
+        width: collapsed ? "80px" : "280px",
+      }}
+      transition={{
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1],
+      }}
+      className={cn(
+        "relative flex h-screen flex-col border-r border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] backdrop-blur-xl",
+        "transition-all duration-300 ease-in-out",
+      )}
+    >
+      {/* Header da sidebar */}
+      <div className="flex h-16 items-center justify-between border-b border-[color-mix(in_oklab,var(--border)_90%,transparent)] px-4">
+        <AnimatePresence mode="wait">
+          {!collapsed ? (
+            <motion.div
+              key="logo-expanded"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              className="flex items-center gap-3"
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white">
+                ML
+              </div>
+              <span className="font-semibold text-[var(--fg)]">Morina Light</span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="logo-collapsed"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white"
+            >
+              ML
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <button
+          onClick={onToggle}
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
+            "hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+            "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+          )}
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
+      </div>
+
+      {/* Navegação */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <ul className="space-y-1">
+          {navItems.map((item) => (
+            <NavItemComponent
+              key={item.href}
+              item={item}
+              collapsed={collapsed}
+              pathname={pathname}
+              expandedItems={expandedItems}
+              onToggleExpand={toggleExpand}
+            />
+          ))}
+        </ul>
+      </nav>
+
+      {/* Footer da sidebar */}
+      <div className="border-t border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4">
+        {!collapsed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]"
+          >
+            <p className="font-medium">v1.0.0</p>
+            <p className="mt-1">Sistema Operacional</p>
+          </motion.div>
+        )}
+      </div>
+    </motion.aside>
+  );
+}
+
+type NavItemComponentProps = {
+  item: NavItem;
+  collapsed: boolean;
+  pathname: string;
+  expandedItems: Set<string>;
+  onToggleExpand: (href: string) => void;
+};
+
+function NavItemComponent({
+  item,
+  collapsed,
+  pathname,
+  expandedItems,
+  onToggleExpand,
+}: NavItemComponentProps) {
+  const hasPermission = useHasPermission(item.permission || "");
+  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+  const isExpanded = expandedItems.has(item.href);
+  const hasChildren = item.children && item.children.length > 0;
+
+  if (!hasPermission) {
+    return null;
+  }
+
+  if (collapsed) {
+    return (
+      <li>
+        <Link
+          href={item.href}
+          className={cn(
+            "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all",
+            isActive
+              ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)]"
+              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+          )}
+          title={item.label}
+        >
+          <item.icon className="h-5 w-5" />
+          {item.badge && (
+            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] font-bold text-white">
+              {item.badge}
+            </span>
+          )}
+        </Link>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <div>
+        <Link
+          href={item.href}
+          onClick={(e) => {
+            if (hasChildren) {
+              e.preventDefault();
+              onToggleExpand(item.href);
+            }
+          }}
+          className={cn(
+            "group flex h-10 items-center gap-3 rounded-lg px-3 transition-all",
+            isActive
+              ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
+              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+          )}
+        >
+          <item.icon className="h-5 w-5 shrink-0" />
+          <span className="flex-1 truncate">{item.label}</span>
+          {item.badge && (
+            <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[var(--primary)] px-1.5 text-[10px] font-bold text-white">
+              {item.badge}
+            </span>
+          )}
+          {hasChildren && (
+            <motion.div
+              animate={{ rotate: isExpanded ? 90 : 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </motion.div>
+          )}
+        </Link>
+
+        {hasChildren && (
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.ul
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-8 mt-1 space-y-1 overflow-hidden border-l border-[color-mix(in_oklab,var(--border)_90%,transparent)] pl-3"
+              >
+                {item.children?.map((child) => (
+                  <ChildNavItem
+                    key={child.href}
+                    item={child}
+                    pathname={pathname}
+                  />
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function ChildNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
+  const hasPermission = useHasPermission(item.permission || "");
+  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+
+  if (!hasPermission) {
+    return null;
+  }
+
+  return (
+    <li>
+      <Link
+        href={item.href}
+        className={cn(
+          "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-all",
+          isActive
+            ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
+            : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+        )}
+      >
+        <item.icon className="h-4 w-4 shrink-0" />
+        <span className="truncate">{item.label}</span>
+      </Link>
+    </li>
+  );
+}
+

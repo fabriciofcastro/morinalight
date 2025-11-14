@@ -64,28 +64,54 @@ const parseTransitionTiming = (value: string) => {
   return rest.join(" ") || "ease";
 };
 
-const buildSurfaceColor = (mode: ThemeName) => {
-  if (mode === "dark") {
-    return "rgba(28,36,56,0.72)";
+const hexToHsl = (value: string | undefined | null): string | null => {
+  if (!value) return null;
+  let hex = value.trim();
+  if (!hex) return null;
+
+  if (hex.startsWith("#")) {
+    hex = hex.slice(1);
   }
 
-  return "rgba(255,255,255,0.58)";
-};
-
-const buildMutedSurfaceColor = (mode: ThemeName) => {
-  if (mode === "dark") {
-    return "rgba(40,54,95,0.52)";
+  if (hex.length === 3) {
+    hex = hex
+      .split("")
+      .map((char) => char + char)
+      .join("");
   }
 
-  return "rgba(255,255,255,0.42)";
-};
+  const match = hex.match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+  if (!match) return null;
 
-const buildBorderColor = (mode: ThemeName) => {
-  if (mode === "dark") {
-    return "rgba(255,255,255,0.24)";
+  const r = parseInt(match[1], 16) / 255;
+  const g = parseInt(match[2], 16) / 255;
+  const b = parseInt(match[3], 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let hue = 0;
+  if (delta !== 0) {
+    if (max === r) {
+      hue = ((g - b) / delta) % 6;
+    } else if (max === g) {
+      hue = (b - r) / delta + 2;
+    } else {
+      hue = (r - g) / delta + 4;
+    }
   }
 
-  return "rgba(40,54,95,0.18)";
+  hue = Math.round(hue * 60);
+  if (hue < 0) hue += 360;
+
+  const lightness = (max + min) / 2;
+  const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1));
+
+  const satPercent = Math.round(saturation * 100);
+  const lightPercent = Math.round(lightness * 100);
+
+  return `${hue} ${satPercent}% ${lightPercent}%`;
 };
 
 const resolveVideoEmbed = (link?: string | null): string | null => {
@@ -136,7 +162,7 @@ export function useThemeEngine() {
   const [companyThemeState, setCompanyThemeState] = useState<NormalizedCompanySettings>(
     () => initialCompanyTheme,
   );
-  const [loading, setLoading] = useState<boolean>(isBrowser);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const themeRef = useRef<ThemeMode>(initialThemeMode);
@@ -171,59 +197,65 @@ export function useThemeEngine() {
       const root = document.documentElement;
       root.classList.remove("light", "dark");
       root.classList.add(resolvedMode);
+      root.setAttribute("data-theme", resolvedMode);
 
-      const colors = themeConfig.tokens.colors;
       const theme = themeConfig.themes[resolvedMode];
+      const cleanTheme = theme.cleanVibrant;
+      const { compatibility, typography, transitions } = themeConfig.tokens;
 
-      const primaryColor = merged.primaryColor || colors.primary;
-      const secondaryColor = merged.secondaryColor || colors.secondary;
+      const primaryHsl = hexToHsl(merged.primaryColor) ?? cleanTheme.primary;
+      const secondaryHsl = hexToHsl(merged.secondaryColor) ?? cleanTheme.secondary;
 
-      root.style.setProperty("--primary", primaryColor);
-      root.style.setProperty("--primary-contrast", colors.primaryContrast);
-      root.style.setProperty("--secondary", secondaryColor);
-      root.style.setProperty("--accent", colors.accent);
-      root.style.setProperty("--accent-glow", theme.accentGlow);
-      root.style.setProperty("--bg", theme.background);
-      root.style.setProperty("--background", theme.background);
-      root.style.setProperty("--fg", theme.text);
-      root.style.setProperty("--text", theme.text);
-      root.style.setProperty("--surface", buildSurfaceColor(resolvedMode));
-      root.style.setProperty("--surface-muted", buildMutedSurfaceColor(resolvedMode));
-      root.style.setProperty("--surface-elevated", theme.glass);
-      root.style.setProperty("--glass", theme.glass);
-      root.style.setProperty("--border", buildBorderColor(resolvedMode));
-      root.style.setProperty("--border-strong", colors.borderStrong);
-      root.style.setProperty("--shadow-soft", colors.shadowSoft);
-      root.style.setProperty("--shadow-strong", colors.shadowMedium);
-      root.style.setProperty("--motion-color", theme.motionColor);
-      root.style.setProperty("--accent-light", theme.accentGlow);
+      root.style.setProperty("--bg", cleanTheme.bg);
+      root.style.setProperty("--surface", cleanTheme.surface);
+      root.style.setProperty("--elevated", cleanTheme.elevated);
+      root.style.setProperty("--overlay", cleanTheme.overlay);
+      root.style.setProperty("--border", cleanTheme.border);
+      root.style.setProperty("--text-1", cleanTheme.text1);
+      root.style.setProperty("--text-2", cleanTheme.text2);
+      root.style.setProperty("--text-3", cleanTheme.text3);
+      root.style.setProperty("--primary", primaryHsl);
+      root.style.setProperty("--secondary", secondaryHsl);
+      root.style.setProperty("--accent", cleanTheme.accent);
+      root.style.setProperty("--success", cleanTheme.success);
+      root.style.setProperty("--warning", cleanTheme.warning);
+      root.style.setProperty("--danger", cleanTheme.danger);
+      root.style.setProperty("--chart-1", cleanTheme.chart1);
+      root.style.setProperty("--chart-2", cleanTheme.chart2);
+      root.style.setProperty("--chart-3", cleanTheme.chart3);
+      root.style.setProperty("--chart-4", cleanTheme.chart4);
+      root.style.setProperty("--chart-5", cleanTheme.chart5);
+      root.style.setProperty("--bg-gradient", cleanTheme.bgGradient);
 
-      const { typography, transitions } = themeConfig.tokens;
+      root.style.setProperty("--primary-contrast", compatibility.primaryContrast);
+      root.style.setProperty("--secondary-contrast", compatibility.secondaryContrast);
+
+      root.style.setProperty("--bg-color", `hsl(${cleanTheme.bg})`);
+      root.style.setProperty("--surface-color", `hsl(${cleanTheme.surface})`);
+      root.style.setProperty("--elevated-color", `hsl(${cleanTheme.elevated})`);
+      root.style.setProperty("--fg", `hsl(${cleanTheme.text1})`);
+      root.style.setProperty("--muted-strong", `hsl(${cleanTheme.text2})`);
+      root.style.setProperty("--muted-soft", `hsl(${cleanTheme.text3})`);
+      root.style.setProperty("--primary-color", `hsl(${primaryHsl})`);
+      root.style.setProperty("--secondary-color", `hsl(${secondaryHsl})`);
+      root.style.setProperty("--accent-color", `hsl(${cleanTheme.accent})`);
+      root.style.setProperty("--success-color", `hsl(${cleanTheme.success})`);
+      root.style.setProperty("--warning-color", `hsl(${cleanTheme.warning})`);
+      root.style.setProperty("--danger-color", `hsl(${cleanTheme.danger})`);
+      root.style.setProperty("--border-color", `hsl(${cleanTheme.border})`);
+
+      root.style.setProperty("--shadow-soft", compatibility.shadows.soft);
+      root.style.setProperty("--shadow-strong", compatibility.shadows.strong);
+
       root.style.setProperty("--font-display", typography.fontPrimary);
       root.style.setProperty("--font-sans", typography.fontSecondary);
-      root.style.setProperty("--lh-base", typography.lineHeightBase);
-      root.style.setProperty("--fw-medium", "500");
       root.style.setProperty("--fw-semibold", typography.headingWeight.toString());
-      root.style.setProperty("--fw-bold", "700");
       root.style.setProperty("--fw-regular", typography.bodyWeight.toString());
       root.style.setProperty("--motion-duration-short", parseTransitionDuration(transitions.fast));
       root.style.setProperty("--motion-duration-base", parseTransitionDuration(transitions.base));
       root.style.setProperty("--motion-duration-slow", parseTransitionDuration(transitions.slow));
       root.style.setProperty("--motion-ease", parseTransitionTiming(transitions.base));
-
-      const glassMotion = document.querySelector<HTMLElement>(".glass-motion");
-      if (glassMotion) {
-        const baseCss = themeConfig.animations.translucentSweep.css
-          .replace(/rgba\(255,255,255,0\.15\)/g, theme.accentGlow)
-          .replace(/rgba\(255,255,255,0\.08\)/g, theme.motionColor);
-
-        glassMotion.style.cssText = `
-          ${baseCss}
-          mix-blend-mode: overlay;
-          opacity: ${resolvedMode === "dark" ? "0.75" : "0.55"};
-        `;
-      }
-
+      root.setAttribute("data-profile", "web");
       if (options.persist !== false) {
         saveSettings({ ...merged, themeMode: mode });
       }
@@ -249,7 +281,6 @@ export function useThemeEngine() {
 
   const syncFromServer = useCallback(async () => {
     if (!isBrowser) {
-      setLoading(false);
       return null;
     }
 
@@ -346,7 +377,10 @@ export function useThemeEngine() {
 
   useEffect(() => {
     if (!isBrowser) return;
-    void syncFromServer();
+    setLoading(true);
+    void syncFromServer().finally(() => {
+      setLoading(false);
+    });
   }, [syncFromServer]);
 
   const theme = useMemo(() => themeState, [themeState]);

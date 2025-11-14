@@ -16,9 +16,10 @@ export function ThemeShell({ children, className }: ThemeShellProps) {
   return (
     <div
       className={cn(
-        "theme-shell relative flex min-h-screen flex-col overflow-hidden bg-[var(--bg)] text-[var(--fg)] transition-colors duration-[var(--motion-duration-base)] ease-[var(--motion-ease)]",
+        "theme-shell relative flex min-h-screen flex-col overflow-hidden text-[var(--fg)] transition-colors duration-[var(--motion-duration-base)] ease-[var(--motion-ease)]",
         className,
       )}
+      style={{ background: "var(--bg-gradient, hsl(var(--bg)))" }}
     >
       {videoSrc ? (
         <iframe
@@ -31,18 +32,26 @@ export function ThemeShell({ children, className }: ThemeShellProps) {
       ) : (
         <div
           aria-hidden
-          className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(40,85,255,0.28)_0%,transparent_70%)] opacity-70"
+          className="absolute inset-0 opacity-70"
+          style={{
+            background:
+              "radial-gradient(circle at top, hsla(var(--primary) / 0.28) 0%, transparent 70%)",
+          }}
         />
       )}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.12)_0%,transparent_55%,rgba(40,85,255,0.18)_100%)] mix-blend-screen opacity-80"
+        className="pointer-events-none absolute inset-0 mix-blend-screen opacity-80"
+        style={{
+          background:
+            "linear-gradient(135deg, hsla(var(--text-1) / 0.12) 0%, transparent 55%, hsla(var(--secondary) / 0.22) 100%)",
+        }}
       />
       <div aria-hidden className="glass-motion pointer-events-none absolute inset-0" />
 
       <div className="relative z-[1] flex flex-1 flex-col">
         {loading ? (
-          <div className="flex flex-1 items-center justify-center text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+          <div className="flex flex-1 items-center justify-center text-[var(--fs-sm)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
             Sincronizando tema da empresa...
           </div>
         ) : (

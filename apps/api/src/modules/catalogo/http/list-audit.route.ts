@@ -3,9 +3,7 @@ import type { ProdutoAuditoriaRepository, ProdutoRepository } from "@morina/cata
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-const headersSchema = z.object({
-  "x-org-id": z.string().min(1),
-});
+import { getTenant } from "../../../core/tenant/tenant.utils";
 
 const paramsSchema = z.object({
   produtoId: z.string().uuid(),
@@ -24,17 +22,22 @@ export async function registerListAuditRoute(
   deps: { produtoRepository: ProdutoRepository; auditoriaRepository: ProdutoAuditoriaRepository },
 ) {
   app.get("/catalogo/produtos/:produtoId/auditoria", async (request, reply) => {
-    const { "x-org-id": orgId } = headersSchema.parse(request.headers);
+    // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
+    const tenant = getTenant(request);
     const { produtoId } = paramsSchema.parse(request.params);
     const filtro = querySchema.parse(request.query ?? {});
 
-    const produto = await deps.produtoRepository.encontrarPorId(orgId, produtoId);
+    const produto = await deps.produtoRepository.encontrarPorId(tenant.orgId, produtoId);
 
     if (!produto) {
       return reply.status(404).send({ message: "Produto não encontrado" });
     }
 
-    const auditoria = await deps.auditoriaRepository.listarPorProduto(orgId, produtoId, filtro);
+    const auditoria = await deps.auditoriaRepository.listarPorProduto(
+      tenant.orgId,
+      produtoId,
+      filtro,
+    );
 
     return reply.send({
       produto: produtoViewSchema.parse({

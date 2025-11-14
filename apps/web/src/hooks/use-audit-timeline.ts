@@ -11,6 +11,7 @@ export type AuditTimelineItem = {
   actorId: string;
   payload: Record<string, unknown> | null;
   criadoEm: string;
+  isRealtime?: boolean;
 };
 
 type AuditTimelineResponse = {
@@ -59,6 +60,46 @@ export function useAuditTimeline({
   const [isRealtimeActive, setRealtimeActive] = useState(false);
   const realtimeRef = useRef<ReturnType<typeof createRealtimeClient> | null>(null);
   const lastEventIdRef = useRef<string | null>(null);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+
+  const inicioTime = inicio?.getTime();
+  const fimTime = fim?.getTime();
+
+  const matchesFilters = useCallback(
+    (item: AuditTimelineItem) => {
+      if (acao && item.acao !== acao) return false;
+
+      const created = new Date(item.criadoEm).getTime();
+      if (typeof inicioTime === "number" && !Number.isNaN(inicioTime) && created < inicioTime) {
+        return false;
+      }
+
+      if (typeof fimTime === "number" && !Number.isNaN(fimTime) && created > fimTime) {
+        return false;
+      }
+
+      return true;
+    },
+    [acao, fimTime, inicioTime],
+  );
+
+  const normalizeAuditItem = useCallback(
+    (item: AuditTimelineResponse["auditoria"]["itens"][number]): AuditTimelineItem => ({
+      id: item.id,
+      acao: item.acao,
+      actorId: item.actorId,
+      payload: item.payload ?? null,
+      criadoEm: item.criadoEm,
+      isRealtime: false,
+    }),
+    [],
+  );
+
+  const sortByDateDesc = useCallback((items: AuditTimelineItem[]) => {
+    return [...items].sort(
+      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime(),
+    );
+  }, []);
 
   const fetchAudit = useCallback(
     async (cursor?: string) => {
@@ -93,24 +134,48 @@ export function useAuditTimeline({
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const auditoria = await fetchAudit();
+      const normalized = auditoria.itens.map(normalizeAuditItem);
+      seenIdsRef.current = new Set(normalized.map((item) => item.id));
       setState({
-        items: auditoria.itens,
+        items: sortByDateDesc(normalized),
         loading: false,
         error: null,
         cursor: auditoria.proximoCursor,
       });
+      lastEventIdRef.current = normalized[0]?.id ?? null;
     } catch (error) {
       setState((prev) => ({ ...prev, loading: false, error: getErrorMessage(error) }));
     }
-  }, [fetchAudit]);
+  }, [fetchAudit, normalizeAuditItem, sortByDateDesc]);
 
   const loadMore = useCallback(async () => {
-    if (!state.cursor || state.loading) return;
+    let cursorToFetch: string | undefined;
+    let isAlreadyLoading = false;
+
+    setState((prev) => {
+      cursorToFetch = prev.cursor;
+      isAlreadyLoading = prev.loading;
+      if (!prev.cursor || prev.loading) {
+        return prev;
+      }
+      return { ...prev, loading: true };
+    });
+
+    if (!cursorToFetch || isAlreadyLoading) return;
+
     try {
-      setState((prev) => ({ ...prev, loading: true }));
-      const auditoria = await fetchAudit(state.cursor);
+      const auditoria = await fetchAudit(cursorToFetch);
+      const freshItems = auditoria.itens
+        .map(normalizeAuditItem)
+        .filter((item) => {
+          if (seenIdsRef.current.has(item.id)) return false;
+          if (!matchesFilters(item)) return false;
+          seenIdsRef.current.add(item.id);
+          return true;
+        });
+
       setState((prev) => ({
-        items: [...prev.items, ...auditoria.itens],
+        items: sortByDateDesc([...prev.items, ...freshItems]),
         cursor: auditoria.proximoCursor,
         loading: false,
         error: null,
@@ -118,7 +183,7 @@ export function useAuditTimeline({
     } catch (error) {
       setState((prev) => ({ ...prev, loading: false, error: getErrorMessage(error) }));
     }
-  }, [fetchAudit, state.cursor, state.loading]);
+  }, [fetchAudit, matchesFilters, normalizeAuditItem, sortByDateDesc]);
 
   useEffect(() => {
     void refresh();
@@ -143,12 +208,16 @@ export function useAuditTimeline({
             if (exists) return prev;
 
             const mapped = mapEventToTimelineItem(event);
-            if (!mapped) return prev;
+            if (!mapped || !matchesFilters(mapped)) return prev;
 
-            return {
-              ...prev,
-              items: [mapped, ...prev.items],
-            };
+            if (seenIdsRef.current.has(mapped.id)) {
+              return prev;
+            }
+            seenIdsRef.current.add(mapped.id);
+
+            const updatedItems = sortByDateDesc([{ ...mapped, isRealtime: true }, ...prev.items]);
+
+            return { ...prev, items: updatedItems };
           });
         }
       },
@@ -163,12 +232,23 @@ export function useAuditTimeline({
     return () => {
       client.disconnect();
     };
-  }, [actorId, orgId, produtoId]);
+  }, [actorId, matchesFilters, orgId, produtoId, sortByDateDesc]);
 
   const meta = useMemo(
-    () => ({ hasMore: Boolean(state.cursor), isRealtimeActive }),
-    [state.cursor, isRealtimeActive],
+    () => ({
+      hasMore: Boolean(state.cursor),
+      isRealtimeActive,
+      realtimeHighlights: state.items.filter((item) => item.isRealtime).length,
+    }),
+    [state.cursor, isRealtimeActive, state.items],
   );
+
+  const acknowledgeRealtime = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      items: prev.items.map((item) => (item.isRealtime ? { ...item, isRealtime: false } : item)),
+    }));
+  }, []);
 
   return {
     items: state.items,
@@ -176,9 +256,11 @@ export function useAuditTimeline({
     error: state.error,
     hasMore: meta.hasMore,
     isRealtimeActive: meta.isRealtimeActive,
+    realtimeHighlights: meta.realtimeHighlights,
     refresh,
     loadMore,
     lastEventId: lastEventIdRef.current,
+    acknowledgeRealtime,
   };
 }
 
@@ -197,6 +279,7 @@ function mapEventToTimelineItem(event: RealtimeEvent): AuditTimelineItem | null 
     actorId: event.metadata.actorId,
     payload: (event.payload as Record<string, unknown>) ?? null,
     criadoEm: event.metadata.timestamp ?? new Date().toISOString(),
+    isRealtime: true,
   };
 }
 

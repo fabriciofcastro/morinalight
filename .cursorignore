@@ -45,3 +45,6 @@ test-results/
 *.map
 *.min.*
 
+# MCP - manter índice para contexto
+!.cursor/docs-index.json
+

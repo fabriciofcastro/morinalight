@@ -4,10 +4,10 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-const headersSchema = z.object({
-  "x-org-id": z.string().min(1),
-  "x-actor-id": z.string().min(1),
-});
+import { canManage, getTenant } from "../../../core/tenant/tenant.utils";
+
+const paramsSchema = reprovarProdutoInputSchema.pick({ produtoId: true });
+const bodySchema = reprovarProdutoInputSchema.pick({ motivo: true });
 
 type CatalogoHttpDeps = {
   produtoRepository: ProdutoRepository;
@@ -16,22 +16,32 @@ type CatalogoHttpDeps = {
 };
 
 export async function registerRejectProductRoute(app: FastifyInstance, deps: CatalogoHttpDeps) {
-  const paramsSchema = reprovarProdutoInputSchema.pick({ produtoId: true });
-  const bodySchema = reprovarProdutoInputSchema.pick({ motivo: true });
-
   app.post("/catalogo/produtos/:produtoId/reprovar", async (request, reply) => {
-    const { "x-org-id": orgId, "x-actor-id": actorId } = headersSchema.parse(request.headers);
+    // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
+    const tenant = getTenant(request);
+
+    // Rejeição requer permissão de gerenciamento (admin ou owner)
+    if (!canManage(request)) {
+      return reply.status(403).send({
+        message: "Sem permissão para reprovar produtos. Requer role de admin ou owner",
+      });
+    }
+
     const { produtoId } = paramsSchema.parse(request.params);
     const body = bodySchema.parse(request.body);
 
     const useCase = new ReprovarProdutoUseCase({
       produtoRepository: deps.produtoRepository,
-      actorId,
+      actorId: tenant.userId,
       eventBus: deps.eventBus,
       auditoriaRepository: deps.auditoriaRepository,
     });
 
-    const resultado = await useCase.execute({ orgId, produtoId, motivo: body.motivo });
+    const resultado = await useCase.execute({
+      orgId: tenant.orgId,
+      produtoId,
+      motivo: body.motivo,
+    });
 
     return reply.status(200).send(resultado);
   });

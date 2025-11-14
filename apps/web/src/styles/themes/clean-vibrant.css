@@ -1,0 +1,145 @@
+@theme {
+  /* =====================
+   * 2. ESPAÇAMENTO / LAYOUT
+   * ===================== */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* =====================
+   * 3. TIPOGRAFIA
+   * ===================== */
+  --font-sans: var(--font-inter, "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  --text-xs: 12px;
+  --leading-xs: 18px;
+  --text-sm: 14px;
+  --leading-sm: 20px;
+  --text-md: 15px;
+  --leading-md: 22px;
+  --text-lg: 18px;
+  --leading-lg: 26px;
+  --text-xl: 20px;
+  --leading-xl: 28px;
+  --text-2xl: 24px;
+  --leading-2xl: 32px;
+  --text-3xl: 30px;
+  --leading-3xl: 38px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* =====================
+   * 4. RADII, BORDAS, SOMBRAS
+   * ===================== */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  --ring: 0 0 0 3px hsl(var(--primary) / 0.35);
+  --ring-focus: 0 0 0 2px hsl(var(--surface)), 0 0 0 5px hsl(var(--primary) / 0.6);
+
+  --shadow-sm: 0 2px 8px hsl(240 10% 10% / 0.25);
+  --shadow-md: 0 8px 24px hsl(240 10% 10% / 0.35);
+  --shadow-lg: 0 18px 42px hsl(240 10% 10% / 0.45);
+
+  /* =====================
+   * 5. LAYOUT / GRID / BREAKPOINTS
+   * ===================== */
+  --container-w: 1320px;
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+}
+
+[data-theme="dark"] {
+  --bg: 222 28% 10%;
+  --surface: 222 22% 14%;
+  --elevated: 222 20% 18%;
+  --overlay: 0 0% 100% / 0.04;
+  --border: 0 0% 100% / 0.06;
+
+  --text-1: 0 0% 95%;
+  --text-2: 0 0% 75%;
+  --text-3: 0 0% 55%;
+
+  --primary: 227 100% 58%;
+  --secondary: 270 95% 65%;
+  --accent: 160 90% 55%;
+
+  --success: 158 72% 55%;
+  --warning: 45 100% 60%;
+  --danger: 0 82% 60%;
+
+  --chart-1: var(--primary);
+  --chart-2: 200 95% 60%;
+  --chart-3: 280 90% 65%;
+  --chart-4: 160 80% 50%;
+  --chart-5: 45 95% 55%;
+
+  --bg-gradient: linear-gradient(
+    135deg,
+    hsl(var(--bg)) 0%,
+    hsl(230 25% 12%) 45%,
+    hsl(240 30% 8%) 100%
+  );
+}
+
+[data-theme="light"] {
+  --bg: 0 0% 98%;
+  --surface: 0 0% 100%;
+  --elevated: 0 0% 95%;
+  --overlay: 0 0% 0% / 0.02;
+  --border: 0 0% 0% / 0.08;
+
+  --text-1: 0 0% 10%;
+  --text-2: 0 0% 30%;
+  --text-3: 0 0% 45%;
+
+  --primary: 210 90% 55%;
+  --secondary: 270 85% 55%;
+  --accent: 160 85% 40%;
+
+  --success: 158 75% 35%;
+  --warning: 45 100% 45%;
+  --danger: 0 82% 45%;
+
+  --chart-1: var(--primary);
+  --chart-2: 200 85% 45%;
+  --chart-3: 280 80% 50%;
+  --chart-4: 160 70% 38%;
+  --chart-5: 45 90% 48%;
+
+  --bg-gradient: linear-gradient(
+    135deg,
+    hsl(0 0% 100%) 0%,
+    hsl(0 0% 97%) 45%,
+    hsl(0 0% 95%) 100%
+  );
+}
+
+[data-profile="web"] {
+  --density: 1;
+}
+
+[data-profile="erp"] {
+  --density: 0.85;
+}
+

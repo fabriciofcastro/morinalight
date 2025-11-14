@@ -1,0 +1,153 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: morina-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: morina
+      POSTGRES_PASSWORD: morina
+      POSTGRES_DB: morina
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U morina"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: morina-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: node:20-alpine
+    container_name: morina-api
+    restart: unless-stopped
+    working_dir: /app/apps/api
+    volumes:
+      - ./:/app
+    command: >
+      sh -lc "corepack enable &&
+              pnpm install --filter @morina/api... --prefer-offline &&
+              pnpm --filter @morina/api dev"
+    environment:
+      DATABASE_URL: postgresql://morina:morina@postgres:5432/morina
+      REDIS_URL: redis://redis:6379
+      REALTIME_SECRET: ${REALTIME_SECRET:-change-me-super-secret}
+      API_HOST: 0.0.0.0
+      API_PORT: 3333
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3333:3333"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3333/health | grep '\"status\":\"ok\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  realtime:
+    image: node:20-alpine
+    container_name: morina-realtime
+    restart: unless-stopped
+    working_dir: /app/apps/realtime
+    volumes:
+      - ./:/app
+    command: >
+      sh -lc "corepack enable &&
+              pnpm install --filter @morina/realtime... --prefer-offline &&
+              pnpm --filter @morina/realtime dev"
+    environment:
+      REALTIME_PORT: 3334
+      REALTIME_HOST: 0.0.0.0
+      REALTIME_SECRET: ${REALTIME_SECRET:-change-me-super-secret}
+      REDIS_URL: redis://redis:6379
+      REALTIME_STREAM: realtime.catalogo
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "3334:3334"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3334/health | grep '\"status\":\"ok\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  web:
+    image: node:20-alpine
+    container_name: morina-web
+    restart: unless-stopped
+    working_dir: /app/apps/web
+    volumes:
+      - ./:/app
+    command: >
+      sh -lc "corepack enable &&
+              pnpm install --filter web --prefer-offline &&
+              pnpm --filter web dev --hostname 0.0.0.0 --port 3000"
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3333}
+      NEXT_PUBLIC_REALTIME_URL: ${NEXT_PUBLIC_REALTIME_URL:-ws://localhost:3334}
+      NEXT_PUBLIC_ORG_ID: ${NEXT_PUBLIC_ORG_ID:-org-demo}
+      NEXT_PUBLIC_ACTOR_ID: ${NEXT_PUBLIC_ACTOR_ID:-user-demo}
+    depends_on:
+      api:
+        condition: service_healthy
+      realtime:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+  # Serviços opcionais para MCP (descomente conforme necessidade)
+  # minio:
+  #   image: minio/minio:latest
+  #   container_name: morina-minio
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   environment:
+  #     MINIO_ROOT_USER: morina
+  #     MINIO_ROOT_PASSWORD: morina-secret
+  #   volumes:
+  #     - minio-data:/data
+  #   command: server /data --console-address ":9001"
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+  #     interval: 30s
+  #     timeout: 20s
+  #     retries: 3
+  #
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   container_name: morina-qdrant
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6333:6333"
+  #     - "6334:6334"
+  #   volumes:
+  #     - qdrant-data:/qdrant/storage
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+  #     interval: 30s
+  #     timeout: 20s
+  #     retries: 3
+
+volumes:
+  postgres-data:
+  # minio-data:
+  # qdrant-data:
+

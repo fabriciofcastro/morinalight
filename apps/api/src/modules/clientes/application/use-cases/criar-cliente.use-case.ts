@@ -1,0 +1,69 @@
+import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
+import { Cliente } from "../../domain/entities/cliente";
+import { criarClienteInputSchema, clienteViewSchema } from "../schemas/cliente.schema";
+
+type Dependencies = {
+  clienteRepository: ClienteRepository;
+  actorId: string;
+};
+
+export class CriarClienteUseCase {
+  constructor(private readonly deps: Dependencies) {}
+
+  async execute(rawInput: unknown) {
+    const input = criarClienteInputSchema.parse(rawInput);
+
+    // Verificar se já existe cliente com este documento
+    const clienteExistente = await this.deps.clienteRepository.encontrarPorDocumento(
+      input.orgId,
+      input.documento,
+    );
+
+    if (clienteExistente) {
+      throw new Error("Cliente com este documento já existe");
+    }
+
+    const cliente = Cliente.criar({
+      orgId: input.orgId,
+      nome: input.nome,
+      razaoSocial: input.razaoSocial ?? null,
+      tipo: input.tipo ?? "fisica",
+      documento: input.documento,
+      email: input.email ?? null,
+      telefone: input.telefone ?? null,
+      celular: input.celular ?? null,
+      endereco: input.endereco ?? null,
+      cidade: input.cidade ?? null,
+      estado: input.estado ?? null,
+      cep: input.cep ?? null,
+      observacoes: input.observacoes ?? null,
+      criadoPor: this.deps.actorId,
+      atualizadoPor: this.deps.actorId,
+    });
+
+    await this.deps.clienteRepository.salvar(cliente);
+
+    return clienteViewSchema.parse({
+      clienteId: cliente.clienteId,
+      orgId: cliente.dados.orgId,
+      nome: cliente.dados.nome,
+      razaoSocial: cliente.dados.razaoSocial ?? null,
+      tipo: cliente.dados.tipo,
+      documento: cliente.dados.documento,
+      email: cliente.dados.email ?? null,
+      telefone: cliente.dados.telefone ?? null,
+      celular: cliente.dados.celular ?? null,
+      endereco: cliente.dados.endereco ?? null,
+      cidade: cliente.dados.cidade ?? null,
+      estado: cliente.dados.estado ?? null,
+      cep: cliente.dados.cep ?? null,
+      status: cliente.dados.status,
+      observacoes: cliente.dados.observacoes ?? null,
+      createdBy: cliente.dados.createdBy,
+      updatedBy: cliente.dados.updatedBy,
+      createdAt: cliente.dados.createdAt,
+      updatedAt: cliente.dados.updatedAt,
+    });
+  }
+}
+

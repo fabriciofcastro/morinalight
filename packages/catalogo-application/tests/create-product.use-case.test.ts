@@ -1,7 +1,11 @@
 import type {
   Produto,
   ProdutoAuditoria,
+  ProdutoAuditoriaFiltro,
+  ProdutoAuditoriaPagina,
   ProdutoAuditoriaRepository,
+  ProdutoListaFiltro,
+  ProdutoListaPagina,
   ProdutoRepository,
 } from "@morina/catalogo-domain";
 import { describe, expect, it } from "vitest";
@@ -28,6 +32,34 @@ class InMemoryProdutoRepository implements ProdutoRepository {
       ) ?? null
     );
   }
+
+  async listarPorOrg(orgId: string, filtro: ProdutoListaFiltro = {}): Promise<ProdutoListaPagina> {
+    let itens = Array.from(this.items.values()).filter(
+      (produto) => produto.dados.orgId === orgId,
+    );
+
+    if (filtro.status) {
+      itens = itens.filter((produto) => produto.dados.status === filtro.status);
+    }
+
+    if (filtro.busca) {
+      const termo = filtro.busca.toLowerCase();
+      itens = itens.filter(
+        (produto) =>
+          produto.dados.nome.toLowerCase().includes(termo) ||
+          (produto.dados.descricao ?? "").toLowerCase().includes(termo),
+      );
+    }
+
+    itens = itens.sort((a, b) => b.dados.atualizadoEm.getTime() - a.dados.atualizadoEm.getTime());
+
+    const limite = Math.min(filtro.limite ?? itens.length, itens.length);
+
+    return {
+      itens: itens.slice(0, limite),
+      proximoCursor: undefined,
+    };
+  }
 }
 
 class InMemoryAuditoriaRepository implements ProdutoAuditoriaRepository {
@@ -37,11 +69,50 @@ class InMemoryAuditoriaRepository implements ProdutoAuditoriaRepository {
     this.items.push(log);
   }
 
-  async listarPorProduto(orgId: string, produtoId: string) {
-    return this.items.filter(
+  async listarPorProduto(
+    orgId: string,
+    produtoId: string,
+    filtro: ProdutoAuditoriaFiltro = {},
+  ): Promise<ProdutoAuditoriaPagina> {
+    const itens = this.items.filter(
       (item) => item.dados.orgId === orgId && item.dados.produtoId === produtoId,
     );
+    return filtrarAuditoria(itens, filtro);
   }
+
+  async listarFeed(
+    orgId: string,
+    filtro: ProdutoAuditoriaFiltro = {},
+  ): Promise<ProdutoAuditoriaPagina> {
+    const itens = this.items.filter((item) => item.dados.orgId === orgId);
+    return filtrarAuditoria(itens, filtro);
+  }
+}
+
+function filtrarAuditoria(
+  itens: ProdutoAuditoria[],
+  filtro: ProdutoAuditoriaFiltro,
+): ProdutoAuditoriaPagina {
+  let resultado = [...itens];
+
+  if (filtro.acao) {
+    resultado = resultado.filter((item) => item.dados.acao === filtro.acao);
+  }
+
+  if (filtro.inicio) {
+    resultado = resultado.filter((item) => item.dados.criadoEm >= filtro.inicio!);
+  }
+
+  if (filtro.fim) {
+    resultado = resultado.filter((item) => item.dados.criadoEm <= filtro.fim!);
+  }
+
+  const limite = Math.min(filtro.limite ?? resultado.length, resultado.length);
+
+  return {
+    itens: resultado.slice(0, limite),
+    proximoCursor: undefined,
+  };
 }
 
 describe("CriarProdutoUseCase", () => {

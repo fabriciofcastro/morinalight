@@ -1,0 +1,30 @@
+{
+  "_comment": "Configuração opcional para S3 e Qdrant - copie este conteúdo para mcp.json e configure conforme necessidade",
+  "_instructions": [
+    "1. Descomente os serviços minio e qdrant no docker-compose.yml",
+    "2. Execute: docker compose up -d minio qdrant",
+    "3. Crie o bucket 'morina' no MinIO (http://localhost:9001)",
+    "4. Copie as configurações abaixo para mcp.json dentro de mcpServers"
+  ],
+  "mcpServers": {
+    "s3": {
+      "command": "npx",
+      "args": ["-y", "@mcp-community/s3-server"],
+      "env": {
+        "S3_ENDPOINT": "http://localhost:9000",
+        "S3_ACCESS_KEY_ID": "morina",
+        "S3_SECRET_ACCESS_KEY": "morina-secret",
+        "S3_BUCKET": "morina",
+        "S3_REGION": "us-east-1"
+      }
+    },
+    "qdrant": {
+      "command": "npx",
+      "args": ["-y", "@mcp-community/qdrant-server"],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333",
+        "QDRANT_API_KEY": ""
+      }
+    }
+  }
+}

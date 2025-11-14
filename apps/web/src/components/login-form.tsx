@@ -1,10 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, cn, Input, Label } from "@morina/ui";
-import { ClipboardList, Loader2, ShieldCheck, ShieldQuestion } from "lucide-react";
-import { useState } from "react";
+import { Button, Input, Label, cn } from "@morina/ui";
+import { ArrowRight, Loader2, ShieldCheck, ShieldX, CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -15,245 +17,435 @@ const loginSchema = z.object({
     .email("Formato de e-mail inválido."),
   password: z
     .string({ required_error: "A senha precisa de pelo menos 8 caracteres." })
-    .min(8, "A senha precisa de pelo menos 8 caracteres.")
-    .regex(/[A-Z]/, "Inclua ao menos uma letra maiúscula.")
-    .regex(/[a-z]/, "Inclua ao menos uma letra minúscula.")
-    .regex(/[0-9]/, "Inclua ao menos um número."),
+    .min(8, "A senha precisa de pelo menos 8 caracteres."),
   remember: z.boolean().optional().default(false),
-  otp: z
-    .string()
-    .trim()
-    .optional()
-    .transform((value) => value || undefined)
-    .refine((value) => !value || /^[0-9]{6}$/.test(value), {
-      message: "Token de 6 dígitos.",
-    }),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
-export type LoginInsight = {
-  sessionCount: number;
-  threatsBlocked: number;
-  lastAudit: string;
-};
-
-const defaultInsights: LoginInsight = {
-  sessionCount: 0,
-  threatsBlocked: 0,
-  lastAudit: "há poucos minutos",
-};
-
 type LoginFormProps = {
   onAuthenticate?: (payload: LoginFormData) => Promise<void>;
-  insights?: LoginInsight;
 };
 
-export function LoginForm({ onAuthenticate, insights = defaultInsights }: LoginFormProps) {
+export function LoginForm({ onAuthenticate }: LoginFormProps) {
+  const router = useRouter();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [emailValue, setEmailValue] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      remember: true,
-      otp: "",
+      remember: false,
     },
     mode: "onBlur",
   });
 
+  const email = watch("email");
+  const password = watch("password");
+
+  const isBusy = pending || isSubmitting;
+  const isEmailValid = email && !errors.email && email.includes("@");
+  const isPasswordValid = password && !errors.password && password.length >= 8;
+
   async function submit(data: LoginFormData) {
     setStatus("idle");
-    setFeedback(null);
+    setMessage(null);
 
-    try {
-      await (onAuthenticate
-        ? onAuthenticate(data)
-        : new Promise((resolve) => setTimeout(resolve, 1200)));
-
-      setStatus("success");
-      setFeedback("Acesso autorizado. Redirecionando para o cockpit de operações...");
-      reset({ ...data, password: "", otp: "" });
-    } catch (error) {
-      console.error(error);
-      setStatus("error");
-      setFeedback(
-        "Credenciais recusadas. Revise o token dinâmico ou solicite um novo acesso temporário.",
-      );
+    if (onAuthenticate) {
+      try {
+        await onAuthenticate(data);
+        setStatus("success");
+        setMessage("Acesso autorizado. Redirecionando...");
+        reset({ ...data, password: "" });
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1500);
+      } catch (error) {
+        setStatus("error");
+        setMessage(
+          error instanceof Error ? error.message : "Credenciais inválidas. Tente novamente.",
+        );
+      }
+      return;
     }
+
+    startTransition(async () => {
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+          }),
+        });
+
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload?.message ?? "Credenciais inválidas. Tente novamente.");
+        }
+
+        setStatus("success");
+        setMessage("Acesso autorizado. Redirecionando...");
+        reset({ ...data, password: "" });
+
+        // Salvar sessão completa
+        if (payload.token) {
+          const { setAuthSession } = await import("@/lib/auth-client");
+          setAuthSession({
+            token: payload.token,
+            user: payload.user,
+            organizations: payload.organizations ?? [],
+          });
+        }
+
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1500);
+      } catch (error) {
+        setStatus("error");
+        setMessage(
+          error instanceof Error ? error.message : "Erro inesperado. Tente novamente.",
+        );
+      }
+    });
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-[var(--space-6)]" noValidate>
-      <div className="grid gap-[var(--space-5)]">
-        <div className="grid gap-[var(--space-2)]">
-          <Label htmlFor="login-email">E-mail corporativo</Label>
-          <Input
-            {...register("email")}
-            id="login-email"
-            type="email"
-            inputMode="email"
-            placeholder="nome.sobrenome@morina.ai"
-            autoComplete="email"
-            className={cn(
-              errors.email && "border-[color-mix(in_oklab,var(--danger)_55%,transparent)]",
+    <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6" noValidate>
+      <div className="flex flex-col gap-5">
+        {/* Campo de e-mail */}
+        <motion.div
+          className="field"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
+          <Label htmlFor="login-email" className="label mb-2 text-sm font-medium text-[hsl(var(--text-2))]">
+            E-mail corporativo
+          </Label>
+          <div className="relative">
+            {/* Efeito glass border quando focado/preenchido */}
+            <motion.div
+              className="pointer-events-none absolute -inset-[1px] rounded-lg"
+              animate={{
+                opacity: focusedField === "email" || isEmailValid ? 1 : 0,
+                scale: focusedField === "email" || isEmailValid ? 1 : 0.95,
+              }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background: "linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.2))",
+                filter: "blur(8px)",
+              }}
+            />
+            
+            <Input
+              id="login-email"
+              type="email"
+              placeholder="nome@empresa.com"
+              autoComplete="email"
+              className={cn(
+                "input relative z-10 h-12 w-full cursor-text rounded-lg border px-4 text-[hsl(var(--text-1))] transition-all placeholder:text-[hsl(var(--text-3))] focus:outline-none",
+                focusedField === "email" || isEmailValid
+                  ? "border-[hsl(var(--primary)_/_0.5)] bg-[hsla(var(--surface) / 0.95)] backdrop-blur-sm shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
+                  : "border-[hsl(var(--border))] bg-[hsla(var(--surface) / 0.8)]",
+                errors.email && "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
+                !errors.email && isEmailValid && "border-[hsl(var(--success)_/_0.5)]",
+              )}
+              {...register("email", {
+                onChange: (e) => setEmailValue(e.target.value),
+              })}
+              onFocus={() => setFocusedField("email")}
+              onBlur={() => setFocusedField(null)}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby="login-email-error"
+            />
+            
+            {/* Ícone de validação */}
+            <AnimatePresence>
+              {isEmailValid && (
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Efeito de brilho interno quando focado */}
+            {focusedField === "email" && (
+              <motion.div
+                className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-[hsla(var(--primary) / 0.1)] to-transparent"
+                initial={{ x: "-100%" }}
+                animate={{ x: "100%" }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              />
             )}
-            aria-invalid={Boolean(errors.email)}
-            aria-describedby="login-email-error"
-          />
-          {errors.email ? (
-            <span
+          </div>
+          {errors.email && (
+            <motion.span
               id="login-email-error"
-              className="text-[var(--fs-xs)] text-[var(--danger)] leading-[var(--lh-snug)]"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1.5 text-xs leading-snug text-[hsl(var(--danger))]"
             >
               {errors.email.message}
-            </span>
+            </motion.span>
+          )}
+        </motion.div>
+
+        {/* Campo de senha */}
+        <motion.div
+          className="field"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <Label htmlFor="login-password" className="label mb-2 text-sm font-medium text-[hsl(var(--text-2))]">
+            Senha
+          </Label>
+          <div className="relative">
+            {/* Efeito glass border quando focado/preenchido */}
+            <motion.div
+              className="pointer-events-none absolute -inset-[1px] rounded-lg"
+              animate={{
+                opacity: focusedField === "password" || isPasswordValid ? 1 : 0,
+                scale: focusedField === "password" || isPasswordValid ? 1 : 0.95,
+              }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background: "linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.2))",
+                filter: "blur(8px)",
+              }}
+            />
+            
+            <Input
+              id="login-password"
+              type="password"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              className={cn(
+                "input relative z-10 h-12 w-full cursor-text rounded-lg border px-4 text-[hsl(var(--text-1))] transition-all placeholder:text-[hsl(var(--text-3))] focus:outline-none",
+                focusedField === "password" || isPasswordValid
+                  ? "border-[hsl(var(--primary)_/_0.5)] bg-[hsla(var(--surface) / 0.95)] backdrop-blur-sm shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
+                  : "border-[hsl(var(--border))] bg-[hsla(var(--surface) / 0.8)]",
+                errors.password && "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
+                !errors.password && isPasswordValid && "border-[hsl(var(--success)_/_0.5)]",
+              )}
+              {...register("password", {
+                onChange: (e) => setPasswordValue(e.target.value),
+              })}
+              onFocus={() => setFocusedField("password")}
+              onBlur={() => setFocusedField(null)}
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby="login-password-error"
+            />
+            
+            {/* Ícone de validação */}
+            <AnimatePresence>
+              {isPasswordValid && (
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <CheckCircle2 className="h-5 w-5 text-[hsl(var(--success))]" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Efeito de brilho interno quando focado */}
+            {focusedField === "password" && (
+              <motion.div
+                className="pointer-events-none absolute inset-0 rounded-lg bg-gradient-to-r from-transparent via-[hsla(var(--primary) / 0.1)] to-transparent"
+                initial={{ x: "-100%" }}
+                animate={{ x: "100%" }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+              />
+            )}
+
+            {/* Indicador de força da senha */}
+            {password && !errors.password && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                className="mt-2 flex gap-1"
+              >
+                {[1, 2, 3, 4].map((level) => (
+                  <motion.div
+                    key={level}
+                    className={cn(
+                      "h-1 flex-1 rounded-full",
+                      password.length >= level * 2
+                        ? "bg-[hsl(var(--success))]"
+                        : "bg-[hsl(var(--border))]",
+                    )}
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: password.length >= level * 2 ? 1 : 0 }}
+                    transition={{ duration: 0.3, delay: level * 0.05 }}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </div>
+          {errors.password ? (
+            <motion.span
+              id="login-password-error"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-1.5 text-xs leading-snug text-[hsl(var(--danger))]"
+            >
+              {errors.password.message}
+            </motion.span>
           ) : (
-            <span className="text-[var(--fs-xs)] leading-[var(--lh-relaxed)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Acesso exclusivo para domínios autorizados. Cada tentativa gera log imediato.
+            <span className="mt-1.5 text-xs leading-snug text-[hsl(var(--text-3))]">
+              Mínimo de 8 caracteres.
             </span>
           )}
-        </div>
-
-        <div className="grid gap-[var(--space-2)]">
-          <Label htmlFor="login-password">Senha</Label>
-          <Input
-            {...register("password")}
-            id="login-password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="••••••••"
-            className={cn(
-              errors.password && "border-[color-mix(in_oklab,var(--danger)_55%,transparent)]",
-            )}
-            aria-invalid={Boolean(errors.password)}
-            aria-describedby="login-password-error"
-          />
-          <div className="grid gap-1 text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-            {errors.password ? (
-              <span id="login-password-error" className="text-[var(--danger)]">
-                {errors.password.message}
-              </span>
-            ) : (
-              <span id="login-password-error">
-                Mínimo 8 caracteres com letras maiúsculas, minúsculas e números.
-              </span>
-            )}
-            <div className="flex items-center gap-2 text-[color-mix(in_oklab,var(--muted)_65%,var(--fg)_35%)]">
-              <ClipboardList className="h-3 w-3" aria-hidden />
-              <span>Política alinhada ao SOC corporativo.</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-[var(--space-2)]">
-          <div className="flex items-center justify-between gap-3">
-            <Label htmlFor="login-otp">Token dinâmico</Label>
-            <span className="text-[10px] uppercase tracking-[0.32em] text-[color-mix(in_oklab,var(--muted)_65%,var(--fg)_35%)]">
-              Opcional (MFA)
-            </span>
-          </div>
-          <Input
-            {...register("otp")}
-            id="login-otp"
-            inputMode="numeric"
-            maxLength={6}
-            placeholder="123 456"
-            className={cn(
-              errors.otp && "border-[color-mix(in_oklab,var(--danger)_55%,transparent)]",
-            )}
-            aria-invalid={Boolean(errors.otp)}
-            aria-describedby="login-otp-error"
-          />
-          {errors.otp ? (
-            <span id="login-otp-error" className="text-[var(--fs-xs)] text-[var(--danger)]">
-              {errors.otp.message}
-            </span>
-          ) : (
-            <span className="text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Em cenários críticos enviamos via app corporativo em segundos.
-            </span>
-          )}
-        </div>
+        </motion.div>
       </div>
 
-      <div className="flex items-center justify-between gap-[var(--space-3)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-        <label className="flex items-center gap-2">
+      {/* Opções e links */}
+      <motion.div
+        className="flex items-center justify-between gap-4 text-xs text-[hsl(var(--text-3))]"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.3 }}
+      >
+        <label className="flex cursor-pointer items-center gap-2">
           <input
             {...register("remember")}
             type="checkbox"
-            className="h-4 w-4 cursor-pointer rounded border-[color-mix(in_oklab,var(--border)_70%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_92%,transparent)] text-[var(--primary)] outline-none transition hover:border-[color-mix(in_oklab,var(--primary)_60%,transparent)] focus:shadow-[0_0_0_2px_rgba(91,138,255,0.25)]"
+            className="h-4 w-4 cursor-pointer rounded border border-[hsl(var(--border))] bg-[hsl(var(--elevated))] text-[hsl(var(--primary))] outline-none transition-all hover:border-[hsl(var(--primary)_/_0.6))] focus:ring-2 focus:ring-[hsl(var(--primary)_/_0.35))] focus:ring-offset-2 focus:ring-offset-[hsl(var(--surface))]"
           />
-          <span>Lembrar sessão por 30 dias</span>
+          <span className="cursor-pointer">Lembrar sessão</span>
         </label>
-        <button
+        <motion.button
           type="button"
-          className="border-b border-dashed border-[color-mix(in_oklab,var(--primary)_45%,transparent)] text-[color-mix(in_oklab,var(--primary)_80%,var(--fg)_20%)] transition hover:text-[var(--primary)]"
+          className="cursor-pointer border-b border-dashed border-[hsl(var(--primary)_/_0.45))] text-[hsl(var(--primary)_/_0.8))] transition-colors hover:border-[hsl(var(--primary))] hover:text-[hsl(var(--primary))]"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          Esqueci meus dados
-        </button>
-      </div>
+          Esqueci minha senha
+        </motion.button>
+      </motion.div>
 
-      <div className="grid gap-[var(--space-3)] rounded-[var(--r-md)] border border-[color-mix(in_oklab,var(--border)_80%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_92%,transparent)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-        <div className="flex items-center gap-[var(--space-2)] text-[color-mix(in_oklab,var(--primary)_60%,var(--fg)_40%)]">
-          <ShieldQuestion className="h-4 w-4" aria-hidden />
-          <span>Monitoramento em tempo real habilitado.</span>
-        </div>
-        <div className="grid gap-2 text-[color-mix(in_oklab,var(--muted)_72%,var(--fg)_28%)]">
-          <div className="flex items-center justify-between">
-            <span>Sessões protegidas hoje</span>
-            <strong className="text-[var(--fg)]">{insights.sessionCount}</strong>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Ataques bloqueados nas últimas 24h</span>
-            <strong className="text-[var(--fg)]">{insights.threatsBlocked}</strong>
-          </div>
-          <div className="flex items-center justify-between">
-            <span>Última auditoria</span>
-            <strong className="text-[var(--fg)]">{insights.lastAudit}</strong>
-          </div>
-        </div>
-      </div>
+      {/* Mensagem de feedback */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.3 }}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all backdrop-blur-sm",
+              status === "success"
+                ? "bg-[hsl(var(--success)_/_0.15)] text-[hsl(var(--success))] border border-[hsl(var(--success)_/_0.3))] shadow-[0_0_20px_hsl(var(--success)_/_0.2)]"
+                : "bg-[hsl(var(--danger)_/_0.15)] text-[hsl(var(--danger))] border border-[hsl(var(--danger)_/_0.3))] shadow-[0_0_20px_hsl(var(--danger)_/_0.2)]",
+            )}
+          >
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ duration: 0.4, type: "spring" }}
+            >
+              {status === "success" ? (
+                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+              ) : (
+                <ShieldX className="h-4 w-4 flex-shrink-0" />
+              )}
+            </motion.div>
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+            >
+              {message}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {feedback && (
-        <div
-          aria-live="polite"
-          aria-atomic="true"
+      {/* Botão de submit */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.4 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        <Button
+          type="submit"
+          disabled={isBusy}
           className={cn(
-            "flex items-start gap-[var(--space-3)] rounded-[var(--r-md)] border px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-sm)]",
-            status === "success"
-              ? "border-[color-mix(in_oklab,var(--success)_40%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_85%,var(--success)_8%)] text-[color-mix(in_oklab,var(--success)_70%,var(--fg)_30%)]"
-              : "border-[color-mix(in_oklab,var(--danger)_40%,transparent)] bg-[color-mix(in_oklab,var(--surface-muted)_85%,var(--danger)_8%)] text-[color-mix(in_oklab,var(--danger)_70%,var(--fg)_30%)]",
+            "btn btn-primary relative h-12 w-full cursor-pointer overflow-hidden rounded-lg font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:brightness-105 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary)_/_0.5))] focus:ring-offset-2 focus:ring-offset-[hsl(var(--surface))] disabled:opacity-50 disabled:cursor-not-allowed",
+            "bg-[linear-gradient(135deg,hsl(var(--primary)),hsl(var(--secondary)))]",
+            isEmailValid && isPasswordValid && "shadow-[0_0_30px_hsl(var(--primary)_/_0.4)]",
           )}
         >
-          <ShieldCheck className="mt-0.5 h-4 w-4" aria-hidden />
-          <span>{feedback}</span>
-        </div>
-      )}
-
-      <Button type="submit" disabled={isSubmitting} className="group relative overflow-hidden">
-        <span className="absolute inset-0 -z-10 translate-y-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.32)_0%,transparent_70%)] opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100" />
-        {isSubmitting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            Validando
-          </>
-        ) : (
-          <>Entrar</>
-        )}
-      </Button>
-
-      <p className="text-center text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted)_75%,var(--fg)_25%)]">
-        Acesso monitorado. Cada tentativa gera auditoria automática e alerta para o time de
-        segurança.
-      </p>
+          {/* Efeito de brilho deslizante no hover */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            initial={{ x: "-100%" }}
+            whileHover={{ x: "100%" }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+          />
+          
+          {/* Efeito de pulso quando campos estão válidos */}
+          {isEmailValid && isPasswordValid && (
+            <motion.div
+              className="absolute inset-0 bg-[hsl(var(--primary)_/_0.2)]"
+              animate={{
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          )}
+          
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            {isBusy ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Entrando...
+              </>
+            ) : (
+              <>
+                Entrar
+                <motion.div
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <ArrowRight className="h-4 w-4" />
+                </motion.div>
+              </>
+            )}
+          </span>
+        </Button>
+      </motion.div>
     </form>
   );
 }
