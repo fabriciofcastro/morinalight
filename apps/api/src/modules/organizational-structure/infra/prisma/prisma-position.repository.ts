@@ -1,3 +1,5 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
+import { Position } from "../../domain/entities/position";
 import type {
   PositionListaFiltro,
   PositionListaPagina,
@@ -5,8 +7,6 @@ import type {
   PositionRepository,
   PositionStatus,
 } from "../../domain/repositories/position-repository";
-import { Position } from "../../domain/entities/position";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -111,7 +111,10 @@ export class PrismaPositionRepository implements PositionRepository {
     return record ? toDomain(record) : null;
   }
 
-  async listarPorOrg(orgId: string, filtro: PositionListaFiltro = {}): Promise<PositionListaPagina> {
+  async listarPorOrg(
+    orgId: string,
+    filtro: PositionListaFiltro = {},
+  ): Promise<PositionListaPagina> {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
     const andFilters = [];
@@ -201,4 +204,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

@@ -17,4 +17,3 @@ export class DepartmentId {
     return this.value === other.value;
   }
 }
-

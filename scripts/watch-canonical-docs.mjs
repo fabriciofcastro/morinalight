@@ -2,22 +2,22 @@
 
 /**
  * Script para monitorar alterações em documentos canônicos e reindexar automaticamente
- * 
+ *
  * Este script pode ser usado com um watcher (ex: chokidar) para reindexar
  * documentos quando arquivos canônicos são modificados.
- * 
+ *
  * Uso:
  *   node scripts/watch-canonical-docs.mjs
- * 
+ *
  * Ou como parte de um processo de desenvolvimento:
  *   pnpm dev:watch
  */
 
-import { watch } from "fs";
-import { exec } from "child_process";
-import { promisify } from "util";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { exec } from "node:child_process";
+import { watch } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -59,12 +59,12 @@ function scheduleIndex() {
   if (indexTimeout) {
     clearTimeout(indexTimeout);
   }
-  
+
   indexTimeout = setTimeout(() => {
     runIndex();
     indexTimeout = null;
   }, DEBOUNCE_MS);
-  
+
   console.log("📝 Alteração detectada, agendando reindexação...");
 }
 
@@ -73,15 +73,15 @@ function scheduleIndex() {
  */
 function watchPath(relativePath) {
   const fullPath = join(ROOT_DIR, relativePath);
-  
+
   try {
-    watch(fullPath, { recursive: true }, (eventType, filename) => {
+    watch(fullPath, { recursive: true }, (_eventType, filename) => {
       if (filename && !filename.includes("node_modules") && !filename.includes(".git")) {
         console.log(`\n📂 Alteração detectada: ${relativePath}/${filename || ""}`);
         scheduleIndex();
       }
     });
-    
+
     console.log(`👀 Monitorando: ${relativePath}`);
   } catch (error) {
     console.warn(`⚠️  Não foi possível monitorar ${relativePath}: ${error.message}`);
@@ -94,12 +94,12 @@ function watchPath(relativePath) {
 function main() {
   console.log("🚀 Iniciando monitoramento de documentos canônicos...\n");
   console.log("📚 Documentos monitorados:");
-  CANONICAL_PATHS.forEach(path => console.log(`  - ${path}`));
+  CANONICAL_PATHS.forEach((path) => console.log(`  - ${path}`));
   console.log("\n💡 Pressione Ctrl+C para parar o monitoramento\n");
-  
+
   // Monitora todos os caminhos canônicos
   CANONICAL_PATHS.forEach(watchPath);
-  
+
   // Mantém o processo rodando
   process.on("SIGINT", () => {
     console.log("\n\n👋 Parando monitoramento...");
@@ -109,4 +109,3 @@ function main() {
 
 // Executa o script
 main();
-

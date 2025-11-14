@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
 
@@ -61,10 +61,7 @@ function validateToken(token: string): JwtPayload | null {
 export function createJwtMiddleware(options: JwtMiddlewareOptions) {
   const { excludeRoutes } = options;
 
-  return async function validateJwt(
-    request: FastifyRequest,
-    reply: FastifyReply,
-  ): Promise<void> {
+  return async function validateJwt(request: FastifyRequest, _reply: FastifyReply): Promise<void> {
     const url = request.url.split("?")[0];
 
     // Verificar se a rota deve ser excluída
@@ -107,10 +104,7 @@ export function createJwtMiddleware(options: JwtMiddlewareOptions) {
 /**
  * Registra o middleware JWT globalmente no Fastify
  */
-export function registerJwtMiddleware(
-  app: FastifyInstance,
-  options: JwtMiddlewareOptions,
-) {
+export function registerJwtMiddleware(app: FastifyInstance, options: JwtMiddlewareOptions) {
   const validateJwt = createJwtMiddleware(options);
 
   app.addHook("onRequest", async (request, reply) => {
@@ -131,4 +125,3 @@ export function requireAuth() {
     }
   };
 }
-

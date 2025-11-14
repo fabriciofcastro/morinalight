@@ -56,10 +56,7 @@ export class PrismaPrefichaAuditoriaRepository implements PrefichaAuditoriaRepos
   ): Promise<PrefichaAuditoriaPagina> {
     const limit = Math.min(filtro.limite ?? 20, 100);
 
-    const andFilters: Array<Record<string, unknown>> = [
-      { orgId },
-      { prefichaId },
-    ];
+    const andFilters: Array<Record<string, unknown>> = [{ orgId }, { prefichaId }];
 
     if (filtro.acao) {
       andFilters.push({ action: filtro.acao });
@@ -97,7 +94,10 @@ export class PrismaPrefichaAuditoriaRepository implements PrefichaAuditoriaRepos
     };
   }
 
-  async listarFeed(orgId: string, filtro: PrefichaAuditoriaFiltro = {}): Promise<PrefichaAuditoriaPagina> {
+  async listarFeed(
+    orgId: string,
+    filtro: PrefichaAuditoriaFiltro = {},
+  ): Promise<PrefichaAuditoriaPagina> {
     const limit = Math.min(filtro.limite ?? 20, 100);
 
     const andFilters: Array<Record<string, unknown>> = [{ orgId }];
@@ -138,4 +138,3 @@ export class PrismaPrefichaAuditoriaRepository implements PrefichaAuditoriaRepos
     };
   }
 }
-

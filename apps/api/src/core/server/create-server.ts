@@ -5,11 +5,11 @@ import { registerHttp } from "../../app/http/routes";
 import type { AuthModuleOptions as CoreAuthModuleOptions } from "../../core/auth/auth.module";
 import type { AuthModuleOptions } from "../../modules/auth/auth.module";
 import type { CatalogoModuleOptions } from "../../modules/catalogo/catalogo.module";
+import type { ClientesModuleOptions } from "../../modules/clientes/clientes.module";
 import type { CompanySettingsModuleOptions } from "../../modules/company-settings/company-settings.module";
 import type { NotificationsModuleOptions } from "../../modules/notifications/notifications.module";
 import type { OrganizationsModuleOptions } from "../../modules/organizations/organizations.module";
 import type { PrefichaModuleOptions } from "../../modules/preficha/preficha.module";
-import type { ClientesModuleOptions } from "../../modules/clientes/clientes.module";
 import { env } from "../config/env";
 import { setupHttpMetrics } from "../observability/metrics";
 
@@ -36,9 +36,7 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
   });
 
   await app.register(cors, {
-    origin: env.NODE_ENV === "production" 
-      ? env.FRONTEND_URL?.split(",") || true
-      : true,
+    origin: env.NODE_ENV === "production" ? env.FRONTEND_URL?.split(",") || true : true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Organization-Id"],

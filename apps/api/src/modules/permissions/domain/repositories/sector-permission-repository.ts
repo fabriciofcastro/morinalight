@@ -28,10 +28,5 @@ export interface SectorPermissionRepository {
   listarPorSector(orgId: string, sectorId: string): Promise<SectorPermission[]>;
   listarPorSectors(orgId: string, sectorIds: string[]): Promise<SectorPermission[]>;
   deletar(orgId: string, id: string): Promise<void>;
-  deletarPorSectorEPermission(
-    orgId: string,
-    sectorId: string,
-    permissionId: string,
-  ): Promise<void>;
+  deletarPorSectorEPermission(orgId: string, sectorId: string, permissionId: string): Promise<void>;
 }
-

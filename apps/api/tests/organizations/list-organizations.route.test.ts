@@ -63,4 +63,3 @@ describe("Organizations HTTP", () => {
     expect(body.itens).toHaveLength(0);
   });
 });
-

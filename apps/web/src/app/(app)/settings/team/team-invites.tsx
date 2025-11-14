@@ -1,11 +1,9 @@
 "use client";
 
+import { Button, cn, GlassCard } from "@morina/ui";
 import { useState, useTransition } from "react";
-
-import { Button, GlassCard, cn } from "@morina/ui";
-
-import type { OrganizationInvite } from "@/types/organization";
 import { Badge } from "@/components/ui/badge";
+import type { OrganizationInvite } from "@/types/organization";
 
 type TeamInvitesProps = {
   orgId: string;
@@ -246,7 +244,10 @@ export function TeamInvites({ orgId, initialInvites }: TeamInvitesProps) {
                 </span>
               </div>
               <span className="text-[var(--fs-sm)]">{ROLE_LABELS[invite.role]}</span>
-              <Badge variant={STATUS_VARIANTS[invite.status] ?? "secondary"} className="text-[10px]">
+              <Badge
+                variant={STATUS_VARIANTS[invite.status] ?? "secondary"}
+                className="text-[10px]"
+              >
                 {STATUS_LABELS[invite.status] ?? invite.status}
               </Badge>
               <div className="flex justify-end">
@@ -272,4 +273,3 @@ export function TeamInvites({ orgId, initialInvites }: TeamInvitesProps) {
     </GlassCard>
   );
 }
-

@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarPositionsUseCase } from "../application/use-cases/listar-positions.use-case";
 import type { PositionRepository } from "../domain/repositories/position-repository";
 
@@ -33,4 +33,3 @@ export async function registerListPositionsRoute(app: FastifyInstance, deps: Dep
     }
   });
 }
-

@@ -22,4 +22,3 @@ export interface DepartmentRepository {
   contarPorOrg(orgId: string, status?: "ativo" | "inativo" | "arquivado"): Promise<number>;
   deletar(orgId: string, departmentId: string): Promise<void>;
 }
-

@@ -53,5 +53,3 @@ export class Permission {
     return `${this.props.resource}:${this.props.action}`;
   }
 }
-
-

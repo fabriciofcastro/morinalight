@@ -1,26 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  LayoutDashboard,
-  Package,
-  Users,
-  ShoppingCart,
-  Settings,
-  FileText,
+  BarChart3,
   Building2,
-  DollarSign,
-  Menu,
   ChevronLeft,
   ChevronRight,
-  UserCog,
-  BarChart3,
+  DollarSign,
+  FileText,
   Home,
+  Package,
+  Settings,
+  ShoppingCart,
+  UserCog,
+  Users,
 } from "lucide-react";
-import { cn } from "@morina/ui";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { useHasPermission } from "@/hooks/use-permissions";
 
 type NavItem = {
@@ -244,7 +242,7 @@ function NavItemComponent({
   onToggleExpand,
 }: NavItemComponentProps) {
   const hasPermission = useHasPermission(item.permission || "");
-  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
   const isExpanded = expandedItems.has(item.href);
   const hasChildren = item.children && item.children.length > 0;
 
@@ -302,10 +300,7 @@ function NavItemComponent({
             </span>
           )}
           {hasChildren && (
-            <motion.div
-              animate={{ rotate: isExpanded ? 90 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
+            <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
               <ChevronRight className="h-4 w-4" />
             </motion.div>
           )}
@@ -322,11 +317,7 @@ function NavItemComponent({
                 className="ml-8 mt-1 space-y-1 overflow-hidden border-l border-[color-mix(in_oklab,var(--border)_90%,transparent)] pl-3"
               >
                 {item.children?.map((child) => (
-                  <ChildNavItem
-                    key={child.href}
-                    item={child}
-                    pathname={pathname}
-                  />
+                  <ChildNavItem key={child.href} item={child} pathname={pathname} />
                 ))}
               </motion.ul>
             )}
@@ -339,7 +330,7 @@ function NavItemComponent({
 
 function ChildNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
   const hasPermission = useHasPermission(item.permission || "");
-  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
   if (!hasPermission) {
     return null;
@@ -362,4 +353,3 @@ function ChildNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
     </li>
   );
 }
-

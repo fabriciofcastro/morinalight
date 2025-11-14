@@ -31,4 +31,3 @@ export type OrganizationInvite = {
 export type OrganizationInviteResponse = {
   itens: OrganizationInvite[];
 };
-

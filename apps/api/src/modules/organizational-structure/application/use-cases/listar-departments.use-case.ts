@@ -1,8 +1,8 @@
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import {
+  departmentViewSchema,
   listarDepartmentsInputSchema,
   listarDepartmentsResultadoSchema,
-  departmentViewSchema,
 } from "../schemas/department.schema";
 
 type Dependencies = {
@@ -49,4 +49,3 @@ export class ListarDepartmentsUseCase {
     });
   }
 }
-

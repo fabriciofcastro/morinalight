@@ -63,4 +63,3 @@ export const listarComissoesResultadoSchema = z.object({
 });
 
 export type ListarComissoesResultado = z.infer<typeof listarComissoesResultadoSchema>;
-

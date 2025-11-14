@@ -1,6 +1,6 @@
-import { config as loadEnv } from "dotenv";
-import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import { config as loadEnv } from "dotenv";
 
 // Carregar variáveis de ambiente
 loadEnv({ path: ".env", override: false });
@@ -16,7 +16,9 @@ async function createUser() {
   try {
     if (!process.env.DATABASE_URL) {
       console.error("❌ Erro: DATABASE_URL não configurada.");
-      console.error("   Configure a variável DATABASE_URL no arquivo .env ou como variável de ambiente.");
+      console.error(
+        "   Configure a variável DATABASE_URL no arquivo .env ou como variável de ambiente.",
+      );
       process.exit(1);
     }
 
@@ -30,7 +32,7 @@ async function createUser() {
     let user;
     if (existingUser) {
       console.log(`⚠️  Usuário ${email} já existe. Atualizando senha...`);
-      
+
       // Atualizar senha e status
       const passwordHash = await bcrypt.hash(password, 10);
       user = await prisma.user.update({
@@ -82,7 +84,9 @@ async function createUser() {
           },
         });
 
-        console.log(`✅ Membership criado/atualizado na organização ${organization.name}: ${membership.id}`);
+        console.log(
+          `✅ Membership criado/atualizado na organização ${organization.name}: ${membership.id}`,
+        );
       }
     }
 
@@ -102,5 +106,3 @@ async function createUser() {
 }
 
 void createUser();
-
-

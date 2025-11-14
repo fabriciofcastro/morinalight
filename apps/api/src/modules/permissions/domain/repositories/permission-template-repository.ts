@@ -40,4 +40,3 @@ export interface PermissionTemplateRepository {
   deletar(orgId: string, id: string): Promise<void>;
   contarPorOrg(orgId: string, filtro?: PermissionTemplateFilter): Promise<number>;
 }
-

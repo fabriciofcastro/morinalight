@@ -12,7 +12,7 @@ type RouteParams = {
 async function getAuthHeaders(): Promise<HeadersInit> {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
-  
+
   if (!token) {
     return {};
   }
@@ -31,7 +31,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   return headers;
 }
 
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(_request: Request, { params }: RouteParams) {
   const response = await fetch(`${apiUrl}/suppliers/${params.id}`, {
     headers: {
       ...(await getAuthHeaders()),
@@ -41,10 +41,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   });
 
   if (!response.ok) {
-    return NextResponse.json(
-      { message: "Fornecedor não encontrado" },
-      { status: response.status }
-    );
+    return NextResponse.json({ message: "Fornecedor não encontrado" }, { status: response.status });
   }
 
   const data = await response.json();
@@ -67,7 +64,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const error = await response.json();
     return NextResponse.json(
       { message: error.message || "Erro ao atualizar fornecedor" },
-      { status: response.status }
+      { status: response.status },
     );
   }
 
@@ -75,7 +72,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(_request: Request, { params }: RouteParams) {
   const response = await fetch(`${apiUrl}/suppliers/${params.id}`, {
     method: "DELETE",
     headers: await getAuthHeaders(),
@@ -84,10 +81,9 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   if (!response.ok) {
     return NextResponse.json(
       { message: "Erro ao excluir fornecedor" },
-      { status: response.status }
+      { status: response.status },
     );
   }
 
   return NextResponse.json({}, { status: 204 });
 }
-

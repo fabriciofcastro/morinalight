@@ -70,7 +70,10 @@ export class Cliente {
     return this.props;
   }
 
-  atualizarDados(dados: Partial<Omit<ClienteProps, "orgId" | "createdAt" | "createdBy">>, actorId: string) {
+  atualizarDados(
+    dados: Partial<Omit<ClienteProps, "orgId" | "createdAt" | "createdBy">>,
+    actorId: string,
+  ) {
     if (dados.nome !== undefined) {
       if (!dados.nome || dados.nome.trim().length === 0) {
         throw new Error("Nome do cliente não pode ser vazio");
@@ -203,4 +206,3 @@ export class Cliente {
     this.props.updatedAt = new Date();
   }
 }
-

@@ -35,15 +35,11 @@
       "name": "Listar Produtos",
       "request": {
         "method": "GET",
-        "header": [
-          { "key": "x-org-id", "value": "{{orgId}}" }
-        ],
+        "header": [{ "key": "x-org-id", "value": "{{orgId}}" }],
         "url": {
           "raw": "{{baseUrl}}/catalogo/produtos?status=ativo",
           "host": ["{{baseUrl}}/catalogo/produtos"],
-          "query": [
-            { "key": "status", "value": "ativo" }
-          ]
+          "query": [{ "key": "status", "value": "ativo" }]
         }
       }
     },
@@ -51,9 +47,7 @@
       "name": "Feed Auditoria",
       "request": {
         "method": "GET",
-        "header": [
-          { "key": "x-org-id", "value": "{{orgId}}" }
-        ],
+        "header": [{ "key": "x-org-id", "value": "{{orgId}}" }],
         "url": "{{baseUrl}}/catalogo/auditoria/feed"
       }
     },
@@ -61,9 +55,7 @@
       "name": "Feed Notificações",
       "request": {
         "method": "GET",
-        "header": [
-          { "key": "x-org-id", "value": "{{orgId}}" }
-        ],
+        "header": [{ "key": "x-org-id", "value": "{{orgId}}" }],
         "url": "{{baseUrl}}/notifications/feed"
       }
     },
@@ -71,9 +63,7 @@
       "name": "Company Settings - GET",
       "request": {
         "method": "GET",
-        "header": [
-          { "key": "x-org-id", "value": "{{orgId}}" }
-        ],
+        "header": [{ "key": "x-org-id", "value": "{{orgId}}" }],
         "url": "{{baseUrl}}/company-settings"
       }
     },
@@ -96,9 +86,7 @@
       "name": "Realtime - Gerar Token",
       "request": {
         "method": "POST",
-        "header": [
-          { "key": "Content-Type", "value": "application/json" }
-        ],
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
         "body": {
           "mode": "raw",
           "raw": "{\n  \"orgId\": \"{{orgId}}\",\n  \"actorId\": \"{{actorId}}\"\n}"
@@ -114,4 +102,3 @@
     { "key": "actorId", "value": "demo-actor" }
   ]
 }
-

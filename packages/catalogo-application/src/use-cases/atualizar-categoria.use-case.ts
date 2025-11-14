@@ -1,8 +1,5 @@
 import type { CategoryRepository } from "@morina/catalogo-domain";
-import {
-  atualizarCategoriaInputSchema,
-  categoriaViewSchema,
-} from "../schemas/product";
+import { atualizarCategoriaInputSchema, categoriaViewSchema } from "../schemas/product";
 
 type Dependencies = {
   categoriaRepository: CategoryRepository;
@@ -79,5 +76,3 @@ export class AtualizarCategoriaUseCase {
     });
   }
 }
-
-

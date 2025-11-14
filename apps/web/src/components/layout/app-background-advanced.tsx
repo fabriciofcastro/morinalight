@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 /**
  * Background fixo animado avançado com blur e glass effects
@@ -38,7 +38,7 @@ export function AppBackgroundAdvanced() {
           ease: "easeInOut",
         }}
       />
-      
+
       <motion.div
         className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,color-mix(in_oklab,hsl(var(--secondary))_6%,transparent)_0%,transparent_60%)]"
         animate={{
@@ -54,7 +54,7 @@ export function AppBackgroundAdvanced() {
           delay: 2,
         }}
       />
-      
+
       <motion.div
         className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,color-mix(in_oklab,hsl(var(--accent))_5%,transparent)_0%,transparent_70%)]"
         animate={{
@@ -172,10 +172,9 @@ export function AppBackgroundAdvanced() {
 
       {/* Glass overlay com blur para profundidade */}
       <div className="absolute inset-0 backdrop-blur-[2px] opacity-50 pointer-events-none" />
-      
+
       {/* Overlay final gradiente para reduzir intensidade nas bordas */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,hsl(var(--bg))/0.3_100%),linear-gradient(to_top,transparent_0%,hsl(var(--bg))/0.3_100%)]" />
     </div>
   );
 }
-

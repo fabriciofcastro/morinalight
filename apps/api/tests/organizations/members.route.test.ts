@@ -1,8 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
-import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
+import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 import { InMemoryUserInviteRepository } from "../../src/modules/organizations/infra/memory/in-memory-user-invite.repository";
 import { InMemoryUserRepository } from "../../src/modules/users/infra/memory/in-memory-user.repository";
 
@@ -178,4 +178,3 @@ describe("Organizations Members HTTP", () => {
     expect(response.statusCode).toBe(403);
   });
 });
-

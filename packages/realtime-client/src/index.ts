@@ -90,13 +90,13 @@ export function createRealtimeClient(options: RealtimeClientOptions) {
 
   async function fetchToken(): Promise<string> {
     const fetcher = options.fetchImpl ?? fetch;
-    
+
     try {
       // Usar rota relativa para passar pelo BFF do Next.js
-      const tokenUrl = options.apiUrl 
+      const tokenUrl = options.apiUrl
         ? `${options.apiUrl}/api/realtime/token`
         : "/api/realtime/token";
-      
+
       const response = await fetcher(tokenUrl, {
         method: "POST",
         headers: {
@@ -121,7 +121,7 @@ export function createRealtimeClient(options: RealtimeClientOptions) {
     } catch (error) {
       // Melhorar mensagem de erro para debugging
       if (error instanceof TypeError && error.message === "Failed to fetch") {
-        const tokenUrl = options.apiUrl 
+        const tokenUrl = options.apiUrl
           ? `${options.apiUrl}/api/realtime/token`
           : "/api/realtime/token";
         throw new Error(

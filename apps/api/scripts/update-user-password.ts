@@ -58,4 +58,3 @@ if (newPassword.length < 8) {
 }
 
 updateUserPassword(email, newPassword);
-

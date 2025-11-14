@@ -33,10 +33,7 @@ export async function GET(request: Request) {
   });
 
   if (!response.ok) {
-    return NextResponse.json(
-      { message: "Erro ao buscar usuários" },
-      { status: response.status }
-    );
+    return NextResponse.json({ message: "Erro ao buscar usuários" }, { status: response.status });
   }
 
   const data = await response.json();

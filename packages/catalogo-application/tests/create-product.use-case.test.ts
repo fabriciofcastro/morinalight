@@ -34,9 +34,7 @@ class InMemoryProdutoRepository implements ProdutoRepository {
   }
 
   async listarPorOrg(orgId: string, filtro: ProdutoListaFiltro = {}): Promise<ProdutoListaPagina> {
-    let itens = Array.from(this.items.values()).filter(
-      (produto) => produto.dados.orgId === orgId,
-    );
+    let itens = Array.from(this.items.values()).filter((produto) => produto.dados.orgId === orgId);
 
     if (filtro.status) {
       itens = itens.filter((produto) => produto.dados.status === filtro.status);

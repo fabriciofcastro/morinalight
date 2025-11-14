@@ -1,8 +1,5 @@
 import { CriarVarianteUseCase } from "@morina/catalogo-application";
-import type {
-  ProductVariantRepository,
-  ProdutoRepository,
-} from "@morina/catalogo-domain";
+import type { ProductVariantRepository, ProdutoRepository } from "@morina/catalogo-domain";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
@@ -29,9 +26,7 @@ export async function registerCreateVariantRoute(
       .object({
         sku: z.string().min(1).max(100),
         nome: z.string().min(1).max(180),
-        atributos: z.record(
-          z.union([z.string(), z.number(), z.boolean()]),
-        ),
+        atributos: z.record(z.union([z.string(), z.number(), z.boolean()])),
         preco: z.number().nonnegative().optional().nullable(),
         estoque: z.number().int().nonnegative().optional().nullable(),
         ativo: z.boolean().optional(),
@@ -53,4 +48,3 @@ export async function registerCreateVariantRoute(
     return reply.status(201).send(variante);
   });
 }
-

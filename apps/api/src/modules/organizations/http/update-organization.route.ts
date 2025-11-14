@@ -72,5 +72,3 @@ export async function registerUpdateOrganizationRoute(
     return reply.send({ organization: updated });
   });
 }
-
-

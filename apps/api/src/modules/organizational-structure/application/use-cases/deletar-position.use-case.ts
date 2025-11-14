@@ -1,11 +1,13 @@
-import type { PositionRepository } from "../../domain/repositories/position-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { PositionRepository } from "../../domain/repositories/position-repository";
+import type { PositionMembershipRepository } from "../../infra/prisma/prisma-position-membership.repository";
 import { deletarPositionInputSchema } from "../schemas/position.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   positionRepository: PositionRepository;
+  positionMembershipRepository?: PositionMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
   actorId: string;
@@ -18,14 +20,28 @@ export class DeletarPositionUseCase {
     const input = deletarPositionInputSchema.parse(rawInput);
 
     // Encontrar cargo
-    const position = await this.deps.positionRepository.encontrarPorId(input.orgId, input.positionId);
+    const position = await this.deps.positionRepository.encontrarPorId(
+      input.orgId,
+      input.positionId,
+    );
 
     if (!position) {
       throw new Error("Cargo não encontrado");
     }
 
-    // TODO: Verificar se existem membros associados ao cargo
-    // Se houver PositionMembership, verificar antes de deletar
+    // Verificar se existem membros associados ao cargo
+    if (this.deps.positionMembershipRepository) {
+      const memberCount = await this.deps.positionMembershipRepository.contarPorPosition(
+        input.orgId,
+        input.positionId,
+      );
+
+      if (memberCount > 0) {
+        throw new Error(
+          "Não é possível deletar cargo com membros associados. Remova todos os membros primeiro.",
+        );
+      }
+    }
 
     await this.deps.positionRepository.deletar(input.orgId, input.positionId);
 
@@ -67,4 +83,3 @@ export class DeletarPositionUseCase {
     }
   }
 }
-

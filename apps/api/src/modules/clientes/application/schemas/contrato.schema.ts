@@ -28,4 +28,3 @@ export const contratoViewSchema = criarContratoInputSchema.extend({
 });
 
 export type ContratoView = z.infer<typeof contratoViewSchema>;
-

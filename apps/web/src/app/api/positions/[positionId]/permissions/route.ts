@@ -30,10 +30,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function GET(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function GET(_request: Request, { params }: RouteParams) {
   const { positionId } = params;
 
   const response = await fetch(`${apiUrl}/positions/${positionId}/permissions`, {
@@ -53,10 +50,7 @@ export async function GET(
   return NextResponse.json(data);
 }
 
-export async function POST(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function POST(request: Request, { params }: RouteParams) {
   const { positionId } = params;
   const body = await request.json();
 
@@ -68,7 +62,9 @@ export async function POST(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: "Erro ao atribuir permissão ao cargo" }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Erro ao atribuir permissão ao cargo" }));
     return NextResponse.json(error, { status: response.status });
   }
 
@@ -76,19 +72,13 @@ export async function POST(
   return NextResponse.json(data);
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function DELETE(request: Request, { params }: RouteParams) {
   const { positionId } = params;
   const { searchParams } = new URL(request.url);
   const permissionId = searchParams.get("permissionId");
 
   if (!permissionId) {
-    return NextResponse.json(
-      { message: "permissionId é obrigatório" },
-      { status: 400 },
-    );
+    return NextResponse.json({ message: "permissionId é obrigatório" }, { status: 400 });
   }
 
   const response = await fetch(`${apiUrl}/positions/${positionId}/permissions/${permissionId}`, {
@@ -98,11 +88,12 @@ export async function DELETE(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: "Erro ao remover permissão do cargo" }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Erro ao remover permissão do cargo" }));
     return NextResponse.json(error, { status: response.status });
   }
 
   const data = await response.json();
   return NextResponse.json(data);
 }
-

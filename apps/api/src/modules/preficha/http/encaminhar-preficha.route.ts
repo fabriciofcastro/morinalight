@@ -1,11 +1,5 @@
-import {
-  EncaminharPrefichaUseCase,
-  criarPrefichaInputSchema,
-} from "@morina/preficha-application";
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import { EncaminharPrefichaUseCase } from "@morina/preficha-application";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
@@ -72,5 +66,3 @@ export async function registerEncaminharPrefichaRoute(
     return reply.status(200).send(resultado);
   });
 }
-
-

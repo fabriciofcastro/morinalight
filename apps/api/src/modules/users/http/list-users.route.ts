@@ -12,7 +12,7 @@ type UsersHttpDeps = {
   userRepository: UserRepository;
 };
 
-export async function registerListUsersRoute(app: FastifyInstance, deps: UsersHttpDeps) {
+export async function registerListUsersRoute(app: FastifyInstance, _deps: UsersHttpDeps) {
   app.get("/users", async (request, reply) => {
     // Validar autenticação
     await requireAuth()(request, reply);
@@ -25,16 +25,16 @@ export async function registerListUsersRoute(app: FastifyInstance, deps: UsersHt
       });
     }
 
-    const query = querySchema.parse(request.query ?? {});
-    
+    const _query = querySchema.parse(request.query ?? {});
+
     // Por enquanto, retornar todos os usuários (em produção, adicionar paginação e filtros)
     // Nota: Esta é uma implementação simplificada. Em produção, você precisaria de um método
     // específico no repositório para listar usuários com filtros e paginação.
-    
+
     return reply.send({
       itens: [],
-      message: "Listagem de usuários não implementada completamente. Use a rota de membros da organização.",
+      message:
+        "Listagem de usuários não implementada completamente. Use a rota de membros da organização.",
     });
   });
 }
-

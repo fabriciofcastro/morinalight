@@ -21,7 +21,8 @@ export default function ClientesPage() {
           Clientes
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie o cadastro avançado de clientes da sua organização. Cadastre clientes pessoa física e jurídica, vincule representantes e acompanhe comissões.
+          Gerencie o cadastro avançado de clientes da sua organização. Cadastre clientes pessoa
+          física e jurídica, vincule representantes e acompanhe comissões.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function ClientesPage() {
     </div>
   );
 }
-

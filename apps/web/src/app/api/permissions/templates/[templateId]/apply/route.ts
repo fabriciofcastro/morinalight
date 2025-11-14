@@ -30,10 +30,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function POST(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function POST(request: Request, { params }: RouteParams) {
   const { templateId } = params;
   const body = await request.json();
 
@@ -45,11 +42,12 @@ export async function POST(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: "Erro ao aplicar template de permissões" }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Erro ao aplicar template de permissões" }));
     return NextResponse.json(error, { status: response.status });
   }
 
   const data = await response.json();
   return NextResponse.json(data);
 }
-

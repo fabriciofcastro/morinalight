@@ -1,7 +1,4 @@
-import type {
-  ProdutoAuditoriaRepository,
-  ProdutoRepository,
-} from "@morina/catalogo-domain";
+import type { ProdutoAuditoriaRepository, ProdutoRepository } from "@morina/catalogo-domain";
 
 import {
   listarAuditoriaFeedInputSchema,
@@ -76,4 +73,3 @@ export class ListarAuditoriaFeedUseCase {
     });
   }
 }
-

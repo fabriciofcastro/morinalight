@@ -1,8 +1,8 @@
 import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
 import {
+  clienteViewSchema,
   listarClientesInputSchema,
   listarClientesResultadoSchema,
-  clienteViewSchema,
 } from "../schemas/cliente.schema";
 
 type Dependencies = {
@@ -52,4 +52,3 @@ export class ListarClientesUseCase {
     });
   }
 }
-

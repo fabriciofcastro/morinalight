@@ -1,10 +1,10 @@
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { Department } from "../../domain/entities/department";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
 import { criarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -127,4 +127,3 @@ export class CriarDepartmentUseCase {
     });
   }
 }
-

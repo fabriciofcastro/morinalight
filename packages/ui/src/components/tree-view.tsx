@@ -1,9 +1,8 @@
 "use client";
 
+import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
-import { ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "../lib/cn";
-import { Button } from "./button";
 
 export type TreeNode<T = Record<string, unknown>> = {
   id: string;
@@ -38,7 +37,12 @@ export function TreeView<T = Record<string, unknown>>({
 }: TreeViewProps<T>) {
   if (nodes.length === 0) {
     return (
-      <div className={cn("py-[var(--space-4)] text-center text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]", className)}>
+      <div
+        className={cn(
+          "py-[var(--space-4)] text-center text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
+          className,
+        )}
+      >
         Nenhum item encontrado
       </div>
     );
@@ -67,7 +71,12 @@ export function TreeView<T = Record<string, unknown>>({
             )}
 
             {/* Linha do nó */}
-            <div className={cn("relative flex items-center gap-[var(--space-2)] py-[var(--space-2)]", level > 0 && "pl-[var(--space-6)]")}>
+            <div
+              className={cn(
+                "relative flex items-center gap-[var(--space-2)] py-[var(--space-2)]",
+                level > 0 && "pl-[var(--space-6)]",
+              )}
+            >
               {/* Conector horizontal */}
               {showConnectors && level > 0 && (
                 <div
@@ -114,13 +123,19 @@ export function TreeView<T = Record<string, unknown>>({
                 )}
               >
                 {/* Ícone */}
-                {node.icon && <div className="shrink-0 text-[var(--muted-soft)] group-hover:text-[var(--fg)]">{node.icon}</div>}
+                {node.icon && (
+                  <div className="shrink-0 text-[var(--muted-soft)] group-hover:text-[var(--fg)]">
+                    {node.icon}
+                  </div>
+                )}
 
                 {/* Label */}
                 <span
                   className={cn(
                     "flex-1 text-left text-[var(--fs-sm)] font-medium leading-[var(--lh-base)]",
-                    isSelected ? "text-[var(--fg)]" : "text-[color-mix(in_oklab,var(--muted-soft)_30%,var(--fg)_70%)]",
+                    isSelected
+                      ? "text-[var(--fg)]"
+                      : "text-[color-mix(in_oklab,var(--muted-soft)_30%,var(--fg)_70%)]",
                   )}
                 >
                   {node.label}
@@ -140,7 +155,9 @@ export function TreeView<T = Record<string, unknown>>({
 
                 {/* Actions */}
                 {node.actions && (
-                  <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100">{node.actions}</div>
+                  <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100">
+                    {node.actions}
+                  </div>
                 )}
               </button>
             </div>
@@ -208,7 +225,12 @@ export function TreeViewContainer<T = Record<string, unknown>>({
   };
 
   return (
-    <div className={cn("overflow-hidden rounded-[var(--r-lg)] border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)]", className)}>
+    <div
+      className={cn(
+        "overflow-hidden rounded-[var(--r-lg)] border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)]",
+        className,
+      )}
+    >
       <div className="overflow-auto p-[var(--space-2)]">
         {nodes.length === 0 ? (
           <div className="py-[var(--space-8)] text-center text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
@@ -228,4 +250,3 @@ export function TreeViewContainer<T = Record<string, unknown>>({
     </div>
   );
 }
-

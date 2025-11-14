@@ -2,10 +2,7 @@ import {
   AdicionarComentarioUseCase,
   adicionarComentarioInputSchema,
 } from "@morina/preficha-application";
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
@@ -26,10 +23,7 @@ type PrefichaHttpDeps = {
   notificationService?: PrefichaNotificationService;
 };
 
-export async function registerAddComentarioRoute(
-  app: FastifyInstance,
-  deps: PrefichaHttpDeps,
-) {
+export async function registerAddComentarioRoute(app: FastifyInstance, deps: PrefichaHttpDeps) {
   app.post("/preficha/:prefichaId/comentarios", async (request, reply) => {
     // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
     const tenant = getTenant(request);
@@ -58,7 +52,7 @@ export async function registerAddComentarioRoute(
       if (outrosAprovadores.length > 0) {
         await Promise.all(
           outrosAprovadores.map((aprovadorId) =>
-            deps.notificationService!.notificarComentario(
+            deps.notificationService?.notificarComentario(
               tenant.orgId,
               resultado.prefichaId,
               resultado.produtoId,
@@ -74,5 +68,3 @@ export async function registerAddComentarioRoute(
     return reply.status(200).send(resultado);
   });
 }
-
-

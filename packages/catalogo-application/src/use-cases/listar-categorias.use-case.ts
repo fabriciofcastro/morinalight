@@ -20,15 +20,12 @@ export class ListarCategoriasUseCase {
   async execute(rawInput: unknown) {
     const input = listarCategoriasInputSchema.parse(rawInput);
 
-    const pagina = await this.deps.categoriaRepository.listarPorOrg(
-      input.orgId,
-      {
-        parentId: input.parentId ?? undefined,
-        ativo: input.ativo,
-        cursor: input.cursor,
-        limite: input.limite,
-      },
-    );
+    const pagina = await this.deps.categoriaRepository.listarPorOrg(input.orgId, {
+      parentId: input.parentId ?? undefined,
+      ativo: input.ativo,
+      cursor: input.cursor,
+      limite: input.limite,
+    });
 
     const itens = pagina.itens.map((categoria) =>
       categoriaViewSchema.parse({
@@ -51,5 +48,3 @@ export class ListarCategoriasUseCase {
     };
   }
 }
-
-

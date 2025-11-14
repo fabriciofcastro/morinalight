@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useThemeEngine, resolveCompanyVideoUrl } from "./use-theme-engine";
+import { resolveCompanyVideoUrl, useThemeEngine } from "./use-theme-engine";
 
 const createMatchMedia = (matches = false) =>
   ({
@@ -52,9 +52,15 @@ describe("useThemeEngine - applyThemeVariables", () => {
     expect(document.documentElement.dataset.theme).toBe("dark");
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(document.documentElement.style.getPropertyValue("--bg").trim()).toBe("222 28% 10%");
-    expect(document.documentElement.style.getPropertyValue("--bg-gradient")).toContain("linear-gradient");
-    expect(document.documentElement.style.getPropertyValue("--primary").trim()).toBe("227 100% 58%");
-    expect(document.documentElement.style.getPropertyValue("--primary-color").trim()).toBe("hsl(227 100% 58%)");
+    expect(document.documentElement.style.getPropertyValue("--bg-gradient")).toContain(
+      "linear-gradient",
+    );
+    expect(document.documentElement.style.getPropertyValue("--primary").trim()).toBe(
+      "227 100% 58%",
+    );
+    expect(document.documentElement.style.getPropertyValue("--primary-color").trim()).toBe(
+      "hsl(227 100% 58%)",
+    );
   });
 
   it("converte cores personalizadas para hsl ao aplicar tokens", async () => {
@@ -74,9 +80,15 @@ describe("useThemeEngine - applyThemeVariables", () => {
 
     expect(document.documentElement.dataset.theme).toBe("light");
     expect(document.documentElement.style.getPropertyValue("--primary").trim()).toBe("0 100% 50%");
-    expect(document.documentElement.style.getPropertyValue("--secondary").trim()).toBe("120 100% 50%");
-    expect(document.documentElement.style.getPropertyValue("--primary-color").trim()).toBe("hsl(0 100% 50%)");
-    expect(document.documentElement.style.getPropertyValue("--secondary-color").trim()).toBe("hsl(120 100% 50%)");
+    expect(document.documentElement.style.getPropertyValue("--secondary").trim()).toBe(
+      "120 100% 50%",
+    );
+    expect(document.documentElement.style.getPropertyValue("--primary-color").trim()).toBe(
+      "hsl(0 100% 50%)",
+    );
+    expect(document.documentElement.style.getPropertyValue("--secondary-color").trim()).toBe(
+      "hsl(120 100% 50%)",
+    );
   });
 });
 

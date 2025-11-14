@@ -29,4 +29,3 @@
   "include": ["apps", "packages", "scripts"],
   "exclude": ["node_modules", ".turbo", "dist", "build"]
 }
-

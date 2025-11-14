@@ -17,4 +17,3 @@ export class PositionId {
     return this.value === other.value;
   }
 }
-

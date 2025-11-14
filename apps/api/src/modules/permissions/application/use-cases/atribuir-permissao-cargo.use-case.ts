@@ -1,9 +1,9 @@
-import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
-import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
-import type { PermissionRepository } from "../../domain/repositories/permission-repository";
-import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
+import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../../domain/repositories/permission-repository";
+import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 
 const atribuirPermissaoCargoInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -119,4 +119,3 @@ export class AtribuirPermissaoCargoUseCase {
     };
   }
 }
-

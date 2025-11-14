@@ -1,9 +1,9 @@
 "use client";
 
-import { useOfflineSync } from "@/hooks/use-offline-sync";
 import { cn } from "@morina/ui";
-import { Cloud, CloudOff, RefreshCw, CheckCircle2, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { CloudOff, RefreshCw } from "lucide-react";
+import { useOfflineSync } from "@/hooks/use-offline-sync";
 
 export function OfflineSyncNotification() {
   const { queueStats, isSyncing, progress, hasPendingOperations } = useOfflineSync();
@@ -65,4 +65,3 @@ export function OfflineSyncNotification() {
     </AnimatePresence>
   );
 }
-

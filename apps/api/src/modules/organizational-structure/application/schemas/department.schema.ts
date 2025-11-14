@@ -71,4 +71,3 @@ export const listarDepartmentsResultadoSchema = z.object({
 });
 
 export type ListarDepartmentsResultado = z.infer<typeof listarDepartmentsResultadoSchema>;
-

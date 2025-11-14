@@ -1,7 +1,7 @@
-import type { ContratoRepository } from "../../domain/repositories/contrato-repository";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { ContratoProps, ContratoStatus } from "../../domain/entities/contrato";
 import { Contrato } from "../../domain/entities/contrato";
-import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { ContratoRepository } from "../../domain/repositories/contrato-repository";
 
 const prisma = getPrisma();
 
@@ -197,5 +197,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-
-

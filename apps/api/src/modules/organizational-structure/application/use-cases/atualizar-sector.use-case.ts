@@ -1,8 +1,8 @@
-import type { SectorRepository } from "../../domain/repositories/sector-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { SectorRepository } from "../../domain/repositories/sector-repository";
 import { atualizarSectorInputSchema, sectorViewSchema } from "../schemas/sector.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -26,7 +26,10 @@ export class AtualizarSectorUseCase {
 
     // Verificar se código já existe em outro setor (se alterado)
     if (input.code && input.code !== sector.dados.code) {
-      const sectorComCode = await this.deps.sectorRepository.encontrarPorCode(input.orgId, input.code);
+      const sectorComCode = await this.deps.sectorRepository.encontrarPorCode(
+        input.orgId,
+        input.code,
+      );
 
       if (sectorComCode && sectorComCode.sectorId !== sector.sectorId) {
         throw new Error("Setor com este código já existe");
@@ -119,4 +122,3 @@ export class AtualizarSectorUseCase {
     });
   }
 }
-

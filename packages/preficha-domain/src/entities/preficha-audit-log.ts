@@ -19,5 +19,3 @@ export class PrefichaAuditoria {
     return this.props;
   }
 }
-
-

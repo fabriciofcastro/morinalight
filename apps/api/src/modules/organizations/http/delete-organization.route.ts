@@ -56,5 +56,3 @@ export async function registerDeleteOrganizationRoute(
     return reply.status(204).send();
   });
 }
-
-

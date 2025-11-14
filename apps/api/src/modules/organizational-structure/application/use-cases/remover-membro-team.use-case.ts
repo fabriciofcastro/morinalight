@@ -2,13 +2,11 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { TeamRepository } from "../../domain/repositories/team-repository";
+import type { TeamMembershipRepository } from "../../infra/prisma/prisma-team-membership.repository";
 import {
-  removerMembroTeamInputSchema,
   type RemoverMembroTeamInput,
+  removerMembroTeamInputSchema,
 } from "../schemas/membership.schema";
-import type {
-  TeamMembershipRepository,
-} from "../../infra/prisma/prisma-team-membership.repository";
 
 type Dependencies = {
   teamMembershipRepository: TeamMembershipRepository;
@@ -72,4 +70,3 @@ export class RemoverMembroTeamUseCase {
     }
   }
 }
-

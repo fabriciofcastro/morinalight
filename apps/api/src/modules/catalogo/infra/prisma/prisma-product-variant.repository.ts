@@ -1,7 +1,7 @@
 import type {
   ProductVariant,
-  ProductVariantRepository,
   ProductVariantProps,
+  ProductVariantRepository,
 } from "@morina/catalogo-domain";
 import { ProductVariant as ProductVariantEntity } from "@morina/catalogo-domain";
 
@@ -42,9 +42,7 @@ function toDomain(variant: {
   return ProductVariantEntity.restaurar(props, variant.id);
 }
 
-export class PrismaProductVariantRepository
-  implements ProductVariantRepository
-{
+export class PrismaProductVariantRepository implements ProductVariantRepository {
   async criar(variante: ProductVariant) {
     const dados = variante.dados;
 
@@ -230,9 +228,7 @@ function encodeCursor(variant: { id: string; updatedAt: Date }) {
 
 function decodeCursor(cursor: string) {
   try {
-    const parsed = JSON.parse(
-      Buffer.from(cursor, "base64url").toString("utf-8"),
-    ) as {
+    const parsed = JSON.parse(Buffer.from(cursor, "base64url").toString("utf-8")) as {
       id: string;
       updatedAt: string;
     };
@@ -244,4 +240,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

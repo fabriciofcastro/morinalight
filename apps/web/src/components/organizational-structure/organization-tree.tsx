@@ -1,10 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { Building2, FolderTree, Briefcase, Users, Edit, Trash2, Plus } from "lucide-react";
-import { TreeViewContainer, type TreeNode } from "@morina/ui";
-import { Button } from "@morina/ui";
-import { cn } from "@morina/ui";
+import { Button, cn, type TreeNode, TreeViewContainer } from "@morina/ui";
+import { Briefcase, Building2, Edit, FolderTree, Plus, Trash2 } from "lucide-react";
 
 export type DepartmentNode = {
   id: string;
@@ -34,9 +31,21 @@ export type PositionNode = {
 type OrganizationTreeProps = {
   departments: DepartmentNode[];
   selectedId?: string;
-  onSelect?: (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => void;
-  onEdit?: (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => void;
-  onDelete?: (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => void;
+  onSelect?: (node: {
+    type: "department" | "sector" | "position";
+    id: string;
+    data: DepartmentNode | SectorNode | PositionNode;
+  }) => void;
+  onEdit?: (node: {
+    type: "department" | "sector" | "position";
+    id: string;
+    data: DepartmentNode | SectorNode | PositionNode;
+  }) => void;
+  onDelete?: (node: {
+    type: "department" | "sector" | "position";
+    id: string;
+    data: DepartmentNode | SectorNode | PositionNode;
+  }) => void;
   onAddChild?: (parentType: "department" | "sector", parentId: string) => void;
   expanded?: Set<string>;
   onToggleExpand?: (id: string) => void;
@@ -191,7 +200,10 @@ export function OrganizationTree({
   };
 
   const handleSelect = (node: TreeNode) => {
-    const data = node.data as DepartmentNode | SectorNode | PositionNode & { type: "department" | "sector" | "position" };
+    const data = node.data as
+      | DepartmentNode
+      | SectorNode
+      | (PositionNode & { type: "department" | "sector" | "position" });
     if (data?.type) {
       onSelect?.({ type: data.type, id: data.id, data });
     }
@@ -209,4 +221,3 @@ export function OrganizationTree({
     />
   );
 }
-

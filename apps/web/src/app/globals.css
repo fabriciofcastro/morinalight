@@ -310,15 +310,15 @@
 
 @media (prefers-reduced-motion: reduce) {
   * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
   }
   .bg-animated,
   .input-shimmer::after,
   .glow-pulse,
   .float-animation {
-    animation: none !important;
+    animation: none;
   }
 }
 
@@ -588,7 +588,7 @@
   .section--animated::before,
   .section--animated::after,
   .header-subline__pulse {
-    animation: none !important;
+    animation: none;
   }
 }
 

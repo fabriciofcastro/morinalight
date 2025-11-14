@@ -16,7 +16,7 @@ export default function CompanySettingsPage() {
       <header className="flex flex-col gap-[var(--space-3)]">
         <Link
           href="/"
-        className="inline-flex max-w-max items-center gap-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]"
+          className="inline-flex max-w-max items-center gap-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]"
         >
           <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
           AlphaSysCore
@@ -24,14 +24,14 @@ export default function CompanySettingsPage() {
         <h1 className="text-[var(--fs-3xl)] font-semibold leading-[var(--lh-tight)] text-[var(--fg)]">
           Configurações da Empresa
         </h1>
-      <p className="max-w-[60ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
+        <p className="max-w-[60ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
           Defina a estética oficial da sua operação: logo, cores, tema e narrativa visual aplicada
           ao cockpit em tempo real. Tudo alinhado ao manifesto da Morina.
         </p>
       </header>
 
       <GlassCard glow className="bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/60">
-      <div className="grid gap-[var(--space-4)] text-[var(--fs-sm)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:grid-cols-2">
+        <div className="grid gap-[var(--space-4)] text-[var(--fs-sm)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:grid-cols-2">
           <div className="flex flex-col gap-[var(--space-2)]">
             <span className="text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 68%,var(--fg) 32%)]">
               Diretrizes

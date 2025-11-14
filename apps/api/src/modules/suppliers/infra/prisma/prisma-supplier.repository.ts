@@ -1,11 +1,11 @@
 import type { PrismaClient } from "@prisma/client";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
-  SupplierRepository,
-  SupplierRecord,
   CreateSupplierInput,
+  SupplierRecord,
+  SupplierRepository,
   UpdateSupplierInput,
 } from "../repositories/supplier.repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 export class PrismaSupplierRepository implements SupplierRepository {
   private prisma: PrismaClient;
@@ -123,4 +123,3 @@ export class PrismaSupplierRepository implements SupplierRepository {
     };
   }
 }
-

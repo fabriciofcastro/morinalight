@@ -1,19 +1,18 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { ArrowRight, Lock, Shield, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-
-import { LoginForm } from "@/components/login-form";
+import { ConnectionStatusIndicator } from "@/components/connection-status-indicator";
 import { AnimatedParticles } from "@/components/login/animated-particles";
 import { AnimatedWaves } from "@/components/login/animated-waves";
-import { FloatingOrbs } from "@/components/login/floating-orbs";
-import { LightBeams } from "@/components/login/light-beams";
-import { GlowingGrid } from "@/components/login/glowing-grid";
-import { MorphingBlobs } from "@/components/login/morphing-blobs";
 import { EnergyRings } from "@/components/login/energy-rings";
-import { ConnectionStatusIndicator } from "@/components/connection-status-indicator";
+import { FloatingOrbs } from "@/components/login/floating-orbs";
+import { GlowingGrid } from "@/components/login/glowing-grid";
+import { LightBeams } from "@/components/login/light-beams";
+import { MorphingBlobs } from "@/components/login/morphing-blobs";
+import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
@@ -41,23 +40,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main 
-      className="relative flex min-h-screen items-center justify-center overflow-hidden p-0" 
-      style={{ 
-        minHeight: '100vh',
-        background: 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)'
+    <main
+      className="relative flex min-h-screen items-center justify-center overflow-hidden p-0"
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)",
       }}
     >
       {/* Background animado com gradientes radiais */}
-      <div 
-        className="absolute inset-0" 
+      <div
+        className="absolute inset-0"
         aria-hidden="true"
         style={{
-          background: 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)'
+          background: "linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)",
         }}
       />
       <div className="absolute inset-0 bg-animated" aria-hidden="true" />
-      
+
       {/* Componentes de animação de background */}
       {mounted && (
         <>
@@ -70,7 +69,7 @@ export default function LoginPage() {
           <EnergyRings />
         </>
       )}
-      
+
       {/* Overlay de profundidade com animação */}
       <motion.div
         className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,hsl(var(--primary)_/_0.12)_0%,transparent_50%)]"
@@ -195,8 +194,8 @@ export default function LoginPage() {
                   </motion.span>
                 </h1>
                 <p className="text-lg leading-relaxed text-[hsl(var(--text-2))] md:text-xl">
-                  Acesse sua conta para continuar gerenciando operações com auditoria em tempo real e
-                  inteligência assistida por IA.
+                  Acesse sua conta para continuar gerenciando operações com auditoria em tempo real
+                  e inteligência assistida por IA.
                 </p>
               </motion.div>
             </header>
@@ -223,10 +222,12 @@ export default function LoginPage() {
                   </motion.div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="mb-1 font-semibold text-[hsl(var(--text-1))]">Segurança reforçada</h3>
+                  <h3 className="mb-1 font-semibold text-[hsl(var(--text-1))]">
+                    Segurança reforçada
+                  </h3>
                   <p className="text-sm leading-relaxed text-[hsl(var(--text-2))]">
-                    Todas as sessões são protegidas por criptografia de ponta a ponta e monitoramento
-                    contínuo.
+                    Todas as sessões são protegidas por criptografia de ponta a ponta e
+                    monitoramento contínuo.
                   </p>
                 </div>
               </motion.div>
@@ -246,7 +247,9 @@ export default function LoginPage() {
                   </motion.div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="mb-1 font-semibold text-[hsl(var(--text-1))]">Auditoria em tempo real</h3>
+                  <h3 className="mb-1 font-semibold text-[hsl(var(--text-1))]">
+                    Auditoria em tempo real
+                  </h3>
                   <p className="text-sm leading-relaxed text-[hsl(var(--text-2))]">
                     Cada ação é registrada e rastreada automaticamente para garantir transparência e
                     compliance.
@@ -368,8 +371,12 @@ export default function LoginPage() {
                         <Lock className="h-6 w-6 text-white" />
                       </motion.div>
                       <div>
-                        <h2 className="text-2xl font-bold text-[hsl(var(--text-1))]">Acesse sua conta</h2>
-                        <p className="text-sm text-[hsl(var(--text-3))]">Entre com suas credenciais</p>
+                        <h2 className="text-2xl font-bold text-[hsl(var(--text-1))]">
+                          Acesse sua conta
+                        </h2>
+                        <p className="text-sm text-[hsl(var(--text-3))]">
+                          Entre com suas credenciais
+                        </p>
                       </div>
                     </div>
                   </motion.div>
@@ -390,9 +397,7 @@ export default function LoginPage() {
       </div>
 
       {/* Status de conexão - posicionado no canto superior direito */}
-      {mounted && (
-        <ConnectionStatusIndicator position="absolute" className="right-6 top-6" />
-      )}
+      {mounted && <ConnectionStatusIndicator position="absolute" className="right-6 top-6" />}
     </main>
   );
 }

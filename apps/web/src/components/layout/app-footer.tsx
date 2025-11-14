@@ -1,7 +1,7 @@
 "use client";
 
+import { Github, Heart, Mail } from "lucide-react";
 import Link from "next/link";
-import { Heart, Mail, Github } from "lucide-react";
 
 export function AppFooter() {
   const currentYear = new Date().getFullYear();
@@ -42,4 +42,3 @@ export function AppFooter() {
     </footer>
   );
 }
-

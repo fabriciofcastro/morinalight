@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Label, cn } from "@morina/ui";
+import { Button, cn, Input, Label } from "@morina/ui";
 import { Loader2, ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -191,7 +191,11 @@ export function AcceptInviteForm({ inviteToken }: AcceptInviteFormProps) {
               : "bg-[color-mix(in oklab,var(--danger-color) 12%,transparent)] text-[color-mix(in oklab,var(--danger-color) 80%,var(--fg) 20%)]",
           )}
         >
-          {status === "success" ? <ShieldCheck className="h-4 w-4" /> : <ShieldX className="h-4 w-4" />}
+          {status === "success" ? (
+            <ShieldCheck className="h-4 w-4" />
+          ) : (
+            <ShieldX className="h-4 w-4" />
+          )}
           <span>{message}</span>
         </div>
       ) : null}
@@ -209,4 +213,3 @@ export function AcceptInviteForm({ inviteToken }: AcceptInviteFormProps) {
     </form>
   );
 }
-

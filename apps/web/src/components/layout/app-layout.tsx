@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { AppSidebar } from "./app-sidebar";
-import { AppHeader } from "./app-header";
+import { useEffect, useState } from "react";
+import { ConnectionStatusIndicator } from "../connection-status-indicator";
+import { RealtimeNotificationsProvider } from "../notifications/realtime-notifications-provider";
+import { OfflineSyncNotification } from "../offline-sync-notification";
 import { AppBackgroundAdvanced } from "./app-background-advanced";
 import { AppFooter } from "./app-footer";
-import { ConnectionStatusIndicator } from "../connection-status-indicator";
-import { OfflineSyncNotification } from "../offline-sync-notification";
-import { RealtimeNotificationsProvider } from "../notifications/realtime-notifications-provider";
+import { AppHeader } from "./app-header";
+import { AppSidebar } from "./app-sidebar";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -55,14 +55,10 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Main content area */}
       <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <AppHeader
-          onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+        <AppHeader onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)} />
 
         {/* Main content */}
-        <main className="relative z-10 flex-1 overflow-y-auto">
-          {children}
-        </main>
+        <main className="relative z-10 flex-1 overflow-y-auto">{children}</main>
 
         {/* Footer */}
         <AppFooter />

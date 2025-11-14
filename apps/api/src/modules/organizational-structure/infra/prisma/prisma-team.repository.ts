@@ -1,3 +1,5 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
+import { Team } from "../../domain/entities/team";
 import type {
   TeamListaFiltro,
   TeamListaPagina,
@@ -5,8 +7,6 @@ import type {
   TeamRepository,
   TeamStatus,
 } from "../../domain/repositories/team-repository";
-import { Team } from "../../domain/entities/team";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -186,4 +186,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

@@ -1,9 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { CriarPositionUseCase } from "../application/use-cases/criar-position.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { PositionRepository } from "../domain/repositories/position-repository";
 import type { SectorRepository } from "../domain/repositories/sector-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   positionRepository: PositionRepository;
@@ -26,7 +26,6 @@ export async function registerCreatePositionRoute(app: FastifyInstance, deps: De
     }
 
     try {
-
       const useCase = new CriarPositionUseCase({
         ...deps,
         actorId: userId,
@@ -50,4 +49,3 @@ export async function registerCreatePositionRoute(app: FastifyInstance, deps: De
     }
   });
 }
-

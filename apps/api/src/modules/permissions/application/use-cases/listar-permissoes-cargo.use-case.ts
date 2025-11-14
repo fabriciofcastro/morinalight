@@ -1,7 +1,7 @@
-import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
+import { z } from "zod";
 import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
-import { z } from "zod";
+import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 
 const listarPermissoesCargoInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -68,4 +68,3 @@ export class ListarPermissoesCargoUseCase {
     });
   }
 }
-

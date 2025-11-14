@@ -67,5 +67,3 @@ function criarPagina(
 
   return { itens: paginaItens, proximoCursor };
 }
-
-

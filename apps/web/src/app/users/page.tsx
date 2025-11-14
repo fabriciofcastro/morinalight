@@ -21,7 +21,8 @@ export default function UsersPage() {
           Usuários
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie todos os usuários do sistema. Visualize informações, status e organizações associadas.
+          Gerencie todos os usuários do sistema. Visualize informações, status e organizações
+          associadas.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function UsersPage() {
     </main>
   );
 }
-

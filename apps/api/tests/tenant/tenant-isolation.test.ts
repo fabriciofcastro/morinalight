@@ -2,12 +2,12 @@ import { Produto } from "@morina/catalogo-domain";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
-import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
-import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
-import { InMemoryUserInviteRepository } from "../../src/modules/organizations/infra/memory/in-memory-user-invite.repository";
-import { InMemoryCompanySettingsRepository } from "../../src/modules/company-settings/repositories/in-memory-company-settings.repository";
 import { InMemoryProdutoRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto.repository";
 import { InMemoryProdutoAuditoriaRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto-auditoria.repository";
+import { InMemoryCompanySettingsRepository } from "../../src/modules/company-settings/repositories/in-memory-company-settings.repository";
+import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
+import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
+import { InMemoryUserInviteRepository } from "../../src/modules/organizations/infra/memory/in-memory-user-invite.repository";
 import { InMemoryUserRepository } from "../../src/modules/users/infra/memory/in-memory-user.repository";
 
 describe("Isolamento Multi-Tenant", () => {
@@ -557,4 +557,3 @@ describe("Isolamento Multi-Tenant", () => {
     });
   });
 });
-

@@ -1,8 +1,5 @@
-import type {
-  ProductVariantRepository,
-  ProdutoRepository,
-} from "@morina/catalogo-domain";
-import { Produto, ProductVariant } from "@morina/catalogo-domain";
+import type { ProductVariantRepository, ProdutoRepository } from "@morina/catalogo-domain";
+import { ProductVariant, Produto } from "@morina/catalogo-domain";
 import { describe, expect, it } from "vitest";
 
 import { CriarVarianteUseCase } from "../src/use-cases/criar-variante.use-case";
@@ -48,9 +45,8 @@ class InMemoryProductVariantRepository implements ProductVariantRepository {
 
   async encontrarPorSku(sku: string, orgId: string) {
     return (
-      Array.from(this.items.values()).find(
-        (v) => v.dados.orgId === orgId && v.dados.sku === sku,
-      ) ?? null
+      Array.from(this.items.values()).find((v) => v.dados.orgId === orgId && v.dados.sku === sku) ??
+      null
     );
   }
 
@@ -175,4 +171,3 @@ describe("CriarVarianteUseCase", () => {
     ).rejects.toThrow("Variante com este SKU já existe");
   });
 });
-

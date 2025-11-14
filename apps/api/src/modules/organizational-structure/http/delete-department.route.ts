@@ -1,21 +1,20 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { DeletarDepartmentUseCase } from "../application/use-cases/deletar-department.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
 import type { SectorRepository } from "../domain/repositories/sector-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { DomainEventBus } from "@morina/shared-kernel";
+import type { DepartmentMembershipRepository } from "../infra/prisma/prisma-department-membership.repository";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
   sectorRepository: SectorRepository;
+  departmentMembershipRepository?: DepartmentMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
 };
 
-export async function registerDeleteDepartmentRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerDeleteDepartmentRoute(app: FastifyInstance, deps: Dependencies) {
   app.delete(
     "/departments/:departmentId",
     async (request: FastifyRequest<{ Params: { departmentId: string } }>, reply: FastifyReply) => {
@@ -34,6 +33,7 @@ export async function registerDeleteDepartmentRoute(
         const useCase = new DeletarDepartmentUseCase({
           departmentRepository: deps.departmentRepository,
           sectorRepository: deps.sectorRepository,
+          departmentMembershipRepository: deps.departmentMembershipRepository,
           auditLogRepository: deps.auditLogRepository,
           eventBus: deps.eventBus,
           actorId: userId,
@@ -47,7 +47,10 @@ export async function registerDeleteDepartmentRoute(
         app.log.error(error, "Erro ao deletar departamento");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("Não é possível deletar")) {
@@ -61,4 +64,3 @@ export async function registerDeleteDepartmentRoute(
     },
   );
 }
-

@@ -1,7 +1,4 @@
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 
 import { z } from "zod";
 
@@ -65,4 +62,3 @@ export class ListarPrefichaAuditoriaFeedUseCase {
 }
 
 export { listarAuditoriaFeedInputSchema };
-

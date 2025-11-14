@@ -3,10 +3,7 @@ import type { ProductVariant } from "../entities/product-variant";
 export interface ProductVariantRepository {
   criar(variante: ProductVariant): Promise<void>;
   atualizar(variante: ProductVariant): Promise<void>;
-  encontrarPorId(
-    varianteId: string,
-    orgId: string,
-  ): Promise<ProductVariant | null>;
+  encontrarPorId(varianteId: string, orgId: string): Promise<ProductVariant | null>;
   encontrarPorSku(sku: string, orgId: string): Promise<ProductVariant | null>;
   listarPorProduto(
     productId: string,
@@ -31,12 +28,6 @@ export interface ProductVariantRepository {
     itens: ProductVariant[];
     proximoCursor?: string | null;
   }>;
-  contarPorProduto(
-    productId: string,
-    orgId: string,
-    ativo?: boolean,
-  ): Promise<number>;
+  contarPorProduto(productId: string, orgId: string, ativo?: boolean): Promise<number>;
   remover(varianteId: string, orgId: string): Promise<void>;
 }
-
-

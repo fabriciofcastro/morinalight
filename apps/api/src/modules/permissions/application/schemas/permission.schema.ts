@@ -33,5 +33,3 @@ export const listarPermissionsInputSchema = z.object({
 });
 
 export type ListarPermissionsInput = z.infer<typeof listarPermissionsInputSchema>;
-
-

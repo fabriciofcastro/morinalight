@@ -23,15 +23,11 @@ export class ListarVariantesUseCase {
     let pagina;
 
     if (input.productId) {
-      pagina = await this.deps.varianteRepository.listarPorProduto(
-        input.productId,
-        input.orgId,
-        {
-          ativo: input.ativo,
-          cursor: input.cursor,
-          limite: input.limite,
-        },
-      );
+      pagina = await this.deps.varianteRepository.listarPorProduto(input.productId, input.orgId, {
+        ativo: input.ativo,
+        cursor: input.cursor,
+        limite: input.limite,
+      });
     } else {
       pagina = await this.deps.varianteRepository.listarPorOrg(input.orgId, {
         ativo: input.ativo,
@@ -64,5 +60,3 @@ export class ListarVariantesUseCase {
     };
   }
 }
-
-

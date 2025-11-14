@@ -13,7 +13,7 @@ export async function offlineFetch(
     body?: unknown;
     resourceId?: string;
     skipOfflineQueue?: boolean;
-  } = {}
+  } = {},
 ): Promise<Response> {
   const { method = "GET", body, resourceId, skipOfflineQueue = false } = options;
 
@@ -22,8 +22,7 @@ export async function offlineFetch(
 
   // Se estiver offline e não for GET, enfileirar a operação
   if (!isOnline && !skipOfflineQueue && method !== "GET") {
-    const operationType =
-      method === "POST" ? "create" : method === "PUT" ? "update" : "delete";
+    const operationType = method === "POST" ? "create" : method === "PUT" ? "update" : "delete";
 
     await enqueueOperation({
       type: operationType,
@@ -41,7 +40,7 @@ export async function offlineFetch(
       {
         status: 202, // Accepted
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -74,8 +73,7 @@ export async function offlineFetch(
   } catch (error) {
     // Se falhar e não for GET, tentar enfileirar
     if (!skipOfflineQueue && method !== "GET") {
-      const operationType =
-        method === "POST" ? "create" : method === "PUT" ? "update" : "delete";
+      const operationType = method === "POST" ? "create" : method === "PUT" ? "update" : "delete";
 
       await enqueueOperation({
         type: operationType,
@@ -92,7 +90,7 @@ export async function offlineFetch(
         {
           status: 202,
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
     }
 
@@ -106,39 +104,30 @@ export async function offlineFetch(
 export const offlineApi = {
   organizations: {
     list: () => offlineFetch("organizations"),
-    create: (data: unknown) =>
-      offlineFetch("organizations", { method: "POST", body: data }),
+    create: (data: unknown) => offlineFetch("organizations", { method: "POST", body: data }),
     update: (id: string, data: unknown) =>
       offlineFetch("organizations", { method: "PUT", body: data, resourceId: id }),
-    delete: (id: string) =>
-      offlineFetch("organizations", { method: "DELETE", resourceId: id }),
+    delete: (id: string) => offlineFetch("organizations", { method: "DELETE", resourceId: id }),
   },
   users: {
     list: () => offlineFetch("users"),
-    create: (data: unknown) =>
-      offlineFetch("users", { method: "POST", body: data }),
+    create: (data: unknown) => offlineFetch("users", { method: "POST", body: data }),
     update: (id: string, data: unknown) =>
       offlineFetch("users", { method: "PUT", body: data, resourceId: id }),
-    delete: (id: string) =>
-      offlineFetch("users", { method: "DELETE", resourceId: id }),
+    delete: (id: string) => offlineFetch("users", { method: "DELETE", resourceId: id }),
   },
   products: {
     list: () => offlineFetch("products"),
-    create: (data: unknown) =>
-      offlineFetch("products", { method: "POST", body: data }),
+    create: (data: unknown) => offlineFetch("products", { method: "POST", body: data }),
     update: (id: string, data: unknown) =>
       offlineFetch("products", { method: "PUT", body: data, resourceId: id }),
-    delete: (id: string) =>
-      offlineFetch("products", { method: "DELETE", resourceId: id }),
+    delete: (id: string) => offlineFetch("products", { method: "DELETE", resourceId: id }),
   },
   suppliers: {
     list: () => offlineFetch("suppliers"),
-    create: (data: unknown) =>
-      offlineFetch("suppliers", { method: "POST", body: data }),
+    create: (data: unknown) => offlineFetch("suppliers", { method: "POST", body: data }),
     update: (id: string, data: unknown) =>
       offlineFetch("suppliers", { method: "PUT", body: data, resourceId: id }),
-    delete: (id: string) =>
-      offlineFetch("suppliers", { method: "DELETE", resourceId: id }),
+    delete: (id: string) => offlineFetch("suppliers", { method: "DELETE", resourceId: id }),
   },
 };
-

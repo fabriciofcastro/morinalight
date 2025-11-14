@@ -24,10 +24,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { departmentId: string } },
-) {
+export async function GET(_request: Request, { params }: { params: { departmentId: string } }) {
   const response = await fetch(`${apiUrl}/departments/${params.departmentId}/members`, {
     headers: getAuthHeaders(),
     cache: "no-store",
@@ -44,10 +41,7 @@ export async function GET(
   return NextResponse.json(data);
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { departmentId: string } },
-) {
+export async function POST(request: Request, { params }: { params: { departmentId: string } }) {
   const body = await request.json();
 
   const response = await fetch(`${apiUrl}/departments/${params.departmentId}/members`, {
@@ -67,4 +61,3 @@ export async function POST(
   const data = await response.json();
   return NextResponse.json(data, { status: 201 });
 }
-

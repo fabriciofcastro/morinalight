@@ -1,10 +1,10 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   PermissionTemplate,
   PermissionTemplateFilter,
   PermissionTemplatePermission,
   PermissionTemplateRepository,
 } from "../../domain/repositories/permission-template-repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -143,11 +143,7 @@ export class PrismaPermissionTemplateRepository implements PermissionTemplateRep
 
     const records = await prisma.permissionTemplate.findMany({
       where,
-      orderBy: [
-        { isDefault: "desc" },
-        { isSystem: "desc" },
-        { name: "asc" },
-      ],
+      orderBy: [{ isDefault: "desc" }, { isSystem: "desc" }, { name: "asc" }],
     });
 
     return records.map(toDomain);
@@ -223,4 +219,3 @@ export class PrismaPermissionTemplateRepository implements PermissionTemplateRep
     return prisma.permissionTemplate.count({ where });
   }
 }
-

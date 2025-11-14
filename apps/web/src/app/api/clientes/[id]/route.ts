@@ -25,10 +25,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const body = await request.json();
 
   const response = await fetch(`${apiUrl}/clientes/${params.id}`, {
@@ -48,4 +45,3 @@ export async function PUT(
   const data = await response.json();
   return NextResponse.json(data);
 }
-

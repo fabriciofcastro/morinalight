@@ -122,8 +122,7 @@ function AnimatedRibbons({ reduceMotion }: AnimatedRibbonsProps) {
         aria-hidden
         className="absolute right-[22%] top-[18%] h-[520px] w-[360px] rounded-[46%] blur-[120px]"
         style={{
-          background:
-            "linear-gradient(160deg, hsla(var(--secondary) / 0.4) 0%, transparent 70%)",
+          background: "linear-gradient(160deg, hsla(var(--secondary) / 0.4) 0%, transparent 70%)",
         }}
         animate={
           reduceMotion
@@ -243,5 +242,3 @@ function FloatingParticles({ reduceMotion }: FloatingParticlesProps) {
     </div>
   );
 }
-
-

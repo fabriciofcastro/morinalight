@@ -1,9 +1,9 @@
-import type {
-  ClienteRepository,
-  RepresentanteRepository,
-} from "../../domain/repositories";
 import { Representante } from "../../domain/entities/representante";
-import { criarRepresentanteInputSchema, representanteViewSchema } from "../schemas/representante.schema";
+import type { ClienteRepository, RepresentanteRepository } from "../../domain/repositories";
+import {
+  criarRepresentanteInputSchema,
+  representanteViewSchema,
+} from "../schemas/representante.schema";
 
 type Dependencies = {
   clienteRepository: ClienteRepository;
@@ -18,21 +18,17 @@ export class CriarRepresentanteUseCase {
     const input = criarRepresentanteInputSchema.parse(rawInput);
 
     // Verificar se o cliente existe
-    const cliente = await this.deps.clienteRepository.encontrarPorId(
-      input.orgId,
-      input.clienteId,
-    );
+    const cliente = await this.deps.clienteRepository.encontrarPorId(input.orgId, input.clienteId);
 
     if (!cliente) {
       throw new Error("Cliente não encontrado");
     }
 
     // Verificar se já existe representante para este cliente
-    const representanteExistente =
-      await this.deps.representanteRepository.encontrarPorClienteId(
-        input.orgId,
-        input.clienteId,
-      );
+    const representanteExistente = await this.deps.representanteRepository.encontrarPorClienteId(
+      input.orgId,
+      input.clienteId,
+    );
 
     if (representanteExistente) {
       throw new Error("Já existe um representante para este cliente");
@@ -81,4 +77,3 @@ export class CriarRepresentanteUseCase {
     });
   }
 }
-

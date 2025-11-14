@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "../../src/core/server/create-server";
 import type { OrganizationRepository } from "../../src/modules/organizations/repositories/organization.repository";
 import type { PermissionRepository } from "../../src/modules/permissions/domain/repositories/permission-repository";
@@ -7,7 +7,7 @@ import type { PermissionRepository } from "../../src/modules/permissions/domain/
 describe("Permissions Routes", () => {
   let app: FastifyInstance;
   let organizationRepository: OrganizationRepository;
-  let permissionRepository: PermissionRepository;
+  let _permissionRepository: PermissionRepository;
   let testOrgId: string;
   let testUserId: string;
   let authToken: string;
@@ -22,7 +22,7 @@ describe("Permissions Routes", () => {
 
     app = server.app;
     organizationRepository = server.deps.organizationRepository;
-    permissionRepository = server.deps.permissionRepository;
+    _permissionRepository = server.deps.permissionRepository;
 
     // Criar organização de teste
     const org = await organizationRepository.criar({
@@ -34,9 +34,9 @@ describe("Permissions Routes", () => {
     testOrgId = org.id;
 
     // Criar usuário de teste
-    const user = await organizationRepository.encontrarUsuarioPorEmail?.(
+    const user = (await organizationRepository.encontrarUsuarioPorEmail?.(
       "test-permissions@example.com",
-    ) || {
+    )) || {
       userId: "test-user-permissions-id",
       email: "test-permissions@example.com",
       displayName: "Test User",
@@ -45,11 +45,7 @@ describe("Permissions Routes", () => {
     testUserId = user.userId;
 
     // Vincular usuário à organização
-    await organizationRepository.vincularUsuario?.(
-      testOrgId,
-      testUserId,
-      "admin",
-    );
+    await organizationRepository.vincularUsuario?.(testOrgId, testUserId, "admin");
 
     // Criar token de autenticação
     // TODO: Usar função real de criação de token
@@ -152,4 +148,3 @@ describe("Permissions Routes", () => {
     });
   });
 });
-

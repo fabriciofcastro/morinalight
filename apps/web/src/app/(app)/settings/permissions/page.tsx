@@ -20,7 +20,8 @@ export default function PermissionsPage() {
           Permissões de Usuário
         </h1>
         <p className="max-w-[62ch] text-sm leading-relaxed text-[color-mix(in_oklab,var(--muted)_75%,var(--fg)_25%)]">
-          Gerencie níveis de acesso e permissões dos usuários do sistema. Configure permissões granulares por módulo e funcionalidade.
+          Gerencie níveis de acesso e permissões dos usuários do sistema. Configure permissões
+          granulares por módulo e funcionalidade.
         </p>
       </header>
 
@@ -28,4 +29,3 @@ export default function PermissionsPage() {
     </div>
   );
 }
-

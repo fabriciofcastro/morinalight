@@ -1,9 +1,9 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   PositionPermission,
   PositionPermissionFiltro,
   PositionPermissionRepository,
 } from "../../domain/repositories/position-permission-repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -181,4 +181,3 @@ export class PrismaPositionPermissionRepository implements PositionPermissionRep
     });
   }
 }
-

@@ -69,4 +69,3 @@ describe("Company Settings Routes", () => {
     });
   });
 });
-

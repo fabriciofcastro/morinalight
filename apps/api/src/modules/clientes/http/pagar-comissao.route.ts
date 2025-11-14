@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { PagarComissaoUseCase } from "../application/use-cases/pagar-comissao.use-case";
 import type { ComissaoRepository } from "../domain/repositories/comissao-repository";
 
@@ -6,10 +6,7 @@ type Dependencies = {
   comissaoRepository: ComissaoRepository;
 };
 
-export async function registerPagarComissaoRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerPagarComissaoRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/comissoes/:comissaoId/pagar", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
     const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
@@ -48,5 +45,3 @@ export async function registerPagarComissaoRoute(
     }
   });
 }
-
-

@@ -1,12 +1,10 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
-
-import { Button, GlassCard, cn } from "@morina/ui";
+import { Button, cn, GlassCard } from "@morina/ui";
 import Link from "next/link";
-
-import type { OrganizationMember } from "@/types/organization";
+import { useMemo, useState, useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
+import type { OrganizationMember } from "@/types/organization";
 
 type TeamClientProps = {
   orgId: string;
@@ -101,7 +99,9 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
 
         setMembers((current) =>
           current.map((member) =>
-            member.userId === userId ? { ...member, role: payload.membership.role as typeof role } : member,
+            member.userId === userId
+              ? { ...member, role: payload.membership.role as typeof role }
+              : member,
           ),
         );
 
@@ -172,7 +172,10 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
             </Badge>
           </div>
         </div>
-        <Link href="/settings/company" className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 65%,var(--fg) 35%)] underline-offset-4 hover:text-[var(--primary-color)] hover:underline">
+        <Link
+          href="/settings/company"
+          className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 65%,var(--fg) 35%)] underline-offset-4 hover:text-[var(--primary-color)] hover:underline"
+        >
           Ajustar branding da organização
         </Link>
       </div>
@@ -180,7 +183,9 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
       <div className="flex flex-wrap items-center gap-[var(--space-3)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 60%,var(--fg) 40%)]">
         <span>
           Proprietários ativos:{" "}
-          <strong className="text-[color-mix(in oklab,var(--primary-color) 80%,var(--fg) 20%)]">{ownerCount}</strong>
+          <strong className="text-[color-mix(in oklab,var(--primary-color) 80%,var(--fg) 20%)]">
+            {ownerCount}
+          </strong>
         </span>
         <span>Convites gerenciados no módulo &ldquo;Convites&rdquo;.</span>
       </div>
@@ -240,7 +245,10 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
                       className="rounded-[var(--r-md)] border border-[color-mix(in oklab,var(--border-color) 75%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)] px-[var(--space-3)] py-[var(--space-2)] text-[var(--fs-sm)] text-[var(--fg)] shadow-[0_12px_26px_rgba(12,17,29,0.08)] focus:border-[color-mix(in oklab,var(--primary-color) 45%,transparent)] focus:outline-none"
                       value={member.role}
                       onChange={(event) =>
-                        handleRoleChange(member.userId, event.target.value as OrganizationMember["role"])
+                        handleRoleChange(
+                          member.userId,
+                          event.target.value as OrganizationMember["role"],
+                        )
                       }
                       disabled={isBusy}
                     >
@@ -258,7 +266,7 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
                     variant="ghost"
                     size="sm"
                     className="text-[var(--fs-xs)]"
-                    disabled={isBusy || member.role === "owner" && ownerCount <= 1}
+                    disabled={isBusy || (member.role === "owner" && ownerCount <= 1)}
                     onClick={() => handleRemoveMember(member.userId)}
                   >
                     Remover
@@ -272,4 +280,3 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
     </GlassCard>
   );
 }
-

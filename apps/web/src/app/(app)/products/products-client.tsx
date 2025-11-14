@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, FormTextarea, cn } from "@morina/ui";
-import { Plus, Search, Edit, Trash2, CheckCircle2, XCircle, Clock, FileText } from "lucide-react";
+import { Button, cn, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
+import { CheckCircle2, Clock, Edit, FileText, Plus, Search, Trash2, XCircle } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type Product = {
   id: string;
@@ -29,7 +29,7 @@ const STATUS_LABELS = {
   inativo: "Inativo",
 } as const;
 
-const STATUS_VARIANTS = {
+const _STATUS_VARIANTS = {
   rascunho: "outline",
   aguardando_aprovacao: "secondary",
   ativo: "default",
@@ -52,7 +52,7 @@ export function ProductsClient() {
 
   useEffect(() => {
     loadProducts();
-  }, [statusFilter]);
+  }, [loadProducts]);
 
   async function loadProducts() {
     setLoading(true);
@@ -85,7 +85,7 @@ export function ProductsClient() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
+
     startTransition(async () => {
       try {
         const response = editingProduct
@@ -132,7 +132,9 @@ export function ProductsClient() {
     const product = products.find((p) => p.id === id);
     const productName = product?.name || "este produto";
 
-    if (!confirm(`Tem certeza que deseja excluir ${productName}? Esta ação não pode ser desfeita.`)) {
+    if (
+      !confirm(`Tem certeza que deseja excluir ${productName}? Esta ação não pode ser desfeita.`)
+    ) {
       return;
     }
 
@@ -188,8 +190,10 @@ export function ProductsClient() {
 
   const filteredProducts = products.filter((product) => {
     if (search && search.length >= 2) {
-      return product.name.toLowerCase().includes(search.toLowerCase()) ||
-             product.description?.toLowerCase().includes(search.toLowerCase());
+      return (
+        product.name.toLowerCase().includes(search.toLowerCase()) ||
+        product.description?.toLowerCase().includes(search.toLowerCase())
+      );
     }
     return true;
   });
@@ -200,18 +204,18 @@ export function ProductsClient() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[hsl(var(--text-3))]" />
-            <Input
-              type="text"
-              placeholder="Buscar produtos..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  loadProducts();
-                }
-              }}
-              className="pl-10 cursor-text"
-            />
+          <Input
+            type="text"
+            placeholder="Buscar produtos..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                loadProducts();
+              }
+            }}
+            className="pl-10 cursor-text"
+          />
         </div>
 
         <div className="flex items-center gap-3">
@@ -227,10 +231,7 @@ export function ProductsClient() {
             <option value="inativo">Inativo</option>
           </FormSelect>
 
-          <Button
-            onClick={() => setShowForm(true)}
-            className="cursor-pointer"
-          >
+          <Button onClick={() => setShowForm(true)} className="cursor-pointer">
             <Plus className="h-4 w-4" />
             Novo Produto
           </Button>
@@ -275,9 +276,7 @@ export function ProductsClient() {
       ) : filteredProducts.length === 0 ? (
         <GlassCard className="p-12 text-center">
           <FileText className="mx-auto h-12 w-12 text-[hsl(var(--text-3))]" />
-          <p className="mt-4 text-sm text-[hsl(var(--text-3))]">
-            Nenhum produto encontrado.
-          </p>
+          <p className="mt-4 text-sm text-[hsl(var(--text-3))]">Nenhum produto encontrado.</p>
         </GlassCard>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -336,4 +335,3 @@ export function ProductsClient() {
     </div>
   );
 }
-

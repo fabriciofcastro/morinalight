@@ -1,7 +1,7 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { CriarClienteUseCase } from "../../src/modules/clientes/application/use-cases/criar-cliente.use-case";
+import type { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
 import type { ClienteRepository } from "../../src/modules/clientes/domain/repositories/cliente-repository";
-import { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
 
 // Repositório in-memory para testes
 class InMemoryClienteRepository implements ClienteRepository {
@@ -26,16 +26,12 @@ class InMemoryClienteRepository implements ClienteRepository {
   }
 
   async listarPorOrg(orgId: string) {
-    const itens = Array.from(this.items.values()).filter(
-      (c) => c.dados.orgId === orgId,
-    );
+    const itens = Array.from(this.items.values()).filter((c) => c.dados.orgId === orgId);
     return { itens, proximoCursor: undefined };
   }
 
   async contarPorOrg(orgId: string) {
-    return Array.from(this.items.values()).filter(
-      (c) => c.dados.orgId === orgId,
-    ).length;
+    return Array.from(this.items.values()).filter((c) => c.dados.orgId === orgId).length;
   }
 }
 
@@ -68,10 +64,7 @@ describe("CriarClienteUseCase", () => {
     expect(resultado.documento).toBe("12345678901");
     expect(resultado.status).toBe("ativo");
 
-    const clienteSalvo = await repository.encontrarPorId(
-      "org-123",
-      resultado.clienteId,
-    );
+    const clienteSalvo = await repository.encontrarPorId("org-123", resultado.clienteId);
     expect(clienteSalvo).toBeDefined();
   });
 
@@ -103,4 +96,3 @@ describe("CriarClienteUseCase", () => {
     expect(resultado.razaoSocial).toBe("XYZ Ltda");
   });
 });
-

@@ -33,7 +33,7 @@ export function setAuthToken(token: string): void {
     return;
   }
   localStorage.setItem(AUTH_TOKEN_KEY, token);
-  
+
   // Também salvar em cookie para acesso server-side
   document.cookie = `${AUTH_TOKEN_KEY}=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
 }
@@ -82,7 +82,7 @@ export function setAuthUser(user: AuthUser): void {
 export function setAuthSession(session: AuthSession): void {
   setAuthToken(session.token);
   setAuthUser(session.user);
-  
+
   // Salvar organizações também
   if (typeof window !== "undefined") {
     localStorage.setItem("auth_organizations", JSON.stringify(session.organizations));
@@ -192,4 +192,3 @@ export function getAuthHeadersWithTenant(): HeadersInit {
 
   return headers;
 }
-

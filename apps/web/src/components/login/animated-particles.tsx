@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
 type Particle = {
   id: number;
@@ -85,4 +85,3 @@ export function AnimatedParticles() {
     </div>
   );
 }
-

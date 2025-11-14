@@ -1,11 +1,11 @@
 /**
  * Testes de integração para sistema de permissões
- * 
+ *
  * Nota: Estes testes devem ser executados com o servidor de desenvolvimento rodando
  * ou em ambiente de testes configurado.
  */
 
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 describe("Permissions Integration", () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
@@ -29,7 +29,7 @@ describe("Permissions Integration", () => {
     it("deve retornar permissões do usuário", async () => {
       const response = await fetch(`${API_URL}/users/${testUserId}/permissions`, {
         headers: {
-          "Authorization": `Bearer ${authToken}`,
+          Authorization: `Bearer ${authToken}`,
           "x-org-id": testOrgId,
           "Content-Type": "application/json",
         },
@@ -53,7 +53,7 @@ describe("Permissions Integration", () => {
         `${API_URL}/users/${testUserId}/permissions/check?permission=products:view`,
         {
           headers: {
-            "Authorization": `Bearer ${authToken}`,
+            Authorization: `Bearer ${authToken}`,
             "x-org-id": testOrgId,
             "Content-Type": "application/json",
           },
@@ -71,4 +71,3 @@ describe("Permissions Integration", () => {
     });
   });
 });
-

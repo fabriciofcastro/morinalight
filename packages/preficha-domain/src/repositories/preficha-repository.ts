@@ -19,5 +19,3 @@ export interface PrefichaRepository {
   listarPorOrg(orgId: string, filtro?: PrefichaListaFiltro): Promise<PrefichaListaPagina>;
   encontrarPorProdutoId(orgId: string, produtoId: string): Promise<Preficha | null>;
 }
-
-

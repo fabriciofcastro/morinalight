@@ -1,5 +1,5 @@
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 
 /**
  * Serviço de notificações para prefichas
@@ -155,4 +155,3 @@ export class PrefichaNotificationService {
     );
   }
 }
-

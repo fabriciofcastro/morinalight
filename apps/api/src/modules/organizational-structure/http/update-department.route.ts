@@ -1,9 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AtualizarDepartmentUseCase } from "../application/use-cases/atualizar-department.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
 import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -12,10 +12,7 @@ type Dependencies = {
   eventBus?: DomainEventBus;
 };
 
-export async function registerUpdateDepartmentRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerUpdateDepartmentRoute(app: FastifyInstance, deps: Dependencies) {
   app.put(
     "/departments/:departmentId",
     async (request: FastifyRequest<{ Params: { departmentId: string } }>, reply: FastifyReply) => {
@@ -51,7 +48,10 @@ export async function registerUpdateDepartmentRoute(
         app.log.error(error, "Erro ao atualizar departamento");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("já existe")) {
@@ -65,4 +65,3 @@ export async function registerUpdateDepartmentRoute(
     },
   );
 }
-

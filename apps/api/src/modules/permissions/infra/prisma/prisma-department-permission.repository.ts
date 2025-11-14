@@ -1,9 +1,9 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   DepartmentPermission,
   DepartmentPermissionFiltro,
   DepartmentPermissionRepository,
 } from "../../domain/repositories/department-permission-repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -31,9 +31,7 @@ function toDomain(record: {
   };
 }
 
-export class PrismaDepartmentPermissionRepository
-  implements DepartmentPermissionRepository
-{
+export class PrismaDepartmentPermissionRepository implements DepartmentPermissionRepository {
   async salvar(permission: DepartmentPermission): Promise<void> {
     await prisma.departmentPermission.upsert({
       where: {
@@ -126,10 +124,7 @@ export class PrismaDepartmentPermissionRepository
     return records.map(toDomain);
   }
 
-  async listarPorDepartment(
-    orgId: string,
-    departmentId: string,
-  ): Promise<DepartmentPermission[]> {
+  async listarPorDepartment(orgId: string, departmentId: string): Promise<DepartmentPermission[]> {
     const records = await prisma.departmentPermission.findMany({
       where: {
         orgId,
@@ -189,4 +184,3 @@ export class PrismaDepartmentPermissionRepository
     });
   }
 }
-

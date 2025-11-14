@@ -50,10 +50,12 @@ async function getDB(): Promise<IDBDatabase> {
 /**
  * Adiciona uma operação à fila offline
  */
-export async function enqueueOperation(operation: Omit<OfflineOperation, "id" | "timestamp" | "retries" | "status">): Promise<string> {
+export async function enqueueOperation(
+  operation: Omit<OfflineOperation, "id" | "timestamp" | "retries" | "status">,
+): Promise<string> {
   const db = await getDB();
   const id = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
-  
+
   const fullOperation: OfflineOperation = {
     ...operation,
     id,
@@ -77,7 +79,7 @@ export async function enqueueOperation(operation: Omit<OfflineOperation, "id" | 
  */
 export async function getPendingOperations(): Promise<OfflineOperation[]> {
   const db = await getDB();
-  
+
   return new Promise((resolve, reject) => {
     const transaction = db.transaction([STORE_NAME], "readonly");
     const store = transaction.objectStore(STORE_NAME);
@@ -100,7 +102,7 @@ export async function getPendingOperations(): Promise<OfflineOperation[]> {
 export async function updateOperationStatus(
   id: string,
   status: OfflineOperation["status"],
-  incrementRetries = false
+  incrementRetries = false,
 ): Promise<void> {
   const db = await getDB();
 
@@ -231,4 +233,3 @@ export async function getQueueStats(): Promise<{
     });
   });
 }
-

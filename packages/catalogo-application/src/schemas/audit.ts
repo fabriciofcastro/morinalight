@@ -33,7 +33,4 @@ export const listarAuditoriaFeedResultadoSchema = z.object({
   proximoCursor: z.string().nullable().optional(),
 });
 
-export type ListarAuditoriaFeedResultado = z.infer<
-  typeof listarAuditoriaFeedResultadoSchema
->;
-
+export type ListarAuditoriaFeedResultado = z.infer<typeof listarAuditoriaFeedResultadoSchema>;

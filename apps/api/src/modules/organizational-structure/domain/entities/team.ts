@@ -132,4 +132,3 @@ export class Team {
     this.props.updatedAt = new Date();
   }
 }
-

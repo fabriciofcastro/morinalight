@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { getAuthUser, getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { useCallback, useEffect, useState } from "react";
+import { getAuthHeadersWithTenant, getAuthUser } from "@/lib/auth-client";
 
 // Cache de permissões em memória
 const permissionsCache = new Map<string, { permissions: string[]; timestamp: number }>();
@@ -22,8 +22,9 @@ async function fetchUserPermissions(userId: string): Promise<string[]> {
     }
 
     const data = await response.json();
-    const permissionKeys = data.permissions?.map((p: { permissionKey: string }) => p.permissionKey) || [];
-    
+    const permissionKeys =
+      data.permissions?.map((p: { permissionKey: string }) => p.permissionKey) || [];
+
     // Atualizar cache
     permissionsCache.set(userId, {
       permissions: permissionKeys,
@@ -90,27 +91,33 @@ export function useHasPermission(permission: string): boolean {
   }, [user, permission, mounted]);
 
   // Verificação rápida via API para permissões críticas
-  const checkPermission = useCallback(async (perm: string): Promise<boolean> => {
-    if (!user) return false;
+  const _checkPermission = useCallback(
+    async (perm: string): Promise<boolean> => {
+      if (!user) return false;
 
-    try {
-      const response = await fetch(`/api/users/${user.userId}/permissions/check?permission=${encodeURIComponent(perm)}`, {
-        headers: {
-          ...getAuthHeadersWithTenant(),
-          "Content-Type": "application/json",
-        },
-      });
+      try {
+        const response = await fetch(
+          `/api/users/${user.userId}/permissions/check?permission=${encodeURIComponent(perm)}`,
+          {
+            headers: {
+              ...getAuthHeadersWithTenant(),
+              "Content-Type": "application/json",
+            },
+          },
+        );
 
-      if (response.ok) {
-        const data = await response.json();
-        return data.hasPermission === true;
+        if (response.ok) {
+          const data = await response.json();
+          return data.hasPermission === true;
+        }
+      } catch (error) {
+        console.error("Erro ao verificar permissão:", error);
       }
-    } catch (error) {
-      console.error("Erro ao verificar permissão:", error);
-    }
 
-    return false;
-  }, [user]);
+      return false;
+    },
+    [user],
+  );
 
   return hasPermission;
 }
@@ -143,4 +150,3 @@ export function usePermissions(): string[] {
 
   return permissions;
 }
-

@@ -1,9 +1,6 @@
 import type { CategoryRepository } from "@morina/catalogo-domain";
 import { Category } from "@morina/catalogo-domain";
-import {
-  criarCategoriaInputSchema,
-  categoriaViewSchema,
-} from "../schemas/product";
+import { categoriaViewSchema, criarCategoriaInputSchema } from "../schemas/product";
 
 type Dependencies = {
   categoriaRepository: CategoryRepository;
@@ -15,11 +12,10 @@ export class CriarCategoriaUseCase {
   async execute(rawInput: unknown) {
     const input = criarCategoriaInputSchema.parse(rawInput);
 
-    const categoriaExistente =
-      await this.deps.categoriaRepository.encontrarPorSlug(
-        input.slug,
-        input.orgId,
-      );
+    const categoriaExistente = await this.deps.categoriaRepository.encontrarPorSlug(
+      input.slug,
+      input.orgId,
+    );
 
     if (categoriaExistente) {
       throw new Error("Categoria com este slug já existe");
@@ -62,5 +58,3 @@ export class CriarCategoriaUseCase {
     });
   }
 }
-
-

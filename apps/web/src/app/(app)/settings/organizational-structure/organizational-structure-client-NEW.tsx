@@ -1,22 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, FormTextarea, cn } from "@morina/ui";
+import { Button, cn, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
 import {
-  Building2,
-  FolderTree,
   Briefcase,
+  Building2,
+  Edit,
+  FolderTree,
+  Network,
   Plus,
   Search,
-  Edit,
   Trash2,
-  Network,
-  ChevronRight,
   X,
 } from "lucide-react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { OrganizationTree, type DepartmentNode, type SectorNode, type PositionNode } from "@/components/organizational-structure/organization-tree";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import {
+  type DepartmentNode,
+  OrganizationTree,
+  type PositionNode,
+  type SectorNode,
+} from "@/components/organizational-structure/organization-tree";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Department = {
   id: string;
@@ -87,7 +92,10 @@ export function OrganizationalStructureClient() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<{ type: "department" | "sector" | "position"; id: string } | null>(null);
+  const [selectedNode, setSelectedNode] = useState<{
+    type: "department" | "sector" | "position";
+    id: string;
+  } | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   // Form states
@@ -137,7 +145,7 @@ export function OrganizationalStructureClient() {
       loadData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, loadAllData, loadData]);
 
   // Carregar dados quando a busca mudar (debounce)
   useEffect(() => {
@@ -147,7 +155,7 @@ export function OrganizationalStructureClient() {
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [loadData]);
 
   async function loadAllData() {
     setLoading(true);
@@ -248,7 +256,7 @@ export function OrganizationalStructureClient() {
   // Construir árvore hierárquica
   const hierarchyTree = useMemo((): DepartmentNode[] => {
     const deptMap = new Map<string, DepartmentNode>();
-    
+
     // Criar nós de departamentos
     departments.forEach((dept) => {
       deptMap.set(dept.id, {
@@ -281,7 +289,7 @@ export function OrganizationalStructureClient() {
     // Adicionar cargos aos setores
     positions.forEach((position) => {
       const dept = Array.from(deptMap.values()).find((d) =>
-        d.sectors?.some((s) => s.id === position.sectorId)
+        d.sectors?.some((s) => s.id === position.sectorId),
       );
       if (dept) {
         const sector = dept.sectors?.find((s) => s.id === position.sectorId);
@@ -491,7 +499,9 @@ export function OrganizationalStructureClient() {
     e.preventDefault();
 
     try {
-      const url = editingDepartment ? `/api/departments/${editingDepartment.id}` : "/api/departments";
+      const url = editingDepartment
+        ? `/api/departments/${editingDepartment.id}`
+        : "/api/departments";
       const method = editingDepartment ? "PUT" : "POST";
 
       const body = {
@@ -738,7 +748,9 @@ export function OrganizationalStructureClient() {
       {/* Conteúdo */}
       {loading ? (
         <div className="flex items-center justify-center py-[var(--space-12)]">
-          <p className="text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">Carregando...</p>
+          <p className="text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
+            Carregando...
+          </p>
         </div>
       ) : activeTab === "hierarchy" ? (
         <OrganizationTree
@@ -778,7 +790,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Nome" required>
                 <Input
                   value={departmentFormData.name}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, name: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, name: e.target.value })
+                  }
                   placeholder="Nome do departamento"
                   required
                 />
@@ -786,7 +800,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Código" required>
                 <Input
                   value={departmentFormData.code}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, code: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, code: e.target.value })
+                  }
                   placeholder="Código único (ex: DPT-001)"
                   required
                 />
@@ -794,7 +810,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Descrição">
                 <FormTextarea
                   value={departmentFormData.description}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, description: e.target.value })
+                  }
                   placeholder="Descrição do departamento"
                   rows={3}
                 />
@@ -802,7 +820,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Departamento Pai">
                 <FormSelect
                   value={departmentFormData.parentId}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, parentId: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, parentId: e.target.value })
+                  }
                 >
                   <option value="">Nenhum</option>
                   {departments
@@ -868,7 +888,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Descrição">
                 <FormTextarea
                   value={sectorFormData.description}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, description: e.target.value })
+                  }
                   placeholder="Descrição do setor"
                   rows={3}
                 />
@@ -876,7 +898,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Departamento" required>
                 <FormSelect
                   value={sectorFormData.departmentId}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, departmentId: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, departmentId: e.target.value })
+                  }
                   required
                 >
                   <option value="">Selecione um departamento</option>
@@ -890,11 +914,17 @@ export function OrganizationalStructureClient() {
               <FormField label="Setor Pai">
                 <FormSelect
                   value={sectorFormData.parentId}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, parentId: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, parentId: e.target.value })
+                  }
                 >
                   <option value="">Nenhum</option>
                   {sectors
-                    .filter((s) => s.departmentId === sectorFormData.departmentId && s.id !== editingSector?.id)
+                    .filter(
+                      (s) =>
+                        s.departmentId === sectorFormData.departmentId &&
+                        s.id !== editingSector?.id,
+                    )
                     .map((sector) => (
                       <option key={sector.id} value={sector.id}>
                         {sector.name} ({sector.code})
@@ -940,7 +970,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Nome" required>
                 <Input
                   value={positionFormData.name}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, name: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, name: e.target.value })
+                  }
                   placeholder="Nome do cargo"
                   required
                 />
@@ -948,7 +980,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Código" required>
                 <Input
                   value={positionFormData.code}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, code: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, code: e.target.value })
+                  }
                   placeholder="Código único (ex: POS-001)"
                   required
                 />
@@ -956,7 +990,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Descrição">
                 <FormTextarea
                   value={positionFormData.description}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, description: e.target.value })
+                  }
                   placeholder="Descrição do cargo"
                   rows={3}
                 />
@@ -964,7 +1000,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Setor" required>
                 <FormSelect
                   value={positionFormData.sectorId}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, sectorId: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, sectorId: e.target.value })
+                  }
                   required
                 >
                   <option value="">Selecione um setor</option>
@@ -981,7 +1019,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Responsabilidades">
                 <FormTextarea
                   value={positionFormData.responsabilidades}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, responsabilidades: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, responsabilidades: e.target.value })
+                  }
                   placeholder="Responsabilidades do cargo"
                   rows={4}
                 />
@@ -989,7 +1029,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Requisitos">
                 <FormTextarea
                   value={positionFormData.requisitos}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, requisitos: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, requisitos: e.target.value })
+                  }
                   placeholder="Requisitos para ocupar o cargo"
                   rows={4}
                 />
@@ -1000,7 +1042,9 @@ export function OrganizationalStructureClient() {
                     type="number"
                     step="0.01"
                     value={positionFormData.salarioMin}
-                    onChange={(e) => setPositionFormData({ ...positionFormData, salarioMin: e.target.value })}
+                    onChange={(e) =>
+                      setPositionFormData({ ...positionFormData, salarioMin: e.target.value })
+                    }
                     placeholder="0.00"
                   />
                 </FormField>
@@ -1009,7 +1053,9 @@ export function OrganizationalStructureClient() {
                     type="number"
                     step="0.01"
                     value={positionFormData.salarioMax}
-                    onChange={(e) => setPositionFormData({ ...positionFormData, salarioMax: e.target.value })}
+                    onChange={(e) =>
+                      setPositionFormData({ ...positionFormData, salarioMax: e.target.value })
+                    }
                     placeholder="0.00"
                   />
                 </FormField>
@@ -1071,14 +1117,18 @@ export function OrganizationalStructureClient() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEditNode({ type: "department", id: dept.id, data: dept })}
+                        onClick={() =>
+                          handleEditNode({ type: "department", id: dept.id, data: dept })
+                        }
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeleteNode({ type: "department", id: dept.id, data: dept })}
+                        onClick={() =>
+                          handleDeleteNode({ type: "department", id: dept.id, data: dept })
+                        }
                         className="text-[var(--danger)] hover:text-[var(--danger)]"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -1107,21 +1157,26 @@ export function OrganizationalStructureClient() {
                       <div>
                         <h3 className="font-semibold text-[var(--fg)]">{sector.name}</h3>
                         <p className="text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
-                          {sector.code} {dept && `• ${dept.name}`} {sector.description && `• ${sector.description}`}
+                          {sector.code} {dept && `• ${dept.name}`}{" "}
+                          {sector.description && `• ${sector.description}`}
                         </p>
                       </div>
                       <div className="flex items-center gap-[var(--space-2)]">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEditNode({ type: "sector", id: sector.id, data: sector })}
+                          onClick={() =>
+                            handleEditNode({ type: "sector", id: sector.id, data: sector })
+                          }
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteNode({ type: "sector", id: sector.id, data: sector })}
+                          onClick={() =>
+                            handleDeleteNode({ type: "sector", id: sector.id, data: sector })
+                          }
                           className="text-[var(--danger)] hover:text-[var(--danger)]"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1143,7 +1198,9 @@ export function OrganizationalStructureClient() {
               ) : (
                 positions.map((position) => {
                   const sector = sectors.find((s) => s.id === position.sectorId);
-                  const dept = sector ? departments.find((d) => d.id === sector.departmentId) : null;
+                  const dept = sector
+                    ? departments.find((d) => d.id === sector.departmentId)
+                    : null;
                   return (
                     <div
                       key={position.id}
@@ -1159,14 +1216,18 @@ export function OrganizationalStructureClient() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEditNode({ type: "position", id: position.id, data: position })}
+                          onClick={() =>
+                            handleEditNode({ type: "position", id: position.id, data: position })
+                          }
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteNode({ type: "position", id: position.id, data: position })}
+                          onClick={() =>
+                            handleDeleteNode({ type: "position", id: position.id, data: position })
+                          }
                           className="text-[var(--danger)] hover:text-[var(--danger)]"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -1183,4 +1244,3 @@ export function OrganizationalStructureClient() {
     </div>
   );
 }
-

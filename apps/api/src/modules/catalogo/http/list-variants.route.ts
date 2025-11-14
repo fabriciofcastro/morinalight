@@ -9,10 +9,7 @@ type ListVariantsRouteDeps = {
   varianteRepository: ProductVariantRepository;
 };
 
-export async function registerListVariantsRoute(
-  app: FastifyInstance,
-  deps: ListVariantsRouteDeps,
-) {
+export async function registerListVariantsRoute(app: FastifyInstance, deps: ListVariantsRouteDeps) {
   app.get("/catalogo/variantes", async (request, reply) => {
     const tenant = getTenant(request);
 
@@ -66,4 +63,3 @@ export async function registerListVariantsRoute(
     return reply.status(200).send(resultado);
   });
 }
-

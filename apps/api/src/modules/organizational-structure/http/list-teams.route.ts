@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarTeamsUseCase } from "../application/use-cases/listar-teams.use-case";
 import type { TeamRepository } from "../domain/repositories/team-repository";
 
@@ -35,4 +35,3 @@ export async function registerListTeamsRoute(app: FastifyInstance, deps: Depende
     }
   });
 }
-

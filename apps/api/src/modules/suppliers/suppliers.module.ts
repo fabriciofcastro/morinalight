@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
-import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
-import type { SupplierRepository } from "./repositories/supplier.repository";
-import { PrismaSupplierRepository } from "./infra/prisma/prisma-supplier.repository";
-import { registerSuppliersRoutes } from "./http/suppliers.routes";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParamsOrHeaders } from "../../core/tenant/tenant.utils";
+import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
+import { registerSuppliersRoutes } from "./http/suppliers.routes";
+import { PrismaSupplierRepository } from "./infra/prisma/prisma-supplier.repository";
+import type { SupplierRepository } from "./repositories/supplier.repository";
 
 export type SuppliersModuleOptions = {
   supplierRepository?: SupplierRepository;
@@ -30,9 +30,8 @@ export async function registerSuppliersModule(
     supplierRepository,
     organizationRepository: options.organizationRepository!,
   });
-  
+
   return {
     supplierRepository,
   };
 }
-

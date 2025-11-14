@@ -14,31 +14,30 @@ const buttonVariants = cva(
         // Primary - Azul
         primary:
           "bg-[hsl(var(--primary))] text-white shadow-[0_4px_12px_rgba(91,138,255,0.3)] hover:bg-[hsl(var(--primary)/0.9)] hover:shadow-[0_6px_20px_rgba(91,138,255,0.4)] active:bg-[hsl(var(--primary)/0.8)] focus-visible:outline-[hsl(var(--primary))]",
-        
+
         // Success - Verde
         success:
           "bg-[hsl(var(--success))] text-white shadow-[0_4px_12px_rgba(34,197,94,0.3)] hover:bg-[hsl(var(--success)/0.9)] hover:shadow-[0_6px_20px_rgba(34,197,94,0.4)] active:bg-[hsl(var(--success)/0.8)] focus-visible:outline-[hsl(var(--success))]",
-        
+
         // Warning - Amarelo/Laranja
         warning:
           "bg-[hsl(var(--warning))] text-white shadow-[0_4px_12px_rgba(245,158,11,0.3)] hover:bg-[hsl(var(--warning)/0.9)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.4)] active:bg-[hsl(var(--warning)/0.8)] focus-visible:outline-[hsl(var(--warning))]",
-        
+
         // Danger - Vermelho
         danger:
           "bg-[hsl(var(--danger))] text-white shadow-[0_4px_12px_rgba(239,68,68,0.3)] hover:bg-[hsl(var(--danger)/0.9)] hover:shadow-[0_6px_20px_rgba(239,68,68,0.4)] active:bg-[hsl(var(--danger)/0.8)] focus-visible:outline-[hsl(var(--danger))]",
-        
+
         // Info - Azul claro
-        info:
-          "bg-[hsl(var(--chart-2))] text-white shadow-[0_4px_12px_rgba(59,130,246,0.3)] hover:bg-[hsl(var(--chart-2)/0.9)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.4)] active:bg-[hsl(var(--chart-2)/0.8)] focus-visible:outline-[hsl(var(--chart-2))]",
-        
+        info: "bg-[hsl(var(--chart-2))] text-white shadow-[0_4px_12px_rgba(59,130,246,0.3)] hover:bg-[hsl(var(--chart-2)/0.9)] hover:shadow-[0_6px_20px_rgba(59,130,246,0.4)] active:bg-[hsl(var(--chart-2)/0.8)] focus-visible:outline-[hsl(var(--chart-2))]",
+
         // Secondary - Roxo
         secondary:
           "bg-[hsl(var(--secondary))] text-white shadow-[0_4px_12px_rgba(168,85,247,0.3)] hover:bg-[hsl(var(--secondary)/0.9)] hover:shadow-[0_6px_20px_rgba(168,85,247,0.4)] active:bg-[hsl(var(--secondary)/0.8)] focus-visible:outline-[hsl(var(--secondary))]",
-        
+
         // Ghost - Transparente
         ghost:
           "bg-transparent text-[hsl(var(--text-1))] hover:bg-[hsl(var(--surface))] focus-visible:outline-[hsl(var(--primary))]",
-        
+
         // Outline - Borda apenas
         outline:
           "bg-transparent border-2 border-[hsl(var(--border))] text-[hsl(var(--text-1))] hover:bg-[hsl(var(--surface))] hover:border-[hsl(var(--primary))] focus-visible:outline-[hsl(var(--primary))]",
@@ -105,4 +104,3 @@ export const ButtonEnhanced = forwardRef<HTMLButtonElement, ButtonEnhancedProps>
 ButtonEnhanced.displayName = "ButtonEnhanced";
 
 export { buttonVariants };
-

@@ -31,10 +31,7 @@ export class Category {
   }
 
   static criar(
-    input: Omit<
-      CategoryProps,
-      "criadoEm" | "atualizadoEm" | "ordem" | "ativo"
-    > & {
+    input: Omit<CategoryProps, "criadoEm" | "atualizadoEm" | "ordem" | "ativo"> & {
       ordem?: number;
       ativo?: boolean;
     },
@@ -100,5 +97,3 @@ export class Category {
     this.props.updatedAt = new Date();
   }
 }
-
-

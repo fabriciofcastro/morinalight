@@ -37,4 +37,3 @@ export async function registerListCategoriesRoute(
     return reply.status(200).send(resultado);
   });
 }
-

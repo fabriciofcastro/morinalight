@@ -72,5 +72,3 @@ export function canManage(request: FastifyRequest): boolean {
 export function isOwner(request: FastifyRequest): boolean {
   return hasRole(request, "owner");
 }
-
-

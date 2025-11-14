@@ -68,4 +68,3 @@ export default function InvitePage({ params }: InvitePageProps) {
     </main>
   );
 }
-

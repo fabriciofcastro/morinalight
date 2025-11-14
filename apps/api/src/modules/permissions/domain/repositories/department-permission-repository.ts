@@ -34,4 +34,3 @@ export interface DepartmentPermissionRepository {
     permissionId: string,
   ): Promise<void>;
 }
-

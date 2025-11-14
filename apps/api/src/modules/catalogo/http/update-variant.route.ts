@@ -24,9 +24,7 @@ export async function registerUpdateVariantRoute(
     const body = z
       .object({
         nome: z.string().min(1).max(180).optional(),
-        atributos: z
-          .record(z.union([z.string(), z.number(), z.boolean()]))
-          .optional(),
+        atributos: z.record(z.union([z.string(), z.number(), z.boolean()])).optional(),
         preco: z.number().nonnegative().optional().nullable(),
         estoque: z.number().int().nonnegative().optional().nullable(),
         ativo: z.boolean().optional(),
@@ -47,4 +45,3 @@ export async function registerUpdateVariantRoute(
     return reply.status(200).send(variante);
   });
 }
-

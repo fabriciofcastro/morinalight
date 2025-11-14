@@ -1,8 +1,8 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { AtualizarPositionUseCase } from "../application/use-cases/atualizar-position.use-case";
-import type { PositionRepository } from "../domain/repositories/position-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { AtualizarPositionUseCase } from "../application/use-cases/atualizar-position.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { PositionRepository } from "../domain/repositories/position-repository";
 
 type Dependencies = {
   positionRepository: PositionRepository;
@@ -24,7 +24,6 @@ export async function registerUpdatePositionRoute(app: FastifyInstance, deps: De
     }
 
     try {
-
       const params = request.params as { positionId: string };
 
       const useCase = new AtualizarPositionUseCase({
@@ -47,4 +46,3 @@ export async function registerUpdatePositionRoute(app: FastifyInstance, deps: De
     }
   });
 }
-

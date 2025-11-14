@@ -21,7 +21,8 @@ export default function OrganizationalStructurePage() {
           Estrutura Organizacional
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie unidades organizacionais, departamentos e times da sua organização. Configure a hierarquia completa da estrutura organizacional.
+          Gerencie unidades organizacionais, departamentos e times da sua organização. Configure a
+          hierarquia completa da estrutura organizacional.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function OrganizationalStructurePage() {
     </div>
   );
 }
-

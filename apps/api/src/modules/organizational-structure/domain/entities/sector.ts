@@ -137,4 +137,3 @@ export class Sector {
     this.props.updatedAt = new Date();
   }
 }
-

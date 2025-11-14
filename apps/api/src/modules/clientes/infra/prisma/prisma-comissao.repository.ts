@@ -1,10 +1,10 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { ComissaoProps, ComissaoStatus } from "../../domain/entities/comissao";
+import { Comissao } from "../../domain/entities/comissao";
 import type {
   ComissaoFiltro,
   ComissaoRepository,
 } from "../../domain/repositories/comissao-repository";
-import type { ComissaoProps, ComissaoStatus } from "../../domain/entities/comissao";
-import { Comissao } from "../../domain/entities/comissao";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -246,5 +246,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-
-

@@ -1,9 +1,9 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   SectorPermission,
   SectorPermissionFiltro,
   SectorPermissionRepository,
 } from "../../domain/repositories/sector-permission-repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -89,10 +89,7 @@ export class PrismaSectorPermissionRepository implements SectorPermissionReposit
     return toDomain(record);
   }
 
-  async listarPorOrg(
-    orgId: string,
-    filtro?: SectorPermissionFiltro,
-  ): Promise<SectorPermission[]> {
+  async listarPorOrg(orgId: string, filtro?: SectorPermissionFiltro): Promise<SectorPermission[]> {
     const where: {
       orgId: string;
       sectorId?: string;
@@ -181,4 +178,3 @@ export class PrismaSectorPermissionRepository implements SectorPermissionReposit
     });
   }
 }
-

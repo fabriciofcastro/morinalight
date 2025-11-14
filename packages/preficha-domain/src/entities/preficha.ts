@@ -43,7 +43,10 @@ export class Preficha {
   }
 
   static criar(
-    input: Omit<PrefichaProps, "criadoEm" | "atualizadoEm" | "status" | "aprovadores" | "comentarios"> & {
+    input: Omit<
+      PrefichaProps,
+      "criadoEm" | "atualizadoEm" | "status" | "aprovadores" | "comentarios"
+    > & {
       status?: PrefichaStatus;
       aprovadores?: PrefichaAprovador[];
       comentarios?: PrefichaComentario[];
@@ -175,4 +178,3 @@ export class Preficha {
     this.props.atualizadoEm = new Date();
   }
 }
-

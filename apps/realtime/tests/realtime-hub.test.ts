@@ -26,13 +26,13 @@ vi.mock("ioredis", () => {
 });
 
 import { Redis } from "ioredis";
+import { RealtimeHub } from "../src/hub/realtime-hub";
 import {
   broadcastCounter,
   connectionsGauge,
   connectionsPerOrgGauge,
   pendingMessagesGauge,
 } from "../src/observability/metrics";
-import { RealtimeHub } from "../src/hub/realtime-hub";
 
 const logger = {
   info: vi.fn(),
@@ -152,4 +152,3 @@ describe("RealtimeHub", () => {
     await hub.stop();
   });
 });
-

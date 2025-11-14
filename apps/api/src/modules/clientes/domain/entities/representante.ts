@@ -101,4 +101,3 @@ export class Representante {
     this.props.updatedAt = new Date();
   }
 }
-

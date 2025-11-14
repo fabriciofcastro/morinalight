@@ -39,5 +39,3 @@ export function BlueprintReveal({
     </motion.div>
   );
 }
-
-

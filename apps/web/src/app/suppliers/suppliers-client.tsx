@@ -1,11 +1,22 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, FormTextarea, cn } from "@morina/ui";
-import { Plus, Search, Edit, Trash2, CheckCircle2, XCircle, Building2, Mail, Phone, MapPin } from "lucide-react";
+import { Button, cn, FormSelect, GlassCard, Input, Label } from "@morina/ui";
+import {
+  Building2,
+  CheckCircle2,
+  Edit,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  Search,
+  Trash2,
+  XCircle,
+} from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type Supplier = {
   id: string;
@@ -50,7 +61,7 @@ export function SuppliersClient() {
 
   useEffect(() => {
     loadSuppliers();
-  }, [statusFilter]);
+  }, [loadSuppliers]);
 
   async function loadSuppliers() {
     setLoading(true);
@@ -83,7 +94,7 @@ export function SuppliersClient() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
+
     startTransition(async () => {
       try {
         const response = editingSupplier
@@ -140,7 +151,9 @@ export function SuppliersClient() {
     const supplier = suppliers.find((s) => s.id === id);
     const supplierName = supplier?.name || "este fornecedor";
 
-    if (!confirm(`Tem certeza que deseja excluir ${supplierName}? Esta ação não pode ser desfeita.`)) {
+    if (
+      !confirm(`Tem certeza que deseja excluir ${supplierName}? Esta ação não pode ser desfeita.`)
+    ) {
       return;
     }
 
@@ -253,10 +266,7 @@ export function SuppliersClient() {
             <option value="inativo">Inativo</option>
           </FormSelect>
 
-          <Button
-            onClick={() => setShowForm(true)}
-            className="cursor-pointer"
-          >
+          <Button onClick={() => setShowForm(true)} className="cursor-pointer">
             <Plus className="h-4 w-4" />
             Novo Fornecedor
           </Button>
@@ -335,7 +345,9 @@ export function SuppliersClient() {
                 <Input
                   id="state"
                   value={formData.state}
-                  onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, state: e.target.value.toUpperCase() })
+                  }
                   maxLength={2}
                   className="mt-2 cursor-text"
                 />
@@ -364,7 +376,12 @@ export function SuppliersClient() {
             </div>
 
             <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={handleCancel} className="cursor-pointer">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                className="cursor-pointer"
+              >
                 Cancelar
               </Button>
               <Button type="submit" disabled={pending} className="cursor-pointer">
@@ -381,9 +398,7 @@ export function SuppliersClient() {
       ) : filteredSuppliers.length === 0 ? (
         <GlassCard className="p-12 text-center">
           <Building2 className="mx-auto h-12 w-12 text-[hsl(var(--text-3))]" />
-          <p className="mt-4 text-sm text-[hsl(var(--text-3))]">
-            Nenhum fornecedor encontrado.
-          </p>
+          <p className="mt-4 text-sm text-[hsl(var(--text-3))]">Nenhum fornecedor encontrado.</p>
         </GlassCard>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -395,11 +410,9 @@ export function SuppliersClient() {
                     <Building2 className="h-5 w-5 text-[hsl(var(--primary))]" />
                     <h3 className="font-semibold text-[hsl(var(--text-1))]">{supplier.name}</h3>
                   </div>
-                  
+
                   {supplier.document && (
-                    <p className="mt-1 text-xs text-[hsl(var(--text-3))]">
-                      {supplier.document}
-                    </p>
+                    <p className="mt-1 text-xs text-[hsl(var(--text-3))]">{supplier.document}</p>
                   )}
 
                   <div className="mt-3 space-y-1.5 text-sm text-[hsl(var(--text-2))]">
@@ -471,4 +484,3 @@ export function SuppliersClient() {
     </div>
   );
 }
-

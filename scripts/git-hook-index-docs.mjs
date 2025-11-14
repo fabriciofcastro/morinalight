@@ -2,21 +2,21 @@
 
 /**
  * Git hook para reindexar documentos canônicos quando arquivos relevantes são modificados
- * 
+ *
  * Este script verifica se algum documento canônico foi modificado no commit
  * e reindexa automaticamente se necessário.
- * 
+ *
  * Uso como hook do Git:
  *   ln -s ../../scripts/git-hook-index-docs.mjs .git/hooks/post-commit
- * 
+ *
  * Ou configurado via Husky:
  *   .husky/post-commit
  */
 
-import { exec } from "child_process";
-import { promisify } from "util";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import { exec } from "node:child_process";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -37,13 +37,12 @@ const CANONICAL_PATTERNS = [
 async function hasCanonicalChanges() {
   try {
     // Obtém arquivos modificados no último commit
-    const { stdout } = await execAsync(
-      "git diff-tree --no-commit-id --name-only -r HEAD",
-      { cwd: ROOT_DIR }
-    );
-    
+    const { stdout } = await execAsync("git diff-tree --no-commit-id --name-only -r HEAD", {
+      cwd: ROOT_DIR,
+    });
+
     const changedFiles = stdout.trim().split("\n").filter(Boolean);
-    
+
     // Verifica se algum arquivo modificado corresponde aos padrões canônicos
     for (const file of changedFiles) {
       for (const pattern of CANONICAL_PATTERNS) {
@@ -52,7 +51,7 @@ async function hasCanonicalChanges() {
         }
       }
     }
-    
+
     return false;
   } catch (error) {
     // Se não houver commit anterior, não há nada para verificar
@@ -84,7 +83,7 @@ async function runIndex() {
  */
 async function main() {
   const shouldIndex = await hasCanonicalChanges();
-  
+
   if (shouldIndex) {
     await runIndex();
   } else {
@@ -94,4 +93,3 @@ async function main() {
 
 // Executa o script
 main();
-

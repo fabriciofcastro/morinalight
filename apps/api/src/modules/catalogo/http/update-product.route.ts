@@ -44,4 +44,3 @@ export async function registerUpdateProductRoute(
     return reply.status(200).send(produto);
   });
 }
-

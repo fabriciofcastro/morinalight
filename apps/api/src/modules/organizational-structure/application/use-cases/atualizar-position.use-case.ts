@@ -1,8 +1,8 @@
-import type { PositionRepository } from "../../domain/repositories/position-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { PositionRepository } from "../../domain/repositories/position-repository";
 import { atualizarPositionInputSchema, positionViewSchema } from "../schemas/position.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   positionRepository: PositionRepository;
@@ -18,7 +18,10 @@ export class AtualizarPositionUseCase {
     const input = atualizarPositionInputSchema.parse(rawInput);
 
     // Encontrar cargo existente
-    const position = await this.deps.positionRepository.encontrarPorId(input.orgId, input.positionId);
+    const position = await this.deps.positionRepository.encontrarPorId(
+      input.orgId,
+      input.positionId,
+    );
 
     if (!position) {
       throw new Error("Cargo não encontrado");
@@ -26,7 +29,10 @@ export class AtualizarPositionUseCase {
 
     // Verificar se código já existe em outro cargo (se alterado)
     if (input.code && input.code !== position.dados.code) {
-      const positionComCode = await this.deps.positionRepository.encontrarPorCode(input.orgId, input.code);
+      const positionComCode = await this.deps.positionRepository.encontrarPorCode(
+        input.orgId,
+        input.code,
+      );
 
       if (positionComCode && positionComCode.positionId !== position.positionId) {
         throw new Error("Cargo com este código já existe");
@@ -117,4 +123,3 @@ export class AtualizarPositionUseCase {
     });
   }
 }
-

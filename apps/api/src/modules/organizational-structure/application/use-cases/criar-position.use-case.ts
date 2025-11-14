@@ -1,10 +1,10 @@
-import type { PositionRepository } from "../../domain/repositories/position-repository";
-import type { SectorRepository } from "../../domain/repositories/sector-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { Position } from "../../domain/entities/position";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { PositionRepository } from "../../domain/repositories/position-repository";
+import type { SectorRepository } from "../../domain/repositories/sector-repository";
 import { criarPositionInputSchema, positionViewSchema } from "../schemas/position.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   positionRepository: PositionRepository;
@@ -21,7 +21,10 @@ export class CriarPositionUseCase {
     const input = criarPositionInputSchema.parse(rawInput);
 
     // Verificar se já existe cargo com este código
-    const positionExistente = await this.deps.positionRepository.encontrarPorCode(input.orgId, input.code);
+    const positionExistente = await this.deps.positionRepository.encontrarPorCode(
+      input.orgId,
+      input.code,
+    );
 
     if (positionExistente) {
       throw new Error("Cargo com este código já existe");
@@ -116,4 +119,3 @@ export class CriarPositionUseCase {
     });
   }
 }
-

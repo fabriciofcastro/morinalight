@@ -3,7 +3,7 @@
 import { GlassCard } from "@morina/ui";
 import { useEffect, useMemo } from "react";
 
-import { useAuditTimeline, type AuditTimelineItem } from "@/hooks/use-audit-timeline";
+import { type AuditTimelineItem, useAuditTimeline } from "@/hooks/use-audit-timeline";
 
 type AuditTimelineProps = {
   produtoId: string;
@@ -63,9 +63,7 @@ export function AuditTimeline({ produtoId, orgId, acao, inicio, fim }: AuditTime
               className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in oklab,var(--primary-color) 60%,transparent)] bg-[color-mix(in oklab,var(--primary-color) 20%,transparent)] px-3 py-1 font-medium text-[color-mix(in oklab,var(--primary-color) 85%,var(--fg) 15%)] transition hover:border-[color-mix(in oklab,var(--primary-color) 80%,transparent)] hover:text-[var(--primary-color)]"
             >
               <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--primary-color)]" />
-              {realtimeHighlights === 1
-                ? "1 novo evento"
-                : `${realtimeHighlights} novos eventos`}
+              {realtimeHighlights === 1 ? "1 novo evento" : `${realtimeHighlights} novos eventos`}
             </button>
           ) : null}
           <span
@@ -76,11 +74,11 @@ export function AuditTimeline({ produtoId, orgId, acao, inicio, fim }: AuditTime
             }`}
           >
             <span
-            className={`h-2 w-2 rounded-full ${
-              isRealtimeActive
-                ? "bg-[var(--primary-color)]"
-                : "bg-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]"
-            }`}
+              className={`h-2 w-2 rounded-full ${
+                isRealtimeActive
+                  ? "bg-[var(--primary-color)]"
+                  : "bg-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]"
+              }`}
             />
             {isRealtimeActive ? "Socket ativo" : "Aguardando socket"}
           </span>

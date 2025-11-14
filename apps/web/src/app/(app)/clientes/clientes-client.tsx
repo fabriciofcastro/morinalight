@@ -1,10 +1,21 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, FormTextarea, cn } from "@morina/ui";
-import { Plus, Search, Edit, CheckCircle2, XCircle, Building2, Mail, Phone, MapPin, User } from "lucide-react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { Button, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
+import {
+  Building2,
+  CheckCircle2,
+  Edit,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  Search,
+  User,
+  XCircle,
+} from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Cliente = {
   clienteId: string;
@@ -57,7 +68,7 @@ export function ClientesClient() {
 
   useEffect(() => {
     loadClientes();
-  }, [statusFilter, search]);
+  }, [loadClientes]);
 
   async function loadClientes() {
     setLoading(true);
@@ -93,9 +104,7 @@ export function ClientesClient() {
 
     startTransition(async () => {
       try {
-        const url = editingCliente
-          ? `/api/clientes/${editingCliente.clienteId}`
-          : "/api/clientes";
+        const url = editingCliente ? `/api/clientes/${editingCliente.clienteId}` : "/api/clientes";
 
         const method = editingCliente ? "PUT" : "POST";
 
@@ -224,10 +233,7 @@ export function ClientesClient() {
             <option value="bloqueado">Bloqueados</option>
           </FormSelect>
         </div>
-        <Button
-          onClick={() => setShowForm(!showForm)}
-          className="w-full sm:w-auto"
-        >
+        <Button onClick={() => setShowForm(!showForm)} className="w-full sm:w-auto">
           <Plus className="h-4 w-4" />
           {showForm ? "Cancelar" : "Novo Cliente"}
         </Button>
@@ -253,7 +259,7 @@ export function ClientesClient() {
                 <option value="fisica">Pessoa Física</option>
                 <option value="juridica">Pessoa Jurídica</option>
               </FormSelect>
-              
+
               <FormField
                 label={formData.tipo === "fisica" ? "CPF" : "CNPJ"}
                 required
@@ -262,97 +268,79 @@ export function ClientesClient() {
                 <Input
                   id="documento"
                   value={formData.documento}
-                  onChange={(e) =>
-                    setFormData({ ...formData, documento: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
                   required
                 />
               </FormField>
-              
+
               <FormField label="Nome" required fieldId="nome">
                 <Input
                   id="nome"
                   value={formData.nome}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nome: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                   required
                 />
               </FormField>
-              
+
               {formData.tipo === "juridica" && (
                 <FormField label="Razão Social" fieldId="razaoSocial">
                   <Input
                     id="razaoSocial"
                     value={formData.razaoSocial}
-                    onChange={(e) =>
-                      setFormData({ ...formData, razaoSocial: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, razaoSocial: e.target.value })}
                   />
                 </FormField>
               )}
-              
+
               <FormField label="Email" fieldId="email">
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Telefone" fieldId="telefone">
                 <Input
                   id="telefone"
                   value={formData.telefone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, telefone: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Celular" fieldId="celular">
                 <Input
                   id="celular"
                   value={formData.celular}
-                  onChange={(e) =>
-                    setFormData({ ...formData, celular: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="CEP" fieldId="cep">
                 <Input
                   id="cep"
                   value={formData.cep}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cep: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Endereço" fieldId="endereco" className="md:col-span-2">
                 <Input
                   id="endereco"
                   value={formData.endereco}
-                  onChange={(e) =>
-                    setFormData({ ...formData, endereco: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Cidade" fieldId="cidade">
                 <Input
                   id="cidade"
                   value={formData.cidade}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cidade: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Estado (UF)" fieldId="estado">
                 <Input
                   id="estado"
@@ -363,14 +351,12 @@ export function ClientesClient() {
                   maxLength={2}
                 />
               </FormField>
-              
+
               <FormTextarea
                 label="Observações"
                 id="observacoes"
                 value={formData.observacoes}
-                onChange={(e) =>
-                  setFormData({ ...formData, observacoes: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
                 className="md:col-span-2"
               />
             </div>
@@ -451,11 +437,7 @@ export function ClientesClient() {
                 )}
               </div>
               <div className="mt-4 flex justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(cliente)}
-                >
+                <Button variant="outline" size="sm" onClick={() => handleEdit(cliente)}>
                   <Edit className="h-4 w-4" />
                   Editar
                 </Button>
@@ -467,4 +449,3 @@ export function ClientesClient() {
     </div>
   );
 }
-

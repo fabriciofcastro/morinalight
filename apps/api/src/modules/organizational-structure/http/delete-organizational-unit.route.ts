@@ -1,12 +1,10 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { DeletarOrganizationalUnitUseCase } from "../application/use-cases/deletar-organizational-unit.use-case";
-import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type {
-  UnitMembershipRepository,
-} from "../infra/prisma/prisma-unit-membership.repository";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { DeletarOrganizationalUnitUseCase } from "../application/use-cases/deletar-organizational-unit.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
+import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
+import type { UnitMembershipRepository } from "../infra/prisma/prisma-unit-membership.repository";
 
 type Dependencies = {
   organizationalUnitRepository: OrganizationalUnitRepository;
@@ -52,7 +50,10 @@ export async function registerDeleteOrganizationalUnitRoute(
         app.log.error(error, "Erro ao deletar unidade organizacional");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("Não é possível deletar")) {
@@ -66,4 +67,3 @@ export async function registerDeleteOrganizationalUnitRoute(
     },
   );
 }
-

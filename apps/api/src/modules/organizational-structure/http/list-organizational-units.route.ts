@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarOrganizationalUnitsUseCase } from "../application/use-cases/listar-organizational-units.use-case";
 import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
 
@@ -38,4 +38,3 @@ export async function registerListOrganizationalUnitsRoute(
     }
   });
 }
-

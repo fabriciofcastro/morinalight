@@ -1,9 +1,9 @@
-import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
-import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
-import type { PermissionRepository } from "../../domain/repositories/permission-repository";
-import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
+import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
+import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 
 const atribuirPermissaoDepartamentoInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -120,4 +120,3 @@ export class AtribuirPermissaoDepartamentoUseCase {
     };
   }
 }
-

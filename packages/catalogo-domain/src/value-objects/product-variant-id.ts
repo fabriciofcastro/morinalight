@@ -6,8 +6,7 @@ export class ProductVariantId {
   }
 
   private isValid(value: string): boolean {
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(value);
   }
 
@@ -33,5 +32,3 @@ export class ProductVariantId {
     return this.value === other.value;
   }
 }
-
-

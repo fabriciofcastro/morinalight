@@ -1,12 +1,12 @@
-import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { OrganizationalUnit } from "../../domain/entities/organizational-unit";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
 import {
   criarOrganizationalUnitInputSchema,
   organizationalUnitViewSchema,
 } from "../schemas/organizational-unit.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   organizationalUnitRepository: OrganizationalUnitRepository;
@@ -113,4 +113,3 @@ export class CriarOrganizationalUnitUseCase {
     });
   }
 }
-

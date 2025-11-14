@@ -10,10 +10,7 @@ export type AuthModuleOptions = {
 /**
  * Registra o módulo de autenticação JWT
  */
-export async function registerAuthModule(
-  app: FastifyInstance,
-  options: AuthModuleOptions = {},
-) {
+export async function registerAuthModule(app: FastifyInstance, options: AuthModuleOptions = {}) {
   const { excludeRoutes } = options;
 
   // Rotas públicas que não precisam de autenticação
@@ -32,4 +29,3 @@ export async function registerAuthModule(
 
   app.log.info("Módulo de autenticação JWT registrado");
 }
-

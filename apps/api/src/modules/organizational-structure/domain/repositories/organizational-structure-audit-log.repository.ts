@@ -29,4 +29,3 @@ export interface OrganizationalStructureAuditLogRepository {
     filtro?: OrganizationalStructureAuditLogFilter,
   ): Promise<OrganizationalStructureAuditLogPage>;
 }
-

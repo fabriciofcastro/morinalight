@@ -139,4 +139,3 @@ export class Comissao {
     return !!this.props.assinadoEm && !!this.props.assinadoPor;
   }
 }
-

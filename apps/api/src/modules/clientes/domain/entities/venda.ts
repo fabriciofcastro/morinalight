@@ -94,4 +94,3 @@ export class Venda {
     this.props.updatedAt = new Date();
   }
 }
-

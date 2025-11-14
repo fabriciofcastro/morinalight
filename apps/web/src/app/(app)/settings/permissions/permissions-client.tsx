@@ -1,28 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { GlassCard, Button, Input, Label } from "@morina/ui";
+import { Button, cn, GlassCard, Input, notificationCenter } from "@morina/ui";
 import {
-  User,
-  Shield,
-  Check,
-  X,
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  Eye,
-  EyeOff,
   Briefcase,
   Building2,
-  Layers,
+  Check,
+  Clock,
   FileText,
+  History,
+  Layers,
+  Plus,
+  Save,
+  Search,
+  Shield,
   Sparkles,
+  User,
+  X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { cn } from "@morina/ui";
-import { notificationCenter } from "@morina/ui";
 
 type Permission = {
   id: string;
@@ -65,7 +61,7 @@ type PositionPermission = {
   granted: boolean;
 };
 
-type Tab = "users" | "positions" | "sectors" | "departments" | "templates";
+type Tab = "users" | "positions" | "sectors" | "departments" | "templates" | "audit-log";
 
 type PermissionTemplate = {
   id: string;
@@ -174,7 +170,7 @@ export function PermissionsClient() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [selectedRole, _setSelectedRole] = useState<Role | null>(null);
   
   // Estados para cargos
   const [positions, setPositions] = useState<Position[]>([]);
@@ -203,9 +199,32 @@ export function PermissionsClient() {
   // Estados para templates
   const [templates, setTemplates] = useState<PermissionTemplate[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<PermissionTemplate | null>(null);
+  const [_selectedTemplate, _setSelectedTemplate] = useState<PermissionTemplate | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showApplyTemplateModal, setShowApplyTemplateModal] = useState(false);
+
+  // Estados para audit log
+  type AuditLogEntry = {
+    id: string;
+    orgId: string;
+    entityType: "position" | "sector" | "department" | "user";
+    entityId: string;
+    permissionId: string;
+    action: "granted" | "denied" | "removed";
+    granted: boolean | null;
+    previousValue: boolean | null;
+    actorId: string;
+    reason: string | null;
+    metadata: Record<string, unknown> | null;
+    createdAt: Date | string;
+  };
+  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
+  const [auditLogLoading, setAuditLogLoading] = useState(false);
+  const [auditLogFilters, setAuditLogFilters] = useState<{
+    entityType?: "position" | "sector" | "department" | "user";
+    entityId?: string;
+    action?: "granted" | "denied" | "removed";
+  }>({});
 
   useEffect(() => {
     if (activeTab === "users") {
@@ -221,6 +240,8 @@ export function PermissionsClient() {
       loadDepartments();
     } else if (activeTab === "templates") {
       loadTemplates();
+    } else if (activeTab === "audit-log") {
+      loadAuditLogs();
     }
   }, [activeTab]);
 
@@ -234,19 +255,19 @@ export function PermissionsClient() {
     if (selectedPosition) {
       loadPositionPermissions(selectedPosition.id);
     }
-  }, [selectedPosition]);
+  }, [selectedPosition, loadPositionPermissions]);
 
   useEffect(() => {
     if (selectedSector) {
       loadSectorPermissions(selectedSector.id);
     }
-  }, [selectedSector]);
+  }, [selectedSector, loadSectorPermissions]);
 
   useEffect(() => {
     if (selectedDepartment) {
       loadDepartmentPermissions(selectedDepartment.id);
     }
-  }, [selectedDepartment]);
+  }, [selectedDepartment, loadDepartmentPermissions]);
 
   async function loadUsers() {
     setLoading(true);
@@ -735,6 +756,71 @@ export function PermissionsClient() {
     );
   }
 
+  // Funções para audit log
+  async function loadAuditLogs() {
+    setAuditLogLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (auditLogFilters.entityType) {
+        params.append("entityType", auditLogFilters.entityType);
+      }
+      if (auditLogFilters.entityId) {
+        params.append("entityId", auditLogFilters.entityId);
+      }
+      if (auditLogFilters.action) {
+        params.append("action", auditLogFilters.action);
+      }
+      params.append("limite", "50");
+
+      const response = await fetch(`/api/permissions/audit-log?${params.toString()}`, {
+        headers: {
+          ...getAuthHeadersWithTenant(),
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data: { itens: AuditLogEntry[] } = await response.json();
+        setAuditLogs(data.itens || []);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar histórico:", error);
+      notificationCenter.error("Erro ao carregar histórico de permissões");
+    } finally {
+      setAuditLogLoading(false);
+    }
+  }
+
+  function formatEntityType(entityType: string): string {
+    const map: Record<string, string> = {
+      position: "Cargo",
+      sector: "Setor",
+      department: "Departamento",
+      user: "Usuário",
+    };
+    return map[entityType] || entityType;
+  }
+
+  function formatAction(action: string): { label: string; color: string } {
+    const map: Record<string, { label: string; color: string }> = {
+      granted: { label: "Concedida", color: "var(--success)" },
+      denied: { label: "Negada", color: "var(--danger)" },
+      removed: { label: "Removida", color: "var(--warning)" },
+    };
+    return map[action] || { label: action, color: "var(--muted)" };
+  }
+
+  function formatDate(date: Date | string): string {
+    const d = typeof date === "string" ? new Date(date) : date;
+    return new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(d);
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Tabs */}
@@ -799,6 +885,18 @@ export function PermissionsClient() {
           >
             <FileText className="mr-2 inline h-4 w-4" />
             Templates
+          </button>
+          <button
+            onClick={() => setActiveTab("audit-log")}
+            className={cn(
+              "px-4 py-2 text-sm font-medium transition-colors",
+              activeTab === "audit-log"
+                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+            )}
+          >
+            <History className="mr-2 inline h-4 w-4" />
+            Histórico
           </button>
         </div>
       </GlassCard>
@@ -1473,8 +1571,7 @@ export function PermissionsClient() {
       )}
 
       {activeTab === "templates" && (
-        <>
-          <GlassCard className="p-6">
+        <GlassCard className="p-6">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-[var(--fg)]">Templates de Permissões</h2>
@@ -1538,7 +1635,6 @@ export function PermissionsClient() {
               )}
             </div>
           </GlassCard>
-        </>
       )}
 
       {/* Modal para aplicar template */}
@@ -1626,6 +1722,122 @@ export function PermissionsClient() {
             </div>
           </GlassCard>
         </div>
+      )}
+
+      {activeTab === "audit-log" && (
+        <>
+          <GlassCard className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--fg)]">Histórico de Permissões</h2>
+                <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Registro de todas as mudanças nas permissões do sistema
+                </p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => loadAuditLogs()}>
+                <Clock className="h-4 w-4" />
+                Atualizar
+              </Button>
+            </div>
+
+            {/* Filtros */}
+            <div className="mb-4 flex flex-wrap gap-2">
+              <select
+                value={auditLogFilters.entityType || ""}
+                onChange={(e) =>
+                  setAuditLogFilters({
+                    ...auditLogFilters,
+                    entityType: (e.target.value as any) || undefined,
+                  })
+                }
+                className="rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[var(--surface)] px-3 py-2 text-sm"
+              >
+                <option value="">Todos os tipos</option>
+                <option value="position">Cargos</option>
+                <option value="sector">Setores</option>
+                <option value="department">Departamentos</option>
+                <option value="user">Usuários</option>
+              </select>
+              <select
+                value={auditLogFilters.action || ""}
+                onChange={(e) =>
+                  setAuditLogFilters({
+                    ...auditLogFilters,
+                    action: (e.target.value as any) || undefined,
+                  })
+                }
+                className="rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[var(--surface)] px-3 py-2 text-sm"
+              >
+                <option value="">Todas as ações</option>
+                <option value="granted">Concedidas</option>
+                <option value="denied">Negadas</option>
+                <option value="removed">Removidas</option>
+              </select>
+            </div>
+
+            {/* Lista de logs */}
+            <div className="space-y-2">
+              {auditLogLoading ? (
+                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Carregando histórico...
+                </p>
+              ) : auditLogs.length === 0 ? (
+                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Nenhum registro encontrado
+                </p>
+              ) : (
+                auditLogs.map((log) => {
+                  const actionInfo = formatAction(log.action);
+                  return (
+                    <div
+                      key={log.id}
+                      className="rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4 transition-all hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="mb-2 flex items-center gap-2">
+                            <span
+                              className="rounded-full px-2 py-0.5 text-xs font-medium text-white"
+                              style={{ backgroundColor: actionInfo.color }}
+                            >
+                              {actionInfo.label}
+                            </span>
+                            <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                              {formatEntityType(log.entityType)}
+                            </span>
+                          </div>
+                          <p className="text-sm font-medium text-[var(--fg)]">
+                            Permissão: {log.permissionId}
+                          </p>
+                          {log.reason && (
+                            <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                              Motivo: {log.reason}
+                            </p>
+                          )}
+                          {log.previousValue !== null && (
+                            <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                              Valor anterior: {log.previousValue ? "Concedida" : "Negada"}
+                            </p>
+                          )}
+                          <div className="mt-2 flex items-center gap-2 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                            <User className="h-3 w-3" />
+                            <span>Ator: {log.actorId}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="flex items-center gap-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                            <Clock className="h-3 w-3" />
+                            <span>{formatDate(log.createdAt)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </GlassCard>
+        </>
       )}
 
       {/* Modal para criar template */}

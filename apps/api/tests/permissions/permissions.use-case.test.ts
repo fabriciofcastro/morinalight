@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import type { OrganizationRepository } from "../../src/modules/organizations/repositories/organization.repository";
 import { ListarUserPermissionsUseCase } from "../../src/modules/permissions/application/use-cases/listar-user-permissions.use-case";
 import { VerificarPermissionUseCase } from "../../src/modules/permissions/application/use-cases/verificar-permission.use-case";
 import type { PermissionRepository } from "../../src/modules/permissions/domain/repositories/permission-repository";
-import type { OrganizationRepository } from "../../src/modules/organizations/repositories/organization.repository";
-import { Permission } from "../../src/modules/permissions/domain/entities/permission";
 
 describe("Permissions Use Cases", () => {
   let permissionRepository: PermissionRepository;
@@ -176,4 +175,3 @@ describe("Permissions Use Cases", () => {
     });
   });
 });
-

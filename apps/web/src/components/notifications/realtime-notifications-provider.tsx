@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
-import { getAuthUser, getAuthToken } from "@/lib/auth-client";
-import { defaultOrgId, defaultActorId } from "@/lib/env";
+import { getAuthToken, getAuthUser } from "@/lib/auth-client";
+import { defaultActorId, defaultOrgId } from "@/lib/env";
 
 /**
  * Decodifica JWT para obter informações do usuário
@@ -102,4 +102,3 @@ export function RealtimeNotificationsProvider() {
 
   return null;
 }
-

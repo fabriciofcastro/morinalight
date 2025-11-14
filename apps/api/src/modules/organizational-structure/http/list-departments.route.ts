@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarDepartmentsUseCase } from "../application/use-cases/listar-departments.use-case";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
 
@@ -6,10 +6,7 @@ type Dependencies = {
   departmentRepository: DepartmentRepository;
 };
 
-export async function registerListDepartmentsRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerListDepartmentsRoute(app: FastifyInstance, deps: Dependencies) {
   app.get("/departments", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
 
@@ -38,4 +35,3 @@ export async function registerListDepartmentsRoute(
     }
   });
 }
-

@@ -1,7 +1,7 @@
-import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
+import { z } from "zod";
 import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
-import { z } from "zod";
+import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 
 const listarPermissoesSetorInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -21,10 +21,7 @@ export class ListarPermissoesSetorUseCase {
     const input = listarPermissoesSetorInputSchema.parse(rawInput);
 
     // Verificar se o setor existe
-    const sector = await this.deps.sectorRepository.encontrarPorId(
-      input.orgId,
-      input.sectorId,
-    );
+    const sector = await this.deps.sectorRepository.encontrarPorId(input.orgId, input.sectorId);
 
     if (!sector) {
       throw new Error("Setor não encontrado");
@@ -68,4 +65,3 @@ export class ListarPermissoesSetorUseCase {
     });
   }
 }
-

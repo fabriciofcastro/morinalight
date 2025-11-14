@@ -1,5 +1,4 @@
 import type { FastifyInstance } from "fastify";
-import { z } from "zod";
 
 import { canManage, getTenant } from "../../core/tenant/tenant.utils";
 import {

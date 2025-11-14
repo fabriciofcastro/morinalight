@@ -11,7 +11,7 @@ async function testHealth() {
   try {
     const response = await fetch(`${API_URL}/health`);
     const data = await response.json();
-    
+
     if (response.ok && data.status === "ok") {
       console.log("✅ Health Check: OK");
       return true;
@@ -47,22 +47,22 @@ async function testAuth() {
         return data.token;
       }
     } else {
-      const error = await response.json();
+      const _error = await response.json();
       console.log("⚠️  Login: Usuário não encontrado ou senha incorreta");
       console.log("   (Isso é normal se não houver usuário criado)");
     }
   } catch (error) {
     console.error("❌ Login: ERRO", error);
   }
-  
+
   return null;
 }
 
 async function testPermissions(token: string, userId: string, orgId: string) {
   console.log("\n🔑 Testando Rotas de Permissões...");
-  
+
   const headers = {
-    "Authorization": `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     "x-org-id": orgId,
     "Content-Type": "application/json",
   };
@@ -93,12 +93,12 @@ async function testPermissions(token: string, userId: string, orgId: string) {
   // Test 2: Verificar permissão específica
   console.log("\n2️⃣  Testando GET /users/:userId/permissions/check");
   const permissionsToTest = ["products:view", "dashboard:view", "settings:permissions:view"];
-  
+
   for (const permission of permissionsToTest) {
     try {
       const response = await fetch(
         `${API_URL}/users/${userId}/permissions/check?permission=${encodeURIComponent(permission)}`,
-        { headers }
+        { headers },
       );
 
       if (response.ok) {
@@ -117,7 +117,7 @@ async function testPermissions(token: string, userId: string, orgId: string) {
 
 async function testModules() {
   console.log("\n📦 Verificando Módulos...");
-  
+
   const modules = [
     { name: "Catálogo", path: "/catalogo/produtos" },
     { name: "Clientes", path: "/clientes" },
@@ -162,14 +162,14 @@ async function main() {
 
   // 3. Tentar autenticação
   const token = await testAuth();
-  
+
   // 4. Se tiver token, testar permissões
   if (token) {
     // Extrair userId e orgId do token (precisa implementar parse do JWT)
     // Por enquanto, usar valores de teste
     const userId = "user-123"; // TODO: Extrair do token
     const orgId = "org-123"; // TODO: Extrair do token
-    
+
     await testPermissions(token, userId, orgId);
   } else {
     console.log("\n⚠️  Não foi possível obter token. Pulando testes de permissões.");
@@ -177,9 +177,8 @@ async function main() {
     console.log("   cd apps/api && pnpm create-admin");
   }
 
-  console.log("\n" + "=".repeat(50));
+  console.log(`\n${"=".repeat(50)}`);
   console.log("✅ Validação concluída!");
 }
 
 main().catch(console.error);
-

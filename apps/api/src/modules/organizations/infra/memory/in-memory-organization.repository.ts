@@ -116,9 +116,7 @@ export class InMemoryOrganizationRepository implements OrganizationRepository {
     slug?: string;
     description?: string | null;
   }): Promise<OrganizationRecord | null> {
-    const org = this.organizations.find(
-      (o) => o.organizationId === input.organizationId,
-    );
+    const org = this.organizations.find((o) => o.organizationId === input.organizationId);
     if (!org) return null;
 
     if (input.name !== undefined) org.name = input.name;
@@ -141,9 +139,7 @@ export class InMemoryOrganizationRepository implements OrganizationRepository {
     });
 
     // Remover organização
-    const orgIndex = this.organizations.findIndex(
-      (o) => o.organizationId === organizationId,
-    );
+    const orgIndex = this.organizations.findIndex((o) => o.organizationId === organizationId);
     if (orgIndex >= 0) {
       this.organizations.splice(orgIndex, 1);
     }

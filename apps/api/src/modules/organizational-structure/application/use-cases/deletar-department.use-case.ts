@@ -1,9 +1,10 @@
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { SectorRepository } from "../../domain/repositories/sector-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { SectorRepository } from "../../domain/repositories/sector-repository";
+import type { DepartmentMembershipRepository } from "../../infra/prisma/prisma-department-membership.repository";
 
 const deletarDepartmentInputSchema = z.object({
   orgId: z.string().min(1),
@@ -13,6 +14,7 @@ const deletarDepartmentInputSchema = z.object({
 type Dependencies = {
   departmentRepository: DepartmentRepository;
   sectorRepository: SectorRepository;
+  departmentMembershipRepository?: DepartmentMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
   actorId: string;
@@ -40,7 +42,9 @@ export class DeletarDepartmentUseCase {
     });
 
     if (departmentsFilhos.itens.length > 0) {
-      throw new Error("Não é possível deletar departamento com departamentos filhos. Remova ou mova os departamentos filhos primeiro.");
+      throw new Error(
+        "Não é possível deletar departamento com departamentos filhos. Remova ou mova os departamentos filhos primeiro.",
+      );
     }
 
     // Verificar se há setores associados
@@ -50,7 +54,23 @@ export class DeletarDepartmentUseCase {
     });
 
     if (sectors.itens.length > 0) {
-      throw new Error("Não é possível deletar departamento com setores associados. Remova ou mova os setores primeiro.");
+      throw new Error(
+        "Não é possível deletar departamento com setores associados. Remova ou mova os setores primeiro.",
+      );
+    }
+
+    // Verificar se há membros associados ao departamento
+    if (this.deps.departmentMembershipRepository) {
+      const memberCount = await this.deps.departmentMembershipRepository.contarPorDepartment(
+        input.orgId,
+        input.departmentId,
+      );
+
+      if (memberCount > 0) {
+        throw new Error(
+          "Não é possível deletar departamento com membros associados. Remova todos os membros primeiro.",
+        );
+      }
     }
 
     await this.deps.departmentRepository.deletar(input.orgId, input.departmentId);
@@ -94,4 +114,3 @@ export class DeletarDepartmentUseCase {
     return { success: true };
   }
 }
-

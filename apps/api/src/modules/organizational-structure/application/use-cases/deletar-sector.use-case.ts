@@ -1,13 +1,15 @@
-import type { SectorRepository } from "../../domain/repositories/sector-repository";
-import type { PositionRepository } from "../../domain/repositories/position-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { PositionRepository } from "../../domain/repositories/position-repository";
+import type { SectorRepository } from "../../domain/repositories/sector-repository";
+import type { SectorMembershipRepository } from "../../infra/prisma/prisma-sector-membership.repository";
 import { deletarSectorInputSchema } from "../schemas/sector.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
   positionRepository?: PositionRepository;
+  sectorMembershipRepository?: SectorMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
   actorId: string;
@@ -33,7 +35,9 @@ export class DeletarSectorUseCase {
     });
 
     if (filhos.itens.length > 0) {
-      throw new Error("Não é possível deletar setor com setores filhos. Remova os setores filhos primeiro.");
+      throw new Error(
+        "Não é possível deletar setor com setores filhos. Remova os setores filhos primeiro.",
+      );
     }
 
     // Verificar se existem cargos associados
@@ -44,7 +48,23 @@ export class DeletarSectorUseCase {
       });
 
       if (cargos.itens.length > 0) {
-        throw new Error("Não é possível deletar setor com cargos associados. Remova os cargos primeiro.");
+        throw new Error(
+          "Não é possível deletar setor com cargos associados. Remova os cargos primeiro.",
+        );
+      }
+    }
+
+    // Verificar se há membros associados ao setor
+    if (this.deps.sectorMembershipRepository) {
+      const memberCount = await this.deps.sectorMembershipRepository.contarPorSector(
+        input.orgId,
+        input.sectorId,
+      );
+
+      if (memberCount > 0) {
+        throw new Error(
+          "Não é possível deletar setor com membros associados. Remova todos os membros primeiro.",
+        );
       }
     }
 
@@ -87,4 +107,3 @@ export class DeletarSectorUseCase {
     }
   }
 }
-

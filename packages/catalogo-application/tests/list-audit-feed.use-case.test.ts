@@ -8,7 +8,10 @@ import type {
   ProdutoListaPagina,
   ProdutoRepository,
 } from "@morina/catalogo-domain";
-import { Produto as ProdutoEntity, ProdutoAuditoria as ProdutoAuditoriaEntity } from "@morina/catalogo-domain";
+import {
+  ProdutoAuditoria as ProdutoAuditoriaEntity,
+  Produto as ProdutoEntity,
+} from "@morina/catalogo-domain";
 import { describe, expect, it } from "vitest";
 
 import { ListarAuditoriaFeedUseCase } from "../src/use-cases/list-audit-feed.use-case";
@@ -35,9 +38,7 @@ class InMemoryProdutoRepository implements ProdutoRepository {
   }
 
   async listarPorOrg(orgId: string, filtro: ProdutoListaFiltro = {}): Promise<ProdutoListaPagina> {
-    let itens = Array.from(this.items.values()).filter(
-      (produto) => produto.dados.orgId === orgId,
-    );
+    let itens = Array.from(this.items.values()).filter((produto) => produto.dados.orgId === orgId);
 
     if (filtro.status) {
       itens = itens.filter((produto) => produto.dados.status === filtro.status);
@@ -140,4 +141,3 @@ describe("ListarAuditoriaFeedUseCase", () => {
     expect(item.produto?.status).toBe("ativo");
   });
 });
-

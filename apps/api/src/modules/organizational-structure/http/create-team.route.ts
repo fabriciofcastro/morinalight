@@ -1,9 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { CriarTeamUseCase } from "../application/use-cases/criar-team.use-case";
-import type { TeamRepository } from "../domain/repositories/team-repository";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { CriarTeamUseCase } from "../application/use-cases/criar-team.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
+import type { TeamRepository } from "../domain/repositories/team-repository";
 
 type Dependencies = {
   teamRepository: TeamRepository;
@@ -52,4 +52,3 @@ export async function registerCreateTeamRoute(app: FastifyInstance, deps: Depend
     }
   });
 }
-

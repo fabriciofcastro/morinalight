@@ -1,8 +1,7 @@
 import { randomUUID } from "node:crypto";
+import type { FastifyBaseLogger } from "fastify";
 import { Redis } from "ioredis";
 import type { WebSocket } from "ws";
-
-import type { FastifyBaseLogger } from "fastify";
 import {
   broadcastCounter,
   connectionsGauge,
@@ -222,7 +221,10 @@ export class RealtimeHub {
         );
       }
     } catch (error) {
-      this.logger.error({ err: error }, "Falha ao verificar mensagens pendentes no stream realtime");
+      this.logger.error(
+        { err: error },
+        "Falha ao verificar mensagens pendentes no stream realtime",
+      );
     }
   }
 }

@@ -1,8 +1,5 @@
 import type { ProdutoAuditoriaRepository, ProdutoRepository } from "@morina/catalogo-domain";
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import type { FastifyInstance } from "fastify";
 
 import { PrismaProdutoRepository } from "../catalogo/infra/prisma/prisma-produto.repository";

@@ -1,23 +1,22 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, cn } from "@morina/ui";
+import { Button, cn, FormField, FormSelect, GlassCard, Input } from "@morina/ui";
 import {
-  Plus,
-  Search,
-  User,
-  Mail,
   Calendar,
   CheckCircle2,
-  XCircle,
   Clock,
   Edit,
+  Mail,
+  Plus,
+  Search,
   Trash2,
+  User,
+  XCircle,
 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";
-import { useOfflineSync } from "@/hooks/use-offline-sync";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type UserData = {
   userId: string;
@@ -57,7 +56,7 @@ export function UsersClient() {
 
   useEffect(() => {
     loadUsers();
-  }, [statusFilter]);
+  }, [loadUsers]);
 
   async function loadUsers() {
     setLoading(true);

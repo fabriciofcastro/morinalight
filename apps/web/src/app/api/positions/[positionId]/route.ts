@@ -3,6 +3,12 @@ import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 
+type RouteParams = {
+  params: {
+    positionId: string;
+  };
+};
+
 function getAuthHeaders(): HeadersInit {
   const cookieStore = cookies();
   const token = cookieStore.get("auth_token")?.value;
@@ -24,36 +30,25 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function PUT(
+export async function GET(
   request: Request,
-  { params }: { params: { positionId: string } },
+  { params }: RouteParams,
 ) {
-  const body = await request.json();
+  const { positionId } = params;
 
-  const response = await fetch(`${apiUrl}/positions/${params.positionId}`, {
-    method: "PUT",
+  const response = await fetch(`${apiUrl}/positions/${positionId}`, {
+    method: "GET",
     headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    cache: "no-store",
   });
 
-  const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
-}
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: { positionId: string } },
-) {
-  const response = await fetch(`${apiUrl}/positions/${params.positionId}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
-
-  if (response.status === 204) {
-    return new NextResponse(null, { status: 204 });
+  if (!response.ok) {
+    return NextResponse.json(
+      { message: "Erro ao buscar cargo" },
+      { status: response.status },
+    );
   }
 
   const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
+  return NextResponse.json(data);
 }
-

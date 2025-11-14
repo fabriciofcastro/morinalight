@@ -1,22 +1,21 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, FormTextarea, cn } from "@morina/ui";
+import { Button, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
 import {
-  Plus,
-  Search,
-  Edit,
+  Building2,
   CheckCircle2,
-  XCircle,
-  User,
   Mail,
-  Phone,
   MapPin,
   Percent,
-  Building2,
+  Phone,
+  Plus,
+  Search,
+  User,
+  XCircle,
 } from "lucide-react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Representante = {
   representanteId: string;
@@ -61,8 +60,7 @@ export function RepresentantesClient() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showForm, setShowForm] = useState(false);
-  const [editingRepresentante, setEditingRepresentante] =
-    useState<Representante | null>(null);
+  const [_editingRepresentante, setEditingRepresentante] = useState<Representante | null>(null);
   const [pending, startTransition] = useTransition();
 
   const [formData, setFormData] = useState({
@@ -83,7 +81,7 @@ export function RepresentantesClient() {
   useEffect(() => {
     loadClientes();
     loadRepresentantes();
-  }, [statusFilter, search]);
+  }, [loadClientes, loadRepresentantes]);
 
   async function loadClientes() {
     setLoadingClientes(true);
@@ -254,10 +252,7 @@ export function RepresentantesClient() {
             <option value="suspenso">Suspensos</option>
           </FormSelect>
         </div>
-        <Button
-          onClick={() => setShowForm(!showForm)}
-          className="w-full sm:w-auto"
-        >
+        <Button onClick={() => setShowForm(!showForm)} className="w-full sm:w-auto">
           <Plus className="h-4 w-4" />
           {showForm ? "Cancelar" : "Novo Representante"}
         </Button>
@@ -278,9 +273,7 @@ export function RepresentantesClient() {
                   <FormSelect
                     id="clienteId"
                     value={formData.clienteId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, clienteId: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, clienteId: e.target.value })}
                     required
                   >
                     <option value="">Selecione um cliente</option>
@@ -292,60 +285,50 @@ export function RepresentantesClient() {
                   </FormSelect>
                 )}
               </FormField>
-              
+
               <FormField label="Nome" required fieldId="nome">
                 <Input
                   id="nome"
                   value={formData.nome}
-                  onChange={(e) =>
-                    setFormData({ ...formData, nome: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                   required
                 />
               </FormField>
-              
+
               <FormField label="CPF" required fieldId="documento">
                 <Input
                   id="documento"
                   value={formData.documento}
-                  onChange={(e) =>
-                    setFormData({ ...formData, documento: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
                   required
                 />
               </FormField>
-              
+
               <FormField label="Email" fieldId="email">
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Telefone" fieldId="telefone">
                 <Input
                   id="telefone"
                   value={formData.telefone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, telefone: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Celular" fieldId="celular">
                 <Input
                   id="celular"
                   value={formData.celular}
-                  onChange={(e) =>
-                    setFormData({ ...formData, celular: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Percentual de Comissão (%)" required fieldId="percentualComissao">
                 <Input
                   id="percentualComissao"
@@ -363,37 +346,31 @@ export function RepresentantesClient() {
                   required
                 />
               </FormField>
-              
+
               <FormField label="CEP" fieldId="cep">
                 <Input
                   id="cep"
                   value={formData.cep}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cep: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Endereço" fieldId="endereco" className="md:col-span-2">
                 <Input
                   id="endereco"
                   value={formData.endereco}
-                  onChange={(e) =>
-                    setFormData({ ...formData, endereco: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Cidade" fieldId="cidade">
                 <Input
                   id="cidade"
                   value={formData.cidade}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cidade: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
                 />
               </FormField>
-              
+
               <FormField label="Estado (UF)" fieldId="estado">
                 <Input
                   id="estado"
@@ -407,14 +384,12 @@ export function RepresentantesClient() {
                   maxLength={2}
                 />
               </FormField>
-              
+
               <FormTextarea
                 label="Observações"
                 id="observacoes"
                 value={formData.observacoes}
-                onChange={(e) =>
-                  setFormData({ ...formData, observacoes: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
                 className="md:col-span-2"
               />
             </div>
@@ -489,8 +464,7 @@ export function RepresentantesClient() {
                 {representante.endereco && (
                   <p className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
-                    {representante.endereco}, {representante.cidade} -{" "}
-                    {representante.estado}
+                    {representante.endereco}, {representante.cidade} - {representante.estado}
                   </p>
                 )}
               </div>
@@ -501,4 +475,3 @@ export function RepresentantesClient() {
     </div>
   );
 }
-

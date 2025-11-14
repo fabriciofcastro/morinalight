@@ -1,3 +1,5 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
+import { Sector } from "../../domain/entities/sector";
 import type {
   SectorListaFiltro,
   SectorListaPagina,
@@ -5,8 +7,6 @@ import type {
   SectorRepository,
   SectorStatus,
 } from "../../domain/repositories/sector-repository";
-import { Sector } from "../../domain/entities/sector";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -192,4 +192,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

@@ -1,25 +1,31 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { env } from "../../core/config/env";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParamsOrHeaders } from "../../core/tenant/tenant.utils";
-import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { RedisEventBus } from "../../infra/events/redis-event-bus";
-import { registerOrganizationalStructureHttpRoutes } from "./http";
-import { PrismaDepartmentRepository } from "./infra/prisma/prisma-department.repository";
-import { PrismaSectorRepository } from "./infra/prisma/prisma-sector.repository";
-import { PrismaPositionRepository } from "./infra/prisma/prisma-position.repository";
-import { PrismaOrganizationalStructureAuditLogRepository } from "./infra/prisma/prisma-organizational-structure-audit-log.repository";
+import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import type {
   DepartmentRepository,
-  SectorRepository,
-  PositionRepository,
   OrganizationalStructureAuditLogRepository,
+  PositionRepository,
+  SectorRepository,
 } from "./domain/repositories";
-import { PrismaPositionMembershipRepository } from "./infra/prisma/prisma-position-membership.repository";
-import type { PositionMembershipRepository } from "./infra/prisma/prisma-position-membership.repository";
-import { PrismaDepartmentMembershipRepository } from "./infra/prisma/prisma-department-membership.repository";
+import { registerOrganizationalStructureHttpRoutes } from "./http";
+import { PrismaDepartmentRepository } from "./infra/prisma/prisma-department.repository";
 import type { DepartmentMembershipRepository } from "./infra/prisma/prisma-department-membership.repository";
+import { PrismaDepartmentMembershipRepository } from "./infra/prisma/prisma-department-membership.repository";
+import { PrismaOrganizationalStructureAuditLogRepository } from "./infra/prisma/prisma-organizational-structure-audit-log.repository";
+import { PrismaPositionRepository } from "./infra/prisma/prisma-position.repository";
+import type { PositionMembershipRepository } from "./infra/prisma/prisma-position-membership.repository";
+import { PrismaPositionMembershipRepository } from "./infra/prisma/prisma-position-membership.repository";
+import { PrismaSectorRepository } from "./infra/prisma/prisma-sector.repository";
+import type { SectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
+import { PrismaSectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
+import type { UserRepository } from "../users/repositories/user.repository";
+import { registerDepartmentMembersRoutes } from "./http/department-members.routes";
+import { registerPositionMembersRoutes } from "./http/position-members.routes";
+import { registerSectorMembersRoutes } from "./http/sector-members.routes";
 
 export type OrganizationalStructureModuleOptions = {
   departmentRepository?: DepartmentRepository;
@@ -30,6 +36,8 @@ export type OrganizationalStructureModuleOptions = {
   eventBus?: DomainEventBus;
   positionMembershipRepository?: PositionMembershipRepository;
   departmentMembershipRepository?: DepartmentMembershipRepository;
+  sectorMembershipRepository?: SectorMembershipRepository;
+  userRepository?: UserRepository;
 };
 
 export async function registerOrganizationalStructureModule(
@@ -59,9 +67,7 @@ export async function registerOrganizationalStructureModule(
 
   const auditLogRepository =
     options.auditLogRepository ??
-    (process.env.DATABASE_URL
-      ? new PrismaOrganizationalStructureAuditLogRepository()
-      : undefined);
+    (process.env.DATABASE_URL ? new PrismaOrganizationalStructureAuditLogRepository() : undefined);
 
   const positionMembershipRepository =
     options.positionMembershipRepository ??
@@ -71,12 +77,61 @@ export async function registerOrganizationalStructureModule(
     options.departmentMembershipRepository ??
     (process.env.DATABASE_URL ? new PrismaDepartmentMembershipRepository() : undefined);
 
+  const sectorMembershipRepository =
+    options.sectorMembershipRepository ??
+    (process.env.DATABASE_URL ? new PrismaSectorMembershipRepository() : undefined);
+
+  // Registrar rotas de membros se tivermos todos os repositórios necessários
+  if (
+    departmentMembershipRepository &&
+    sectorMembershipRepository &&
+    positionMembershipRepository &&
+    departmentRepository &&
+    sectorRepository &&
+    positionRepository &&
+    options.userRepository
+  ) {
+    // Registrar rotas de membros de departamentos
+    await registerDepartmentMembersRoutes(app, {
+      departmentMembershipRepository,
+      departmentRepository,
+      userRepository: options.userRepository,
+      auditLogRepository,
+      eventBus,
+    });
+
+    // Registrar rotas de membros de setores
+    await registerSectorMembersRoutes(app, {
+      sectorMembershipRepository,
+      sectorRepository,
+      userRepository: options.userRepository,
+      auditLogRepository,
+      eventBus,
+    });
+
+    // Registrar rotas de membros de cargos
+    await registerPositionMembersRoutes(app, {
+      positionMembershipRepository,
+      positionRepository,
+      userRepository: options.userRepository,
+      auditLogRepository,
+      eventBus,
+    });
+  }
+
   // Aplicar hook de tenant nas rotas de estrutura organizacional
   if (options.organizationRepository && departmentRepository) {
     registerTenantHook(app, {
       organizationRepository: options.organizationRepository,
       extractOrgId: extractOrgIdFromParamsOrHeaders,
-      routes: ["/departments", "/sectors", "/positions"],
+      routes: [
+        "/departments",
+        "/sectors",
+        "/positions",
+        "/departments/:departmentId/members",
+        "/sectors/:sectorId/members",
+        "/positions/:positionId/members",
+      ],
     });
   }
 
@@ -86,6 +141,9 @@ export async function registerOrganizationalStructureModule(
       departmentRepository,
       sectorRepository,
       positionRepository,
+      departmentMembershipRepository,
+      sectorMembershipRepository,
+      positionMembershipRepository,
       auditLogRepository,
       eventBus,
     });
@@ -101,6 +159,6 @@ export async function registerOrganizationalStructureModule(
     eventBus,
     positionMembershipRepository,
     departmentMembershipRepository,
+    sectorMembershipRepository,
   };
 }
-

@@ -1,5 +1,4 @@
-import type { CategoryRepository } from "@morina/catalogo-domain";
-import { Category } from "@morina/catalogo-domain";
+import type { Category, CategoryRepository } from "@morina/catalogo-domain";
 import { describe, expect, it } from "vitest";
 
 import { CriarCategoriaUseCase } from "../src/use-cases/criar-categoria.use-case";
@@ -129,4 +128,3 @@ describe("CriarCategoriaUseCase", () => {
     ).rejects.toThrow("Categoria pai não encontrada");
   });
 });
-

@@ -2,9 +2,9 @@ import { Produto } from "@morina/catalogo-domain";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
-import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 import { InMemoryProdutoRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto.repository";
 import { InMemoryProdutoAuditoriaRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto-auditoria.repository";
+import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 
 const repository = new InMemoryProdutoRepository();
 const auditoriaRepository = new InMemoryProdutoAuditoriaRepository();
@@ -157,7 +157,10 @@ describe("Catálogo HTTP", () => {
     });
 
     expect(response.statusCode).toBe(200);
-    const body = response.json() as { itens: Array<{ status: string }>; proximoCursor: string | null };
+    const body = response.json() as {
+      itens: Array<{ status: string }>;
+      proximoCursor: string | null;
+    };
     expect(body.itens.every((item) => item.status === "ativo")).toBe(true);
   });
 

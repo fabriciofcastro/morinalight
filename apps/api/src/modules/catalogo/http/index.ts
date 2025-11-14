@@ -1,7 +1,7 @@
 import type {
   CategoryRepository,
-  ProdutoAuditoriaRepository,
   ProductVariantRepository,
+  ProdutoAuditoriaRepository,
   ProdutoRepository,
 } from "@morina/catalogo-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";

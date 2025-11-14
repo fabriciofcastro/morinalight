@@ -1,7 +1,7 @@
-import type { RepresentanteRepository } from "../../domain/repositories/representante-repository";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { RepresentanteProps, RepresentanteStatus } from "../../domain/entities/representante";
 import { Representante } from "../../domain/entities/representante";
-import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { RepresentanteRepository } from "../../domain/repositories/representante-repository";
 
 const prisma = getPrisma();
 
@@ -180,4 +180,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

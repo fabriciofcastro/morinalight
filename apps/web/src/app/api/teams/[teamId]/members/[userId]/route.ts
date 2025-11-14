@@ -28,13 +28,10 @@ export async function DELETE(
   _request: Request,
   { params }: { params: { teamId: string; userId: string } },
 ) {
-  const response = await fetch(
-    `${apiUrl}/teams/${params.teamId}/members/${params.userId}`,
-    {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    },
-  );
+  const response = await fetch(`${apiUrl}/teams/${params.teamId}/members/${params.userId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
 
   if (!response.ok) {
     const error = await response.json();
@@ -53,14 +50,11 @@ export async function PATCH(
 ) {
   const body = await request.json();
 
-  const response = await fetch(
-    `${apiUrl}/teams/${params.teamId}/members/${params.userId}`,
-    {
-      method: "PATCH",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(body),
-    },
-  );
+  const response = await fetch(`${apiUrl}/teams/${params.teamId}/members/${params.userId}`, {
+    method: "PATCH",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(body),
+  });
 
   if (!response.ok) {
     const error = await response.json();
@@ -73,4 +67,3 @@ export async function PATCH(
   const data = await response.json();
   return NextResponse.json(data);
 }
-

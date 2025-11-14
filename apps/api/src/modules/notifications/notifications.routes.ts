@@ -3,14 +3,8 @@ import {
   listarAuditoriaFeedInputSchema,
 } from "@morina/catalogo-application";
 import type { ProdutoAuditoriaRepository, ProdutoRepository } from "@morina/catalogo-domain";
-import {
-  ListarPrefichaAuditoriaFeedUseCase,
-  listarAuditoriaFeedInputSchema as listarPrefichaAuditoriaFeedInputSchema,
-} from "@morina/preficha-application";
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import { ListarPrefichaAuditoriaFeedUseCase } from "@morina/preficha-application";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
@@ -112,28 +106,30 @@ export async function registerNotificationsRoutes(app: FastifyInstance, deps: No
         produto: null,
         preficha: null,
       })),
-      ...(prefichaFeed?.itens.map((item: {
-        id: string;
-        acao: string;
-        criadoEm: Date;
-        actorId: string;
-        payload: unknown;
-        preficha: { prefichaId: string; produtoId: string; status: string } | null;
-      }) => ({
-        id: item.id,
-        tipo: item.acao,
-        criadoEm: item.criadoEm,
-        actorId: item.actorId,
-        payload: item.payload,
-        produto: null,
-        preficha: item.preficha
-          ? {
-              prefichaId: item.preficha.prefichaId,
-              produtoId: item.preficha.produtoId,
-              status: item.preficha.status,
-            }
-          : null,
-      })) ?? []),
+      ...(prefichaFeed?.itens.map(
+        (item: {
+          id: string;
+          acao: string;
+          criadoEm: Date;
+          actorId: string;
+          payload: unknown;
+          preficha: { prefichaId: string; produtoId: string; status: string } | null;
+        }) => ({
+          id: item.id,
+          tipo: item.acao,
+          criadoEm: item.criadoEm,
+          actorId: item.actorId,
+          payload: item.payload,
+          produto: null,
+          preficha: item.preficha
+            ? {
+                prefichaId: item.preficha.prefichaId,
+                produtoId: item.preficha.produtoId,
+                status: item.preficha.status,
+              }
+            : null,
+        }),
+      ) ?? []),
     ]
       .sort((a, b) => {
         const diff = b.criadoEm.getTime() - a.criadoEm.getTime();

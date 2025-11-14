@@ -1,22 +1,22 @@
 import type { FastifyInstance } from "fastify";
-import type { PermissionRepository } from "../domain/repositories/permission-repository";
-import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
-import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
-import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
+import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
 import type { PositionRepository } from "../../organizational-structure/domain/repositories/position-repository";
 import type { SectorRepository } from "../../organizational-structure/domain/repositories/sector-repository";
-import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
-import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
-import type { PositionMembershipRepository } from "../../organizational-structure/infra/prisma/prisma-position-membership.repository";
 import type { DepartmentMembershipRepository } from "../../organizational-structure/infra/prisma/prisma-department-membership.repository";
+import type { PositionMembershipRepository } from "../../organizational-structure/infra/prisma/prisma-position-membership.repository";
+import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
+import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../domain/repositories/permission-repository";
 import type { PermissionTemplateRepository } from "../domain/repositories/permission-template-repository";
-import { registerListUserPermissionsRoute } from "./list-user-permissions.route";
-import { registerPositionPermissionsRoute } from "./position-permissions.route";
-import { registerSectorPermissionsRoute } from "./sector-permissions.route";
+import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
+import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
 import { registerDepartmentPermissionsRoute } from "./department-permissions.route";
+import { registerListUserPermissionsRoute } from "./list-user-permissions.route";
 import { registerPermissionAuditLogRoute } from "./permission-audit-log.route";
 import { registerPermissionTemplatesRoute } from "./permission-templates.route";
+import { registerPositionPermissionsRoute } from "./position-permissions.route";
+import { registerSectorPermissionsRoute } from "./sector-permissions.route";
 
 type PermissionsHttpDeps = {
   permissionRepository: PermissionRepository;
@@ -103,5 +103,3 @@ export async function registerPermissionsHttpRoutes(
     });
   }
 }
-
-

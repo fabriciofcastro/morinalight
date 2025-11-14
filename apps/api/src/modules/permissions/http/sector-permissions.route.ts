@@ -1,12 +1,12 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { randomUUID } from "node:crypto";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { SectorRepository } from "../../organizational-structure/domain/repositories/sector-repository";
 import { AtribuirPermissaoSetorUseCase } from "../application/use-cases/atribuir-permissao-setor.use-case";
 import { ListarPermissoesSetorUseCase } from "../application/use-cases/listar-permissoes-setor.use-case";
-import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
-import type { SectorRepository } from "../../organizational-structure/domain/repositories/sector-repository";
-import type { PermissionRepository } from "../domain/repositories/permission-repository";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../domain/repositories/permission-repository";
+import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
 
 type Dependencies = {
   sectorPermissionRepository: SectorPermissionRepository;
@@ -15,10 +15,7 @@ type Dependencies = {
   auditLogRepository?: PermissionAuditLogRepository;
 };
 
-export async function registerSectorPermissionsRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerSectorPermissionsRoute(app: FastifyInstance, deps: Dependencies) {
   // Listar permissões de um setor
   app.get(
     "/sectors/:sectorId/permissions",
@@ -182,4 +179,3 @@ export async function registerSectorPermissionsRoute(
     },
   );
 }
-

@@ -23,24 +23,24 @@ export class PrismaOrganizationAuditLogRepository implements OrganizationAuditLo
     createdAt?: Date;
   }): Promise<void> {
     const createdAt = entry.createdAt ?? new Date();
-    
+
     // Verificar se a organização existe antes de criar o log
     // Se orgId for "system" ou não existir, tentar usar uma organização padrão ou pular o log
     let orgIdToUse = entry.orgId;
-    
+
     if (entry.orgId === "system") {
       // Tentar encontrar uma organização padrão ou criar uma organização "system"
       const systemOrg = await prisma.organization.findUnique({
         where: { id: "system" },
       });
-      
+
       if (!systemOrg) {
         // Se não existir organização "system", tentar usar a primeira organização disponível
         // ou pular o log de auditoria para evitar erro de foreign key
         const firstOrg = await prisma.organization.findFirst({
           select: { id: true },
         });
-        
+
         if (firstOrg) {
           orgIdToUse = firstOrg.id;
         } else {
@@ -58,7 +58,7 @@ export class PrismaOrganizationAuditLogRepository implements OrganizationAuditLo
         where: { id: entry.orgId },
         select: { id: true },
       });
-      
+
       if (!orgExists) {
         console.warn(
           `Não foi possível criar log de auditoria: organização "${entry.orgId}" não existe`,
@@ -66,7 +66,7 @@ export class PrismaOrganizationAuditLogRepository implements OrganizationAuditLo
         return;
       }
     }
-    
+
     const registro = await prisma.organizationAuditLog.create({
       data: {
         orgId: orgIdToUse,

@@ -1,23 +1,24 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, cn } from "@morina/ui";
+import { Button, cn, FormSelect, GlassCard, Input, Label } from "@morina/ui";
 import {
   Building2,
-  Users,
-  UserCircle,
+  ChevronDown,
+  ChevronRight,
+  Edit,
+  Network,
   Plus,
   Search,
-  Edit,
   Trash2,
+  UserCircle,
   UserPlus,
-  Network,
-  ChevronRight,
-  ChevronDown,
+  Users,
 } from "lucide-react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { MembersManager } from "@/components/organizational-structure/members-manager";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { MembersManager } from "@/components/organizational-structure/members-manager";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type OrganizationalUnit = {
   unitId: string;
@@ -135,7 +136,11 @@ export function OrganizationalStructureClient() {
       loadData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [
+    activeTab, // Para a visualização hierárquica, precisamos carregar tudo
+    loadAllData,
+    loadData,
+  ]);
 
   // Carregar dados quando a busca mudar (debounce)
   useEffect(() => {
@@ -145,7 +150,7 @@ export function OrganizationalStructureClient() {
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search]);
+  }, [loadData]);
 
   async function loadAllData() {
     setLoading(true);
@@ -357,9 +362,7 @@ export function OrganizationalStructureClient() {
     e.preventDefault();
 
     try {
-      const url = editingTeam
-        ? `/api/teams/${editingTeam.teamId}`
-        : "/api/teams";
+      const url = editingTeam ? `/api/teams/${editingTeam.teamId}` : "/api/teams";
       const method = editingTeam ? "PUT" : "POST";
 
       const body = {
@@ -656,9 +659,7 @@ export function OrganizationalStructureClient() {
                     <Input
                       id="unit-name"
                       value={unitFormData.name}
-                      onChange={(e) =>
-                        setUnitFormData({ ...unitFormData, name: e.target.value })
-                      }
+                      onChange={(e) => setUnitFormData({ ...unitFormData, name: e.target.value })}
                       required
                     />
                   </div>
@@ -667,9 +668,7 @@ export function OrganizationalStructureClient() {
                     <Input
                       id="unit-code"
                       value={unitFormData.code}
-                      onChange={(e) =>
-                        setUnitFormData({ ...unitFormData, code: e.target.value })
-                      }
+                      onChange={(e) => setUnitFormData({ ...unitFormData, code: e.target.value })}
                       required
                     />
                   </div>
@@ -687,9 +686,7 @@ export function OrganizationalStructureClient() {
                     label="Unidade Pai"
                     id="unit-parentId"
                     value={unitFormData.parentId}
-                    onChange={(e) =>
-                      setUnitFormData({ ...unitFormData, parentId: e.target.value })
-                    }
+                    onChange={(e) => setUnitFormData({ ...unitFormData, parentId: e.target.value })}
                   >
                     <option value="">Nenhuma</option>
                     {units
@@ -780,11 +777,7 @@ export function OrganizationalStructureClient() {
                         >
                           <UserPlus className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditUnit(unit)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleEditUnit(unit)}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
@@ -843,7 +836,10 @@ export function OrganizationalStructureClient() {
                       id="dept-description"
                       value={departmentFormData.description}
                       onChange={(e) =>
-                        setDepartmentFormData({ ...departmentFormData, description: e.target.value })
+                        setDepartmentFormData({
+                          ...departmentFormData,
+                          description: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -999,9 +995,7 @@ export function OrganizationalStructureClient() {
                     <Input
                       id="team-name"
                       value={teamFormData.name}
-                      onChange={(e) =>
-                        setTeamFormData({ ...teamFormData, name: e.target.value })
-                      }
+                      onChange={(e) => setTeamFormData({ ...teamFormData, name: e.target.value })}
                       required
                     />
                   </div>
@@ -1010,9 +1004,7 @@ export function OrganizationalStructureClient() {
                     <Input
                       id="team-code"
                       value={teamFormData.code}
-                      onChange={(e) =>
-                        setTeamFormData({ ...teamFormData, code: e.target.value })
-                      }
+                      onChange={(e) => setTeamFormData({ ...teamFormData, code: e.target.value })}
                       required
                     />
                   </div>
@@ -1121,11 +1113,7 @@ export function OrganizationalStructureClient() {
                         >
                           <UserPlus className="h-4 w-4" />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditTeam(team)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => handleEditTeam(team)}>
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
@@ -1155,9 +1143,9 @@ export function OrganizationalStructureClient() {
 
   function renderHierarchyView() {
     // Construir árvore hierárquica
-    const unitsMap = new Map(units.map((u) => [u.unitId, u]));
-    const departmentsMap = new Map(departments.map((d) => [d.departmentId, d]));
-    const teamsMap = new Map(teams.map((t) => [t.teamId, t]));
+    const _unitsMap = new Map(units.map((u) => [u.unitId, u]));
+    const _departmentsMap = new Map(departments.map((d) => [d.departmentId, d]));
+    const _teamsMap = new Map(teams.map((t) => [t.teamId, t]));
 
     // Organizar unidades por hierarquia
     const rootUnits = units.filter((u) => !u.parentId);
@@ -1367,7 +1355,9 @@ export function OrganizationalStructureClient() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => onManageMembers("department", department.departmentId, department.name)}
+                  onClick={() =>
+                    onManageMembers("department", department.departmentId, department.name)
+                  }
                 >
                   <UserPlus className="h-3 w-3" />
                 </Button>
@@ -1650,7 +1640,13 @@ export function OrganizationalStructureClient() {
           className="w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
-          {showForm ? "Cancelar" : activeTab === "units" ? "Nova Unidade" : activeTab === "departments" ? "Novo Departamento" : "Novo Time"}
+          {showForm
+            ? "Cancelar"
+            : activeTab === "units"
+              ? "Nova Unidade"
+              : activeTab === "departments"
+                ? "Novo Departamento"
+                : "Novo Time"}
         </Button>
       </div>
 
@@ -1674,4 +1670,3 @@ export function OrganizationalStructureClient() {
     </div>
   );
 }
-

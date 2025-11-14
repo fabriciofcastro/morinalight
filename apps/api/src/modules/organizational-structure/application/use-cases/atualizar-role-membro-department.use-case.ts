@@ -1,13 +1,10 @@
-import { z } from "zod";
-
 import type { DomainEventBus } from "@morina/shared-kernel";
+import { z } from "zod";
 
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { DepartmentMembershipRepository } from "../../infra/prisma/prisma-department-membership.repository";
 import { organizationRoleSchema } from "../schemas/membership.schema";
-import type {
-  DepartmentMembershipRepository,
-} from "../../infra/prisma/prisma-department-membership.repository";
 
 const atualizarRoleMembroDepartamentoInputSchema = z.object({
   orgId: z.string().min(1),
@@ -103,4 +100,3 @@ export class AtualizarRoleMembroDepartamentoUseCase {
     return updatedMembership;
   }
 }
-

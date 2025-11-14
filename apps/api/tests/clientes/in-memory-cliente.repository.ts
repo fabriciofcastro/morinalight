@@ -1,5 +1,5 @@
+import type { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
 import type { ClienteRepository } from "../../src/modules/clientes/domain/repositories/cliente-repository";
-import { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
 
 export class InMemoryClienteRepository implements ClienteRepository {
   private readonly items = new Map<string, Cliente>();
@@ -34,7 +34,7 @@ export class InMemoryClienteRepository implements ClienteRepository {
           return (
             c.dados.nome.toLowerCase().includes(busca) ||
             c.dados.documento.toLowerCase().includes(busca) ||
-            (c.dados.email && c.dados.email.toLowerCase().includes(busca))
+            c.dados.email?.toLowerCase().includes(busca)
           );
         }
         return true;
@@ -54,4 +54,3 @@ export class InMemoryClienteRepository implements ClienteRepository {
     }).length;
   }
 }
-

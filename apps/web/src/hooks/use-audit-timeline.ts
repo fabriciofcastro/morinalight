@@ -165,14 +165,12 @@ export function useAuditTimeline({
 
     try {
       const auditoria = await fetchAudit(cursorToFetch);
-      const freshItems = auditoria.itens
-        .map(normalizeAuditItem)
-        .filter((item) => {
-          if (seenIdsRef.current.has(item.id)) return false;
-          if (!matchesFilters(item)) return false;
-          seenIdsRef.current.add(item.id);
-          return true;
-        });
+      const freshItems = auditoria.itens.map(normalizeAuditItem).filter((item) => {
+        if (seenIdsRef.current.has(item.id)) return false;
+        if (!matchesFilters(item)) return false;
+        seenIdsRef.current.add(item.id);
+        return true;
+      });
 
       setState((prev) => ({
         items: sortByDateDesc([...prev.items, ...freshItems]),

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label, FormField, FormTextarea, cn } from "@morina/ui";
-import { Plus, Search, Users, Building2, Edit, Trash2, Eye } from "lucide-react";
+import { Button, FormField, FormTextarea, GlassCard, Input } from "@morina/ui";
+import { Building2, Edit, Eye, Plus, Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState, useTransition } from "react";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { useOfflineSync } from "@/hooks/use-offline-sync";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";
-import { useOfflineSync } from "@/hooks/use-offline-sync";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type Organization = {
   id: string;
@@ -38,7 +38,7 @@ export function OrganizationsClient() {
 
   useEffect(() => {
     loadOrganizations();
-  }, []);
+  }, [loadOrganizations]);
 
   async function loadOrganizations() {
     setLoading(true);
@@ -81,7 +81,7 @@ export function OrganizationsClient() {
           setShowForm(false);
           setEditingOrganization(null);
           setFormData({ name: "", description: "" });
-          
+
           if (data.queued) {
             // Operação enfileirada - recarregar após um delay para dar tempo de sincronizar
             setTimeout(() => loadOrganizations(), 2000);
@@ -234,9 +234,7 @@ export function OrganizationsClient() {
       ) : filteredOrganizations.length === 0 ? (
         <GlassCard className="p-12 text-center">
           <Building2 className="mx-auto h-12 w-12 text-[hsl(var(--text-3))]" />
-          <p className="mt-4 text-sm text-[hsl(var(--text-3))]">
-            Nenhuma organização encontrada.
-          </p>
+          <p className="mt-4 text-sm text-[hsl(var(--text-3))]">Nenhuma organização encontrada.</p>
         </GlassCard>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

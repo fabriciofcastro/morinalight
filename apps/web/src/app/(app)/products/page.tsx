@@ -21,7 +21,8 @@ export default function ProductsPage() {
           Produtos
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie o catálogo de produtos da sua organização. Crie, edite e acompanhe o status de cada produto.
+          Gerencie o catálogo de produtos da sua organização. Crie, edite e acompanhe o status de
+          cada produto.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function ProductsPage() {
     </div>
   );
 }
-

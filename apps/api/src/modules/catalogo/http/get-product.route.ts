@@ -1,7 +1,6 @@
 import { ObterProdutoUseCase, obterProdutoInputSchema } from "@morina/catalogo-application";
 import type { ProdutoRepository } from "@morina/catalogo-domain";
 import type { FastifyInstance } from "fastify";
-import { z } from "zod";
 
 import { getTenant } from "../../../core/tenant/tenant.utils";
 

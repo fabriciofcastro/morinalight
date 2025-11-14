@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
 import { createRealtimeClient, type RealtimeEvent } from "@morina/realtime-client";
-import { realtimeUrl, defaultOrgId, defaultActorId } from "@/lib/env";
+import { useCallback, useEffect, useRef } from "react";
+import { defaultActorId, defaultOrgId, realtimeUrl } from "@/lib/env";
 
 type NotificationEvent = RealtimeEvent<{
   type: "success" | "error" | "info" | "warning";
@@ -42,7 +42,7 @@ export function useRealtimeNotifications(
         event.name?.includes("Notification")
       ) {
         const notificationEvent = event as NotificationEvent;
-        
+
         // Disparar evento customizado para o NotificationCenter
         window.dispatchEvent(
           new CustomEvent("realtime-notification", {
@@ -124,4 +124,3 @@ export function useRealtimeNotifications(
     },
   };
 }
-

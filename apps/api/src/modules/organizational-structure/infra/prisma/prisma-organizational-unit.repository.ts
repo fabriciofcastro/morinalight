@@ -1,3 +1,5 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
+import { OrganizationalUnit } from "../../domain/entities/organizational-unit";
 import type {
   OrganizationalUnitListaFiltro,
   OrganizationalUnitListaPagina,
@@ -5,8 +7,6 @@ import type {
   OrganizationalUnitRepository,
   OrganizationalUnitStatus,
 } from "../../domain/repositories/organizational-unit-repository";
-import { OrganizationalUnit } from "../../domain/entities/organizational-unit";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -189,4 +189,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

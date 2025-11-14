@@ -67,4 +67,3 @@ export const listarTeamsResultadoSchema = z.object({
 });
 
 export type ListarTeamsResultado = z.infer<typeof listarTeamsResultadoSchema>;
-

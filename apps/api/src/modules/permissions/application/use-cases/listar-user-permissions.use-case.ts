@@ -1,11 +1,11 @@
+import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
+import type { DepartmentMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-department-membership.repository";
+import type { PositionMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-position-membership.repository";
+import type { OrganizationRepository } from "../../../organizations/repositories/organization.repository";
+import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
-import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
-import type { OrganizationRepository } from "../../../organizations/repositories/organization.repository";
-import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
-import type { PositionMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-position-membership.repository";
-import type { DepartmentMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import {
   listarUserPermissionsInputSchema,
   userPermissionViewSchema,
@@ -144,23 +144,25 @@ export class ListarUserPermissionsUseCase {
         // Buscar cargos para obter os setores
         const positions = await Promise.all(
           positionIds.map((positionId) =>
-            this.deps.positionRepository!.encontrarPorId(input.orgId, positionId),
+            this.deps.positionRepository?.encontrarPorId(input.orgId, positionId),
           ),
         );
 
-        const sectorIds = positions
-          .filter((p) => p !== null)
-          .map((p) => p!.dados.sectorId);
+        const sectorIds = positions.filter((p) => p !== null).map((p) => p?.dados.sectorId);
 
         if (sectorIds.length > 0) {
-          const sectorPermissions =
-            await this.deps.sectorPermissionRepository.listarPorSectors(input.orgId, sectorIds);
+          const sectorPermissions = await this.deps.sectorPermissionRepository.listarPorSectors(
+            input.orgId,
+            sectorIds,
+          );
 
           // Adicionar permissões dos setores
           for (const sp of sectorPermissions) {
             let permissionKey = sp.permissionId;
             try {
-              const permission = await this.deps.permissionRepository.encontrarPorId(sp.permissionId);
+              const permission = await this.deps.permissionRepository.encontrarPorId(
+                sp.permissionId,
+              );
               if (permission) {
                 permissionKey = permission.permissionKey;
               }
@@ -182,16 +184,16 @@ export class ListarUserPermissionsUseCase {
     // Ordem de precedência: role < departamento < setor < cargo < customizada
     const allPermissionIds = new Set<string>();
     rolePermissions.forEach((p) => allPermissionIds.add(p));
-    
+
     // Permissões dos departamentos sobrescrevem role
     departmentPermissionIds.forEach((p) => allPermissionIds.add(p));
-    
+
     // Permissões dos setores sobrescrevem departamento e role
     sectorPermissionIds.forEach((p) => allPermissionIds.add(p));
-    
+
     // Permissões dos cargos sobrescrevem setor, departamento e role
     positionPermissionIds.forEach((p) => allPermissionIds.add(p));
-    
+
     // Permissões customizadas sobrescrevem tudo
     customPermissions.forEach((p) => {
       if (p.granted) {
@@ -309,5 +311,3 @@ export class ListarUserPermissionsUseCase {
     return rolePermissionsMap[role] || [];
   }
 }
-
-

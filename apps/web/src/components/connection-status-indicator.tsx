@@ -1,30 +1,30 @@
 "use client";
 
+import { cn } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, Loader2, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useConnectionStatus } from "@/hooks/use-connection-status";
-import { cn } from "@morina/ui";
-import { Wifi, WifiOff, Loader2, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 type ConnectionStatusIndicatorProps = {
   position?: "fixed" | "absolute";
   className?: string;
 };
 
-export function ConnectionStatusIndicator({ 
+export function ConnectionStatusIndicator({
   position = "fixed",
-  className 
+  className,
 }: ConnectionStatusIndicatorProps = {}) {
   const [mounted, setMounted] = useState(false);
-  
+
   // Sempre chamar o hook (regra dos hooks do React)
   // O hook já tem proteção para SSR
   const { status, isOnline, backendOnline, realtimeConnected, lastChecked } = useConnectionStatus();
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   if (!mounted) {
     return null;
   }
@@ -107,11 +107,8 @@ export function ConnectionStatusIndicator({
           aria-hidden="true"
         />
         <span className="hidden sm:inline">{config.label}</span>
-        {!isOnline && (
-          <span className="ml-1 text-[10px] opacity-75">(Modo offline)</span>
-        )}
+        {!isOnline && <span className="ml-1 text-[10px] opacity-75">(Modo offline)</span>}
       </motion.div>
     </AnimatePresence>
   );
 }
-

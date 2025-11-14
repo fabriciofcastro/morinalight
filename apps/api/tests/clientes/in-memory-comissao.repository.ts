@@ -1,5 +1,5 @@
+import type { Comissao } from "../../src/modules/clientes/domain/entities/comissao";
 import type { ComissaoRepository } from "../../src/modules/clientes/domain/repositories/comissao-repository";
-import { Comissao } from "../../src/modules/clientes/domain/entities/comissao";
 
 export class InMemoryComissaoRepository implements ComissaoRepository {
   private readonly items = new Map<string, Comissao>();
@@ -70,4 +70,3 @@ export class InMemoryComissaoRepository implements ComissaoRepository {
       .reduce((sum, c) => sum + c.dados.valorComissao, 0);
   }
 }
-

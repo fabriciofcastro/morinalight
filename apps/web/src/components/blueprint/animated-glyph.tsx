@@ -1,7 +1,7 @@
- "use client";
+"use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -100,13 +100,13 @@ export function AnimatedGlyph({
             transition: "opacity 0.4s ease",
           }}
         />
-          <Player
-            animationData={animationData}
-            loop
-            autoplay
-            className="relative z-10"
-            style={{ width: resolvedSize, height: resolvedSize }}
-          />
+        <Player
+          animationData={animationData}
+          loop
+          autoplay
+          className="relative z-10"
+          style={{ width: resolvedSize, height: resolvedSize }}
+        />
       </div>
     );
   }
@@ -255,7 +255,11 @@ function SentinelGlyph({ accentColor, glowColor, size, paused }: GlyphComponentP
       <motion.span
         aria-hidden
         className="absolute rounded-full blur-xl"
-        animate={paused ? { scale: 1, opacity: 0.6 } : { scale: [0.9, 1.05, 0.95], opacity: [0.5, 0.85, 0.6] }}
+        animate={
+          paused
+            ? { scale: 1, opacity: 0.6 }
+            : { scale: [0.9, 1.05, 0.95], opacity: [0.5, 0.85, 0.6] }
+        }
         transition={{ duration: 6, repeat: paused ? 0 : Infinity, repeatType: "mirror" }}
         style={{
           width: size * 0.42,
@@ -370,9 +374,7 @@ function PulseCore({ accentColor, paused }: PulseCoreProps) {
         aria-hidden
         className="relative z-10 inline-flex h-16 w-16 items-center justify-center rounded-full border"
         animate={
-          paused
-            ? { opacity: 1, rotate: 0 }
-            : { opacity: [0.9, 1, 0.9], rotate: [0, 8, -6, 0] }
+          paused ? { opacity: 1, rotate: 0 } : { opacity: [0.9, 1, 0.9], rotate: [0, 8, -6, 0] }
         }
         transition={{ duration: 4.4, repeat: paused ? 0 : Infinity }}
         style={{
@@ -400,12 +402,7 @@ type SparkParticlesProps = {
   radius?: number;
 };
 
-function SparkParticles({
-  accentColor,
-  paused,
-  density = 5,
-  radius = 78,
-}: SparkParticlesProps) {
+function SparkParticles({ accentColor, paused, density = 5, radius = 78 }: SparkParticlesProps) {
   const sparks = useMemo(
     () =>
       Array.from({ length: density }, (_, index) => ({
@@ -501,5 +498,3 @@ function OrbitalRings({ accentColor, size, paused }: OrbitalRingsProps) {
     </>
   );
 }
-
-

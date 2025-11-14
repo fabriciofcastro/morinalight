@@ -48,5 +48,3 @@ export async function registerDeleteUserRoute(app: FastifyInstance, deps: Delete
     return reply.status(204).send();
   });
 }
-
-

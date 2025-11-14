@@ -1,6 +1,6 @@
+import { randomUUID } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { randomUUID } from "node:crypto";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 import type { OrganizationRepository } from "../repositories/organization.repository";
 import type { OrganizationAuditLogRepository } from "../repositories/organization-audit-log.repository";
@@ -68,7 +68,11 @@ export async function registerCreateOrganizationRoute(
 
     // Vincular o criador como owner
     if (deps.organizationRepository.vincularUsuario) {
-      await deps.organizationRepository.vincularUsuario(organizationId, request.auth.userId, "owner");
+      await deps.organizationRepository.vincularUsuario(
+        organizationId,
+        request.auth.userId,
+        "owner",
+      );
     }
 
     // Registrar auditoria
@@ -86,5 +90,3 @@ export async function registerCreateOrganizationRoute(
     return reply.status(201).send({ organization });
   });
 }
-
-

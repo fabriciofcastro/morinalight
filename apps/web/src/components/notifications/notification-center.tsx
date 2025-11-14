@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, CheckCircle2, AlertCircle, Info, XCircle } from "lucide-react";
 import { cn } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, Bell, CheckCircle2, Info, X, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useConnectionStatus } from "@/hooks/use-connection-status";
 
 type Notification = {
@@ -30,7 +30,8 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
       addNotification({
         type: "warning",
         title: "Conexão perdida",
-        message: "Você está offline. Alterações serão sincronizadas quando a conexão for restaurada.",
+        message:
+          "Você está offline. Alterações serão sincronizadas quando a conexão for restaurada.",
       });
     } else if (isOnline && status === "online") {
       addNotification({
@@ -39,7 +40,7 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
         message: "Conexão restaurada. Sincronizando alterações...",
       });
     }
-  }, [status, isOnline]);
+  }, [status, isOnline, addNotification]);
 
   // Escutar eventos de notificação via WebSocket
   useEffect(() => {
@@ -65,7 +66,7 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
 
     // Escutar evento customizado de notificações realtime
     window.addEventListener("realtime-notification", handleRealtimeNotification as EventListener);
-    
+
     // Escutar evento customizado de notificações locais
     const handleLocalNotification = (event: CustomEvent) => {
       addNotification(event.detail);
@@ -73,10 +74,13 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
     window.addEventListener("add-notification", handleLocalNotification as EventListener);
 
     return () => {
-      window.removeEventListener("realtime-notification", handleRealtimeNotification as EventListener);
+      window.removeEventListener(
+        "realtime-notification",
+        handleRealtimeNotification as EventListener,
+      );
       window.removeEventListener("add-notification", handleLocalNotification as EventListener);
     };
-  }, []);
+  }, [addNotification]);
 
   function addNotification(notification: Omit<Notification, "id" | "timestamp" | "read">) {
     const newNotification: Notification = {
@@ -103,10 +107,8 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }
 
-  function markAsRead(id: string) {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+  function _markAsRead(id: string) {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   }
 
   function markAllAsRead() {
@@ -171,9 +173,7 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
             className="absolute right-0 top-full mt-2 w-96 rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_98%,transparent)] p-4 shadow-xl backdrop-blur-xl"
           >
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-[var(--fg)]">
-                Notificações
-              </h3>
+              <h3 className="text-sm font-semibold text-[var(--fg)]">Notificações</h3>
               {unreadCount > 0 && (
                 <button
                   onClick={markAllAsRead}
@@ -243,5 +243,3 @@ export const notificationCenter = {
     );
   },
 };
-
-

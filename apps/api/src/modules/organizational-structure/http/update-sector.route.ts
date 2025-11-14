@@ -1,8 +1,8 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { AtualizarSectorUseCase } from "../application/use-cases/atualizar-sector.use-case";
-import type { SectorRepository } from "../domain/repositories/sector-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { AtualizarSectorUseCase } from "../application/use-cases/atualizar-sector.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { SectorRepository } from "../domain/repositories/sector-repository";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -24,7 +24,6 @@ export async function registerUpdateSectorRoute(app: FastifyInstance, deps: Depe
     }
 
     try {
-
       const params = request.params as { sectorId: string };
 
       const useCase = new AtualizarSectorUseCase({
@@ -47,4 +46,3 @@ export async function registerUpdateSectorRoute(app: FastifyInstance, deps: Depe
     }
   });
 }
-

@@ -39,13 +39,9 @@ export async function GET(request: Request) {
   });
 
   if (!response.ok) {
-    return NextResponse.json(
-      { message: "Erro ao buscar comissões" },
-      { status: response.status },
-    );
+    return NextResponse.json({ message: "Erro ao buscar comissões" }, { status: response.status });
   }
 
   const data = await response.json();
   return NextResponse.json(data);
 }
-

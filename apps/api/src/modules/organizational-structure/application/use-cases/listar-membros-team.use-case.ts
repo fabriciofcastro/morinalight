@@ -1,8 +1,6 @@
 import type { UserRepository } from "../../../users/repositories/user.repository";
-import type {
-  TeamMembershipRepository,
-} from "../../infra/prisma/prisma-team-membership.repository";
 import type { TeamRepository } from "../../domain/repositories/team-repository";
+import type { TeamMembershipRepository } from "../../infra/prisma/prisma-team-membership.repository";
 import type { MemberInfo } from "./listar-membros-unidade.use-case";
 
 export class ListarMembrosTeamUseCase {
@@ -56,4 +54,3 @@ export class ListarMembrosTeamUseCase {
     });
   }
 }
-

@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
-import { Button, GlassCard, Input, Label } from "@morina/ui";
+import { Button, GlassCard, Input } from "@morina/ui";
 import {
-  Search,
+  Calendar,
   CheckCircle2,
   Clock,
-  XCircle,
-  DollarSign,
-  Percent,
-  Calendar,
-  User,
-  FileSignature,
   CreditCard,
+  DollarSign,
+  FileSignature,
+  Percent,
+  Search,
+  User,
+  XCircle,
 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Comissao = {
@@ -66,7 +66,7 @@ export function ComissoesClient() {
   useEffect(() => {
     loadRepresentantes();
     loadComissoes();
-  }, [statusFilter, representanteFilter, dataInicio, dataFim]);
+  }, [loadComissoes, loadRepresentantes]);
 
   async function loadRepresentantes() {
     setLoadingRepresentantes(true);
@@ -190,9 +190,7 @@ export function ComissoesClient() {
   }
 
   function getRepresentanteNome(representanteId: string) {
-    const representante = representantes.find(
-      (r) => r.representanteId === representanteId,
-    );
+    const representante = representantes.find((r) => r.representanteId === representanteId);
     return representante?.nome || "Representante não encontrado";
   }
 
@@ -226,10 +224,7 @@ export function ComissoesClient() {
     }
   }
 
-  const totalComissoes = comissoes.reduce(
-    (sum, c) => sum + c.valorComissao,
-    0,
-  );
+  const totalComissoes = comissoes.reduce((sum, c) => sum + c.valorComissao, 0);
   const totalPagas = comissoes
     .filter((c) => c.status === "paga")
     .reduce((sum, c) => sum + c.valorComissao, 0);
@@ -400,15 +395,13 @@ export function ComissoesClient() {
                     {comissao.dataCalculo && (
                       <p className="flex items-center gap-2">
                         <FileSignature className="h-4 w-4" />
-                        Assinada em:{" "}
-                        {new Date(comissao.dataCalculo).toLocaleDateString("pt-BR")}
+                        Assinada em: {new Date(comissao.dataCalculo).toLocaleDateString("pt-BR")}
                       </p>
                     )}
                     {comissao.dataPagamento && (
                       <p className="flex items-center gap-2">
                         <CreditCard className="h-4 w-4" />
-                        Paga em:{" "}
-                        {new Date(comissao.dataPagamento).toLocaleDateString("pt-BR")}
+                        Paga em: {new Date(comissao.dataPagamento).toLocaleDateString("pt-BR")}
                       </p>
                     )}
                     {comissao.numeroPagamento && (
@@ -454,4 +447,3 @@ export function ComissoesClient() {
     </div>
   );
 }
-

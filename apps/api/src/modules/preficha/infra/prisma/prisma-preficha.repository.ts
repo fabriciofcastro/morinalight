@@ -162,7 +162,10 @@ export class PrismaPrefichaRepository implements PrefichaRepository {
     return record ? toDomain(record) : null;
   }
 
-  async listarPorOrg(orgId: string, filtro: PrefichaListaFiltro = {}): Promise<PrefichaListaPagina> {
+  async listarPorOrg(
+    orgId: string,
+    filtro: PrefichaListaFiltro = {},
+  ): Promise<PrefichaListaPagina> {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
     const andFilters: Array<Record<string, unknown>> = [];
@@ -253,4 +256,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

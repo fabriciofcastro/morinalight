@@ -137,4 +137,3 @@ export class Department {
     this.props.updatedAt = new Date();
   }
 }
-

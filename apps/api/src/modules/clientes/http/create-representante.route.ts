@@ -1,19 +1,13 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { CriarRepresentanteUseCase } from "../application/use-cases/criar-representante.use-case";
-import type {
-  ClienteRepository,
-  RepresentanteRepository,
-} from "../domain/repositories";
+import type { ClienteRepository, RepresentanteRepository } from "../domain/repositories";
 
 type Dependencies = {
   clienteRepository: ClienteRepository;
   representanteRepository: RepresentanteRepository;
 };
 
-export async function registerCreateRepresentanteRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerCreateRepresentanteRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/representantes", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
     const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
@@ -54,4 +48,3 @@ export async function registerCreateRepresentanteRoute(
     }
   });
 }
-

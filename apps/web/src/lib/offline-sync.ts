@@ -2,11 +2,11 @@
 
 import { getAuthHeaders } from "@/lib/auth-client";
 import {
-  type OfflineOperation,
-  getPendingOperations,
-  updateOperationStatus,
-  removeOperation,
   cleanupOldOperations,
+  getPendingOperations,
+  type OfflineOperation,
+  removeOperation,
+  updateOperationStatus,
 } from "./offline-queue";
 
 type SyncProgress = {
@@ -61,7 +61,7 @@ export async function syncOfflineOperations(callbacks?: SyncCallbacks): Promise<
           await updateOperationStatus(
             operation.id,
             operation.retries >= 3 ? "failed" : "pending",
-            true
+            true,
           );
           progress.failed++;
         }
@@ -70,7 +70,7 @@ export async function syncOfflineOperations(callbacks?: SyncCallbacks): Promise<
         await updateOperationStatus(
           operation.id,
           operation.retries >= 3 ? "failed" : "pending",
-          true
+          true,
         );
         progress.failed++;
       }
@@ -180,4 +180,3 @@ export function createAutoSync() {
 
   return { start, stop, sync };
 }
-

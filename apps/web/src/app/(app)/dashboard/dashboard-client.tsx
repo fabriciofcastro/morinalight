@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassCard } from "@morina/ui";
-import { Package, Users, DollarSign, TrendingUp, ShoppingCart, BarChart3 } from "lucide-react";
+import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
 import Link from "next/link";
 
 type StatCard = {
@@ -74,7 +74,9 @@ export function DashboardClient() {
                     <p className="mt-2 text-2xl font-bold text-[var(--fg)]">{stat.value}</p>
                     <p className="mt-1 text-xs text-green-500">{stat.change}</p>
                   </div>
-                  <div className={`rounded-lg bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] p-3 ${stat.color}`}>
+                  <div
+                    className={`rounded-lg bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] p-3 ${stat.color}`}
+                  >
                     <Icon className="h-6 w-6" />
                   </div>
                 </div>

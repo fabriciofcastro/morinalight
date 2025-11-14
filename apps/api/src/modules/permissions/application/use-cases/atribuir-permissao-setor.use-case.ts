@@ -1,9 +1,9 @@
-import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
-import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
-import type { PermissionRepository } from "../../domain/repositories/permission-repository";
-import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
+import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../../domain/repositories/permission-repository";
+import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 
 const atribuirPermissaoSetorInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -28,10 +28,7 @@ export class AtribuirPermissaoSetorUseCase {
     const input = atribuirPermissaoSetorInputSchema.parse(rawInput);
 
     // Verificar se o setor existe
-    const sector = await this.deps.sectorRepository.encontrarPorId(
-      input.orgId,
-      input.sectorId,
-    );
+    const sector = await this.deps.sectorRepository.encontrarPorId(input.orgId, input.sectorId);
 
     if (!sector) {
       throw new Error("Setor não encontrado");
@@ -119,4 +116,3 @@ export class AtribuirPermissaoSetorUseCase {
     };
   }
 }
-

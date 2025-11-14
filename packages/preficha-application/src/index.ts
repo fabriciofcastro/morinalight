@@ -7,5 +7,3 @@ export * from "./use-cases/get-preficha.use-case";
 export * from "./use-cases/list-audit-feed.use-case";
 export * from "./use-cases/list-prefichas.use-case";
 export * from "./use-cases/reject-preficha.use-case";
-
-

@@ -1,6 +1,11 @@
 import { randomUUID } from "node:crypto";
 
-export type ContratoStatus = "rascunho" | "pendente_assinatura" | "vigente" | "encerrado" | "cancelado";
+export type ContratoStatus =
+  | "rascunho"
+  | "pendente_assinatura"
+  | "vigente"
+  | "encerrado"
+  | "cancelado";
 
 export type ContratoProps = {
   id: string;
@@ -76,7 +81,9 @@ export class Contrato {
 
   assinar(assinadoPor: string) {
     if (this.props.status !== "rascunho" && this.props.status !== "pendente_assinatura") {
-      throw new Error("Contrato só pode ser assinado se estiver em rascunho ou pendente de assinatura");
+      throw new Error(
+        "Contrato só pode ser assinado se estiver em rascunho ou pendente de assinatura",
+      );
     }
 
     this.props.status = "vigente";
@@ -123,4 +130,3 @@ export class Contrato {
     return true;
   }
 }
-

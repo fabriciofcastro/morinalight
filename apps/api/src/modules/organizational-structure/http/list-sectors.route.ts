@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarSectorsUseCase } from "../application/use-cases/listar-sectors.use-case";
 import type { SectorRepository } from "../domain/repositories/sector-repository";
 
@@ -33,4 +33,3 @@ export async function registerListSectorsRoute(app: FastifyInstance, deps: Depen
     }
   });
 }
-

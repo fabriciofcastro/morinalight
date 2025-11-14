@@ -15,12 +15,22 @@ export type TeamMembershipData = {
 };
 
 export interface TeamMembershipRepository {
-  adicionar(orgId: string, teamId: string, userId: string, role: OrganizationRole): Promise<TeamMembershipData>;
+  adicionar(
+    orgId: string,
+    teamId: string,
+    userId: string,
+    role: OrganizationRole,
+  ): Promise<TeamMembershipData>;
   remover(orgId: string, teamId: string, userId: string): Promise<void>;
   encontrar(orgId: string, teamId: string, userId: string): Promise<TeamMembershipData | null>;
   listarPorTeam(orgId: string, teamId: string): Promise<TeamMembershipData[]>;
   listarPorUser(orgId: string, userId: string): Promise<TeamMembershipData[]>;
-  atualizarRole(orgId: string, teamId: string, userId: string, role: OrganizationRole): Promise<TeamMembershipData>;
+  atualizarRole(
+    orgId: string,
+    teamId: string,
+    userId: string,
+    role: OrganizationRole,
+  ): Promise<TeamMembershipData>;
   contarPorTeam(orgId: string, teamId: string): Promise<number>;
 }
 
@@ -135,7 +145,7 @@ export class PrismaTeamMembershipRepository implements TeamMembershipRepository 
   }
 
   async atualizarRole(
-    orgId: string,
+    _orgId: string,
     teamId: string,
     userId: string,
     role: OrganizationRole,
@@ -172,4 +182,3 @@ export class PrismaTeamMembershipRepository implements TeamMembershipRepository 
     });
   }
 }
-

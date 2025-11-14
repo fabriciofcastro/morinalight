@@ -14,5 +14,3 @@ export interface PermissionRepository {
   listar(filtro?: PermissionFiltro): Promise<Permission[]>;
   encontrarPorIds(ids: string[]): Promise<Permission[]>;
 }
-
-

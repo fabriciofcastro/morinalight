@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import { useEffect, useMemo, useState } from "react";
 
 type Blob = {
   id: number;
@@ -69,7 +69,11 @@ export function MorphingBlobs() {
             y: [0, -40, 30, 0],
             scale: [1, 1.4, 0.8, 1],
             opacity: [0.2, 0.5, 0.3, 0.2],
-            borderRadius: ["30% 70% 70% 30% / 30% 30% 70% 70%", "70% 30% 30% 70% / 70% 70% 30% 30%", "30% 70% 70% 30% / 30% 30% 70% 70%"],
+            borderRadius: [
+              "30% 70% 70% 30% / 30% 30% 70% 70%",
+              "70% 30% 30% 70% / 70% 70% 30% 30%",
+              "30% 70% 70% 30% / 30% 30% 70% 70%",
+            ],
           }}
           transition={{
             duration: blob.duration,
@@ -82,4 +86,3 @@ export function MorphingBlobs() {
     </div>
   );
 }
-

@@ -1,18 +1,15 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { z } from "zod";
-
-import type { UserRepository } from "../../users/repositories/user.repository";
-import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
+import type { UserRepository } from "../../users/repositories/user.repository";
+import { organizationRoleSchema } from "../application/schemas/membership.schema";
 import { AdicionarMembroUnidadeUseCase } from "../application/use-cases/adicionar-membro-unidade.use-case";
+import { AtualizarRoleMembroUnidadeUseCase } from "../application/use-cases/atualizar-role-membro-unidade.use-case";
 import { ListarMembrosUnidadeUseCase } from "../application/use-cases/listar-membros-unidade.use-case";
 import { RemoverMembroUnidadeUseCase } from "../application/use-cases/remover-membro-unidade.use-case";
-import { AtualizarRoleMembroUnidadeUseCase } from "../application/use-cases/atualizar-role-membro-unidade.use-case";
-import type {
-  UnitMembershipRepository,
-} from "../infra/prisma/prisma-unit-membership.repository";
-import { organizationRoleSchema } from "../application/schemas/membership.schema";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
+import type { UnitMembershipRepository } from "../infra/prisma/prisma-unit-membership.repository";
 
 type Dependencies = {
   unitMembershipRepository: UnitMembershipRepository;
@@ -22,10 +19,7 @@ type Dependencies = {
   eventBus?: DomainEventBus;
 };
 
-export async function registerUnitMembersRoutes(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerUnitMembersRoutes(app: FastifyInstance, deps: Dependencies) {
   // Listar membros de uma unidade
   app.get(
     "/organizational-units/:unitId/members",
@@ -233,4 +227,3 @@ export async function registerUnitMembersRoutes(
     },
   );
 }
-

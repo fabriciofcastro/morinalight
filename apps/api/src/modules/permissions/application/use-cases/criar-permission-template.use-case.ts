@@ -1,5 +1,5 @@
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
-import { randomUUID } from "crypto";
 import type { PermissionTemplateRepository } from "../../domain/repositories/permission-template-repository";
 
 const criarPermissionTemplateInputSchema = z.object({
@@ -68,4 +68,3 @@ export class CriarPermissionTemplateUseCase {
     };
   }
 }
-

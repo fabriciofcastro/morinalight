@@ -24,10 +24,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { userId: string } },
-) {
+export async function GET(request: Request, { params }: { params: { userId: string } }) {
   const { searchParams } = new URL(request.url);
   const permission = searchParams.get("permission");
 
@@ -42,14 +39,9 @@ export async function GET(
   });
 
   if (!response.ok) {
-    return NextResponse.json(
-      { message: "Erro ao buscar permissões" },
-      { status: response.status },
-    );
+    return NextResponse.json({ message: "Erro ao buscar permissões" }, { status: response.status });
   }
 
   const data = await response.json();
   return NextResponse.json(data);
 }
-
-

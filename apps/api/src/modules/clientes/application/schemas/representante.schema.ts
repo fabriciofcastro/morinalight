@@ -61,7 +61,4 @@ export const listarRepresentantesResultadoSchema = z.object({
   proximoCursor: z.string().nullable().optional(),
 });
 
-export type ListarRepresentantesResultado = z.infer<
-  typeof listarRepresentantesResultadoSchema
->;
-
+export type ListarRepresentantesResultado = z.infer<typeof listarRepresentantesResultadoSchema>;

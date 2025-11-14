@@ -2,7 +2,6 @@ import { AprovarProdutoUseCase, aprovarProdutoInputSchema } from "@morina/catalo
 import type { ProdutoAuditoriaRepository, ProdutoRepository } from "@morina/catalogo-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
-import { z } from "zod";
 
 import { canManage, getTenant } from "../../../core/tenant/tenant.utils";
 

@@ -21,7 +21,8 @@ export default function RepresentantesPage() {
           Representantes
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie os representantes de vendas vinculados aos seus clientes. Configure percentuais de comissão e acompanhe o desempenho.
+          Gerencie os representantes de vendas vinculados aos seus clientes. Configure percentuais
+          de comissão e acompanhe o desempenho.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function RepresentantesPage() {
     </div>
   );
 }
-

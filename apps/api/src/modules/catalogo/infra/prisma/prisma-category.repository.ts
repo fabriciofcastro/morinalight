@@ -1,8 +1,4 @@
-import type {
-  Category,
-  CategoryRepository,
-  CategoryProps,
-} from "@morina/catalogo-domain";
+import type { Category, CategoryProps, CategoryRepository } from "@morina/catalogo-domain";
 import { Category as CategoryEntity } from "@morina/catalogo-domain";
 
 import { getPrisma } from "../../../../infra/database/prisma.service";
@@ -186,9 +182,7 @@ function encodeCursor(category: { id: string; updatedAt: Date }) {
 
 function decodeCursor(cursor: string) {
   try {
-    const parsed = JSON.parse(
-      Buffer.from(cursor, "base64url").toString("utf-8"),
-    ) as {
+    const parsed = JSON.parse(Buffer.from(cursor, "base64url").toString("utf-8")) as {
       id: string;
       updatedAt: string;
     };
@@ -200,4 +194,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

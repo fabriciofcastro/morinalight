@@ -17,4 +17,3 @@ export class TeamId {
     return this.value === other.value;
   }
 }
-

@@ -1,10 +1,9 @@
 "use client";
 
+import { GlassCard } from "@morina/ui";
+import { ArrowUpRight, Layers, NotebookPen, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
-import { ArrowUpRight, Layers, NotebookPen, Sparkles } from "lucide-react";
-
-import { GlassCard } from "@morina/ui";
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -74,9 +73,9 @@ export function DocsKnowledgeHub() {
               Blueprint operacional e design system pulsando dentro do cockpit.
             </h1>
             <p className="text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in_oklab,var(--muted-soft) 68%,var(--fg) 32%)]">
-              Agrupamos cada decisão relevante — do manifesto visual às integrações críticas —
-              para você navegar sem precisar abrir planilhas ou apresentações externas. Tudo
-              acontece aqui, com status, progresso e links para o repositório.
+              Agrupamos cada decisão relevante — do manifesto visual às integrações críticas — para
+              você navegar sem precisar abrir planilhas ou apresentações externas. Tudo acontece
+              aqui, com status, progresso e links para o repositório.
             </p>
             <div className="flex flex-wrap gap-[var(--space-3)]">
               <Link
@@ -217,7 +216,10 @@ export function DocsKnowledgeHub() {
                     </div>
                     <div className="flex flex-col gap-[var(--space-2)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
                       <div className="flex items-center gap-[var(--space-2)]">
-                        <Progress value={Math.round(doc.progress * 100)} className="h-[var(--space-2)] flex-1" />
+                        <Progress
+                          value={Math.round(doc.progress * 100)}
+                          className="h-[var(--space-2)] flex-1"
+                        />
                         <span>{Math.round(doc.progress * 100)}%</span>
                       </div>
                       <div className="flex flex-wrap gap-[var(--space-2)]">
@@ -286,4 +288,3 @@ export function DocsKnowledgeHub() {
     </div>
   );
 }
-

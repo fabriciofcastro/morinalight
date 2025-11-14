@@ -21,4 +21,3 @@ export interface TeamRepository {
   contarPorOrg(orgId: string, status?: "ativo" | "inativo" | "arquivado"): Promise<number>;
   deletar(orgId: string, teamId: string): Promise<void>;
 }
-

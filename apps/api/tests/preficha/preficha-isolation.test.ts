@@ -1,6 +1,6 @@
+import type { FastifyInstance } from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "../../src/core/server/create-server";
-import type { FastifyInstance } from "fastify";
 import { getPrisma } from "../../src/infra/database/prisma.service";
 
 describe("Preficha - Isolamento Multi-tenant", () => {
@@ -9,8 +9,8 @@ describe("Preficha - Isolamento Multi-tenant", () => {
   const orgId2 = "org-preficha-test-2";
   const userId1 = "user-preficha-test-1";
   const userId2 = "user-preficha-test-2";
-  const produtoId1 = "produto-preficha-test-1";
-  const produtoId2 = "produto-preficha-test-2";
+  let produtoId1 = "produto-preficha-test-1";
+  let produtoId2 = "produto-preficha-test-2";
   let prefichaId1: string;
   let prefichaId2: string;
 
@@ -207,4 +207,3 @@ describe("Preficha - Isolamento Multi-tenant", () => {
     expect(preficha.aprovadores[0].aprovado).toBe(true);
   });
 });
-

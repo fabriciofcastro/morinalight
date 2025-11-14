@@ -7,9 +7,19 @@ export type SectorStatus = z.infer<typeof sectorStatusSchema>;
 const sectorBaseSchema = z.object({
   orgId: z.string().min(1, "orgId obrigatório"),
   departmentId: z.string().uuid("departmentId deve ser UUID válido"),
-  name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(180, "Nome deve ter no máximo 180 caracteres"),
-  code: z.string().min(2, "Código deve ter no mínimo 2 caracteres").max(50, "Código deve ter no máximo 50 caracteres"),
-  description: z.string().max(1024, "Descrição deve ter no máximo 1024 caracteres").nullable().optional(),
+  name: z
+    .string()
+    .min(3, "Nome deve ter no mínimo 3 caracteres")
+    .max(180, "Nome deve ter no máximo 180 caracteres"),
+  code: z
+    .string()
+    .min(2, "Código deve ter no mínimo 2 caracteres")
+    .max(50, "Código deve ter no máximo 50 caracteres"),
+  description: z
+    .string()
+    .max(1024, "Descrição deve ter no máximo 1024 caracteres")
+    .nullable()
+    .optional(),
   parentId: z.string().uuid("parentId deve ser UUID válido").nullable().optional(),
   status: sectorStatusSchema.optional(),
   ordem: z.number().int().min(0).optional(),
@@ -70,4 +80,3 @@ export const deletarSectorInputSchema = z
   .strict();
 
 export type DeletarSectorInput = z.infer<typeof deletarSectorInputSchema>;
-

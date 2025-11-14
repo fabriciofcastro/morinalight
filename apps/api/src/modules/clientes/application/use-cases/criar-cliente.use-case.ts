@@ -1,6 +1,6 @@
-import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
 import { Cliente } from "../../domain/entities/cliente";
-import { criarClienteInputSchema, clienteViewSchema } from "../schemas/cliente.schema";
+import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
+import { clienteViewSchema, criarClienteInputSchema } from "../schemas/cliente.schema";
 
 type Dependencies = {
   clienteRepository: ClienteRepository;
@@ -66,4 +66,3 @@ export class CriarClienteUseCase {
     });
   }
 }
-

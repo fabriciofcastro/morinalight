@@ -4,8 +4,7 @@ import { DocsKnowledgeHub } from "@/components/docs/docs-knowledge-hub";
 
 export const metadata: Metadata = {
   title: "Documentação Viva · Morina Light",
-  description:
-    "Hub interativo com blueprints, design system e guias operacionais do Morina Light.",
+  description: "Hub interativo com blueprints, design system e guias operacionais do Morina Light.",
 };
 
 export default function DocsPage() {
@@ -15,4 +14,3 @@ export default function DocsPage() {
     </main>
   );
 }
-

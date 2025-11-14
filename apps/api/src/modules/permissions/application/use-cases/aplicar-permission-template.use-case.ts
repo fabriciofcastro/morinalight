@@ -1,13 +1,13 @@
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
+import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
+import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
+import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
+import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
+import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
 import type { PermissionTemplateRepository } from "../../domain/repositories/permission-template-repository";
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
-import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
-import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
-import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
-import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
-import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
-import { randomUUID } from "crypto";
 
 const aplicarPermissionTemplateInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -36,7 +36,10 @@ export class AplicarPermissionTemplateUseCase {
     const input = aplicarPermissionTemplateInputSchema.parse(rawInput);
 
     // Buscar template
-    const template = await this.deps.templateRepository.encontrarPorId(input.orgId, input.templateId);
+    const template = await this.deps.templateRepository.encontrarPorId(
+      input.orgId,
+      input.templateId,
+    );
 
     if (!template) {
       throw new Error("Template não encontrado");
@@ -52,7 +55,10 @@ export class AplicarPermissionTemplateUseCase {
     // Verificar se a entidade existe
     let entityExists = false;
     if (input.entityType === "position" && this.deps.positionRepository) {
-      const position = await this.deps.positionRepository.encontrarPorId(input.orgId, input.entityId);
+      const position = await this.deps.positionRepository.encontrarPorId(
+        input.orgId,
+        input.entityId,
+      );
       entityExists = !!position;
     } else if (input.entityType === "sector" && this.deps.sectorRepository) {
       const sector = await this.deps.sectorRepository.encontrarPorId(input.orgId, input.entityId);
@@ -215,4 +221,3 @@ export class AplicarPermissionTemplateUseCase {
     };
   }
 }
-

@@ -3,6 +3,12 @@ import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 
+type RouteParams = {
+  params: {
+    sectorId: string;
+  };
+};
+
 function getAuthHeaders(): HeadersInit {
   const cookieStore = cookies();
   const token = cookieStore.get("auth_token")?.value;
@@ -24,36 +30,25 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function PUT(
+export async function GET(
   request: Request,
-  { params }: { params: { sectorId: string } },
+  { params }: RouteParams,
 ) {
-  const body = await request.json();
+  const { sectorId } = params;
 
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}`, {
-    method: "PUT",
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}`, {
+    method: "GET",
     headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    cache: "no-store",
   });
 
-  const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
-}
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: { sectorId: string } },
-) {
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
-
-  if (response.status === 204) {
-    return new NextResponse(null, { status: 204 });
+  if (!response.ok) {
+    return NextResponse.json(
+      { message: "Erro ao buscar setor" },
+      { status: response.status },
+    );
   }
 
   const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
+  return NextResponse.json(data);
 }
-

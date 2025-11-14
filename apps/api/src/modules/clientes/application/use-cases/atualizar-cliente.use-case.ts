@@ -1,8 +1,5 @@
 import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
-import {
-  atualizarClienteInputSchema,
-  clienteViewSchema,
-} from "../schemas/cliente.schema";
+import { atualizarClienteInputSchema, clienteViewSchema } from "../schemas/cliente.schema";
 
 type Dependencies = {
   clienteRepository: ClienteRepository;
@@ -15,10 +12,7 @@ export class AtualizarClienteUseCase {
   async execute(rawInput: unknown) {
     const input = atualizarClienteInputSchema.parse(rawInput);
 
-    const cliente = await this.deps.clienteRepository.encontrarPorId(
-      input.orgId,
-      input.clienteId,
-    );
+    const cliente = await this.deps.clienteRepository.encontrarPorId(input.orgId, input.clienteId);
 
     if (!cliente) {
       throw new Error("Cliente não encontrado");
@@ -87,4 +81,3 @@ export class AtualizarClienteUseCase {
     });
   }
 }
-

@@ -5,5 +5,3 @@ export * from "./encaminhar-preficha.route";
 export * from "./get-preficha.route";
 export * from "./list-prefichas.route";
 export * from "./reject-preficha.route";
-
-

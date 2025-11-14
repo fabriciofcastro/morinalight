@@ -27,7 +27,7 @@ function getAuthHeaders(): HeadersInit {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const params = new URLSearchParams();
-  
+
   if (searchParams.get("entityType")) {
     params.append("entityType", searchParams.get("entityType")!);
   }
@@ -72,4 +72,3 @@ export async function GET(request: Request) {
   const data = await response.json();
   return NextResponse.json(data);
 }
-

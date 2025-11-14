@@ -23,7 +23,11 @@ export interface PositionMembershipRepository {
     role: OrganizationRole,
   ): Promise<PositionMembershipData>;
   remover(orgId: string, positionId: string, userId: string): Promise<void>;
-  encontrar(orgId: string, positionId: string, userId: string): Promise<PositionMembershipData | null>;
+  encontrar(
+    orgId: string,
+    positionId: string,
+    userId: string,
+  ): Promise<PositionMembershipData | null>;
   listarPorPosition(orgId: string, positionId: string): Promise<PositionMembershipData[]>;
   listarPorUser(orgId: string, userId: string): Promise<PositionMembershipData[]>;
   atualizarRole(
@@ -209,4 +213,3 @@ export class PrismaPositionMembershipRepository implements PositionMembershipRep
     });
   }
 }
-

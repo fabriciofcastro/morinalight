@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarRepresentantesUseCase } from "../application/use-cases/listar-representantes.use-case";
 import type { RepresentanteRepository } from "../domain/repositories/representante-repository";
 
@@ -6,10 +6,7 @@ type Dependencies = {
   representanteRepository: RepresentanteRepository;
 };
 
-export async function registerListRepresentantesRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerListRepresentantesRoute(app: FastifyInstance, deps: Dependencies) {
   app.get("/representantes", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
 
@@ -32,4 +29,3 @@ export async function registerListRepresentantesRoute(
     }
   });
 }
-

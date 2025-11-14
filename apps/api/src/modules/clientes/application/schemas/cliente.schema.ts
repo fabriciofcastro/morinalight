@@ -81,4 +81,3 @@ export const listarClientesResultadoSchema = z.object({
 });
 
 export type ListarClientesResultado = z.infer<typeof listarClientesResultadoSchema>;
-

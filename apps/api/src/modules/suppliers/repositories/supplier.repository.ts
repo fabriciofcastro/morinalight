@@ -39,9 +39,11 @@ export type UpdateSupplierInput = Partial<Omit<CreateSupplierInput, "orgId" | "c
 
 export interface SupplierRepository {
   findById(id: string): Promise<SupplierRecord | null>;
-  findByOrgId(orgId: string, filters?: { status?: string; busca?: string }): Promise<SupplierRecord[]>;
+  findByOrgId(
+    orgId: string,
+    filters?: { status?: string; busca?: string },
+  ): Promise<SupplierRecord[]>;
   create(input: CreateSupplierInput): Promise<SupplierRecord>;
   update(id: string, input: UpdateSupplierInput): Promise<SupplierRecord>;
   delete(id: string): Promise<void>;
 }
-

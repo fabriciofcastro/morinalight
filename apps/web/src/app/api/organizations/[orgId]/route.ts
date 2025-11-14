@@ -44,7 +44,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(_request: Request, { params }: RouteParams) {
   const response = await fetch(`${apiUrl}/organizations/${params.orgId}`, {
     method: "DELETE",
     headers: await getAuthHeaders(),
@@ -58,5 +58,3 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
   return new NextResponse(null, { status: 204 });
 }
-
-

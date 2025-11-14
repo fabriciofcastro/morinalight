@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Input, Label, cn } from "@morina/ui";
-import { ArrowRight, Loader2, ShieldCheck, ShieldX, CheckCircle2 } from "lucide-react";
+import { Button, cn, Input, Label } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, CheckCircle2, Loader2, ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -33,8 +33,8 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [emailValue, setEmailValue] = useState("");
-  const [passwordValue, setPasswordValue] = useState("");
+  const [_emailValue, setEmailValue] = useState("");
+  const [_passwordValue, setPasswordValue] = useState("");
 
   const {
     register,
@@ -119,9 +119,7 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
         }, 1500);
       } catch (error) {
         setStatus("error");
-        setMessage(
-          error instanceof Error ? error.message : "Erro inesperado. Tente novamente.",
-        );
+        setMessage(error instanceof Error ? error.message : "Erro inesperado. Tente novamente.");
       }
     });
   }
@@ -136,7 +134,10 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <Label htmlFor="login-email" className="label mb-2 text-sm font-medium text-[hsl(var(--text-2))]">
+          <Label
+            htmlFor="login-email"
+            className="label mb-2 text-sm font-medium text-[hsl(var(--text-2))]"
+          >
             E-mail corporativo
           </Label>
           <div className="relative">
@@ -149,11 +150,12 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
               }}
               transition={{ duration: 0.3 }}
               style={{
-                background: "linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.2))",
+                background:
+                  "linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.2))",
                 filter: "blur(8px)",
               }}
             />
-            
+
             <Input
               id="login-email"
               type="email"
@@ -164,7 +166,8 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
                 focusedField === "email" || isEmailValid
                   ? "border-[hsl(var(--primary)_/_0.5)] bg-[hsla(var(--surface) / 0.95)] backdrop-blur-sm shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
                   : "border-[hsl(var(--border))] bg-[hsla(var(--surface) / 0.8)]",
-                errors.email && "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
+                errors.email &&
+                  "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
                 !errors.email && isEmailValid && "border-[hsl(var(--success)_/_0.5)]",
               )}
               {...register("email", {
@@ -175,7 +178,7 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
               aria-invalid={Boolean(errors.email)}
               aria-describedby="login-email-error"
             />
-            
+
             {/* Ícone de validação */}
             <AnimatePresence>
               {isEmailValid && (
@@ -219,7 +222,10 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <Label htmlFor="login-password" className="label mb-2 text-sm font-medium text-[hsl(var(--text-2))]">
+          <Label
+            htmlFor="login-password"
+            className="label mb-2 text-sm font-medium text-[hsl(var(--text-2))]"
+          >
             Senha
           </Label>
           <div className="relative">
@@ -232,11 +238,12 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
               }}
               transition={{ duration: 0.3 }}
               style={{
-                background: "linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.2))",
+                background:
+                  "linear-gradient(135deg, hsl(var(--primary) / 0.3), hsl(var(--secondary) / 0.2))",
                 filter: "blur(8px)",
               }}
             />
-            
+
             <Input
               id="login-password"
               type="password"
@@ -247,7 +254,8 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
                 focusedField === "password" || isPasswordValid
                   ? "border-[hsl(var(--primary)_/_0.5)] bg-[hsla(var(--surface) / 0.95)] backdrop-blur-sm shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
                   : "border-[hsl(var(--border))] bg-[hsla(var(--surface) / 0.8)]",
-                errors.password && "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
+                errors.password &&
+                  "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
                 !errors.password && isPasswordValid && "border-[hsl(var(--success)_/_0.5)]",
               )}
               {...register("password", {
@@ -258,7 +266,7 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
               aria-invalid={Boolean(errors.password)}
               aria-describedby="login-password-error"
             />
-            
+
             {/* Ícone de validação */}
             <AnimatePresence>
               {isPasswordValid && (
@@ -410,7 +418,7 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
             whileHover={{ x: "100%" }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
           />
-          
+
           {/* Efeito de pulso quando campos estão válidos */}
           {isEmailValid && isPasswordValid && (
             <motion.div
@@ -425,7 +433,7 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
               }}
             />
           )}
-          
+
           <span className="relative z-10 flex items-center justify-center gap-2">
             {isBusy ? (
               <>

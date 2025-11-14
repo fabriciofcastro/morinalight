@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 const publicRoutes = ["/login", "/invite"];
 const apiPublicRoutes = ["/api/auth/login", "/api/auth/register", "/api/realtime/token"];
@@ -37,4 +37,3 @@ export function proxy(request: NextRequest) {
 
   return NextResponse.next();
 }
-

@@ -152,4 +152,3 @@ export class Position {
     this.props.updatedAt = new Date();
   }
 }
-

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 type AnimatedCounterProps = {
   value: number;
@@ -69,7 +69,5 @@ export function AnimatedCounter({
 }
 
 function easeOutCubic(t: number) {
-  return 1 - Math.pow(1 - t, 3);
+  return 1 - (1 - t) ** 3;
 }
-
-

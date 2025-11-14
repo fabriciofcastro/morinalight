@@ -1,21 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Search,
-  Moon,
-  Sun,
-  Monitor,
-  User,
-  LogOut,
-  Settings,
-  Menu,
-} from "lucide-react";
 import { cn } from "@morina/ui";
-import { getAuthUser, clearAuthToken } from "@/lib/auth-client";
+import { AnimatePresence, motion } from "framer-motion";
+import { LogOut, Menu, Monitor, Moon, Search, Settings, Sun, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { clearAuthToken, getAuthUser } from "@/lib/auth-client";
 import { NotificationCenter } from "../notifications/notification-center";
 
 type AppHeaderProps = {
@@ -155,4 +146,3 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
     </header>
   );
 }
-

@@ -13,10 +13,7 @@ export class ObterProdutoUseCase {
   async execute(rawInput: unknown) {
     const input = obterProdutoInputSchema.parse(rawInput);
 
-    const produto = await this.deps.produtoRepository.encontrarPorId(
-      input.orgId,
-      input.produtoId,
-    );
+    const produto = await this.deps.produtoRepository.encontrarPorId(input.orgId, input.produtoId);
 
     if (!produto) {
       throw new ProdutoNotFoundError(input.produtoId);
@@ -37,4 +34,3 @@ export class ObterProdutoUseCase {
     });
   }
 }
-

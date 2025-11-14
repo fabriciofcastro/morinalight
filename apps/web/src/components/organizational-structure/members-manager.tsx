@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
-import { Button, GlassCard, FormSelect, cn } from "@morina/ui";
-import { User, X, Plus, Search } from "lucide-react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { Input } from "@morina/ui";
+import { Button, cn, FormSelect, GlassCard, Input } from "@morina/ui";
+import { Plus, Search, User, X } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type MemberInfo = {
   membershipId: string;
@@ -52,18 +51,13 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: ROLE_LABELS.viewer },
 ] as const;
 
-const STATUS_LABELS: Record<string, string> = {
+const _STATUS_LABELS: Record<string, string> = {
   active: "Ativo",
   pending: "Pendente",
   suspended: "Suspenso",
 };
 
-export function MembersManager({
-  entityType,
-  entityId,
-  entityName,
-  onClose,
-}: MembersManagerProps) {
+export function MembersManager({ entityType, entityId, entityName, onClose }: MembersManagerProps) {
   const [members, setMembers] = useState<MemberInfo[]>([]);
   const [availableUsers, setAvailableUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,7 +78,7 @@ export function MembersManager({
 
   useEffect(() => {
     loadMembers();
-  }, [entityId, entityType]);
+  }, [loadMembers]);
 
   async function loadMembers() {
     setLoading(true);
@@ -190,7 +184,7 @@ export function MembersManager({
             message: errorMessage,
           });
         }
-      } catch (error) {
+      } catch (_error) {
         const errorMessage = "Erro ao adicionar membro";
         notificationCenter.add({
           type: "error",
@@ -210,9 +204,7 @@ export function MembersManager({
     const memberName = member?.user.displayName || member?.user.email || "este membro";
 
     if (
-      !confirm(
-        `Tem certeza que deseja remover ${memberName}? Esta ação não pode ser desfeita.`,
-      )
+      !confirm(`Tem certeza que deseja remover ${memberName}? Esta ação não pode ser desfeita.`)
     ) {
       return;
     }
@@ -248,7 +240,7 @@ export function MembersManager({
             message: errorMessage,
           });
         }
-      } catch (error) {
+      } catch (_error) {
         const errorMessage = "Erro ao remover membro";
         notificationCenter.add({
           type: "error",
@@ -297,7 +289,7 @@ export function MembersManager({
             message: errorMessage,
           });
         }
-      } catch (error) {
+      } catch (_error) {
         const errorMessage = "Erro ao atualizar papel";
         notificationCenter.add({
           type: "error",
@@ -426,11 +418,7 @@ export function MembersManager({
               </FormSelect>
 
               <div className="flex gap-2">
-                <Button
-                  onClick={handleAddMember}
-                  disabled={!selectedUserId || pending}
-                  size="sm"
-                >
+                <Button onClick={handleAddMember} disabled={!selectedUserId || pending} size="sm">
                   Adicionar
                 </Button>
                 <Button
@@ -518,4 +506,3 @@ export function MembersManager({
     </GlassCard>
   );
 }
-

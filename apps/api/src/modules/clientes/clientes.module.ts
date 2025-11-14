@@ -3,19 +3,19 @@ import { env } from "../../core/config/env";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParamsOrHeaders } from "../../core/tenant/tenant.utils";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
-import { registerClientesHttpRoutes } from "./http";
-import { PrismaClienteRepository } from "./infra/prisma/prisma-cliente.repository";
-import { PrismaRepresentanteRepository } from "./infra/prisma/prisma-representante.repository";
-import { PrismaComissaoRepository } from "./infra/prisma/prisma-comissao.repository";
-import { PrismaContratoRepository } from "./infra/prisma/prisma-contrato.repository";
-import { PrismaVendaRepository } from "./infra/prisma/prisma-venda.repository";
-import { EmillenniumClient } from "./infra/integrations/emillennium-client";
 import type {
   ClienteRepository,
-  RepresentanteRepository,
   ComissaoRepository,
   ContratoRepository,
+  RepresentanteRepository,
 } from "./domain/repositories";
+import { registerClientesHttpRoutes } from "./http";
+import { EmillenniumClient } from "./infra/integrations/emillennium-client";
+import { PrismaClienteRepository } from "./infra/prisma/prisma-cliente.repository";
+import { PrismaComissaoRepository } from "./infra/prisma/prisma-comissao.repository";
+import { PrismaContratoRepository } from "./infra/prisma/prisma-contrato.repository";
+import { PrismaRepresentanteRepository } from "./infra/prisma/prisma-representante.repository";
+import { PrismaVendaRepository } from "./infra/prisma/prisma-venda.repository";
 import type { VendaRepository } from "./infra/services/venda-sync.service";
 
 export type ClientesModuleOptions = {
@@ -49,16 +49,11 @@ export async function registerClientesModule(
     (process.env.DATABASE_URL ? new PrismaContratoRepository() : undefined);
 
   const vendaRepository =
-    options.vendaRepository ??
-    (process.env.DATABASE_URL ? new PrismaVendaRepository() : undefined);
+    options.vendaRepository ?? (process.env.DATABASE_URL ? new PrismaVendaRepository() : undefined);
 
   // Criar cliente do e-millennium se configurado
   let emillenniumClient: EmillenniumClient | undefined;
-  if (
-    env.EMILLENNIUM_BASE_URL &&
-    env.EMILLENNIUM_USERNAME &&
-    env.EMILLENNIUM_PASSWORD
-  ) {
+  if (env.EMILLENNIUM_BASE_URL && env.EMILLENNIUM_USERNAME && env.EMILLENNIUM_PASSWORD) {
     emillenniumClient = new EmillenniumClient({
       baseUrl: env.EMILLENNIUM_BASE_URL,
       username: env.EMILLENNIUM_USERNAME,
@@ -97,5 +92,3 @@ export async function registerClientesModule(
     emillenniumClient,
   };
 }
-
-

@@ -1,8 +1,5 @@
 import type { ProductVariantRepository } from "@morina/catalogo-domain";
-import {
-  atualizarVarianteInputSchema,
-  varianteViewSchema,
-} from "../schemas/product";
+import { atualizarVarianteInputSchema, varianteViewSchema } from "../schemas/product";
 
 type Dependencies = {
   varianteRepository: ProductVariantRepository;
@@ -67,5 +64,3 @@ export class AtualizarVarianteUseCase {
     });
   }
 }
-
-

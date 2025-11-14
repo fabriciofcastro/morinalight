@@ -44,4 +44,3 @@ export async function registerUpdateCategoryRoute(
     return reply.status(200).send(categoria);
   });
 }
-

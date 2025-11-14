@@ -2,7 +2,7 @@
 
 /**
  * Script de validação da configuração MCP
- * 
+ *
  * Verifica se:
  * - Os servidores MCP estão configurados corretamente
  * - Os serviços (PostgreSQL, Redis) estão acessíveis
@@ -10,11 +10,11 @@
  * - O índice de documentos está atualizado
  */
 
-import { readFile, access } from "fs/promises";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
-import { exec } from "child_process";
-import { promisify } from "util";
+import { exec } from "node:child_process";
+import { access, readFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -40,7 +40,7 @@ async function validateMcpConfig() {
   console.log("🔍 Validando configuração MCP...\n");
 
   const mcpConfigPath = join(ROOT_DIR, ".cursor", "mcp.json");
-  
+
   if (!(await fileExists(mcpConfigPath))) {
     console.error("❌ Arquivo .cursor/mcp.json não encontrado!");
     return false;
@@ -49,15 +49,15 @@ async function validateMcpConfig() {
   try {
     const configContent = await readFile(mcpConfigPath, "utf-8");
     const config = JSON.parse(configContent);
-    
+
     if (!config.mcpServers) {
       console.error("❌ Configuração mcpServers não encontrada!");
       return false;
     }
 
-    const servers = Object.keys(config.mcpServers).filter(key => !key.startsWith("_"));
+    const servers = Object.keys(config.mcpServers).filter((key) => !key.startsWith("_"));
     console.log(`  ✓ Configuração encontrada com ${servers.length} servidores:`);
-    servers.forEach(server => {
+    servers.forEach((server) => {
       console.log(`    - ${server}`);
     });
 
@@ -76,11 +76,11 @@ async function validatePostgres() {
 
   try {
     const { stdout } = await execAsync(
-      "psql postgresql://morina:morina@localhost:5432/morina -c 'SELECT 1;' 2>&1"
+      "psql postgresql://morina:morina@localhost:5432/morina -c 'SELECT 1;' 2>&1",
     );
     console.log("  ✓ PostgreSQL está acessível");
     return true;
-  } catch (error) {
+  } catch (_error) {
     console.warn("  ⚠️  PostgreSQL não está acessível (pode estar rodando no Docker)");
     console.warn("     Certifique-se de que o Docker Compose está rodando: docker compose ps");
     return false;
@@ -99,7 +99,7 @@ async function validateRedis() {
       console.log("  ✓ Redis está acessível");
       return true;
     }
-  } catch (error) {
+  } catch (_error) {
     console.warn("  ⚠️  Redis não está acessível (pode estar rodando no Docker)");
     console.warn("     Certifique-se de que o Docker Compose está rodando: docker compose ps");
     return false;
@@ -168,7 +168,7 @@ async function validateDocsIndex() {
  */
 async function main() {
   console.log("🚀 Validação da Configuração MCP\n");
-  console.log("=" .repeat(50) + "\n");
+  console.log(`${"=".repeat(50)}\n`);
 
   const results = {
     mcpConfig: await validateMcpConfig(),
@@ -178,18 +178,16 @@ async function main() {
     docsIndex: await validateDocsIndex(),
   };
 
-  console.log("\n" + "=".repeat(50));
+  console.log(`\n${"=".repeat(50)}`);
   console.log("\n📋 Resumo da Validação:\n");
 
-  const allPassed = Object.values(results).every(r => r);
-  const passedCount = Object.values(results).filter(r => r).length;
+  const allPassed = Object.values(results).every((r) => r);
+  const passedCount = Object.values(results).filter((r) => r).length;
   const totalCount = Object.keys(results).length;
 
   Object.entries(results).forEach(([key, passed]) => {
     const status = passed ? "✓" : "✗";
-    const name = key
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, str => str.toUpperCase());
+    const name = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
     console.log(`  ${status} ${name}`);
   });
 
@@ -210,4 +208,3 @@ async function main() {
 
 // Executa o script
 main();
-

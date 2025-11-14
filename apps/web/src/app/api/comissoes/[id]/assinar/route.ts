@@ -25,10 +25,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } },
-) {
+export async function POST(_request: Request, { params }: { params: { id: string } }) {
   const response = await fetch(`${apiUrl}/comissoes/${params.id}/assinar`, {
     method: "POST",
     headers: getAuthHeaders(),
@@ -45,4 +42,3 @@ export async function POST(
   const data = await response.json();
   return NextResponse.json(data);
 }
-

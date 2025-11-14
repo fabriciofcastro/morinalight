@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ListarClientesUseCase } from "../application/use-cases/listar-clientes.use-case";
 import type { ClienteRepository } from "../domain/repositories/cliente-repository";
 
@@ -6,10 +6,7 @@ type Dependencies = {
   clienteRepository: ClienteRepository;
 };
 
-export async function registerListClientesRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerListClientesRoute(app: FastifyInstance, deps: Dependencies) {
   app.get("/clientes", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
 
@@ -32,4 +29,3 @@ export async function registerListClientesRoute(
     }
   });
 }
-

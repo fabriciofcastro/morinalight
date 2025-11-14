@@ -11,5 +11,3 @@ export class PrefichaId {
     return this.value;
   }
 }
-
-

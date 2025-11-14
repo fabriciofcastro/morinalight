@@ -40,10 +40,7 @@ export class ProductVariant {
   }
 
   static criar(
-    input: Omit<
-      ProductVariantProps,
-      "criadoEm" | "atualizadoEm" | "ativo"
-    > & {
+    input: Omit<ProductVariantProps, "criadoEm" | "atualizadoEm" | "ativo"> & {
       ativo?: boolean;
     },
   ) {
@@ -112,10 +109,7 @@ export class ProductVariant {
     this.props.updatedAt = new Date();
   }
 
-  atualizarAtributos(
-    atributos: ProductVariantAttributes,
-    actorId: string,
-  ) {
+  atualizarAtributos(atributos: ProductVariantAttributes, actorId: string) {
     this.props.atributos = { ...this.props.atributos, ...atributos };
     this.props.updatedBy = actorId;
     this.props.updatedAt = new Date();
@@ -142,5 +136,3 @@ export class ProductVariant {
     this.props.updatedAt = new Date();
   }
 }
-
-

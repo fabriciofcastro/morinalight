@@ -16,7 +16,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   };
 }
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const response = await fetch(`${apiUrl}/organizations`, {
     headers: {
       ...(await getAuthHeaders()),
@@ -28,7 +28,7 @@ export async function GET(request: Request) {
   if (!response.ok) {
     return NextResponse.json(
       { message: "Erro ao buscar organizações" },
-      { status: response.status }
+      { status: response.status },
     );
   }
 

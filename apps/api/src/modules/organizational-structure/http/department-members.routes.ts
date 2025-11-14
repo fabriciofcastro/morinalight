@@ -1,18 +1,15 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { z } from "zod";
-
-import type { UserRepository } from "../../users/repositories/user.repository";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { z } from "zod";
+import type { UserRepository } from "../../users/repositories/user.repository";
+import { organizationRoleSchema } from "../application/schemas/membership.schema";
 import { AdicionarMembroDepartamentoUseCase } from "../application/use-cases/adicionar-membro-department.use-case";
+import { AtualizarRoleMembroDepartamentoUseCase } from "../application/use-cases/atualizar-role-membro-department.use-case";
 import { ListarMembrosDepartamentoUseCase } from "../application/use-cases/listar-membros-department.use-case";
 import { RemoverMembroDepartamentoUseCase } from "../application/use-cases/remover-membro-department.use-case";
-import { AtualizarRoleMembroDepartamentoUseCase } from "../application/use-cases/atualizar-role-membro-department.use-case";
-import type {
-  DepartmentMembershipRepository,
-} from "../infra/prisma/prisma-department-membership.repository";
-import { organizationRoleSchema } from "../application/schemas/membership.schema";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
+import type { DepartmentMembershipRepository } from "../infra/prisma/prisma-department-membership.repository";
 
 type Dependencies = {
   departmentMembershipRepository: DepartmentMembershipRepository;
@@ -22,10 +19,7 @@ type Dependencies = {
   eventBus?: DomainEventBus;
 };
 
-export async function registerDepartmentMembersRoutes(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerDepartmentMembersRoutes(app: FastifyInstance, deps: Dependencies) {
   // Listar membros de um departamento
   app.get(
     "/departments/:departmentId/members",
@@ -42,7 +36,9 @@ export async function registerDepartmentMembersRoutes(
       }
 
       try {
-        const { departmentId } = z.object({ departmentId: z.string().uuid() }).parse(request.params);
+        const { departmentId } = z
+          .object({ departmentId: z.string().uuid() })
+          .parse(request.params);
 
         const useCase = new ListarMembrosDepartamentoUseCase({
           departmentMembershipRepository: deps.departmentMembershipRepository,
@@ -81,7 +77,9 @@ export async function registerDepartmentMembersRoutes(
       }
 
       try {
-        const { departmentId } = z.object({ departmentId: z.string().uuid() }).parse(request.params);
+        const { departmentId } = z
+          .object({ departmentId: z.string().uuid() })
+          .parse(request.params);
         const body = z
           .object({
             userId: z.string().uuid(),
@@ -233,4 +231,3 @@ export async function registerDepartmentMembersRoutes(
     },
   );
 }
-

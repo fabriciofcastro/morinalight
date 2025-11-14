@@ -33,7 +33,7 @@ let prismaRead: PrismaClient | null = null;
 export function getPrismaRead() {
   if (!prismaRead) {
     const replicaUrl = process.env.DATABASE_REPLICA_URL || env.DATABASE_URL;
-    
+
     prismaRead = new PrismaClient({
       datasources: {
         db: {

@@ -21,7 +21,8 @@ export default function SuppliersPage() {
           Fornecedores
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie o cadastro de fornecedores da sua organização. Mantenha informações atualizadas e organize seus parceiros comerciais.
+          Gerencie o cadastro de fornecedores da sua organização. Mantenha informações atualizadas e
+          organize seus parceiros comerciais.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function SuppliersPage() {
     </main>
   );
 }
-

@@ -22,5 +22,3 @@ export interface PrefichaAuditoriaRepository {
   ): Promise<PrefichaAuditoriaPagina>;
   listarFeed(orgId: string, filtro?: PrefichaAuditoriaFiltro): Promise<PrefichaAuditoriaPagina>;
 }
-
-

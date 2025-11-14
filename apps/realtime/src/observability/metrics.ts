@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { Counter, Gauge, Registry, collectDefaultMetrics } from "prom-client";
+import { Counter, collectDefaultMetrics, Gauge, Registry } from "prom-client";
 
 const registry = new Registry();
 
@@ -49,4 +49,3 @@ export {
   pendingMessagesGauge,
   registry as realtimeMetricsRegistry,
 };
-

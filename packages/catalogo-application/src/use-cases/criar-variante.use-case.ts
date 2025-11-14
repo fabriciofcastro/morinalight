@@ -1,10 +1,7 @@
 import type { ProductVariantRepository, ProdutoRepository } from "@morina/catalogo-domain";
 import { ProductVariant } from "@morina/catalogo-domain";
 import { ProdutoNotFoundError } from "../errors/produto-not-found.error";
-import {
-  criarVarianteInputSchema,
-  varianteViewSchema,
-} from "../schemas/product";
+import { criarVarianteInputSchema, varianteViewSchema } from "../schemas/product";
 
 type Dependencies = {
   produtoRepository: ProdutoRepository;
@@ -18,20 +15,16 @@ export class CriarVarianteUseCase {
   async execute(rawInput: unknown) {
     const input = criarVarianteInputSchema.parse(rawInput);
 
-    const produto = await this.deps.produtoRepository.encontrarPorId(
-      input.orgId,
-      input.productId,
-    );
+    const produto = await this.deps.produtoRepository.encontrarPorId(input.orgId, input.productId);
 
     if (!produto) {
       throw new ProdutoNotFoundError(input.productId);
     }
 
-    const varianteExistente =
-      await this.deps.varianteRepository.encontrarPorSku(
-        input.sku,
-        input.orgId,
-      );
+    const varianteExistente = await this.deps.varianteRepository.encontrarPorSku(
+      input.sku,
+      input.orgId,
+    );
 
     if (varianteExistente) {
       throw new Error("Variante com este SKU já existe");
@@ -69,5 +62,3 @@ export class CriarVarianteUseCase {
     });
   }
 }
-
-

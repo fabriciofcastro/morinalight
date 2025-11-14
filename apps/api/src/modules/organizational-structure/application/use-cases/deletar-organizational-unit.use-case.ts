@@ -1,12 +1,10 @@
-import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type {
-  UnitMembershipRepository,
-} from "../../infra/prisma/prisma-unit-membership.repository";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
+import type { UnitMembershipRepository } from "../../infra/prisma/prisma-unit-membership.repository";
 
 const deletarOrganizationalUnitInputSchema = z.object({
   orgId: z.string().min(1),
@@ -44,7 +42,9 @@ export class DeletarOrganizationalUnitUseCase {
     });
 
     if (unidadesFilhas.itens.length > 0) {
-      throw new Error("Não é possível deletar unidade com unidades filhas. Remova ou mova as unidades filhas primeiro.");
+      throw new Error(
+        "Não é possível deletar unidade com unidades filhas. Remova ou mova as unidades filhas primeiro.",
+      );
     }
 
     // Verificar se há departamentos associados
@@ -54,7 +54,9 @@ export class DeletarOrganizationalUnitUseCase {
     });
 
     if (departments.itens.length > 0) {
-      throw new Error("Não é possível deletar unidade com departamentos associados. Remova ou mova os departamentos primeiro.");
+      throw new Error(
+        "Não é possível deletar unidade com departamentos associados. Remova ou mova os departamentos primeiro.",
+      );
     }
 
     // Verificar se há membros
@@ -65,7 +67,9 @@ export class DeletarOrganizationalUnitUseCase {
       );
 
       if (memberCount > 0) {
-        throw new Error("Não é possível deletar unidade com membros. Remova todos os membros primeiro.");
+        throw new Error(
+          "Não é possível deletar unidade com membros. Remova todos os membros primeiro.",
+        );
       }
     }
 
@@ -110,4 +114,3 @@ export class DeletarOrganizationalUnitUseCase {
     return { success: true };
   }
 }
-

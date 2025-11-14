@@ -1,6 +1,6 @@
 /**
  * Serviço para sincronizar vendas do e-millennium e calcular comissões
- * 
+ *
  * Este serviço:
  * 1. Busca vendas do e-millennium
  * 2. Cria registros de Venda no sistema
@@ -8,13 +8,13 @@
  * 4. Cria registros de Comissão pendentes de assinatura
  */
 
+import { Comissao } from "../../domain/entities/comissao";
+import { Venda } from "../../domain/entities/venda";
 import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
 import type { ComissaoRepository } from "../../domain/repositories/comissao-repository";
 import type { ContratoRepository } from "../../domain/repositories/contrato-repository";
 import type { RepresentanteRepository } from "../../domain/repositories/representante-repository";
-import { Comissao } from "../../domain/entities/comissao";
-import { Venda } from "../../domain/entities/venda";
-import { EmillenniumClient } from "../integrations/emillennium-client";
+import type { EmillenniumClient } from "../integrations/emillennium-client";
 
 type VendaSyncServiceDeps = {
   clienteRepository: ClienteRepository;
@@ -120,10 +120,11 @@ export class VendaSyncService {
           }
 
           // Buscar contrato vigente do representante
-          const contratosVigentes = await this.deps.contratoRepository.listarVigentesPorRepresentante(
-            params.orgId,
-            representante.representanteId,
-          );
+          const contratosVigentes =
+            await this.deps.contratoRepository.listarVigentesPorRepresentante(
+              params.orgId,
+              representante.representanteId,
+            );
 
           if (contratosVigentes.length === 0) {
             console.warn(`Representante ${representante.representanteId} sem contrato vigente`);
@@ -208,4 +209,3 @@ export class VendaSyncService {
     }
   }
 }
-

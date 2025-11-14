@@ -1,5 +1,5 @@
+import type { Representante } from "../../src/modules/clientes/domain/entities/representante";
 import type { RepresentanteRepository } from "../../src/modules/clientes/domain/repositories/representante-repository";
-import { Representante } from "../../src/modules/clientes/domain/entities/representante";
 
 export class InMemoryRepresentanteRepository implements RepresentanteRepository {
   private readonly items = new Map<string, Representante>();
@@ -38,4 +38,3 @@ export class InMemoryRepresentanteRepository implements RepresentanteRepository 
     };
   }
 }
-

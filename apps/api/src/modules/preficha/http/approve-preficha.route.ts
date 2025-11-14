@@ -1,11 +1,5 @@
-import {
-  AprovarPrefichaUseCase,
-  aprovarPrefichaInputSchema,
-} from "@morina/preficha-application";
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import { AprovarPrefichaUseCase, aprovarPrefichaInputSchema } from "@morina/preficha-application";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
@@ -26,10 +20,7 @@ type PrefichaHttpDeps = {
   notificationService?: PrefichaNotificationService;
 };
 
-export async function registerApprovePrefichaRoute(
-  app: FastifyInstance,
-  deps: PrefichaHttpDeps,
-) {
+export async function registerApprovePrefichaRoute(app: FastifyInstance, deps: PrefichaHttpDeps) {
   app.post("/preficha/:prefichaId/aprovar", async (request, reply) => {
     // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
     const tenant = getTenant(request);
@@ -63,5 +54,3 @@ export async function registerApprovePrefichaRoute(
     return reply.status(200).send(resultado);
   });
 }
-
-

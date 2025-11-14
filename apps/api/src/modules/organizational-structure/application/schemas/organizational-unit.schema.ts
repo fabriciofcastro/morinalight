@@ -46,7 +46,9 @@ export const atualizarOrganizationalUnitInputSchema = z.object({
   metadata: z.record(z.unknown()).optional().nullable(),
 });
 
-export type AtualizarOrganizationalUnitInput = z.infer<typeof atualizarOrganizationalUnitInputSchema>;
+export type AtualizarOrganizationalUnitInput = z.infer<
+  typeof atualizarOrganizationalUnitInputSchema
+>;
 
 export const listarOrganizationalUnitsInputSchema = z
   .object({
@@ -66,5 +68,6 @@ export const listarOrganizationalUnitsResultadoSchema = z.object({
   proximoCursor: z.string().nullable().optional(),
 });
 
-export type ListarOrganizationalUnitsResultado = z.infer<typeof listarOrganizationalUnitsResultadoSchema>;
-
+export type ListarOrganizationalUnitsResultado = z.infer<
+  typeof listarOrganizationalUnitsResultadoSchema
+>;

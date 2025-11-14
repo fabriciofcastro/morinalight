@@ -21,7 +21,8 @@ export default function OrganizationsPage() {
           Organizações
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Gerencie as organizações, membros e permissões. Visualize a estrutura hierárquica e configure acessos.
+          Gerencie as organizações, membros e permissões. Visualize a estrutura hierárquica e
+          configure acessos.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function OrganizationsPage() {
     </main>
   );
 }
-

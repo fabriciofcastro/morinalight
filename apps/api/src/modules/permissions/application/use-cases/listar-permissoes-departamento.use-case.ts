@@ -1,7 +1,7 @@
-import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
-import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
-import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 import { z } from "zod";
+import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
+import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
+import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 
 const listarPermissoesDepartamentoInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -69,4 +69,3 @@ export class ListarPermissoesDepartamentoUseCase {
     });
   }
 }
-

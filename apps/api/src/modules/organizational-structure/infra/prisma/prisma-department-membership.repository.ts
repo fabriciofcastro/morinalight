@@ -15,12 +15,26 @@ export type DepartmentMembershipData = {
 };
 
 export interface DepartmentMembershipRepository {
-  adicionar(orgId: string, departmentId: string, userId: string, role: OrganizationRole): Promise<DepartmentMembershipData>;
+  adicionar(
+    orgId: string,
+    departmentId: string,
+    userId: string,
+    role: OrganizationRole,
+  ): Promise<DepartmentMembershipData>;
   remover(orgId: string, departmentId: string, userId: string): Promise<void>;
-  encontrar(orgId: string, departmentId: string, userId: string): Promise<DepartmentMembershipData | null>;
+  encontrar(
+    orgId: string,
+    departmentId: string,
+    userId: string,
+  ): Promise<DepartmentMembershipData | null>;
   listarPorDepartment(orgId: string, departmentId: string): Promise<DepartmentMembershipData[]>;
   listarPorUser(orgId: string, userId: string): Promise<DepartmentMembershipData[]>;
-  atualizarRole(orgId: string, departmentId: string, userId: string, role: OrganizationRole): Promise<DepartmentMembershipData>;
+  atualizarRole(
+    orgId: string,
+    departmentId: string,
+    userId: string,
+    role: OrganizationRole,
+  ): Promise<DepartmentMembershipData>;
   contarPorDepartment(orgId: string, departmentId: string): Promise<number>;
 }
 
@@ -90,7 +104,10 @@ export class PrismaDepartmentMembershipRepository implements DepartmentMembershi
     };
   }
 
-  async listarPorDepartment(orgId: string, departmentId: string): Promise<DepartmentMembershipData[]> {
+  async listarPorDepartment(
+    orgId: string,
+    departmentId: string,
+  ): Promise<DepartmentMembershipData[]> {
     const memberships = await prisma.departmentMembership.findMany({
       where: {
         orgId,
@@ -135,7 +152,7 @@ export class PrismaDepartmentMembershipRepository implements DepartmentMembershi
   }
 
   async atualizarRole(
-    orgId: string,
+    _orgId: string,
     departmentId: string,
     userId: string,
     role: OrganizationRole,
@@ -172,4 +189,3 @@ export class PrismaDepartmentMembershipRepository implements DepartmentMembershi
     });
   }
 }
-

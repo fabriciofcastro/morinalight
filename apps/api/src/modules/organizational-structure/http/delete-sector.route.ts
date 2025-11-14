@@ -1,13 +1,15 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { DeletarSectorUseCase } from "../application/use-cases/deletar-sector.use-case";
-import type { SectorRepository } from "../domain/repositories/sector-repository";
-import type { PositionRepository } from "../domain/repositories/position-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { DeletarSectorUseCase } from "../application/use-cases/deletar-sector.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { PositionRepository } from "../domain/repositories/position-repository";
+import type { SectorRepository } from "../domain/repositories/sector-repository";
+import type { SectorMembershipRepository } from "../infra/prisma/prisma-sector-membership.repository";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
   positionRepository?: PositionRepository;
+  sectorMembershipRepository?: SectorMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
 };
@@ -26,11 +28,14 @@ export async function registerDeleteSectorRoute(app: FastifyInstance, deps: Depe
     }
 
     try {
-
       const params = request.params as { sectorId: string };
 
       const useCase = new DeletarSectorUseCase({
-        ...deps,
+        sectorRepository: deps.sectorRepository,
+        positionRepository: deps.positionRepository,
+        sectorMembershipRepository: deps.sectorMembershipRepository,
+        auditLogRepository: deps.auditLogRepository,
+        eventBus: deps.eventBus,
         actorId: userId,
       });
 
@@ -51,4 +56,3 @@ export async function registerDeleteSectorRoute(app: FastifyInstance, deps: Depe
     }
   });
 }
-

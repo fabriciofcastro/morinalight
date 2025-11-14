@@ -104,9 +104,7 @@ describe("PersonalizationPanel", () => {
     await user.click(saveButton);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/personalização salva/i, { exact: false }),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/personalização salva/i, { exact: false })).toBeInTheDocument();
     });
   });
 
@@ -151,5 +149,3 @@ describe("PersonalizationPanel", () => {
     ).toBeInTheDocument();
   });
 });
-
-

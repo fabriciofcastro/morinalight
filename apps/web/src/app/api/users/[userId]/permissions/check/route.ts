@@ -24,18 +24,12 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { userId: string } },
-) {
+export async function GET(request: Request, { params }: { params: { userId: string } }) {
   const { searchParams } = new URL(request.url);
   const permission = searchParams.get("permission");
 
   if (!permission) {
-    return NextResponse.json(
-      { message: "permission é obrigatório" },
-      { status: 400 },
-    );
+    return NextResponse.json({ message: "permission é obrigatório" }, { status: 400 });
   }
 
   const response = await fetch(
@@ -56,5 +50,3 @@ export async function GET(
   const data = await response.json();
   return NextResponse.json(data);
 }
-
-

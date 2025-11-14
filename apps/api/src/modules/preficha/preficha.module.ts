@@ -1,7 +1,4 @@
-import type {
-  PrefichaAuditoriaRepository,
-  PrefichaRepository,
-} from "@morina/preficha-domain";
+import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 import { env } from "../../core/config/env";
@@ -18,8 +15,8 @@ import {
   registerListPrefichasRoute,
   registerRejectPrefichaRoute,
 } from "./http";
-import { InMemoryPrefichaAuditoriaRepository } from "./infra/memory/in-memory-preficha-auditoria.repository";
 import { InMemoryPrefichaRepository } from "./infra/memory/in-memory-preficha.repository";
+import { InMemoryPrefichaAuditoriaRepository } from "./infra/memory/in-memory-preficha-auditoria.repository";
 import { PrefichaNotificationService } from "./infra/notifications/preficha-notification.service";
 
 export type PrefichaModuleOptions = {
@@ -125,4 +122,3 @@ async function createPrismaPrefichaAuditoriaRepository(): Promise<PrefichaAudito
   );
   return new PrismaPrefichaAuditoriaRepository();
 }
-

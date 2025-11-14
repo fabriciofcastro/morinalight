@@ -46,13 +46,19 @@ export class RedisEventBus implements DomainEventBus {
       }
 
       const errorMessage = error instanceof Error ? error.message : String(error);
-      
+
       // Detectar tipo de erro e logar apenas uma vez
       if (errorMessage.includes("NOAUTH") || errorMessage.includes("Authentication required")) {
-        console.warn("⚠️  Redis requer autenticação (eventos serão ignorados). Configure REDIS_URL com senha (redis://:senha@host:port) ou desabilite autenticação no Redis.");
+        console.warn(
+          "⚠️  Redis requer autenticação (eventos serão ignorados). Configure REDIS_URL com senha (redis://:senha@host:port) ou desabilite autenticação no Redis.",
+        );
         this.connectionFailed = true;
         this.errorLogged = true;
-      } else if (errorMessage.includes("Connection") || errorMessage.includes("ECONNREFUSED") || errorMessage.includes("ETIMEDOUT")) {
+      } else if (
+        errorMessage.includes("Connection") ||
+        errorMessage.includes("ECONNREFUSED") ||
+        errorMessage.includes("ETIMEDOUT")
+      ) {
         // Apenas logar uma vez para outros erros de conexão
         console.warn("⚠️  Redis não disponível (eventos serão ignorados):", errorMessage);
         this.connectionFailed = true;
@@ -117,15 +123,23 @@ export class RedisEventBus implements DomainEventBus {
         }
         // Tentar conectar apenas uma vez se não estiver conectado
         try {
-          if (this.redis.status === "wait" || this.redis.status === "end" || this.redis.status === "close") {
+          if (
+            this.redis.status === "wait" ||
+            this.redis.status === "end" ||
+            this.redis.status === "close"
+          ) {
             await this.redis.connect();
           }
         } catch (connectError) {
           // Se falhar ao conectar, marcar como falhado e retornar
           this.connectionFailed = true;
-          const errorMessage = connectError instanceof Error ? connectError.message : String(connectError);
+          const errorMessage =
+            connectError instanceof Error ? connectError.message : String(connectError);
           if (!this.errorLogged) {
-            if (errorMessage.includes("NOAUTH") || errorMessage.includes("Authentication required")) {
+            if (
+              errorMessage.includes("NOAUTH") ||
+              errorMessage.includes("Authentication required")
+            ) {
               console.warn("⚠️  Redis requer autenticação (eventos serão ignorados).");
             } else {
               console.warn("⚠️  Redis não disponível (eventos serão ignorados):", errorMessage);
@@ -171,11 +185,18 @@ export class RedisEventBus implements DomainEventBus {
       // Se houver erro de autenticação ou conexão, marcar como falhado
       if (error instanceof Error) {
         const errorMessage = error.message;
-        if (errorMessage.includes("NOAUTH") || errorMessage.includes("Authentication required") || errorMessage.includes("Connection")) {
+        if (
+          errorMessage.includes("NOAUTH") ||
+          errorMessage.includes("Authentication required") ||
+          errorMessage.includes("Connection")
+        ) {
           this.connectionFailed = true;
           this.connected = false;
           if (!this.errorLogged) {
-            if (errorMessage.includes("NOAUTH") || errorMessage.includes("Authentication required")) {
+            if (
+              errorMessage.includes("NOAUTH") ||
+              errorMessage.includes("Authentication required")
+            ) {
               console.warn("⚠️  Redis requer autenticação (eventos serão ignorados).");
             } else {
               console.warn("⚠️  Redis não disponível (eventos serão ignorados):", errorMessage);
@@ -205,7 +226,11 @@ export class RedisEventBus implements DomainEventBus {
       // Ignorar erros de métricas silenciosamente
       if (error instanceof Error) {
         const errorMessage = error.message;
-        if (errorMessage.includes("NOAUTH") || errorMessage.includes("Authentication required") || errorMessage.includes("Connection")) {
+        if (
+          errorMessage.includes("NOAUTH") ||
+          errorMessage.includes("Authentication required") ||
+          errorMessage.includes("Connection")
+        ) {
           this.connectionFailed = true;
           this.connected = false;
         }
@@ -221,7 +246,7 @@ export class RedisEventBus implements DomainEventBus {
       if (this.redis && this.redis.status !== "end") {
         await this.redis.quit();
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignorar erros ao desconectar
     }
   }

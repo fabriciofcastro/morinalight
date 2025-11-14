@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-
-import { apiUrl, defaultOrgId } from "@/lib/env";
 import {
   type NormalizedCompanySettings,
   normalizeCompanySettings,
   sanitizeForPersistence,
 } from "@/lib/company-settings";
+import { apiUrl, defaultOrgId } from "@/lib/env";
 import { getPrismaClient } from "@/lib/prisma";
 import { companySettingsSchema } from "@/schemas/company-settings";
 

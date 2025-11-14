@@ -1,6 +1,6 @@
-import type { FastifyRequest, FastifyReply } from "fastify";
-import type { OrganizationRepository } from "../../modules/organizations/repositories/organization.repository";
 import type { OrganizationRole } from "@prisma/client";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { OrganizationRepository } from "../../modules/organizations/repositories/organization.repository";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -150,7 +150,10 @@ export function requireAnyRole(
       });
     }
 
-    const membership = await organizationRepository.encontrarMembership?.(orgId, request.auth.userId);
+    const membership = await organizationRepository.encontrarMembership?.(
+      orgId,
+      request.auth.userId,
+    );
 
     if (!membership) {
       return reply.status(403).send({
@@ -201,4 +204,3 @@ export function extractOrgId(request: FastifyRequest): string | null {
 
   return null;
 }
-

@@ -65,4 +65,3 @@ describe("ObterProdutoUseCase", () => {
     ).rejects.toBeInstanceOf(ProdutoNotFoundError);
   });
 });
-

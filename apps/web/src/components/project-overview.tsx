@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { faker } from "@faker-js/faker";
-
 import { GlassCard } from "@morina/ui";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -46,24 +45,24 @@ export function ProjectOverview() {
       <div className="grid gap-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
         <span>Telemetria atualizada com dados simulados (faker)</span>
         <div className="grid gap-[var(--space-4)] md:grid-cols-3">
-        <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
+          <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
             <span>Casos de aprovação prontos</span>
             <strong className="text-2xl text-[var(--fg)]">{telemetry.approvalsReady}</strong>
-          <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+            <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
               Fluxos de aprovação com RBAC aplicados aguardando backend.
             </p>
           </GlassCard>
-        <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
+          <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
             <span>Variantes em QA</span>
             <strong className="text-2xl text-[var(--fg)]">{telemetry.variantsInQA}</strong>
-          <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+            <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
               MatrixGrade preparado para testes com dados gerados.
             </p>
           </GlassCard>
-        <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
+          <GlassCard className="flex flex-col gap-[var(--space-2)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/85 p-[var(--space-4)]">
             <span>ETA próxima release</span>
             <strong className="text-2xl text-[var(--primary-color)]">{telemetry.releaseEta}</strong>
-          <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+            <p className="text-xs normal-case text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
               Dependência: integração Postgres/Redis em andamento por outra frente.
             </p>
           </GlassCard>
@@ -71,7 +70,7 @@ export function ProjectOverview() {
       </div>
 
       <header className="flex flex-col gap-[var(--space-3)]">
-      <span className="inline-flex max-w-max items-center gap-[var(--space-2)] rounded-full border border-[color-mix(in oklab,var(--primary-color) 35%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 95%,transparent)] px-[var(--space-4)] py-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
+        <span className="inline-flex max-w-max items-center gap-[var(--space-2)] rounded-full border border-[color-mix(in oklab,var(--primary-color) 35%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 95%,transparent)] px-[var(--space-4)] py-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
           Status do Projeto
         </span>
         <div className="flex flex-col gap-2">

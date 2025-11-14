@@ -71,4 +71,3 @@ main().catch((error) => {
   console.error("❌ Erro ao executar demo:", error);
   process.exitCode = 1;
 });
-

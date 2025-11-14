@@ -17,4 +17,3 @@ export class SectorId {
     return this.value === other.value;
   }
 }
-

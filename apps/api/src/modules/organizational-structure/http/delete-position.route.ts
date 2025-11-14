@@ -1,11 +1,13 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { DeletarPositionUseCase } from "../application/use-cases/deletar-position.use-case";
-import type { PositionRepository } from "../domain/repositories/position-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { DeletarPositionUseCase } from "../application/use-cases/deletar-position.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { PositionRepository } from "../domain/repositories/position-repository";
+import type { PositionMembershipRepository } from "../infra/prisma/prisma-position-membership.repository";
 
 type Dependencies = {
   positionRepository: PositionRepository;
+  positionMembershipRepository?: PositionMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
 };
@@ -24,11 +26,13 @@ export async function registerDeletePositionRoute(app: FastifyInstance, deps: De
     }
 
     try {
-
       const params = request.params as { positionId: string };
 
       const useCase = new DeletarPositionUseCase({
-        ...deps,
+        positionRepository: deps.positionRepository,
+        positionMembershipRepository: deps.positionMembershipRepository,
+        auditLogRepository: deps.auditLogRepository,
+        eventBus: deps.eventBus,
         actorId: userId,
       });
 
@@ -49,4 +53,3 @@ export async function registerDeletePositionRoute(app: FastifyInstance, deps: De
     }
   });
 }
-

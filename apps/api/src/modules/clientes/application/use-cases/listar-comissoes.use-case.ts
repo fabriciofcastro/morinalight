@@ -1,8 +1,8 @@
 import type { ComissaoRepository } from "../../domain/repositories/comissao-repository";
 import {
+  comissaoViewSchema,
   listarComissoesInputSchema,
   listarComissoesResultadoSchema,
-  comissaoViewSchema,
 } from "../schemas/comissao.schema";
 
 type Dependencies = {
@@ -56,4 +56,3 @@ export class ListarComissoesUseCase {
     });
   }
 }
-

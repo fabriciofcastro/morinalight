@@ -1,9 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { AtualizarTeamUseCase } from "../application/use-cases/atualizar-team.use-case";
-import type { TeamRepository } from "../domain/repositories/team-repository";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { AtualizarTeamUseCase } from "../application/use-cases/atualizar-team.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
+import type { TeamRepository } from "../domain/repositories/team-repository";
 
 type Dependencies = {
   teamRepository: TeamRepository;
@@ -44,7 +44,10 @@ export async function registerUpdateTeamRoute(app: FastifyInstance, deps: Depend
         app.log.error(error, "Erro ao atualizar time");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("já existe")) {
@@ -58,4 +61,3 @@ export async function registerUpdateTeamRoute(app: FastifyInstance, deps: Depend
     },
   );
 }
-

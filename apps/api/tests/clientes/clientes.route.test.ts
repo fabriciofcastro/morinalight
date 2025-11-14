@@ -1,10 +1,9 @@
-import { describe, expect, it, beforeAll } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "../../src/core/server/create-server";
 import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
 import { InMemoryClienteRepository } from "./in-memory-cliente.repository";
-import { InMemoryRepresentanteRepository } from "./in-memory-representante.repository";
 import { InMemoryComissaoRepository } from "./in-memory-comissao.repository";
-import { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
+import { InMemoryRepresentanteRepository } from "./in-memory-representante.repository";
 
 describe("Clientes HTTP Routes", () => {
   let server: any;
@@ -180,4 +179,3 @@ describe("Clientes HTTP Routes", () => {
     expect(data.itens.length).toBeGreaterThan(0);
   });
 });
-

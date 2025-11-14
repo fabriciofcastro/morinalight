@@ -2,10 +2,10 @@
 
 /**
  * Script de indexação de documentos canônicos para MCP/Vectorstore
- * 
+ *
  * Este script extrai e processa documentos canônicos do projeto MORINA
  * para melhorar o contexto do Cursor AI através de servidores MCP.
- * 
+ *
  * Documentos canônicos:
  * - MANIFESTO.md: Princípios e diretrizes
  * - DOCS_STANDARDS.md: Padrões de documentação
@@ -16,9 +16,9 @@
  * - events/*.ts: Definições de eventos
  */
 
-import { readFile, readdir, stat } from "fs/promises";
-import { join, dirname, relative } from "path";
-import { fileURLToPath } from "url";
+import { readdir, readFile } from "node:fs/promises";
+import { dirname, join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -42,7 +42,7 @@ const CONTRACT_DIRS = [
 ];
 
 // Metadados para indexação
-const METADATA_KEYS = {
+const _METADATA_KEYS = {
   dominio: ["catalogo", "preficha", "org", "auth"],
   tipo: ["contrato", "evento", "regra", "manifesto"],
   versao: ["v1"],
@@ -116,9 +116,8 @@ async function processFile(filePath) {
   const metadata = extractMetadata(filePath, content);
 
   // Limita o tamanho do conteúdo para indexação (primeiros 8000 caracteres)
-  const truncatedContent = content.length > 8000 
-    ? content.substring(0, 8000) + "\n\n... (conteúdo truncado)"
-    : content;
+  const truncatedContent =
+    content.length > 8000 ? `${content.substring(0, 8000)}\n\n... (conteúdo truncado)` : content;
 
   return {
     ...metadata,
@@ -132,13 +131,13 @@ async function processFile(filePath) {
  */
 async function listFiles(dir, extensions = [".ts", ".md", ".yaml", ".yml"]) {
   const files = [];
-  
+
   try {
     const entries = await readdir(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = join(dir, entry.name);
-      
+
       if (entry.isDirectory()) {
         // Ignora node_modules, dist, .next, etc.
         if (!entry.name.startsWith(".") && entry.name !== "node_modules" && entry.name !== "dist") {
@@ -155,7 +154,7 @@ async function listFiles(dir, extensions = [".ts", ".md", ".yaml", ".yml"]) {
   } catch (error) {
     console.warn(`⚠️  Não foi possível listar ${dir}: ${error.message}`);
   }
-  
+
   return files;
 }
 
@@ -183,10 +182,9 @@ async function generateIndex() {
     if (processed) {
       index.documents.push(processed);
       index.summary.total++;
-      index.summary.byDominio[processed.dominio] = 
+      index.summary.byDominio[processed.dominio] =
         (index.summary.byDominio[processed.dominio] || 0) + 1;
-      index.summary.byTipo[processed.tipo] = 
-        (index.summary.byTipo[processed.tipo] || 0) + 1;
+      index.summary.byTipo[processed.tipo] = (index.summary.byTipo[processed.tipo] || 0) + 1;
       console.log(`  ✓ ${docPath}`);
     }
   }
@@ -196,16 +194,15 @@ async function generateIndex() {
   for (const contractDir of CONTRACT_DIRS) {
     const fullPath = join(ROOT_DIR, contractDir);
     const files = await listFiles(fullPath);
-    
+
     for (const file of files) {
       const processed = await processFile(file);
       if (processed) {
         index.documents.push(processed);
         index.summary.total++;
-        index.summary.byDominio[processed.dominio] = 
+        index.summary.byDominio[processed.dominio] =
           (index.summary.byDominio[processed.dominio] || 0) + 1;
-        index.summary.byTipo[processed.tipo] = 
-          (index.summary.byTipo[processed.tipo] || 0) + 1;
+        index.summary.byTipo[processed.tipo] = (index.summary.byTipo[processed.tipo] || 0) + 1;
         console.log(`  ✓ ${relative(ROOT_DIR, file)}`);
       }
     }
@@ -230,8 +227,8 @@ function displaySummary(index) {
  */
 async function saveIndex(index) {
   const indexPath = join(ROOT_DIR, ".cursor", "docs-index.json");
-  const { writeFile, mkdir } = await import("fs/promises");
-  
+  const { writeFile, mkdir } = await import("node:fs/promises");
+
   try {
     await mkdir(join(ROOT_DIR, ".cursor"), { recursive: true });
     await writeFile(indexPath, JSON.stringify(index, null, 2), "utf-8");
@@ -251,7 +248,9 @@ async function main() {
     displaySummary(index);
     await saveIndex(index);
     console.log("\n✅ Indexação concluída com sucesso!");
-    console.log("\n💡 Dica: Execute 'pnpm docs:index' sempre que documentos canônicos forem atualizados.");
+    console.log(
+      "\n💡 Dica: Execute 'pnpm docs:index' sempre que documentos canônicos forem atualizados.",
+    );
   } catch (error) {
     console.error(`❌ Erro durante a indexação: ${error.message}`);
     console.error(error.stack);

@@ -27,7 +27,7 @@ function getAuthHeaders(): HeadersInit {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const params = new URLSearchParams();
-  
+
   if (searchParams.get("entityType")) {
     params.append("entityType", searchParams.get("entityType")!);
   }
@@ -66,11 +66,12 @@ export async function POST(request: Request) {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: "Erro ao criar template de permissões" }));
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Erro ao criar template de permissões" }));
     return NextResponse.json(error, { status: response.status });
   }
 
   const data = await response.json();
   return NextResponse.json(data);
 }
-

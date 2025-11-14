@@ -1,10 +1,10 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
-  OrganizationalStructureAuditLogRepository,
   OrganizationalStructureAuditLog,
   OrganizationalStructureAuditLogFilter,
   OrganizationalStructureAuditLogPage,
+  OrganizationalStructureAuditLogRepository,
 } from "../../domain/repositories/organizational-structure-audit-log.repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -120,4 +120,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

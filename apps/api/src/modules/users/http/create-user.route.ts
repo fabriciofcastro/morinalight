@@ -1,7 +1,7 @@
-import type { FastifyInstance } from "fastify";
-import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
+import type { FastifyInstance } from "fastify";
+import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 import type { UserRepository } from "../repositories/user.repository";
 
@@ -61,5 +61,3 @@ export async function registerCreateUserRoute(app: FastifyInstance, deps: Create
     });
   });
 }
-
-

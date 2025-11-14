@@ -1,25 +1,29 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Button, GlassCard, Input, Label, FormSelect, FormField, FormTextarea, cn } from "@morina/ui";
+import { Button, cn, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
 import {
-  Building2,
-  FolderTree,
+  ArrowDown,
+  ArrowUp,
   Briefcase,
+  Building2,
+  Edit,
+  FolderTree,
+  Network,
   Plus,
   Search,
-  Edit,
   Trash2,
-  Network,
-  ChevronRight,
   X,
-  Users,
-  ArrowUp,
-  ArrowDown,
 } from "lucide-react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { OrganizationTree, type DepartmentNode, type SectorNode, type PositionNode } from "@/components/organizational-structure/organization-tree";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import {
+  type DepartmentNode,
+  OrganizationTree,
+  type PositionNode,
+  type SectorNode,
+} from "@/components/organizational-structure/organization-tree";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Department = {
   departmentId: string;
@@ -93,7 +97,10 @@ export function OrganizationalStructureClient() {
   const [sortBy, setSortBy] = useState<"name" | "code" | "createdAt">("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [showForm, setShowForm] = useState(false);
-  const [selectedNode, setSelectedNode] = useState<{ type: "department" | "sector" | "position"; id: string } | null>(null);
+  const [selectedNode, setSelectedNode] = useState<{
+    type: "department" | "sector" | "position";
+    id: string;
+  } | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -104,7 +111,9 @@ export function OrganizationalStructureClient() {
   const [editingSector, setEditingSector] = useState<Sector | null>(null);
   const [editingPosition, setEditingPosition] = useState<Position | null>(null);
 
-  const [users, setUsers] = useState<Array<{ userId: string; email: string; displayName: string | null }>>([]);
+  const [users, setUsers] = useState<
+    Array<{ userId: string; email: string; displayName: string | null }>
+  >([]);
 
   const [departmentFormData, setDepartmentFormData] = useState({
     name: "",
@@ -150,7 +159,7 @@ export function OrganizationalStructureClient() {
   // Carregar usuários
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
 
   // Carregar dados quando a aba mudar
   useEffect(() => {
@@ -162,7 +171,7 @@ export function OrganizationalStructureClient() {
       loadData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab]);
+  }, [activeTab, loadAllData, loadData]);
 
   // Carregar dados quando a busca ou filtro mudar (debounce)
   useEffect(() => {
@@ -172,7 +181,7 @@ export function OrganizationalStructureClient() {
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, statusFilter]);
+  }, [loadData]);
 
   async function loadAllData() {
     setLoading(true);
@@ -289,7 +298,9 @@ export function OrganizationalStructureClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ userId: string; email: string; displayName: string | null }> } = await response.json();
+        const data: {
+          itens: Array<{ userId: string; email: string; displayName: string | null }>;
+        } = await response.json();
         setUsers(data.itens || []);
       }
     } catch (error) {
@@ -300,7 +311,7 @@ export function OrganizationalStructureClient() {
   // Construir árvore hierárquica
   const hierarchyTree = useMemo((): DepartmentNode[] => {
     const deptMap = new Map<string, DepartmentNode>();
-    
+
     // Criar nós de departamentos
     departments.forEach((dept) => {
       deptMap.set(dept.departmentId, {
@@ -333,7 +344,7 @@ export function OrganizationalStructureClient() {
     // Adicionar cargos aos setores
     positions.forEach((position) => {
       const dept = Array.from(deptMap.values()).find((d) =>
-        d.sectors?.some((s) => s.id === position.sectorId)
+        d.sectors?.some((s) => s.id === position.sectorId),
       );
       if (dept) {
         const sector = dept.sectors?.find((s) => s.id === position.sectorId);
@@ -382,7 +393,8 @@ export function OrganizationalStructureClient() {
       const dept = departments.find((d) => d.departmentId === node.id);
       if (dept) {
         setEditingDepartment(dept);
-        const metadata = (dept as unknown as { metadata?: Record<string, unknown> | null })?.metadata || {};
+        const metadata =
+          (dept as unknown as { metadata?: Record<string, unknown> | null })?.metadata || {};
         setDepartmentFormData({
           name: dept.name,
           code: dept.code,
@@ -401,7 +413,8 @@ export function OrganizationalStructureClient() {
       const sector = sectors.find((s) => s.id === node.id);
       if (sector) {
         setEditingSector(sector);
-        const metadata = (sector as unknown as { metadata?: Record<string, unknown> | null })?.metadata || {};
+        const metadata =
+          (sector as unknown as { metadata?: Record<string, unknown> | null })?.metadata || {};
         setSectorFormData({
           name: sector.name,
           code: sector.code,
@@ -421,7 +434,8 @@ export function OrganizationalStructureClient() {
       const position = positions.find((p) => p.id === node.id);
       if (position) {
         setEditingPosition(position);
-        const metadata = (position as unknown as { metadata?: Record<string, unknown> | null })?.metadata || {};
+        const metadata =
+          (position as unknown as { metadata?: Record<string, unknown> | null })?.metadata || {};
         setPositionFormData({
           name: position.name,
           code: position.code,
@@ -572,19 +586,19 @@ export function OrganizationalStructureClient() {
 
   function validateDepartmentForm(): boolean {
     const errors: Record<string, string> = {};
-    
+
     if (!departmentFormData.name.trim()) {
       errors.name = "Nome é obrigatório";
     } else if (departmentFormData.name.length < 2) {
       errors.name = "Nome deve ter no mínimo 2 caracteres";
     }
-    
+
     if (!departmentFormData.code.trim()) {
       errors.code = "Código é obrigatório";
     } else if (departmentFormData.code.length < 2) {
       errors.code = "Código deve ter no mínimo 2 caracteres";
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -598,7 +612,9 @@ export function OrganizationalStructureClient() {
 
     setSubmitting(true);
     try {
-      const url = editingDepartment ? `/api/departments/${editingDepartment.departmentId}` : "/api/departments";
+      const url = editingDepartment
+        ? `/api/departments/${editingDepartment.departmentId}`
+        : "/api/departments";
       const method = editingDepartment ? "PUT" : "POST";
 
       const body = {
@@ -606,7 +622,9 @@ export function OrganizationalStructureClient() {
         parentId: departmentFormData.parentId || null,
         description: departmentFormData.description || null,
         metadata: {
-          ...(departmentFormData.responsavelId && { responsavelId: departmentFormData.responsavelId }),
+          ...(departmentFormData.responsavelId && {
+            responsavelId: departmentFormData.responsavelId,
+          }),
           ...(departmentFormData.finalidade && { finalidade: departmentFormData.finalidade }),
           ...(departmentFormData.sigla && { sigla: departmentFormData.sigla }),
         },
@@ -653,23 +671,23 @@ export function OrganizationalStructureClient() {
 
   function validateSectorForm(): boolean {
     const errors: Record<string, string> = {};
-    
+
     if (!sectorFormData.name.trim()) {
       errors.name = "Nome é obrigatório";
     } else if (sectorFormData.name.length < 2) {
       errors.name = "Nome deve ter no mínimo 2 caracteres";
     }
-    
+
     if (!sectorFormData.code.trim()) {
       errors.code = "Código é obrigatório";
     } else if (sectorFormData.code.length < 2) {
       errors.code = "Código deve ter no mínimo 2 caracteres";
     }
-    
+
     if (!sectorFormData.departmentId) {
       errors.departmentId = "Departamento é obrigatório";
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -693,7 +711,9 @@ export function OrganizationalStructureClient() {
         description: sectorFormData.description || null,
         metadata: {
           ...(sectorFormData.responsavelId && { responsavelId: sectorFormData.responsavelId }),
-          ...(sectorFormData.politicaInterna && { politicaInterna: sectorFormData.politicaInterna }),
+          ...(sectorFormData.politicaInterna && {
+            politicaInterna: sectorFormData.politicaInterna,
+          }),
           ...(sectorFormData.atribuicoes && { atribuicoes: sectorFormData.atribuicoes }),
         },
       };
@@ -739,23 +759,23 @@ export function OrganizationalStructureClient() {
 
   function validatePositionForm(): boolean {
     const errors: Record<string, string> = {};
-    
+
     if (!positionFormData.name.trim()) {
       errors.name = "Nome é obrigatório";
     } else if (positionFormData.name.length < 2) {
       errors.name = "Nome deve ter no mínimo 2 caracteres";
     }
-    
+
     if (!positionFormData.code.trim()) {
       errors.code = "Código é obrigatório";
     } else if (positionFormData.code.length < 2) {
       errors.code = "Código deve ter no mínimo 2 caracteres";
     }
-    
+
     if (!positionFormData.sectorId) {
       errors.sectorId = "Setor é obrigatório";
     }
-    
+
     if (positionFormData.salarioMin && positionFormData.salarioMax) {
       const min = Number(positionFormData.salarioMin);
       const max = Number(positionFormData.salarioMax);
@@ -763,7 +783,7 @@ export function OrganizationalStructureClient() {
         errors.salarioMax = "Salário máximo deve ser maior que o mínimo";
       }
     }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -790,7 +810,9 @@ export function OrganizationalStructureClient() {
         salarioMax: positionFormData.salarioMax ? Number(positionFormData.salarioMax) : null,
         metadata: {
           ...(positionFormData.senioridade && { senioridade: positionFormData.senioridade }),
-          ...(positionFormData.acoesPermitidas && { acoesPermitidas: positionFormData.acoesPermitidas }),
+          ...(positionFormData.acoesPermitidas && {
+            acoesPermitidas: positionFormData.acoesPermitidas,
+          }),
           ...(positionFormData.kpis && { kpis: positionFormData.kpis }),
         },
       };
@@ -835,10 +857,12 @@ export function OrganizationalStructureClient() {
   }
 
   // Função de ordenação
-  const sortItems = <T extends { name: string; code: string; createdAt: string }>(items: T[]): T[] => {
+  const sortItems = <T extends { name: string; code: string; createdAt: string }>(
+    items: T[],
+  ): T[] => {
     return [...items].sort((a, b) => {
       let comparison = 0;
-      
+
       if (sortBy === "name") {
         comparison = a.name.localeCompare(b.name, "pt-BR", { sensitivity: "base" });
       } else if (sortBy === "code") {
@@ -846,15 +870,15 @@ export function OrganizationalStructureClient() {
       } else if (sortBy === "createdAt") {
         comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       }
-      
+
       return sortOrder === "asc" ? comparison : -comparison;
     });
   };
 
   // Itens ordenados
-  const sortedDepartments = useMemo(() => sortItems(departments), [departments, sortBy, sortOrder]);
-  const sortedSectors = useMemo(() => sortItems(sectors), [sectors, sortBy, sortOrder]);
-  const sortedPositions = useMemo(() => sortItems(positions), [positions, sortBy, sortOrder]);
+  const sortedDepartments = useMemo(() => sortItems(departments), [departments, sortItems]);
+  const sortedSectors = useMemo(() => sortItems(sectors), [sectors, sortItems]);
+  const sortedPositions = useMemo(() => sortItems(positions), [positions, sortItems]);
 
   // Calcular estatísticas
   const stats = useMemo(() => {
@@ -1035,7 +1059,11 @@ export function OrganizationalStructureClient() {
               className="w-[40px]"
               title={sortOrder === "asc" ? "Ordenar decrescente" : "Ordenar crescente"}
             >
-              {sortOrder === "asc" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+              {sortOrder === "asc" ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
             </Button>
           </div>
           <Button
@@ -1150,7 +1178,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Sigla">
                 <Input
                   value={departmentFormData.sigla}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, sigla: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, sigla: e.target.value })
+                  }
                   placeholder="Sigla do departamento (ex: RH, TI, FIN)"
                   maxLength={10}
                 />
@@ -1158,7 +1188,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Descrição">
                 <FormTextarea
                   value={departmentFormData.description}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, description: e.target.value })
+                  }
                   placeholder="Descrição do departamento"
                   rows={3}
                 />
@@ -1166,7 +1198,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Finalidade">
                 <FormTextarea
                   value={departmentFormData.finalidade}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, finalidade: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, finalidade: e.target.value })
+                  }
                   placeholder="Finalidade do departamento"
                   rows={3}
                 />
@@ -1174,7 +1208,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Responsável">
                 <FormSelect
                   value={departmentFormData.responsavelId}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, responsavelId: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, responsavelId: e.target.value })
+                  }
                 >
                   <option value="">Nenhum</option>
                   {users.map((user) => (
@@ -1187,7 +1223,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Departamento Pai">
                 <FormSelect
                   value={departmentFormData.parentId}
-                  onChange={(e) => setDepartmentFormData({ ...departmentFormData, parentId: e.target.value })}
+                  onChange={(e) =>
+                    setDepartmentFormData({ ...departmentFormData, parentId: e.target.value })
+                  }
                 >
                   <option value="">Nenhum</option>
                   {departments
@@ -1286,7 +1324,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Descrição">
                 <FormTextarea
                   value={sectorFormData.description}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, description: e.target.value })
+                  }
                   placeholder="Descrição do setor"
                   rows={3}
                 />
@@ -1311,7 +1351,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Responsável">
                 <FormSelect
                   value={sectorFormData.responsavelId}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, responsavelId: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, responsavelId: e.target.value })
+                  }
                 >
                   <option value="">Nenhum</option>
                   {users.map((user) => (
@@ -1324,7 +1366,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Política Interna">
                 <FormTextarea
                   value={sectorFormData.politicaInterna}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, politicaInterna: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, politicaInterna: e.target.value })
+                  }
                   placeholder="Políticas internas do setor"
                   rows={4}
                 />
@@ -1332,7 +1376,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Atribuições">
                 <FormTextarea
                   value={sectorFormData.atribuicoes}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, atribuicoes: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, atribuicoes: e.target.value })
+                  }
                   placeholder="Atribuições do setor"
                   rows={4}
                 />
@@ -1340,11 +1386,17 @@ export function OrganizationalStructureClient() {
               <FormField label="Setor Pai">
                 <FormSelect
                   value={sectorFormData.parentId}
-                  onChange={(e) => setSectorFormData({ ...sectorFormData, parentId: e.target.value })}
+                  onChange={(e) =>
+                    setSectorFormData({ ...sectorFormData, parentId: e.target.value })
+                  }
                 >
                   <option value="">Nenhum</option>
                   {sectors
-                    .filter((s) => s.departmentId === sectorFormData.departmentId && s.id !== editingSector?.id)
+                    .filter(
+                      (s) =>
+                        s.departmentId === sectorFormData.departmentId &&
+                        s.id !== editingSector?.id,
+                    )
                     .map((sector) => (
                       <option key={sector.id} value={sector.id}>
                         {sector.name} ({sector.code})
@@ -1439,7 +1491,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Descrição">
                 <FormTextarea
                   value={positionFormData.description}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, description: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, description: e.target.value })
+                  }
                   placeholder="Descrição do cargo"
                   rows={3}
                 />
@@ -1467,7 +1521,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Responsabilidades">
                 <FormTextarea
                   value={positionFormData.responsabilidades}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, responsabilidades: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, responsabilidades: e.target.value })
+                  }
                   placeholder="Responsabilidades do cargo"
                   rows={4}
                 />
@@ -1475,7 +1531,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Requisitos">
                 <FormTextarea
                   value={positionFormData.requisitos}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, requisitos: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, requisitos: e.target.value })
+                  }
                   placeholder="Requisitos para ocupar o cargo"
                   rows={4}
                 />
@@ -1483,7 +1541,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Senioridade">
                 <FormSelect
                   value={positionFormData.senioridade}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, senioridade: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, senioridade: e.target.value })
+                  }
                 >
                   <option value="">Nenhuma</option>
                   <option value="estagiario">Estagiário</option>
@@ -1499,7 +1559,9 @@ export function OrganizationalStructureClient() {
               <FormField label="Ações Permitidas">
                 <FormTextarea
                   value={positionFormData.acoesPermitidas}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, acoesPermitidas: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, acoesPermitidas: e.target.value })
+                  }
                   placeholder="Ações permitidas para este cargo (separadas por vírgula ou linha)"
                   rows={3}
                 />
@@ -1507,7 +1569,9 @@ export function OrganizationalStructureClient() {
               <FormField label="KPIs">
                 <FormTextarea
                   value={positionFormData.kpis}
-                  onChange={(e) => setPositionFormData({ ...positionFormData, kpis: e.target.value })}
+                  onChange={(e) =>
+                    setPositionFormData({ ...positionFormData, kpis: e.target.value })
+                  }
                   placeholder="Indicadores de performance (KPIs) para este cargo (separados por vírgula ou linha)"
                   rows={3}
                 />
@@ -1608,95 +1672,130 @@ export function OrganizationalStructureClient() {
                 </div>
               ) : (
                 sortedDepartments.map((dept) => {
-                  const metadata = (dept as unknown as { metadata?: { sigla?: string; responsavelId?: string } | null })?.metadata || {};
-                  const responsavel = metadata.responsavelId ? users.find((u) => u.userId === metadata.responsavelId) : null;
+                  const metadata =
+                    (
+                      dept as unknown as {
+                        metadata?: { sigla?: string; responsavelId?: string } | null;
+                      }
+                    )?.metadata || {};
+                  const responsavel = metadata.responsavelId
+                    ? users.find((u) => u.userId === metadata.responsavelId)
+                    : null;
                   return (
-                  <div
-                    key={dept.departmentId}
-                    className="flex items-center justify-between rounded-[var(--r-md)] border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] p-[var(--space-4)] transition-colors hover:border-[var(--primary)]"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-[var(--space-2)]">
-                        <h3 className="font-semibold text-[var(--fg)]">{dept.name}</h3>
-                        <span
-                          className={cn(
-                            "rounded-[var(--r-sm)] px-[var(--space-2)] py-0.5 text-[var(--fs-xs)] font-medium uppercase",
-                            dept.status === "ativo"
-                              ? "bg-[color-mix(in_oklab,var(--success)_20%,transparent)] text-[var(--success)]"
-                              : dept.status === "inativo"
-                                ? "bg-[color-mix(in_oklab,var(--warning)_20%,transparent)] text-[var(--warning)]"
-                                : "bg-[color-mix(in_oklab,var(--muted-soft)_20%,transparent)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
-                          )}
-                        >
-                          {dept.status === "ativo" ? "Ativo" : dept.status === "inativo" ? "Inativo" : "Arquivado"}
-                        </span>
-                      </div>
-                      <p className="mt-[var(--space-1)] text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
-                        {dept.code} {metadata.sigla && `(${metadata.sigla})`} {dept.description && `• ${dept.description}`}
-                        {responsavel && (
-                          <>
-                            {" • "}
-                            <span className="font-medium">Responsável: {responsavel.displayName || responsavel.email}</span>
-                          </>
-                        )}
-                        {sectors.filter((s) => s.departmentId === dept.departmentId).length > 0 && (
-                          <>
-                            {" • "}
-                            <span className="font-medium">
-                              {sectors.filter((s) => s.departmentId === dept.departmentId).length}{" "}
-                              {sectors.filter((s) => s.departmentId === dept.departmentId).length === 1 ? "setor" : "setores"}
-                            </span>
-                          </>
-                        )}
-                      </p>
-                      {dept.createdAt && (
-                        <p className="mt-[var(--space-1)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted-soft)_60%,var(--fg)_40%)]">
-                          Criado em {new Date(dept.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-[var(--space-2)]">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditNode({ type: "department", id: dept.departmentId, data: dept })}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteNode({ type: "department", id: dept.departmentId, data: dept })}
-                        className="text-[var(--danger)] hover:text-[var(--danger)]"
-                        disabled={deleting === dept.departmentId}
-                      >
-                        {deleting === dept.departmentId ? (
-                          <svg
-                            className="h-4 w-4 animate-spin"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
+                    <div
+                      key={dept.departmentId}
+                      className="flex items-center justify-between rounded-[var(--r-md)] border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] p-[var(--space-4)] transition-colors hover:border-[var(--primary)]"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-[var(--space-2)]">
+                          <h3 className="font-semibold text-[var(--fg)]">{dept.name}</h3>
+                          <span
+                            className={cn(
+                              "rounded-[var(--r-sm)] px-[var(--space-2)] py-0.5 text-[var(--fs-xs)] font-medium uppercase",
+                              dept.status === "ativo"
+                                ? "bg-[color-mix(in_oklab,var(--success)_20%,transparent)] text-[var(--success)]"
+                                : dept.status === "inativo"
+                                  ? "bg-[color-mix(in_oklab,var(--warning)_20%,transparent)] text-[var(--warning)]"
+                                  : "bg-[color-mix(in_oklab,var(--muted-soft)_20%,transparent)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
+                            )}
                           >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
+                            {dept.status === "ativo"
+                              ? "Ativo"
+                              : dept.status === "inativo"
+                                ? "Inativo"
+                                : "Arquivado"}
+                          </span>
+                        </div>
+                        <p className="mt-[var(--space-1)] text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
+                          {dept.code} {metadata.sigla && `(${metadata.sigla})`}{" "}
+                          {dept.description && `• ${dept.description}`}
+                          {responsavel && (
+                            <>
+                              {" • "}
+                              <span className="font-medium">
+                                Responsável: {responsavel.displayName || responsavel.email}
+                              </span>
+                            </>
+                          )}
+                          {sectors.filter((s) => s.departmentId === dept.departmentId).length >
+                            0 && (
+                            <>
+                              {" • "}
+                              <span className="font-medium">
+                                {sectors.filter((s) => s.departmentId === dept.departmentId).length}{" "}
+                                {sectors.filter((s) => s.departmentId === dept.departmentId)
+                                  .length === 1
+                                  ? "setor"
+                                  : "setores"}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                        {dept.createdAt && (
+                          <p className="mt-[var(--space-1)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted-soft)_60%,var(--fg)_40%)]">
+                            Criado em{" "}
+                            {new Date(dept.createdAt).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                          </p>
                         )}
-                      </Button>
+                      </div>
+                      <div className="flex items-center gap-[var(--space-2)]">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            handleEditNode({
+                              type: "department",
+                              id: dept.departmentId,
+                              data: dept,
+                            })
+                          }
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            handleDeleteNode({
+                              type: "department",
+                              id: dept.departmentId,
+                              data: dept,
+                            })
+                          }
+                          className="text-[var(--danger)] hover:text-[var(--danger)]"
+                          disabled={deleting === dept.departmentId}
+                        >
+                          {deleting === dept.departmentId ? (
+                            <svg
+                              className="h-4 w-4 animate-spin"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              />
+                            </svg>
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
-                  </div>
                   );
                 })
               )}
@@ -1712,8 +1811,12 @@ export function OrganizationalStructureClient() {
               ) : (
                 sortedSectors.map((sector) => {
                   const dept = departments.find((d) => d.departmentId === sector.departmentId);
-                  const metadata = (sector as unknown as { metadata?: { responsavelId?: string } | null })?.metadata || {};
-                  const responsavel = metadata.responsavelId ? users.find((u) => u.userId === metadata.responsavelId) : null;
+                  const metadata =
+                    (sector as unknown as { metadata?: { responsavelId?: string } | null })
+                      ?.metadata || {};
+                  const responsavel = metadata.responsavelId
+                    ? users.find((u) => u.userId === metadata.responsavelId)
+                    : null;
                   return (
                     <div
                       key={sector.id}
@@ -1732,15 +1835,22 @@ export function OrganizationalStructureClient() {
                                   : "bg-[color-mix(in_oklab,var(--muted-soft)_20%,transparent)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
                             )}
                           >
-                            {sector.status === "ativo" ? "Ativo" : sector.status === "inativo" ? "Inativo" : "Arquivado"}
+                            {sector.status === "ativo"
+                              ? "Ativo"
+                              : sector.status === "inativo"
+                                ? "Inativo"
+                                : "Arquivado"}
                           </span>
                         </div>
                         <p className="mt-[var(--space-1)] text-[var(--fs-sm)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
-                          {sector.code} {dept && `• ${dept.name}`} {sector.description && `• ${sector.description}`}
+                          {sector.code} {dept && `• ${dept.name}`}{" "}
+                          {sector.description && `• ${sector.description}`}
                           {responsavel && (
                             <>
                               {" • "}
-                              <span className="font-medium">Responsável: {responsavel.displayName || responsavel.email}</span>
+                              <span className="font-medium">
+                                Responsável: {responsavel.displayName || responsavel.email}
+                              </span>
                             </>
                           )}
                           {positions.filter((p) => p.sectorId === sector.id).length > 0 && (
@@ -1748,14 +1858,21 @@ export function OrganizationalStructureClient() {
                               {" • "}
                               <span className="font-medium">
                                 {positions.filter((p) => p.sectorId === sector.id).length}{" "}
-                                {positions.filter((p) => p.sectorId === sector.id).length === 1 ? "cargo" : "cargos"}
+                                {positions.filter((p) => p.sectorId === sector.id).length === 1
+                                  ? "cargo"
+                                  : "cargos"}
                               </span>
                             </>
                           )}
                         </p>
                         {sector.createdAt && (
                           <p className="mt-[var(--space-1)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted-soft)_60%,var(--fg)_40%)]">
-                            Criado em {new Date(sector.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                            Criado em{" "}
+                            {new Date(sector.createdAt).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
                           </p>
                         )}
                       </div>
@@ -1763,14 +1880,18 @@ export function OrganizationalStructureClient() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEditNode({ type: "sector", id: sector.id, data: sector })}
+                          onClick={() =>
+                            handleEditNode({ type: "sector", id: sector.id, data: sector })
+                          }
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteNode({ type: "sector", id: sector.id, data: sector })}
+                          onClick={() =>
+                            handleDeleteNode({ type: "sector", id: sector.id, data: sector })
+                          }
                           className="text-[var(--danger)] hover:text-[var(--danger)]"
                           disabled={deleting === sector.id}
                         >
@@ -1816,7 +1937,9 @@ export function OrganizationalStructureClient() {
               ) : (
                 sortedPositions.map((position) => {
                   const sector = sectors.find((s) => s.id === position.sectorId);
-                  const dept = sector ? departments.find((d) => d.departmentId === sector.departmentId) : null;
+                  const dept = sector
+                    ? departments.find((d) => d.departmentId === sector.departmentId)
+                    : null;
                   return (
                     <div
                       key={position.id}
@@ -1835,11 +1958,19 @@ export function OrganizationalStructureClient() {
                                   : "bg-[color-mix(in_oklab,var(--muted-soft)_20%,transparent)] text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
                             )}
                           >
-                            {position.status === "ativo" ? "Ativo" : position.status === "inativo" ? "Inativo" : "Arquivado"}
+                            {position.status === "ativo"
+                              ? "Ativo"
+                              : position.status === "inativo"
+                                ? "Inativo"
+                                : "Arquivado"}
                           </span>
-                          {(position as unknown as { metadata?: { senioridade?: string } }).metadata?.senioridade && (
+                          {(position as unknown as { metadata?: { senioridade?: string } }).metadata
+                            ?.senioridade && (
                             <span className="rounded-[var(--r-sm)] bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] px-[var(--space-2)] py-0.5 text-[var(--fs-xs)] font-medium capitalize text-[var(--primary)]">
-                              {((position as unknown as { metadata?: { senioridade?: string } }).metadata?.senioridade || "")
+                              {(
+                                (position as unknown as { metadata?: { senioridade?: string } })
+                                  .metadata?.senioridade || ""
+                              )
                                 .split("-")
                                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                                 .join(" ")}
@@ -1851,14 +1982,27 @@ export function OrganizationalStructureClient() {
                           {position.salarioMin && position.salarioMax && (
                             <>
                               {" • "}
-                              R$ {Number(position.salarioMin).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} - R${" "}
-                              {Number(position.salarioMax).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              R${" "}
+                              {Number(position.salarioMin).toLocaleString("pt-BR", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}{" "}
+                              - R${" "}
+                              {Number(position.salarioMax).toLocaleString("pt-BR", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
                             </>
                           )}
                         </p>
                         {position.createdAt && (
                           <p className="mt-[var(--space-1)] text-[var(--fs-xs)] text-[color-mix(in_oklab,var(--muted-soft)_60%,var(--fg)_40%)]">
-                            Criado em {new Date(position.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                            Criado em{" "}
+                            {new Date(position.createdAt).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
                           </p>
                         )}
                       </div>
@@ -1866,14 +2010,18 @@ export function OrganizationalStructureClient() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleEditNode({ type: "position", id: position.id, data: position })}
+                          onClick={() =>
+                            handleEditNode({ type: "position", id: position.id, data: position })
+                          }
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDeleteNode({ type: "position", id: position.id, data: position })}
+                          onClick={() =>
+                            handleDeleteNode({ type: "position", id: position.id, data: position })
+                          }
                           className="text-[var(--danger)] hover:text-[var(--danger)]"
                           disabled={deleting === position.id}
                         >
@@ -1914,4 +2062,3 @@ export function OrganizationalStructureClient() {
     </div>
   );
 }
-

@@ -1,8 +1,8 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { CriarOrganizationalUnitUseCase } from "../application/use-cases/criar-organizational-unit.use-case";
-import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { CriarOrganizationalUnitUseCase } from "../application/use-cases/criar-organizational-unit.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
 
 type Dependencies = {
   organizationalUnitRepository: OrganizationalUnitRepository;
@@ -52,4 +52,3 @@ export async function registerCreateOrganizationalUnitRoute(
     }
   });
 }
-

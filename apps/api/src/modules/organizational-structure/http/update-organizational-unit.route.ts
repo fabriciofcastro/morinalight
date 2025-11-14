@@ -1,8 +1,8 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { AtualizarOrganizationalUnitUseCase } from "../application/use-cases/atualizar-organizational-unit.use-case";
-import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { AtualizarOrganizationalUnitUseCase } from "../application/use-cases/atualizar-organizational-unit.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
 
 type Dependencies = {
   organizationalUnitRepository: OrganizationalUnitRepository;
@@ -44,7 +44,10 @@ export async function registerUpdateOrganizationalUnitRoute(
         app.log.error(error, "Erro ao atualizar unidade organizacional");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("já existe")) {
@@ -58,4 +61,3 @@ export async function registerUpdateOrganizationalUnitRoute(
     },
   );
 }
-

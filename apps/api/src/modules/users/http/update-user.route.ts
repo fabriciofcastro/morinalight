@@ -1,6 +1,6 @@
+import bcrypt from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import bcrypt from "bcryptjs";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 import type { UserRepository } from "../repositories/user.repository";
 
@@ -90,5 +90,3 @@ export async function registerUpdateUserRoute(app: FastifyInstance, deps: Update
     });
   });
 }
-
-

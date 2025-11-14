@@ -1,9 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { OrganizationRepository } from "../../modules/organizations/repositories/organization.repository";
 import type { TenantContext } from "./tenant.types";
 
-const headersSchema = z.object({
+const _headersSchema = z.object({
   "x-user-id": z.string().min(1),
 });
 
@@ -31,7 +31,7 @@ export function createTenantMiddleware(options: TenantMiddlewareOptions) {
     try {
       // Extrair userId do header ou do JWT
       let userId: string | null = null;
-      
+
       // Tentar obter do header primeiro
       const headerUserId = request.headers["x-user-id"];
       if (typeof headerUserId === "string") {
@@ -79,7 +79,8 @@ export function createTenantMiddleware(options: TenantMiddlewareOptions) {
 
       if (!orgId) {
         return reply.status(400).send({
-          message: "Organização não especificada. Forneça orgId em params, header x-org-id ou token JWT com defaultOrgId",
+          message:
+            "Organização não especificada. Forneça orgId em params, header x-org-id ou token JWT com defaultOrgId",
         });
       }
 
@@ -205,5 +206,3 @@ export function requireTenant(options?: { requireRole?: Array<string> }) {
     }
   };
 }
-
-

@@ -1,10 +1,10 @@
-import type { TeamRepository } from "../../domain/repositories/team-repository";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { Team } from "../../domain/entities/team";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { TeamRepository } from "../../domain/repositories/team-repository";
 import { criarTeamInputSchema, teamViewSchema } from "../schemas/team.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   teamRepository: TeamRepository;
@@ -109,4 +109,3 @@ export class CriarTeamUseCase {
     });
   }
 }
-

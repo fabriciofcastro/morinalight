@@ -1,10 +1,10 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   PermissionAuditLog,
   PermissionAuditLogFilter,
   PermissionAuditLogPage,
   PermissionAuditLogRepository,
 } from "../../domain/repositories/permission-audit-log-repository";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -195,5 +195,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-
-

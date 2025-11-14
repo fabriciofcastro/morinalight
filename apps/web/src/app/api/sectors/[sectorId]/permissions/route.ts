@@ -30,10 +30,7 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function GET(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function GET(_request: Request, { params }: RouteParams) {
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions`, {
     headers: getAuthHeaders(),
     cache: "no-store",
@@ -43,10 +40,7 @@ export async function GET(
   return NextResponse.json(data, { status: response.status });
 }
 
-export async function POST(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function POST(request: Request, { params }: RouteParams) {
   const body = await request.json();
 
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions`, {
@@ -63,10 +57,7 @@ export async function POST(
   return NextResponse.json(data, { status: response.status });
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function DELETE(request: Request, { params }: RouteParams) {
   const { searchParams } = new URL(request.url);
   const permissionId = searchParams.get("permissionId");
 
@@ -74,13 +65,10 @@ export async function DELETE(
     return NextResponse.json({ message: "permissionId é obrigatório" }, { status: 400 });
   }
 
-  const response = await fetch(
-    `${apiUrl}/sectors/${params.sectorId}/permissions/${permissionId}`,
-    {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    },
-  );
+  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions/${permissionId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
 
   if (response.status === 204) {
     return new NextResponse(null, { status: 204 });
@@ -89,5 +77,3 @@ export async function DELETE(
   const data = await response.json();
   return NextResponse.json(data, { status: response.status });
 }
-
-

@@ -1,10 +1,10 @@
-import type { SectorRepository } from "../../domain/repositories/sector-repository";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { Sector } from "../../domain/entities/sector";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { SectorRepository } from "../../domain/repositories/sector-repository";
 import { criarSectorInputSchema, sectorViewSchema } from "../schemas/sector.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -21,14 +21,20 @@ export class CriarSectorUseCase {
     const input = criarSectorInputSchema.parse(rawInput);
 
     // Verificar se já existe setor com este código
-    const sectorExistente = await this.deps.sectorRepository.encontrarPorCode(input.orgId, input.code);
+    const sectorExistente = await this.deps.sectorRepository.encontrarPorCode(
+      input.orgId,
+      input.code,
+    );
 
     if (sectorExistente) {
       throw new Error("Setor com este código já existe");
     }
 
     // Verificar se departmentId existe
-    const department = await this.deps.departmentRepository.encontrarPorId(input.orgId, input.departmentId);
+    const department = await this.deps.departmentRepository.encontrarPorId(
+      input.orgId,
+      input.departmentId,
+    );
 
     if (!department) {
       throw new Error("Departamento não encontrado");
@@ -115,4 +121,3 @@ export class CriarSectorUseCase {
     });
   }
 }
-

@@ -15,12 +15,22 @@ export type UnitMembershipData = {
 };
 
 export interface UnitMembershipRepository {
-  adicionar(orgId: string, unitId: string, userId: string, role: OrganizationRole): Promise<UnitMembershipData>;
+  adicionar(
+    orgId: string,
+    unitId: string,
+    userId: string,
+    role: OrganizationRole,
+  ): Promise<UnitMembershipData>;
   remover(orgId: string, unitId: string, userId: string): Promise<void>;
   encontrar(orgId: string, unitId: string, userId: string): Promise<UnitMembershipData | null>;
   listarPorUnit(orgId: string, unitId: string): Promise<UnitMembershipData[]>;
   listarPorUser(orgId: string, userId: string): Promise<UnitMembershipData[]>;
-  atualizarRole(orgId: string, unitId: string, userId: string, role: OrganizationRole): Promise<UnitMembershipData>;
+  atualizarRole(
+    orgId: string,
+    unitId: string,
+    userId: string,
+    role: OrganizationRole,
+  ): Promise<UnitMembershipData>;
   contarPorUnit(orgId: string, unitId: string): Promise<number>;
 }
 
@@ -135,7 +145,7 @@ export class PrismaUnitMembershipRepository implements UnitMembershipRepository 
   }
 
   async atualizarRole(
-    orgId: string,
+    _orgId: string,
     unitId: string,
     userId: string,
     role: OrganizationRole,
@@ -172,4 +182,3 @@ export class PrismaUnitMembershipRepository implements UnitMembershipRepository 
     });
   }
 }
-

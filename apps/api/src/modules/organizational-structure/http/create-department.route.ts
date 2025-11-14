@@ -1,9 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { DomainEventBus } from "@morina/shared-kernel";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { CriarDepartmentUseCase } from "../application/use-cases/criar-department.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
 import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -12,10 +12,7 @@ type Dependencies = {
   eventBus?: DomainEventBus;
 };
 
-export async function registerCreateDepartmentRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerCreateDepartmentRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/departments", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
     const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
@@ -55,4 +52,3 @@ export async function registerCreateDepartmentRoute(
     }
   });
 }
-

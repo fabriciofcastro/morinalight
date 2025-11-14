@@ -1,6 +1,7 @@
 #!/usr/bin/env tsx
 
 import { config } from "dotenv";
+
 config({ path: ".env" });
 
 const API_URL = process.env.API_URL || "http://localhost:3333";
@@ -58,9 +59,9 @@ async function main() {
   // Test 3: Testar rotas de permissões (se tiver token)
   if (token && userId && orgId) {
     console.log("\n3️⃣  Rotas de Permissões");
-    
+
     const headers = {
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       "x-org-id": orgId,
       "Content-Type": "application/json",
     };
@@ -69,13 +70,13 @@ async function main() {
     console.log("\n   📋 GET /users/:userId/permissions");
     try {
       const response = await fetch(`${API_URL}/users/${userId}/permissions`, { headers });
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log(`      ✅ Status: ${response.status}`);
         console.log(`      📊 Role: ${data.role || "N/A"}`);
         console.log(`      📊 Total de permissões: ${data.permissions?.length || 0}`);
-        
+
         if (data.permissions && data.permissions.length > 0) {
           console.log(`      🔑 Primeiras 3 permissões:`);
           data.permissions.slice(0, 3).forEach((p: any) => {
@@ -104,7 +105,7 @@ async function main() {
       try {
         const response = await fetch(
           `${API_URL}/users/${userId}/permissions/check?permission=${encodeURIComponent(permission)}`,
-          { headers }
+          { headers },
         );
 
         if (response.ok) {
@@ -116,7 +117,9 @@ async function main() {
           }
         } else {
           const error = await response.json();
-          console.log(`      ❌ ${permission}: Erro ${response.status} - ${error.message || JSON.stringify(error)}`);
+          console.log(
+            `      ❌ ${permission}: Erro ${response.status} - ${error.message || JSON.stringify(error)}`,
+          );
         }
       } catch (error) {
         console.log(`      ❌ ${permission}: Erro - ${error}`);
@@ -130,7 +133,7 @@ async function main() {
 
   // Test 4: Testar outras rotas sem autenticação
   console.log("\n4️⃣  Outras Rotas (sem autenticação)");
-  
+
   const routes = [
     { name: "Catálogo", path: "/catalogo/produtos", method: "GET" },
     { name: "Clientes", path: "/clientes", method: "GET" },
@@ -158,9 +161,8 @@ async function main() {
     }
   }
 
-  console.log("\n" + "=".repeat(60));
+  console.log(`\n${"=".repeat(60)}`);
   console.log("✅ Testes concluídos!\n");
 }
 
 main().catch(console.error);
-

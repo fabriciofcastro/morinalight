@@ -35,5 +35,3 @@ export interface PermissionAuditLogRepository {
   listar(orgId: string, filtro?: PermissionAuditLogFilter): Promise<PermissionAuditLogPage>;
   contar(orgId: string, filtro?: PermissionAuditLogFilter): Promise<number>;
 }
-
-

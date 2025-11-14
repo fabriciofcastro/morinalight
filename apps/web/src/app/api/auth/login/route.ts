@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 
@@ -62,4 +62,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ message }, { status: 502 });
   }
 }
-

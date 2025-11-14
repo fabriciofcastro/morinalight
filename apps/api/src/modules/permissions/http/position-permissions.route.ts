@@ -1,12 +1,12 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { randomUUID } from "node:crypto";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { PositionRepository } from "../../organizational-structure/domain/repositories/position-repository";
 import { AtribuirPermissaoCargoUseCase } from "../application/use-cases/atribuir-permissao-cargo.use-case";
 import { ListarPermissoesCargoUseCase } from "../application/use-cases/listar-permissoes-cargo.use-case";
-import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
-import type { PositionRepository } from "../../organizational-structure/domain/repositories/position-repository";
-import type { PermissionRepository } from "../domain/repositories/permission-repository";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../domain/repositories/permission-repository";
+import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
 
 type Dependencies = {
   positionPermissionRepository: PositionPermissionRepository;
@@ -15,10 +15,7 @@ type Dependencies = {
   auditLogRepository?: PermissionAuditLogRepository;
 };
 
-export async function registerPositionPermissionsRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerPositionPermissionsRoute(app: FastifyInstance, deps: Dependencies) {
   // Listar permissões de um cargo
   app.get(
     "/positions/:positionId/permissions",
@@ -76,7 +73,7 @@ export async function registerPositionPermissionsRoute(
 
       try {
         const { positionId } = z.object({ positionId: z.string().uuid() }).parse(request.params);
-            const body = z
+        const body = z
           .object({
             permissionId: z.string(),
             granted: z.boolean().default(true),
@@ -139,12 +136,11 @@ export async function registerPositionPermissionsRoute(
           .parse(request.params);
 
         // Buscar permissão existente para registrar no log
-        const existente =
-          await deps.positionPermissionRepository.encontrarPorPositionEPermission(
-            orgId,
-            positionId,
-            permissionId,
-          );
+        const existente = await deps.positionPermissionRepository.encontrarPorPositionEPermission(
+          orgId,
+          positionId,
+          permissionId,
+        );
 
         await deps.positionPermissionRepository.deletarPorPositionEPermission(
           orgId,
@@ -183,4 +179,3 @@ export async function registerPositionPermissionsRoute(
     },
   );
 }
-

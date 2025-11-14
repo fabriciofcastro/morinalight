@@ -24,4 +24,3 @@ export interface SectorRepository {
   contarPorOrg(orgId: string, status?: "ativo" | "inativo" | "arquivado"): Promise<number>;
   deletar(orgId: string, sectorId: string): Promise<void>;
 }
-

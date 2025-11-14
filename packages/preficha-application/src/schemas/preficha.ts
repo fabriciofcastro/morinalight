@@ -72,5 +72,3 @@ export type ListarPrefichasInput = z.infer<typeof listarPrefichasInputSchema>;
 export type ObterPrefichaInput = z.infer<typeof obterPrefichaInputSchema>;
 export type AdicionarComentarioInput = z.infer<typeof adicionarComentarioInputSchema>;
 export type PrefichaView = z.infer<typeof prefichaViewSchema>;
-
-

@@ -19,4 +19,3 @@ export interface ClienteRepository {
   listarPorOrg(orgId: string, filtro?: ClienteListaFiltro): Promise<ClienteListaPagina>;
   contarPorOrg(orgId: string, status?: "ativo" | "inativo" | "bloqueado"): Promise<number>;
 }
-

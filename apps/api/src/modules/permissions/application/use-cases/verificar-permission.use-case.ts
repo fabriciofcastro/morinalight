@@ -1,11 +1,11 @@
+import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
+import type { DepartmentMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-department-membership.repository";
+import type { PositionMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-position-membership.repository";
+import type { OrganizationRepository } from "../../../organizations/repositories/organization.repository";
+import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
-import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
-import type { OrganizationRepository } from "../../../organizations/repositories/organization.repository";
-import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
-import type { PositionMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-position-membership.repository";
-import type { DepartmentMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import { verificarPermissionInputSchema } from "../schemas/user-permission.schema";
 
 type Dependencies = {
@@ -62,10 +62,7 @@ export class VerificarPermissionUseCase {
     let hasRolePermission = rolePermissions.includes(permission.permissionKey);
 
     // Verificar permissões dos departamentos do usuário (sobrescrevem role)
-    if (
-      this.deps.departmentMembershipRepository &&
-      this.deps.departmentPermissionRepository
-    ) {
+    if (this.deps.departmentMembershipRepository && this.deps.departmentPermissionRepository) {
       const departmentMemberships = await this.deps.departmentMembershipRepository.listarPorUser(
         input.orgId,
         input.userId,
@@ -121,15 +118,17 @@ export class VerificarPermissionUseCase {
         const positionIds = positionMemberships.map((m) => m.positionId);
         const positions = await Promise.all(
           positionIds.map((positionId) =>
-            this.deps.positionRepository!.encontrarPorId(input.orgId, positionId),
+            this.deps.positionRepository?.encontrarPorId(input.orgId, positionId),
           ),
         );
 
-        const sectorIds = positions.filter((p) => p !== null).map((p) => p!.dados.sectorId);
+        const sectorIds = positions.filter((p) => p !== null).map((p) => p?.dados.sectorId);
 
         if (sectorIds.length > 0) {
-          const sectorPermissions =
-            await this.deps.sectorPermissionRepository.listarPorSectors(input.orgId, sectorIds);
+          const sectorPermissions = await this.deps.sectorPermissionRepository.listarPorSectors(
+            input.orgId,
+            sectorIds,
+          );
 
           for (const sp of sectorPermissions) {
             let permissionKey = sp.permissionId;
@@ -297,5 +296,3 @@ export class VerificarPermissionUseCase {
     return permissions.includes(permission);
   }
 }
-
-

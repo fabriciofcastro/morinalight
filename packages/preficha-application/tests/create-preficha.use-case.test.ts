@@ -1,8 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
-import { CriarPrefichaUseCase } from "../src/use-cases/create-preficha.use-case";
 import type { PrefichaAuditoriaRepository, PrefichaRepository } from "@morina/preficha-domain";
 import { Preficha } from "@morina/preficha-domain";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import { describe, expect, it, vi } from "vitest";
+import { CriarPrefichaUseCase } from "../src/use-cases/create-preficha.use-case";
 
 describe("CriarPrefichaUseCase", () => {
   const orgId = "org-123";
@@ -157,4 +157,3 @@ describe("CriarPrefichaUseCase", () => {
     ).rejects.toThrow();
   });
 });
-

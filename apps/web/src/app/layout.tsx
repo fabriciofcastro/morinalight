@@ -2,9 +2,8 @@ import { cn } from "@morina/ui";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-
-import { ThemeShell } from "@/components/theme-shell";
 import { ConnectionProviders } from "@/components/connection-providers";
+import { ThemeShell } from "@/components/theme-shell";
 
 import "./globals.css";
 

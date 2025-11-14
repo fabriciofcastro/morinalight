@@ -13,7 +13,7 @@ export type AuthSession = {
 };
 
 const AUTH_TOKEN_KEY = "auth_token";
-const AUTH_USER_KEY = "auth_user";
+const _AUTH_USER_KEY = "auth_user";
 
 /**
  * Obtém o token de autenticação do cookie (server-side apenas)
@@ -43,5 +43,3 @@ export function getAuthHeaders(): HeadersInit {
     Authorization: `Bearer ${token}`,
   };
 }
-
-

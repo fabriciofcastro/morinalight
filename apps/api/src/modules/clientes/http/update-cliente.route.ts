@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AtualizarClienteUseCase } from "../application/use-cases/atualizar-cliente.use-case";
 import type { ClienteRepository } from "../domain/repositories/cliente-repository";
 
@@ -6,10 +6,7 @@ type Dependencies = {
   clienteRepository: ClienteRepository;
 };
 
-export async function registerUpdateClienteRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerUpdateClienteRoute(app: FastifyInstance, deps: Dependencies) {
   app.put("/clientes/:clienteId", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = request.headers["x-org-id"] as string;
     const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
@@ -47,4 +44,3 @@ export async function registerUpdateClienteRoute(
     }
   });
 }
-

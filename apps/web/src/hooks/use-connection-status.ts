@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { apiUrl } from "@/lib/env";
 
 export type ConnectionStatus = "online" | "offline" | "checking" | "error";
@@ -47,7 +47,7 @@ export function useConnectionStatus() {
       }));
 
       return isOnline;
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({
         ...prev,
         backendOnline: false,
@@ -62,7 +62,7 @@ export function useConnectionStatus() {
     // Verificar se há um cliente realtime ativo
     // Por enquanto, apenas verificar se a URL está acessível
     try {
-      const realtimeUrl = process.env.NEXT_PUBLIC_REALTIME_URL ?? "ws://localhost:3334";
+      const _realtimeUrl = process.env.NEXT_PUBLIC_REALTIME_URL ?? "ws://localhost:3334";
       // WebSocket não pode ser verificado via fetch, então assumimos conectado se backend está online
       setState((prev) => ({
         ...prev,
@@ -100,10 +100,10 @@ export function useConnectionStatus() {
     const checkWithDebounce = async () => {
       const now = Date.now();
       // Evitar verificações muito frequentes
-      if (isChecking || (now - lastCheckTime < MIN_CHECK_INTERVAL)) {
+      if (isChecking || now - lastCheckTime < MIN_CHECK_INTERVAL) {
         return;
       }
-      
+
       isChecking = true;
       lastCheckTime = now;
       await checkAll();
@@ -117,10 +117,11 @@ export function useConnectionStatus() {
 
       // Intervalo mais longo quando tudo está OK (60s), mais curto quando há problemas (15s)
       const currentState = stateRef.current;
-      const intervalTime = (currentState.backendOnline && currentState.realtimeConnected) 
-        ? 60000  // 60s quando tudo está OK
-        : 15000; // 15s quando há problemas
-      
+      const intervalTime =
+        currentState.backendOnline && currentState.realtimeConnected
+          ? 60000 // 60s quando tudo está OK
+          : 15000; // 15s quando há problemas
+
       intervalId = setInterval(() => {
         if (navigator.onLine) {
           void checkWithDebounce().then(() => {
@@ -181,4 +182,3 @@ export function useConnectionStatus() {
     refresh: checkAll,
   };
 }
-

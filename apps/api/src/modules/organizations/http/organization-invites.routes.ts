@@ -47,7 +47,7 @@ type OrganizationInvitesDeps = {
   auditRepository: OrganizationAuditLogRepository;
 };
 
-const allowedRolesToInvite = new Set(["owner", "admin", "manager"]);
+const _allowedRolesToInvite = new Set(["owner", "admin", "manager"]);
 
 export async function registerOrganizationInvitesRoutes(
   app: FastifyInstance,

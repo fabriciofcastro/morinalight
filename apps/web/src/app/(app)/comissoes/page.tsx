@@ -21,7 +21,8 @@ export default function ComissoesPage() {
           Comissões
         </h1>
         <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Acompanhe e gerencie as comissões dos representantes. Visualize status, valores e histórico de pagamentos.
+          Acompanhe e gerencie as comissões dos representantes. Visualize status, valores e
+          histórico de pagamentos.
         </p>
       </header>
 
@@ -29,4 +30,3 @@ export default function ComissoesPage() {
     </div>
   );
 }
-

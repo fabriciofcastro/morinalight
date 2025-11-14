@@ -1,7 +1,7 @@
 import type {
   CategoryRepository,
-  ProdutoAuditoriaRepository,
   ProductVariantRepository,
+  ProdutoAuditoriaRepository,
   ProdutoRepository,
 } from "@morina/catalogo-domain";
 
@@ -9,10 +9,10 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
 
 import { env } from "../../core/config/env";
-import { RedisEventBus } from "../../infra/events/redis-event-bus";
-import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParamsOrHeaders } from "../../core/tenant/tenant.utils";
+import { RedisEventBus } from "../../infra/events/redis-event-bus";
+import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import { registerCatalogoHttp } from "./http";
 import { PrismaCategoryRepository } from "./infra/prisma/prisma-category.repository";
 import { PrismaProductVariantRepository } from "./infra/prisma/prisma-product-variant.repository";
@@ -32,18 +32,14 @@ export async function registerCatalogoModule(
   app: FastifyInstance,
   options: CatalogoModuleOptions = {},
 ) {
-  const produtoRepository =
-    options.produtoRepository ?? new PrismaProdutoRepository();
-  const auditoriaRepository =
-    options.auditoriaRepository ?? new PrismaProdutoAuditoriaRepository();
+  const produtoRepository = options.produtoRepository ?? new PrismaProdutoRepository();
+  const auditoriaRepository = options.auditoriaRepository ?? new PrismaProdutoAuditoriaRepository();
   const categoriaRepository =
     options.categoriaRepository ??
     (process.env.DATABASE_URL ? new PrismaCategoryRepository() : undefined);
   const varianteRepository =
     options.varianteRepository ??
-    (process.env.DATABASE_URL
-      ? new PrismaProductVariantRepository()
-      : undefined);
+    (process.env.DATABASE_URL ? new PrismaProductVariantRepository() : undefined);
   const eventBus =
     options.eventBus ??
     (env.REDIS_URL

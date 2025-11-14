@@ -1,11 +1,9 @@
-import type { TeamRepository } from "../../domain/repositories/team-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type {
-  TeamMembershipRepository,
-} from "../../infra/prisma/prisma-team-membership.repository";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { TeamRepository } from "../../domain/repositories/team-repository";
+import type { TeamMembershipRepository } from "../../infra/prisma/prisma-team-membership.repository";
 
 const deletarTeamInputSchema = z.object({
   orgId: z.string().min(1),
@@ -40,7 +38,9 @@ export class DeletarTeamUseCase {
       );
 
       if (memberCount > 0) {
-        throw new Error("Não é possível deletar time com membros. Remova todos os membros primeiro.");
+        throw new Error(
+          "Não é possível deletar time com membros. Remova todos os membros primeiro.",
+        );
       }
     }
 
@@ -85,4 +85,3 @@ export class DeletarTeamUseCase {
     return { success: true };
   }
 }
-

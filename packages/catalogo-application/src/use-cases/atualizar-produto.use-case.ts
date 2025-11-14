@@ -1,9 +1,6 @@
 import type { ProdutoRepository } from "@morina/catalogo-domain";
 import { ProdutoNotFoundError } from "../errors/produto-not-found.error";
-import {
-  atualizarProdutoInputSchema,
-  produtoViewSchema,
-} from "../schemas/product";
+import { atualizarProdutoInputSchema, produtoViewSchema } from "../schemas/product";
 
 type Dependencies = {
   produtoRepository: ProdutoRepository;
@@ -16,10 +13,7 @@ export class AtualizarProdutoUseCase {
   async execute(rawInput: unknown) {
     const input = atualizarProdutoInputSchema.parse(rawInput);
 
-    const produto = await this.deps.produtoRepository.encontrarPorId(
-      input.orgId,
-      input.produtoId,
-    );
+    const produto = await this.deps.produtoRepository.encontrarPorId(input.orgId, input.produtoId);
 
     if (!produto) {
       throw new ProdutoNotFoundError(input.produtoId);
@@ -58,5 +52,3 @@ export class AtualizarProdutoUseCase {
     });
   }
 }
-
-

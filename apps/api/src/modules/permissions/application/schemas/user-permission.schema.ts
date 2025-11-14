@@ -22,18 +22,14 @@ export const atualizarUserPermissionsInputSchema = z.object({
   ),
 });
 
-export type AtualizarUserPermissionsInput = z.infer<
-  typeof atualizarUserPermissionsInputSchema
->;
+export type AtualizarUserPermissionsInput = z.infer<typeof atualizarUserPermissionsInputSchema>;
 
 export const listarUserPermissionsInputSchema = z.object({
   orgId: z.string().min(1),
   userId: z.string().uuid().optional(),
 });
 
-export type ListarUserPermissionsInput = z.infer<
-  typeof listarUserPermissionsInputSchema
->;
+export type ListarUserPermissionsInput = z.infer<typeof listarUserPermissionsInputSchema>;
 
 export const verificarPermissionInputSchema = z.object({
   orgId: z.string().min(1),
@@ -42,5 +38,3 @@ export const verificarPermissionInputSchema = z.object({
 });
 
 export type VerificarPermissionInput = z.infer<typeof verificarPermissionInputSchema>;
-
-

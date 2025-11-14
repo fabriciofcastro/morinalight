@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 import { apiUrl, defaultActorId, defaultOrgId } from "@/lib/env";
 
@@ -24,7 +24,7 @@ function resolveActorId(request: Request) {
 function getAuthHeaders(): HeadersInit {
   const cookieStore = cookies();
   const token = cookieStore.get("auth_token")?.value;
-  
+
   if (!token) {
     return {};
   }
@@ -64,4 +64,3 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
   return NextResponse.json({ message: String(payload) }, { status: response.status });
 }
-

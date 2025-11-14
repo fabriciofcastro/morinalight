@@ -1,5 +1,5 @@
 import type { ComissaoRepository } from "../../domain/repositories/comissao-repository";
-import { pagarComissaoInputSchema, comissaoViewSchema } from "../schemas/comissao.schema";
+import { comissaoViewSchema, pagarComissaoInputSchema } from "../schemas/comissao.schema";
 
 type Dependencies = {
   comissaoRepository: ComissaoRepository;
@@ -54,4 +54,3 @@ export class PagarComissaoUseCase {
     });
   }
 }
-

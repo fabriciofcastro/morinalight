@@ -26,7 +26,9 @@ export const adicionarMembroDepartamentoInputSchema = z.object({
   role: organizationRoleSchema.default("member"),
 });
 
-export type AdicionarMembroDepartamentoInput = z.infer<typeof adicionarMembroDepartamentoInputSchema>;
+export type AdicionarMembroDepartamentoInput = z.infer<
+  typeof adicionarMembroDepartamentoInputSchema
+>;
 
 export const removerMembroDepartamentoInputSchema = z.object({
   orgId: z.string().min(1),
@@ -53,3 +55,54 @@ export const removerMembroTeamInputSchema = z.object({
 
 export type RemoverMembroTeamInput = z.infer<typeof removerMembroTeamInputSchema>;
 
+export const adicionarMembroSetorInputSchema = z.object({
+  orgId: z.string().min(1),
+  sectorId: z.string().uuid(),
+  userId: z.string().uuid(),
+  role: organizationRoleSchema.default("member"),
+});
+
+export type AdicionarMembroSetorInput = z.infer<typeof adicionarMembroSetorInputSchema>;
+
+export const removerMembroSetorInputSchema = z.object({
+  orgId: z.string().min(1),
+  sectorId: z.string().uuid(),
+  userId: z.string().uuid(),
+});
+
+export type RemoverMembroSetorInput = z.infer<typeof removerMembroSetorInputSchema>;
+
+export const atualizarRoleMembroSetorInputSchema = z.object({
+  orgId: z.string().min(1),
+  sectorId: z.string().uuid(),
+  userId: z.string().uuid(),
+  role: organizationRoleSchema,
+});
+
+export type AtualizarRoleMembroSetorInput = z.infer<typeof atualizarRoleMembroSetorInputSchema>;
+
+export const adicionarMembroCargoInputSchema = z.object({
+  orgId: z.string().min(1),
+  positionId: z.string().uuid(),
+  userId: z.string().uuid(),
+  role: organizationRoleSchema.default("member"),
+});
+
+export type AdicionarMembroCargoInput = z.infer<typeof adicionarMembroCargoInputSchema>;
+
+export const removerMembroCargoInputSchema = z.object({
+  orgId: z.string().min(1),
+  positionId: z.string().uuid(),
+  userId: z.string().uuid(),
+});
+
+export type RemoverMembroCargoInput = z.infer<typeof removerMembroCargoInputSchema>;
+
+export const atualizarRoleMembroCargoInputSchema = z.object({
+  orgId: z.string().min(1),
+  positionId: z.string().uuid(),
+  userId: z.string().uuid(),
+  role: organizationRoleSchema,
+});
+
+export type AtualizarRoleMembroCargoInput = z.infer<typeof atualizarRoleMembroCargoInputSchema>;

@@ -1,9 +1,9 @@
+import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { atualizarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -41,7 +41,11 @@ export class AtualizarDepartmentUseCase {
     }
 
     // Verificar se unitId existe (se fornecido)
-    if (input.unitId !== undefined && input.unitId !== null && this.deps.organizationalUnitRepository) {
+    if (
+      input.unitId !== undefined &&
+      input.unitId !== null &&
+      this.deps.organizationalUnitRepository
+    ) {
       const unit = await this.deps.organizationalUnitRepository.encontrarPorId(
         input.orgId,
         input.unitId,
@@ -141,4 +145,3 @@ export class AtualizarDepartmentUseCase {
     });
   }
 }
-

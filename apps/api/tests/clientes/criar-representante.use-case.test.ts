@@ -1,11 +1,11 @@
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { CriarRepresentanteUseCase } from "../../src/modules/clientes/application/use-cases/criar-representante.use-case";
+import { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
+import type { Representante } from "../../src/modules/clientes/domain/entities/representante";
 import type {
   ClienteRepository,
   RepresentanteRepository,
 } from "../../src/modules/clientes/domain/repositories";
-import { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
-import { Representante } from "../../src/modules/clientes/domain/entities/representante";
 
 // Repositórios in-memory para testes
 class InMemoryClienteRepository implements ClienteRepository {
@@ -156,4 +156,3 @@ describe("CriarRepresentanteUseCase", () => {
     await expect(useCase.execute(input)).rejects.toThrow("já possui");
   });
 });
-

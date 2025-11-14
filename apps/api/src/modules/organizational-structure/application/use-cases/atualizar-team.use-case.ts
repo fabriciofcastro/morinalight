@@ -1,9 +1,9 @@
-import type { TeamRepository } from "../../domain/repositories/team-repository";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { TeamRepository } from "../../domain/repositories/team-repository";
 import { atualizarTeamInputSchema, teamViewSchema } from "../schemas/team.schema";
-import { randomUUID } from "crypto";
 
 type Dependencies = {
   teamRepository: TeamRepository;
@@ -27,7 +27,10 @@ export class AtualizarTeamUseCase {
 
     // Verificar se novo código já existe (se fornecido e diferente do atual)
     if (input.code !== undefined && input.code !== team.dados.code) {
-      const teamExistente = await this.deps.teamRepository.encontrarPorCode(input.orgId, input.code);
+      const teamExistente = await this.deps.teamRepository.encontrarPorCode(
+        input.orgId,
+        input.code,
+      );
 
       if (teamExistente) {
         throw new Error("Time com este código já existe");
@@ -35,7 +38,11 @@ export class AtualizarTeamUseCase {
     }
 
     // Verificar se departmentId existe (se fornecido)
-    if (input.departmentId !== undefined && input.departmentId !== null && this.deps.departmentRepository) {
+    if (
+      input.departmentId !== undefined &&
+      input.departmentId !== null &&
+      this.deps.departmentRepository
+    ) {
       const department = await this.deps.departmentRepository.encontrarPorId(
         input.orgId,
         input.departmentId,
@@ -116,4 +123,3 @@ export class AtualizarTeamUseCase {
     });
   }
 }
-

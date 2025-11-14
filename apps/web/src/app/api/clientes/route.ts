@@ -39,10 +39,7 @@ export async function GET(request: Request) {
   });
 
   if (!response.ok) {
-    return NextResponse.json(
-      { message: "Erro ao buscar clientes" },
-      { status: response.status },
-    );
+    return NextResponse.json({ message: "Erro ao buscar clientes" }, { status: response.status });
   }
 
   const data = await response.json();
@@ -69,4 +66,3 @@ export async function POST(request: Request) {
   const data = await response.json();
   return NextResponse.json(data, { status: 201 });
 }
-

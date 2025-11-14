@@ -1,7 +1,7 @@
-import type { VendaRepository } from "../services/venda-sync.service";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { VendaProps, VendaStatus } from "../../domain/entities/venda";
 import { Venda } from "../../domain/entities/venda";
-import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { VendaRepository } from "../services/venda-sync.service";
 
 const prisma = getPrisma();
 
@@ -102,4 +102,3 @@ export class PrismaVendaRepository implements VendaRepository {
     return record ? toDomain(record) : null;
   }
 }
-

@@ -1,12 +1,12 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import { randomUUID } from "node:crypto";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { randomUUID } from "crypto";
+import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
 import { AtribuirPermissaoDepartamentoUseCase } from "../application/use-cases/atribuir-permissao-departamento.use-case";
 import { ListarPermissoesDepartamentoUseCase } from "../application/use-cases/listar-permissoes-departamento.use-case";
 import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
-import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
-import type { PermissionRepository } from "../domain/repositories/permission-repository";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
+import type { PermissionRepository } from "../domain/repositories/permission-repository";
 
 type Dependencies = {
   departmentPermissionRepository: DepartmentPermissionRepository;
@@ -15,10 +15,7 @@ type Dependencies = {
   auditLogRepository?: PermissionAuditLogRepository;
 };
 
-export async function registerDepartmentPermissionsRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerDepartmentPermissionsRoute(app: FastifyInstance, deps: Dependencies) {
   // Listar permissões de um departamento
   app.get(
     "/departments/:departmentId/permissions",
@@ -187,4 +184,3 @@ export async function registerDepartmentPermissionsRoute(
     },
   );
 }
-

@@ -6,7 +6,7 @@ import { apiUrl } from "@/lib/env";
 async function getAuthHeaders(): Promise<HeadersInit> {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth_token")?.value;
-  
+
   if (!token) {
     return {};
   }
@@ -28,7 +28,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const params = new URLSearchParams();
-  
+
   searchParams.forEach((value, key) => {
     params.append(key, value);
   });
@@ -39,10 +39,7 @@ export async function GET(request: Request) {
   });
 
   if (!response.ok) {
-    return NextResponse.json(
-      { message: "Erro ao buscar produtos" },
-      { status: response.status }
-    );
+    return NextResponse.json({ message: "Erro ao buscar produtos" }, { status: response.status });
   }
 
   const data = await response.json();
@@ -62,11 +59,10 @@ export async function POST(request: Request) {
     const error = await response.json();
     return NextResponse.json(
       { message: error.message || "Erro ao criar produto" },
-      { status: response.status }
+      { status: response.status },
     );
   }
 
   const data = await response.json();
   return NextResponse.json(data, { status: 201 });
 }
-

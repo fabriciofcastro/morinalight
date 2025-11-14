@@ -1,11 +1,9 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { DeletarTeamUseCase } from "../application/use-cases/deletar-team.use-case";
-import type { TeamRepository } from "../domain/repositories/team-repository";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type {
-  TeamMembershipRepository,
-} from "../infra/prisma/prisma-team-membership.repository";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { DeletarTeamUseCase } from "../application/use-cases/deletar-team.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
+import type { TeamRepository } from "../domain/repositories/team-repository";
+import type { TeamMembershipRepository } from "../infra/prisma/prisma-team-membership.repository";
 
 type Dependencies = {
   teamRepository: TeamRepository;
@@ -46,7 +44,10 @@ export async function registerDeleteTeamRoute(app: FastifyInstance, deps: Depend
         app.log.error(error, "Erro ao deletar time");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("Não é possível deletar")) {
@@ -60,4 +61,3 @@ export async function registerDeleteTeamRoute(app: FastifyInstance, deps: Depend
     },
   );
 }
-

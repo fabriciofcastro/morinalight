@@ -7,9 +7,19 @@ export type PositionStatus = z.infer<typeof positionStatusSchema>;
 const positionBaseSchema = z.object({
   orgId: z.string().min(1, "orgId obrigatório"),
   sectorId: z.string().uuid("sectorId deve ser UUID válido"),
-  name: z.string().min(3, "Nome deve ter no mínimo 3 caracteres").max(180, "Nome deve ter no máximo 180 caracteres"),
-  code: z.string().min(2, "Código deve ter no mínimo 2 caracteres").max(50, "Código deve ter no máximo 50 caracteres"),
-  description: z.string().max(1024, "Descrição deve ter no máximo 1024 caracteres").nullable().optional(),
+  name: z
+    .string()
+    .min(3, "Nome deve ter no mínimo 3 caracteres")
+    .max(180, "Nome deve ter no máximo 180 caracteres"),
+  code: z
+    .string()
+    .min(2, "Código deve ter no mínimo 2 caracteres")
+    .max(50, "Código deve ter no máximo 50 caracteres"),
+  description: z
+    .string()
+    .max(1024, "Descrição deve ter no máximo 1024 caracteres")
+    .nullable()
+    .optional(),
   responsabilidades: z.string().nullable().optional(),
   requisitos: z.string().nullable().optional(),
   salarioMin: z.number().positive("Salário mínimo deve ser positivo").nullable().optional(),
@@ -19,7 +29,9 @@ const positionBaseSchema = z.object({
   metadata: z.record(z.unknown()).nullable().optional(),
 });
 
-export const criarPositionInputSchema = positionBaseSchema.omit({ status: true, ordem: true }).strict();
+export const criarPositionInputSchema = positionBaseSchema
+  .omit({ status: true, ordem: true })
+  .strict();
 
 export type CriarPositionInput = z.infer<typeof criarPositionInputSchema>;
 
@@ -72,4 +84,3 @@ export const deletarPositionInputSchema = z
   .strict();
 
 export type DeletarPositionInput = z.infer<typeof deletarPositionInputSchema>;
-

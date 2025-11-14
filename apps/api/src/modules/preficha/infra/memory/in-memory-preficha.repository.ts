@@ -26,13 +26,18 @@ export class InMemoryPrefichaRepository implements PrefichaRepository {
     );
   }
 
-  async listarPorOrg(orgId: string, filtro: PrefichaListaFiltro = {}): Promise<PrefichaListaPagina> {
+  async listarPorOrg(
+    orgId: string,
+    filtro: PrefichaListaFiltro = {},
+  ): Promise<PrefichaListaPagina> {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
     const itens = Array.from(this.items.values())
       .filter((preficha) => preficha.dados.orgId === orgId)
       .filter((preficha) => (filtro.status ? preficha.dados.status === filtro.status : true))
-      .filter((preficha) => (filtro.produtoId ? preficha.dados.produtoId === filtro.produtoId : true))
+      .filter((preficha) =>
+        filtro.produtoId ? preficha.dados.produtoId === filtro.produtoId : true,
+      )
       .filter((preficha) => {
         if (!filtro.busca) return true;
         const termo = filtro.busca.toLowerCase();
@@ -89,5 +94,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-
-

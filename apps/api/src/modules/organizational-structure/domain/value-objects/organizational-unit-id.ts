@@ -17,4 +17,3 @@ export class OrganizationalUnitId {
     return this.value === other.value;
   }
 }
-

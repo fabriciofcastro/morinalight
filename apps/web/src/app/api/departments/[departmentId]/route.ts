@@ -3,6 +3,12 @@ import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 
+type RouteParams = {
+  params: {
+    departmentId: string;
+  };
+};
+
 function getAuthHeaders(): HeadersInit {
   const cookieStore = cookies();
   const token = cookieStore.get("auth_token")?.value;
@@ -24,22 +30,21 @@ function getAuthHeaders(): HeadersInit {
   return headers;
 }
 
-export async function PUT(
+export async function GET(
   request: Request,
-  { params }: { params: { departmentId: string } },
+  { params }: RouteParams,
 ) {
-  const body = await request.json();
+  const { departmentId } = params;
 
-  const response = await fetch(`${apiUrl}/departments/${params.departmentId}`, {
-    method: "PUT",
+  const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
+    method: "GET",
     headers: getAuthHeaders(),
-    body: JSON.stringify(body),
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    const error = await response.json();
     return NextResponse.json(
-      { message: error.message || "Erro ao atualizar departamento" },
+      { message: "Erro ao buscar departamento" },
       { status: response.status },
     );
   }
@@ -47,24 +52,3 @@ export async function PUT(
   const data = await response.json();
   return NextResponse.json(data);
 }
-
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { departmentId: string } },
-) {
-  const response = await fetch(`${apiUrl}/departments/${params.departmentId}`, {
-    method: "DELETE",
-    headers: getAuthHeaders(),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    return NextResponse.json(
-      { message: error.message || "Erro ao deletar departamento" },
-      { status: response.status },
-    );
-  }
-
-  return NextResponse.json({ success: true }, { status: 204 });
-}
-

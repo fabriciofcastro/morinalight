@@ -61,5 +61,3 @@ export class PermissionsClient {
 }
 
 export const permissionsClient = new PermissionsClient();
-
-

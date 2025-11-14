@@ -2,7 +2,10 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
 import type { CompanySettings } from "../../src/modules/company-settings/company-settings.schema";
-import { companySettingsSchema, DEFAULT_COMPANY_SETTINGS } from "../../src/modules/company-settings/company-settings.schema";
+import {
+  companySettingsSchema,
+  DEFAULT_COMPANY_SETTINGS,
+} from "../../src/modules/company-settings/company-settings.schema";
 import { InMemoryCompanySettingsRepository } from "../../src/modules/company-settings/repositories/in-memory-company-settings.repository";
 
 describe("Contracto de /company-settings", () => {
@@ -89,5 +92,3 @@ describe("Contracto de /company-settings", () => {
     expect(fetched).toMatchObject(payload);
   });
 });
-
-

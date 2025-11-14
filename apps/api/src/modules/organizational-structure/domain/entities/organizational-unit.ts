@@ -132,4 +132,3 @@ export class OrganizationalUnit {
     this.props.updatedAt = new Date();
   }
 }
-

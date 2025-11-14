@@ -1,10 +1,10 @@
 /**
  * Cliente para integração com a API do e-millennium
- * 
+ *
  * Baseado na documentação oficial do e-millennium:
  * - API First: https://e-millennium.com.br/apis/integracao/
  * - Documentação de integração: https://e-millennium.com.br/apis/introducao-plataforma/
- * 
+ *
  * O e-millennium é um ERP Omnichannel que oferece API para integração.
  * Cada cliente tem particularidades em seu ambiente, então é necessário
  * um processo de homologação específico com o pós-venda do e-millennium.
@@ -85,11 +85,7 @@ export class EmillenniumClient {
    * Verifica se o token ainda é válido e renova se necessário
    */
   private async garantirAutenticacao(): Promise<void> {
-    if (
-      !this.accessToken ||
-      !this.tokenExpiresAt ||
-      this.tokenExpiresAt < new Date()
-    ) {
+    if (!this.accessToken || !this.tokenExpiresAt || this.tokenExpiresAt < new Date()) {
       await this.autenticar();
     }
   }
@@ -115,16 +111,13 @@ export class EmillenniumClient {
         ...(params.limite && { limite: String(params.limite) }),
       });
 
-      const response = await fetch(
-        `${this.config.baseUrl}/api/pedidos?${queryParams.toString()}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.accessToken}`,
-            "Content-Type": "application/json",
-          },
+      const response = await fetch(`${this.config.baseUrl}/api/pedidos?${queryParams.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (!response.ok) {
         throw new Error(`Erro ao buscar pedidos: ${response.statusText}`);
@@ -230,4 +223,3 @@ export class EmillenniumClient {
     }
   }
 }
-

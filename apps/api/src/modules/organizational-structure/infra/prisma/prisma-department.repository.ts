@@ -1,3 +1,5 @@
+import { getPrisma } from "../../../../infra/database/prisma.service";
+import { Department } from "../../domain/entities/department";
 import type {
   DepartmentListaFiltro,
   DepartmentListaPagina,
@@ -5,8 +7,6 @@ import type {
   DepartmentRepository,
   DepartmentStatus,
 } from "../../domain/repositories/department-repository";
-import { Department } from "../../domain/entities/department";
-import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -196,4 +196,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

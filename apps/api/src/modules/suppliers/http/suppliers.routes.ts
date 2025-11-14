@@ -148,4 +148,3 @@ export async function registerSuppliersRoutes(app: FastifyInstance, deps: Suppli
     return reply.status(204).send();
   });
 }
-

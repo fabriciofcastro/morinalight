@@ -14,12 +14,7 @@ export interface CategoryRepository {
       limite?: number;
     },
   ): Promise<{ itens: Category[]; proximoCursor?: string | null }>;
-  listarPorParent(
-    orgId: string,
-    parentId: string | null,
-  ): Promise<Category[]>;
+  listarPorParent(orgId: string, parentId: string | null): Promise<Category[]>;
   contarPorOrg(orgId: string, ativo?: boolean): Promise<number>;
   remover(categoriaId: string, orgId: string): Promise<void>;
 }
-
-

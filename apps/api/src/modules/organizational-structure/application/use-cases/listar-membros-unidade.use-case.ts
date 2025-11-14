@@ -1,8 +1,6 @@
 import type { UserRepository } from "../../../users/repositories/user.repository";
-import type {
-  UnitMembershipRepository,
-} from "../../infra/prisma/prisma-unit-membership.repository";
 import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
+import type { UnitMembershipRepository } from "../../infra/prisma/prisma-unit-membership.repository";
 
 type Dependencies = {
   unitMembershipRepository: UnitMembershipRepository;
@@ -69,4 +67,3 @@ export class ListarMembrosUnidadeUseCase {
     });
   }
 }
-

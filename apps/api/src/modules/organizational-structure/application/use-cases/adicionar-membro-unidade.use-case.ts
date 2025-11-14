@@ -1,15 +1,12 @@
 import type { DomainEventBus } from "@morina/shared-kernel";
-
+import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
-import type { UserRepository } from "../../../users/repositories/user.repository";
+import type { UnitMembershipRepository } from "../../infra/prisma/prisma-unit-membership.repository";
 import {
-  adicionarMembroUnidadeInputSchema,
   type AdicionarMembroUnidadeInput,
+  adicionarMembroUnidadeInputSchema,
 } from "../schemas/membership.schema";
-import type {
-  UnitMembershipRepository,
-} from "../../infra/prisma/prisma-unit-membership.repository";
 
 type Dependencies = {
   unitMembershipRepository: UnitMembershipRepository;
@@ -91,4 +88,3 @@ export class AdicionarMembroUnidadeUseCase {
     return membership;
   }
 }
-

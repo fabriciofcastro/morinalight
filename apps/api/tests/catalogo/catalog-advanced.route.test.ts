@@ -2,9 +2,9 @@ import { Produto } from "@morina/catalogo-domain";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
-import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 import { InMemoryProdutoRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto.repository";
 import { InMemoryProdutoAuditoriaRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto-auditoria.repository";
+import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
 
 // Repositórios in-memory simples para testes
 class InMemoryCategoryRepository {
@@ -66,9 +66,8 @@ class InMemoryProductVariantRepository {
 
   async encontrarPorSku(sku: string, orgId: string) {
     return (
-      Array.from(this.items.values()).find(
-        (v) => v.dados.orgId === orgId && v.dados.sku === sku,
-      ) ?? null
+      Array.from(this.items.values()).find((v) => v.dados.orgId === orgId && v.dados.sku === sku) ??
+      null
     );
   }
 
@@ -350,4 +349,3 @@ describe("Catálogo Avançado HTTP", () => {
     });
   });
 });
-
