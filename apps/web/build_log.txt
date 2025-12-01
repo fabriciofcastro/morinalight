@@ -1,0 +1,2 @@
+src/app/(app)/settings/permissions/permissions-client.tsx(1086,7): error TS1005: ')' expected.
+src/app/(app)/settings/permissions/permissions-client.tsx(1247,7): error TS1005: ')' expected.

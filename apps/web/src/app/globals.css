@@ -64,6 +64,7 @@
   }
 
   @media (max-width: 640px) {
+
     .grid-3,
     .grid-2 {
       grid-template-columns: 1fr;
@@ -94,15 +95,133 @@
     gap: calc(var(--space-6) * var(--density));
   }
 
+  /* =====================
+   * MOBILE-FIRST UTILITIES
+   * ===================== */
+
+  /* Touch-friendly tap targets */
+  .tap-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Prevent text selection on buttons */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Safe area for notched devices */
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Smooth momentum scrolling */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile-optimized card spacing */
+  @media (max-width: 640px) {
+    .mobile-card-spacing {
+      margin-left: -1rem;
+      margin-right: -1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
   .glass-motion {
-    background: linear-gradient(
-      90deg,
-      hsla(var(--text-1) / 0.08),
-      hsla(var(--text-1) / 0.15),
-      hsla(var(--text-1) / 0.08)
-    );
+    background: linear-gradient(90deg,
+        hsla(var(--text-1) / 0.08),
+        hsla(var(--text-1) / 0.15),
+        hsla(var(--text-1) / 0.08));
     opacity: 0.6;
     filter: blur(12px) saturate(140%);
+  }
+
+  @keyframes progress-indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    50% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-progress-indeterminate {
+    animation: progress-indeterminate 1.5s infinite ease-in-out;
+  }
+
+  /* Periodic Shine Interval Animation - Natural Feel */
+  @keyframes shine-interval {
+    0% {
+      transform: translateX(-100%) skewX(-25deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    25% {
+      transform: translateX(200%) skewX(-25deg);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateX(200%) skewX(-25deg);
+      opacity: 0;
+    }
+  }
+
+  .animate-shine-interval {
+    animation: shine-interval 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* 3D Text Effect */
+  .text-3d {
+    text-shadow:
+      0 1px 0 hsl(var(--primary) / 0.3),
+      0 2px 0 hsl(var(--primary) / 0.25),
+      0 3px 0 hsl(var(--primary) / 0.2),
+      0 4px 0 hsl(var(--primary) / 0.15),
+      0 5px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Text Shine Animation */
+  @keyframes text-shine {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    100% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-text-shine {
+    background-size: 200% auto;
+    animation: text-shine 3s linear infinite;
   }
 }
 
@@ -121,9 +240,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -134,6 +255,7 @@
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -151,20 +273,21 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    hsla(var(--primary) / 0.1),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      hsla(var(--primary) / 0.1),
+      transparent);
   animation: shimmer 2s infinite;
 }
 
 /* Efeito de glow pulsante */
 @keyframes glow-pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px hsla(var(--primary) / 0.3), 0 0 40px hsla(var(--primary) / 0.2);
   }
+
   50% {
     box-shadow: 0 0 30px hsla(var(--primary) / 0.5), 0 0 60px hsla(var(--primary) / 0.3);
   }
@@ -176,9 +299,12 @@
 
 /* Efeito de float suave */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -194,6 +320,7 @@
     transform: scale(0.95);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -206,9 +333,12 @@
 
 /* Efeito de brilho pulsante para elementos importantes */
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     filter: drop-shadow(0 0 8px hsla(var(--primary) / 0.4));
   }
+
   50% {
     filter: drop-shadow(0 0 16px hsla(var(--primary) / 0.7));
   }
@@ -220,14 +350,18 @@
 
 /* Efeito de partículas flutuantes */
 @keyframes particle-float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.3;
   }
+
   33% {
     transform: translate(20px, -30px) scale(1.2);
     opacity: 0.6;
   }
+
   66% {
     transform: translate(-15px, 20px) scale(0.9);
     opacity: 0.4;
@@ -240,10 +374,13 @@
 
 /* Efeito de onda suave */
 @keyframes wave {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0) translateY(0) scale(1);
     opacity: 0.3;
   }
+
   50% {
     transform: translateX(50px) translateY(-30px) scale(1.2);
     opacity: 0.6;
@@ -259,9 +396,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -278,9 +417,11 @@
     transform: translateX(-100%) skewX(-15deg);
     opacity: 0;
   }
+
   50% {
     opacity: 1;
   }
+
   100% {
     transform: translateX(200%) skewX(-15deg);
     opacity: 0;
@@ -299,12 +440,10 @@
   left: 0;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    hsla(var(--primary) / 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      hsla(var(--primary) / 0.2),
+      transparent);
   animation: slide-glow 3s ease-in-out infinite;
 }
 
@@ -314,6 +453,7 @@
     animation-iteration-count: 1;
     transition-duration: 0.01ms;
   }
+
   .bg-animated,
   .input-shimmer::after,
   .glow-pulse,
@@ -456,31 +596,23 @@
   }
 
   .section--surface::before {
-    background: linear-gradient(
-      180deg,
-      hsla(var(--section-surface-from, var(--surface)) / 0.98) 0%,
-      hsla(var(--section-surface-to, var(--surface)) / 0.94) 100%
-    );
+    background: linear-gradient(180deg,
+        hsla(var(--section-surface-from, var(--surface)) / 0.98) 0%,
+        hsla(var(--section-surface-to, var(--surface)) / 0.94) 100%);
   }
 
   .section--accent::before {
-    background: var(
-      --section-accent-bg,
-      radial-gradient(
-        circle at top,
-        hsla(var(--primary) / 0.8) 0%,
-        hsla(var(--secondary) / 0.48) 35%,
-        hsla(var(--bg) / 0.92) 90%
-      )
-    );
+    background: var(--section-accent-bg,
+        radial-gradient(circle at top,
+          hsla(var(--primary) / 0.8) 0%,
+          hsla(var(--secondary) / 0.48) 35%,
+          hsla(var(--bg) / 0.92) 90%));
   }
 
   .section--inverse::before {
-    background: linear-gradient(
-      180deg,
-      hsla(var(--section-inverse-from, var(--bg)) / 0.95) 0%,
-      hsla(var(--section-inverse-to, var(--bg)) / 0.98) 100%
-    );
+    background: linear-gradient(180deg,
+        hsla(var(--section-inverse-from, var(--bg)) / 0.95) 0%,
+        hsla(var(--section-inverse-to, var(--bg)) / 0.98) 100%);
   }
 
   .section--animated::before {
@@ -534,9 +666,11 @@
   0% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0% 50%;
   }
@@ -546,9 +680,11 @@
   0% {
     transform: translate3d(-2%, -1%, 0) rotate(0deg);
   }
+
   50% {
     transform: translate3d(2%, 3%, 0) rotate(1.2deg);
   }
+
   100% {
     transform: translate3d(-2%, -1%, 0) rotate(0deg);
   }
@@ -559,10 +695,12 @@
     transform: scale(1);
     box-shadow: 0 0 0 0 hsla(var(--primary) / 0.6);
   }
+
   70% {
     transform: scale(1.25);
     box-shadow: 0 0 0 6px hsla(var(--primary) / 0);
   }
+
   100% {
     transform: scale(1);
     box-shadow: 0 0 0 0 hsla(var(--primary) / 0);
@@ -574,10 +712,12 @@
     opacity: 0.28;
     filter: blur(120px);
   }
+
   50% {
     opacity: 0.46;
     filter: blur(150px);
   }
+
   100% {
     opacity: 0.28;
     filter: blur(120px);
@@ -585,6 +725,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .section--animated::before,
   .section--animated::after,
   .header-subline__pulse {
@@ -619,11 +760,9 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      135deg,
-      hsla(var(--primary) / 0.18),
-      hsla(var(--secondary) / 0.12)
-    );
+    background: linear-gradient(135deg,
+        hsla(var(--primary) / 0.18),
+        hsla(var(--secondary) / 0.12));
     opacity: 0.42;
     filter: saturate(115%);
   }
@@ -1030,4 +1169,3 @@
 [data-profile="erp"] [data-page="blueprint-home"] .blueprint-highlight {
   gap: var(--space-2);
 }
-

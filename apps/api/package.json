@@ -17,6 +17,9 @@
     "update-password": "tsx scripts/update-user-password.ts",
     "list-users": "tsx scripts/list-users.ts"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
     "@fastify/helmet": "^11.1.1",

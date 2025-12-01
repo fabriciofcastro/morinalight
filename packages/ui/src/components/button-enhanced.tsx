@@ -5,7 +5,7 @@ import { forwardRef } from "react";
 
 import { cn } from "../lib/cn";
 
-const buttonVariants = cva(
+const buttonEnhancedVariants = cva(
   // Base: Estilo quadrado, sem border-radius
   "inline-flex items-center justify-center gap-2 border-0 font-semibold uppercase tracking-wider transition-all duration-250 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
@@ -58,7 +58,7 @@ const buttonVariants = cva(
 
 export interface ButtonEnhancedProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonEnhancedVariants> {
   isLoading?: boolean;
 }
 
@@ -66,7 +66,7 @@ export const ButtonEnhanced = forwardRef<HTMLButtonElement, ButtonEnhancedProps>
   ({ className, variant, size, isLoading, children, disabled, ...props }, ref) => (
     <button
       ref={ref}
-      className={cn(buttonVariants({ variant, size }), className)}
+      className={cn(buttonEnhancedVariants({ variant, size }), className)}
       disabled={disabled || isLoading}
       {...props}
     >
@@ -103,4 +103,4 @@ export const ButtonEnhanced = forwardRef<HTMLButtonElement, ButtonEnhancedProps>
 
 ButtonEnhanced.displayName = "ButtonEnhanced";
 
-export { buttonVariants };
+export { buttonEnhancedVariants };

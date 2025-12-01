@@ -79,39 +79,39 @@ type PermissionTemplate = {
 const allPermissions: Permission[] = [
   // Dashboard
   { id: "dashboard:view", name: "Ver Dashboard", description: "Acessar a página inicial", module: "Dashboard", category: "Visualização" },
-  
+
   // Produtos
   { id: "products:view", name: "Ver Produtos", description: "Visualizar lista de produtos", module: "Produtos", category: "Visualização" },
   { id: "products:create", name: "Criar Produtos", description: "Criar novos produtos", module: "Produtos", category: "Criação" },
   { id: "products:edit", name: "Editar Produtos", description: "Editar produtos existentes", module: "Produtos", category: "Edição" },
   { id: "products:delete", name: "Excluir Produtos", description: "Excluir produtos", module: "Produtos", category: "Exclusão" },
-  
+
   // Catálogo
   { id: "catalog:view", name: "Ver Catálogo", description: "Acessar catálogo e auditoria", module: "Catálogo", category: "Visualização" },
-  
+
   // Clientes
   { id: "clients:view", name: "Ver Clientes", description: "Visualizar lista de clientes", module: "Clientes", category: "Visualização" },
   { id: "clients:create", name: "Criar Clientes", description: "Criar novos clientes", module: "Clientes", category: "Criação" },
   { id: "clients:edit", name: "Editar Clientes", description: "Editar clientes existentes", module: "Clientes", category: "Edição" },
   { id: "clients:delete", name: "Excluir Clientes", description: "Excluir clientes", module: "Clientes", category: "Exclusão" },
-  
+
   // Representantes
   { id: "representatives:view", name: "Ver Representantes", description: "Visualizar representantes", module: "Representantes", category: "Visualização" },
   { id: "representatives:create", name: "Criar Representantes", description: "Criar representantes", module: "Representantes", category: "Criação" },
-  
+
   // Comissões
   { id: "commissions:view", name: "Ver Comissões", description: "Visualizar comissões", module: "Comissões", category: "Visualização" },
   { id: "commissions:pay", name: "Pagar Comissões", description: "Pagar comissões", module: "Comissões", category: "Operações" },
-  
+
   // Fornecedores
   { id: "suppliers:view", name: "Ver Fornecedores", description: "Visualizar fornecedores", module: "Fornecedores", category: "Visualização" },
-  
+
   // Vendas
   { id: "sales:view", name: "Ver Vendas", description: "Visualizar vendas", module: "Vendas", category: "Visualização" },
-  
+
   // Relatórios
   { id: "reports:view", name: "Ver Relatórios", description: "Acessar relatórios", module: "Relatórios", category: "Visualização" },
-  
+
   // Configurações
   { id: "settings:view", name: "Ver Configurações", description: "Acessar configurações", module: "Configurações", category: "Visualização" },
   { id: "settings:company:view", name: "Config. Empresa", description: "Editar configurações da empresa", module: "Configurações", category: "Edição" },
@@ -162,7 +162,7 @@ const roles: Role[] = [
 
 export function PermissionsClient() {
   const [activeTab, setActiveTab] = useState<Tab>("users");
-  
+
   // Estados para usuários
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -171,7 +171,7 @@ export function PermissionsClient() {
   const [loading, setLoading] = useState(true);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [selectedRole, _setSelectedRole] = useState<Role | null>(null);
-  
+
   // Estados para cargos
   const [positions, setPositions] = useState<Position[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(null);
@@ -179,7 +179,7 @@ export function PermissionsClient() {
   const [positionPermissionsSet, setPositionPermissionsSet] = useState<Set<string>>(new Set());
   const [positionSearch, setPositionSearch] = useState("");
   const [positionLoading, setPositionLoading] = useState(false);
-  
+
   // Estados para setores
   const [sectors, setSectors] = useState<Array<{ id: string; name: string; code: string; departmentId: string }>>([]);
   const [selectedSector, setSelectedSector] = useState<{ id: string; name: string; code: string; departmentId: string } | null>(null);
@@ -187,7 +187,7 @@ export function PermissionsClient() {
   const [sectorPermissionsSet, setSectorPermissionsSet] = useState<Set<string>>(new Set());
   const [sectorSearch, setSectorSearch] = useState("");
   const [sectorLoading, setSectorLoading] = useState(false);
-  
+
   // Estados para departamentos
   const [departments, setDepartments] = useState<Array<{ id: string; name: string; code: string }>>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<{ id: string; name: string; code: string } | null>(null);
@@ -903,347 +903,349 @@ export function PermissionsClient() {
 
       {activeTab === "users" && (
         <>
-      {/* Lista de usuários */}
-      <GlassCard className="p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[var(--fg)]">Usuários</h2>
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
-            <Input
-              type="search"
-              placeholder="Buscar usuários..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          {loading ? (
-            <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Carregando usuários...
-            </p>
-          ) : filteredUsers.length === 0 ? (
-            <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Nenhum usuário encontrado
-            </p>
-          ) : (
-            filteredUsers.map((user) => {
-              const role = roles.find((r) => r.id === user.role);
-              return (
-                <button
-                  key={user.userId}
-                  onClick={() => setSelectedUser(user)}
-                  className={cn(
-                    "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
-                    selectedUser?.userId === user.userId
-                      ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                      : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
-                      <User className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-[var(--fg)]">
-                        {user.displayName || user.email}
-                      </p>
-                      <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                        {user.email} · {role?.name || user.role}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                      {user.permissions.length} permissões
-                    </span>
-                    <Shield className="h-4 w-4 text-[var(--primary)]" />
-                  </div>
-                </button>
-              );
-            })
-          )}
-        </div>
-      </GlassCard>
-
-      {/* Permissões do usuário selecionado */}
-      {selectedUser && (
-        <GlassCard className="p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-[var(--fg)]">
-                Permissões de {selectedUser.displayName || selectedUser.email}
-              </h2>
-              <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                {userPermissions.size} de {allPermissions.length} permissões selecionadas
-              </p>
+          {/* Lista de usuários */}
+          <GlassCard className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-[var(--fg)]">Usuários</h2>
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
+                <Input
+                  type="search"
+                  placeholder="Buscar usuários..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowRoleModal(true)}
-              >
-                <Shield className="h-4 w-4" />
-                Aplicar Role
-              </Button>
-              <Button size="sm" onClick={savePermissions}>
-                <Save className="h-4 w-4" />
-                Salvar
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            {Object.entries(permissionsByModule).map(([module, permissions]) => (
-              <div key={module}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  {module}
-                </h3>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {permissions.map((permission) => {
-                    const hasPermission = userPermissions.has(permission.id);
-                    return (
-                      <label
-                        key={permission.id}
-                        className={cn(
-                          "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
-                          hasPermission
-                            ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                            : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-                        )}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={hasPermission}
-                          onChange={() => togglePermission(permission.id)}
-                          className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-[var(--fg)]">{permission.name}</p>
+            <div className="space-y-2">
+              {loading ? (
+                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Carregando usuários...
+                </p>
+              ) : filteredUsers.length === 0 ? (
+                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Nenhum usuário encontrado
+                </p>
+              ) : (
+                filteredUsers.map((user) => {
+                  const role = roles.find((r) => r.id === user.role);
+                  return (
+                    <button
+                      key={user.userId}
+                      onClick={() => setSelectedUser(user)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
+                        selectedUser?.userId === user.userId
+                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                          <User className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-[var(--fg)]">
+                            {user.displayName || user.email}
+                          </p>
                           <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                            {permission.description}
+                            {user.email} · {role?.name || user.role}
                           </p>
                         </div>
-                        {hasPermission ? (
-                          <Check className="h-4 w-4 text-[var(--primary)]" />
-                        ) : (
-                          <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
-      )}
-
-      {/* Modal de roles */}
-      {showRoleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <GlassCard className="relative max-w-md p-6">
-            <h3 className="mb-4 text-lg font-semibold text-[var(--fg)]">
-              Aplicar Role
-            </h3>
-            <p className="mb-4 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Selecione uma role para aplicar todas as permissões de uma vez
-            </p>
-            <div className="space-y-2">
-              {roles.map((role) => (
-                <button
-                  key={role.id}
-                  onClick={() => applyRole(role)}
-                  className={cn(
-                    "w-full rounded-lg border p-4 text-left transition-all",
-                    selectedRole?.id === role.id
-                      ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                      : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-                  )}
-                >
-                  <p className="font-medium text-[var(--fg)]">{role.name}</p>
-                  <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                    {role.description}
-                  </p>
-                  <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                    {role.permissions.length} permissões
-                  </p>
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowRoleModal(false)}>
-                Cancelar
-              </Button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                          {user.permissions.length} permissões
+                        </span>
+                        <Shield className="h-4 w-4 text-[var(--primary)]" />
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
           </GlassCard>
-        </div>
+
+          {/* Permissões do usuário selecionado */}
+          {selectedUser && (
+            <GlassCard className="p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-[var(--fg)]">
+                    Permissões de {selectedUser.displayName || selectedUser.email}
+                  </h2>
+                  <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                    {userPermissions.size} de {allPermissions.length} permissões selecionadas
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowRoleModal(true)}
+                  >
+                    <Shield className="h-4 w-4" />
+                    Aplicar Role
+                  </Button>
+                  <Button size="sm" onClick={savePermissions}>
+                    <Save className="h-4 w-4" />
+                    Salvar
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {Object.entries(permissionsByModule).map(([module, permissions]) => (
+                  <div key={module}>
+                    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                      {module}
+                    </h3>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                      {permissions.map((permission) => {
+                        const hasPermission = userPermissions.has(permission.id);
+                        return (
+                          <label
+                            key={permission.id}
+                            className={cn(
+                              "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
+                              hasPermission
+                                ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                                : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                            )}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={hasPermission}
+                              onChange={() => togglePermission(permission.id)}
+                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                            />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-[var(--fg)]">{permission.name}</p>
+                              <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                                {permission.description}
+                              </p>
+                            </div>
+                            {hasPermission ? (
+                              <Check className="h-4 w-4 text-[var(--primary)]" />
+                            ) : (
+                              <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          )}
+
+          {/* Modal de roles */}
+          {showRoleModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+              <GlassCard className="relative max-w-md p-6">
+                <h3 className="mb-4 text-lg font-semibold text-[var(--fg)]">
+                  Aplicar Role
+                </h3>
+                <p className="mb-4 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Selecione uma role para aplicar todas as permissões de uma vez
+                </p>
+                <div className="space-y-2">
+                  {roles.map((role) => (
+                    <button
+                      key={role.id}
+                      onClick={() => applyRole(role)}
+                      className={cn(
+                        "w-full rounded-lg border p-4 text-left transition-all",
+                        selectedRole?.id === role.id
+                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                      )}
+                    >
+                      <p className="font-medium text-[var(--fg)]">{role.name}</p>
+                      <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                        {role.description}
+                      </p>
+                      <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                        {role.permissions.length} permissões
+                      </p>
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-4 flex justify-end gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowRoleModal(false)}>
+                    Cancelar
+                  </Button>
+                </div>
+              </GlassCard>
+            </div>
+          )}
+        </>
       )}
-      </>
+
 
       {activeTab === "positions" && (
         <>
-      {/* Lista de cargos */}
-      <GlassCard className="p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[var(--fg)]">Cargos</h2>
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
-            <Input
-              type="search"
-              placeholder="Buscar cargos..."
-              value={positionSearch}
-              onChange={(e) => {
-                setPositionSearch(e.target.value);
-                // Debounce para buscar
-                setTimeout(() => {
-                  if (e.target.value.length >= 2 || e.target.value.length === 0) {
-                    loadPositions();
-                  }
-                }, 500);
-              }}
-              className="pl-9"
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          {positionLoading ? (
-            <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Carregando cargos...
-            </p>
-          ) : filteredPositions.length === 0 ? (
-            <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              Nenhum cargo encontrado
-            </p>
-          ) : (
-            filteredPositions.map((position) => {
-              const sector = sectors.find((s) => s.id === position.sectorId);
-              const department = sector ? departments.find((d) => d.id === sector.departmentId) : null;
-              const permissionCount = positionPermissions.filter((p) => p.positionId === position.id && p.granted).length;
-              
-              return (
-                <button
-                  key={position.id}
-                  onClick={() => setSelectedPosition(position)}
-                  className={cn(
-                    "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
-                    selectedPosition?.id === position.id
-                      ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                      : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
-                      <Briefcase className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-[var(--fg)]">
-                        {position.name}
-                      </p>
-                      <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                        {position.code} {department && sector && `• ${department.name} → ${sector.name}`}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                      {permissionCount} permissões
-                    </span>
-                    <Shield className="h-4 w-4 text-[var(--primary)]" />
-                  </div>
-                </button>
-              );
-            })
-          )}
-        </div>
-      </GlassCard>
-
-      {/* Permissões do cargo selecionado */}
-      {selectedPosition && (
-        <GlassCard className="p-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-[var(--fg)]">
-                Permissões do Cargo: {selectedPosition.name}
-              </h2>
-              <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                {positionPermissionsSet.size} de {allPermissions.length} permissões concedidas
-              </p>
+          {/* Lista de cargos */}
+          <GlassCard className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-[var(--fg)]">Cargos</h2>
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
+                <Input
+                  type="search"
+                  placeholder="Buscar cargos..."
+                  value={positionSearch}
+                  onChange={(e) => {
+                    setPositionSearch(e.target.value);
+                    // Debounce para buscar
+                    setTimeout(() => {
+                      if (e.target.value.length >= 2 || e.target.value.length === 0) {
+                        loadPositions();
+                      }
+                    }, 500);
+                  }}
+                  className="pl-9"
+                />
+              </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setShowApplyTemplateModal(true);
-                }}
-              >
-                <Sparkles className="h-4 w-4" />
-                Aplicar Template
-              </Button>
-              <Button size="sm" onClick={() => loadPositionPermissions(selectedPosition.id)}>
-                <Save className="h-4 w-4" />
-                Atualizar
-              </Button>
-            </div>
-          </div>
+            <div className="space-y-2">
+              {positionLoading ? (
+                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Carregando cargos...
+                </p>
+              ) : filteredPositions.length === 0 ? (
+                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                  Nenhum cargo encontrado
+                </p>
+              ) : (
+                filteredPositions.map((position) => {
+                  const sector = sectors.find((s) => s.id === position.sectorId);
+                  const department = sector ? departments.find((d) => d.id === sector.departmentId) : null;
+                  const permissionCount = positionPermissions.filter((p) => p.positionId === position.id && p.granted).length;
 
-          <div className="space-y-6">
-            {Object.entries(permissionsByModule).map(([module, permissions]) => (
-              <div key={module}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  {module}
-                </h3>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {permissions.map((permission) => {
-                    const hasPermission = positionPermissionsSet.has(permission.id);
-                    const positionPermission = positionPermissions.find(
-                      (p) => p.permissionKey === permission.id,
-                    );
-                    const isDenied = positionPermission && !positionPermission.granted;
-
-                    return (
-                      <label
-                        key={permission.id}
-                        className={cn(
-                          "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
-                          hasPermission
-                            ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                            : isDenied
-                              ? "border-[color-mix(in_oklab,var(--danger)_50%,transparent)] bg-[color-mix(in_oklab,var(--danger)_5%,transparent)]"
-                              : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-                        )}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={hasPermission}
-                          onChange={() => togglePositionPermission(permission.id, !hasPermission)}
-                          className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-[var(--fg)]">{permission.name}</p>
+                  return (
+                    <button
+                      key={position.id}
+                      onClick={() => setSelectedPosition(position)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
+                        selectedPosition?.id === position.id
+                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                          <Briefcase className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-[var(--fg)]">
+                            {position.name}
+                          </p>
                           <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                            {permission.description}
+                            {position.code} {department && sector && `• ${department.name} → ${sector.name}`}
                           </p>
                         </div>
-                        {hasPermission ? (
-                          <Check className="h-4 w-4 text-[var(--primary)]" />
-                        ) : (
-                          <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
-                        )}
-                      </label>
-                    );
-                  })}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                          {permissionCount} permissões
+                        </span>
+                        <Shield className="h-4 w-4 text-[var(--primary)]" />
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </GlassCard>
+
+          {/* Permissões do cargo selecionado */}
+          {selectedPosition && (
+            <GlassCard className="p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-[var(--fg)]">
+                    Permissões do Cargo: {selectedPosition.name}
+                  </h2>
+                  <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                    {positionPermissionsSet.size} de {allPermissions.length} permissões concedidas
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowApplyTemplateModal(true);
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Aplicar Template
+                  </Button>
+                  <Button size="sm" onClick={() => loadPositionPermissions(selectedPosition.id)}>
+                    <Save className="h-4 w-4" />
+                    Atualizar
+                  </Button>
                 </div>
               </div>
-            ))}
-          </div>
-        </GlassCard>
-      )}
-      </>
 
+              <div className="space-y-6">
+                {Object.entries(permissionsByModule).map(([module, permissions]) => (
+                  <div key={module}>
+                    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                      {module}
+                    </h3>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                      {permissions.map((permission) => {
+                        const hasPermission = positionPermissionsSet.has(permission.id);
+                        const positionPermission = positionPermissions.find(
+                          (p) => p.permissionKey === permission.id,
+                        );
+                        const isDenied = positionPermission && !positionPermission.granted;
+
+                        return (
+                          <label
+                            key={permission.id}
+                            className={cn(
+                              "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
+                              hasPermission
+                                ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                                : isDenied
+                                  ? "border-[color-mix(in_oklab,var(--danger)_50%,transparent)] bg-[color-mix(in_oklab,var(--danger)_5%,transparent)]"
+                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                            )}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={hasPermission}
+                              onChange={() => togglePositionPermission(permission.id, !hasPermission)}
+                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                            />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-[var(--fg)]">{permission.name}</p>
+                              <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                                {permission.description}
+                              </p>
+                            </div>
+                            {hasPermission ? (
+                              <Check className="h-4 w-4 text-[var(--primary)]" />
+                            ) : (
+                              <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </GlassCard>
+          )}
+        </>
+      )}
       {activeTab === "sectors" && (
         <>
           {/* Lista de setores */}
@@ -1572,69 +1574,69 @@ export function PermissionsClient() {
 
       {activeTab === "templates" && (
         <GlassCard className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--fg)]">Templates de Permissões</h2>
-                <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  Conjuntos predefinidos de permissões para aplicar rapidamente
-                </p>
-              </div>
-              <Button size="sm" onClick={() => setShowTemplateModal(true)}>
-                <Plus className="h-4 w-4" />
-                Novo Template
-              </Button>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-[var(--fg)]">Templates de Permissões</h2>
+              <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                Conjuntos predefinidos de permissões para aplicar rapidamente
+              </p>
             </div>
+            <Button size="sm" onClick={() => setShowTemplateModal(true)}>
+              <Plus className="h-4 w-4" />
+              Novo Template
+            </Button>
+          </div>
 
-            <div className="space-y-2">
-              {templatesLoading ? (
-                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  Carregando templates...
-                </p>
-              ) : templates.length === 0 ? (
-                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  Nenhum template encontrado
-                </p>
-              ) : (
-                templates.map((template) => (
-                  <div
-                    key={template.id}
-                    className={cn(
-                      "flex items-center justify-between rounded-lg border p-4 transition-all",
-                      "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
-                        <FileText className="h-5 w-5" />
+          <div className="space-y-2">
+            {templatesLoading ? (
+              <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                Carregando templates...
+              </p>
+            ) : templates.length === 0 ? (
+              <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                Nenhum template encontrado
+              </p>
+            ) : (
+              templates.map((template) => (
+                <div
+                  key={template.id}
+                  className={cn(
+                    "flex items-center justify-between rounded-lg border p-4 transition-all",
+                    "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-[var(--fg)]">{template.name}</p>
+                        {template.isDefault && (
+                          <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
+                            Padrão
+                          </span>
+                        )}
+                        {template.isSystem && (
+                          <span className="rounded-full bg-[color-mix(in_oklab,var(--muted)_70%,transparent)] px-2 py-0.5 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                            Sistema
+                          </span>
+                        )}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-[var(--fg)]">{template.name}</p>
-                          {template.isDefault && (
-                            <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
-                              Padrão
-                            </span>
-                          )}
-                          {template.isSystem && (
-                            <span className="rounded-full bg-[color-mix(in_oklab,var(--muted)_70%,transparent)] px-2 py-0.5 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                              Sistema
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                          {template.description || "Sem descrição"}
-                        </p>
-                        <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                          Tipo: {template.entityType === "all" ? "Todos" : template.entityType} •{" "}
-                          {template.permissions.length} permissões
-                        </p>
-                      </div>
+                      <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                        {template.description || "Sem descrição"}
+                      </p>
+                      <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                        Tipo: {template.entityType === "all" ? "Todos" : template.entityType} •{" "}
+                        {template.permissions.length} permissões
+                      </p>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-          </GlassCard>
+                </div>
+              ))
+            )}
+          </div>
+        </GlassCard>
       )}
 
       {/* Modal para aplicar template */}

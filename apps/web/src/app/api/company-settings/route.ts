@@ -51,7 +51,7 @@ function transformRecord(
 }
 
 function resolveOrgId(request?: Request) {
-  return request?.headers.get("x-org-id") ?? defaultOrgId;
+  return request?.headers.get("x-organization-id") ?? defaultOrgId;
 }
 
 function persistInMemory(orgId: string, settings: NormalizedCompanySettings) {
@@ -90,7 +90,7 @@ async function loadFromApi(orgId: string): Promise<NormalizedCompanySettings | n
   try {
     const response = await fetch(`${apiUrl}/company-settings`, {
       headers: {
-        "x-org-id": orgId,
+        "x-organization-id": orgId,
       },
       cache: "no-store",
     });
@@ -155,7 +155,7 @@ async function persistWithApi(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "x-org-id": orgId,
+        "x-organization-id": orgId,
       },
       body: JSON.stringify(sanitizeForPersistence(payload)),
       cache: "no-store",

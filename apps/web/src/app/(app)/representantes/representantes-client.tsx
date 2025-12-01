@@ -1,19 +1,20 @@
 "use client";
 
-import { Button, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
+import { Button, cn } from "@morina/ui";
 import {
   Building2,
   CheckCircle2,
+  Edit,
   Mail,
   MapPin,
   Percent,
   Phone,
-  Plus,
-  Search,
   User,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { DataGridMasterpiece, type Column } from "@/components/data-grid-masterpiece";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
@@ -35,12 +36,10 @@ type Representante = {
   observacoes: string | null;
   createdAt: string;
   updatedAt: string;
-};
-
-type Cliente = {
-  clienteId: string;
-  nome: string;
-  tipo: "fisica" | "juridica";
+  cliente?: {
+    nome: string;
+    tipo: "fisica" | "juridica";
+  };
 };
 
 type RepresentantesResponse = {
@@ -48,74 +47,19 @@ type RepresentantesResponse = {
   proximoCursor?: string | null;
 };
 
-type ClientesResponse = {
-  itens: Cliente[];
-};
-
 export function RepresentantesClient() {
+  const router = useRouter();
   const [representantes, setRepresentantes] = useState<Representante[]>([]);
-  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
-  const [loadingClientes, setLoadingClientes] = useState(true);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [showForm, setShowForm] = useState(false);
-  const [_editingRepresentante, setEditingRepresentante] = useState<Representante | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  const [formData, setFormData] = useState({
-    clienteId: "",
-    nome: "",
-    documento: "",
-    email: "",
-    telefone: "",
-    celular: "",
-    endereco: "",
-    cidade: "",
-    estado: "",
-    cep: "",
-    percentualComissao: 0,
-    observacoes: "",
-  });
 
   useEffect(() => {
-    loadClientes();
     loadRepresentantes();
-  }, [loadClientes, loadRepresentantes]);
-
-  async function loadClientes() {
-    setLoadingClientes(true);
-    try {
-      const response = await fetch(`/api/clientes`, {
-        headers: {
-          ...getAuthHeadersWithTenant(),
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data: ClientesResponse = await response.json();
-        setClientes(data.itens || []);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
-    } finally {
-      setLoadingClientes(false);
-    }
-  }
+  }, []);
 
   async function loadRepresentantes() {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (statusFilter !== "all") {
-        params.append("status", statusFilter);
-      }
-      if (search.length >= 2) {
-        params.append("busca", search);
-      }
-
-      const response = await fetch(`/api/representantes?${params.toString()}`, {
+      const response = await fetch(`/api/representantes`, {
         headers: {
           ...getAuthHeadersWithTenant(),
           "Content-Type": "application/json",
@@ -128,350 +72,267 @@ export function RepresentantesClient() {
       }
     } catch (error) {
       console.error("Erro ao carregar representantes:", error);
+      notificationCenter.add({
+        type: "error",
+        title: "Erro ao carregar representantes",
+        message: "Não foi possível carregar a lista de representantes",
+      });
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    startTransition(async () => {
-      try {
-        const url = "/api/representantes";
-        const method = "POST";
-
-        const response = await fetch(url, {
-          method,
-          headers: {
-            ...getAuthHeadersWithTenant(),
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (response.ok) {
-          notificationCenter.add({
-            type: "success",
-            title: "Representante criado",
-            message: `${formData.nome} foi criado com sucesso`,
-          });
-          setShowForm(false);
-          setEditingRepresentante(null);
-          setFormData({
-            clienteId: "",
-            nome: "",
-            documento: "",
-            email: "",
-            telefone: "",
-            celular: "",
-            endereco: "",
-            cidade: "",
-            estado: "",
-            cep: "",
-            percentualComissao: 0,
-            observacoes: "",
-          });
-          await loadRepresentantes();
-        } else {
-          const error = await response.json();
-          const errorMessage = error.message || "Erro ao salvar representante";
-          notificationCenter.add({
-            type: "error",
-            title: "Erro ao salvar representante",
-            message: errorMessage,
-          });
-          alert(errorMessage);
-        }
-      } catch (error) {
-        console.error("Erro ao salvar representante:", error);
-        notificationCenter.add({
-          type: "error",
-          title: "Erro",
-          message: "Erro ao salvar representante. Tente novamente.",
-        });
-        alert("Erro ao salvar representante");
-      }
-    });
-  }
-
-  function handleCancel() {
-    setShowForm(false);
-    setEditingRepresentante(null);
-    setFormData({
-      clienteId: "",
-      nome: "",
-      documento: "",
-      email: "",
-      telefone: "",
-      celular: "",
-      endereco: "",
-      cidade: "",
-      estado: "",
-      cep: "",
-      percentualComissao: 0,
-      observacoes: "",
-    });
-  }
-
-  function getClienteNome(clienteId: string) {
-    const cliente = clientes.find((c) => c.clienteId === clienteId);
-    return cliente?.nome || "Cliente não encontrado";
-  }
-
-  const filteredRepresentantes = representantes.filter((representante) => {
-    if (statusFilter !== "all" && representante.status !== statusFilter) {
-      return false;
-    }
-    return true;
-  });
+  const columns: Column<Representante>[] = [
+    {
+      key: "nome",
+      header: "Representante",
+      sortable: true,
+      render: (rep) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--primary-color)_15%,transparent)]">
+            <User className="h-5 w-5 text-[var(--primary-color)]" />
+          </div>
+          <div>
+            <p className="font-medium text-[var(--fg)]">{rep.nome}</p>
+            <p className="text-xs font-mono text-[var(--muted-soft)]">{rep.documento}</p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "cliente",
+      header: "Cliente Vinculado",
+      render: (rep) => (
+        <div className="flex items-center gap-2">
+          {rep.cliente?.tipo === "juridica" ? (
+            <Building2 className="h-4 w-4 text-[var(--primary-color)]" />
+          ) : (
+            <User className="h-4 w-4 text-[var(--accent-color)]" />
+          )}
+          <span className="text-sm text-[var(--muted-strong)]">
+            {rep.cliente?.nome || "Não informado"}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "percentualComissao",
+      header: "Comissão",
+      width: "120px",
+      align: "center",
+      sortable: true,
+      render: (rep) => (
+        <div className="flex items-center justify-center gap-1.5 font-semibold text-[var(--primary-color)]">
+          <Percent className="h-4 w-4" />
+          <span>{rep.percentualComissao.toFixed(2)}%</span>
+        </div>
+      ),
+    },
+    {
+      key: "contato",
+      header: "Contato",
+      render: (rep) => (
+        <div className="space-y-1">
+          {rep.email && (
+            <div className="flex items-center gap-2 text-sm">
+              <Mail className="h-3.5 w-3.5 text-[var(--muted-soft)]" />
+              <span className="text-[var(--muted-strong)]">{rep.email}</span>
+            </div>
+          )}
+          {(rep.telefone || rep.celular) && (
+            <div className="flex items-center gap-2 text-sm">
+              <Phone className="h-3.5 w-3.5 text-[var(--muted-soft)]" />
+              <span className="text-[var(--muted-strong)]">
+                {rep.celular || rep.telefone}
+              </span>
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "localizacao",
+      header: "Localização",
+      render: (rep) => {
+        if (!rep.cidade && !rep.estado) return <span className="text-[var(--muted-soft)]">-</span>;
+        return (
+          <div className="flex items-center gap-2 text-sm">
+            <MapPin className="h-3.5 w-3.5 text-[var(--muted-soft)]" />
+            <span className="text-[var(--muted-strong)]">
+              {rep.cidade}
+              {rep.cidade && rep.estado && ", "}
+              {rep.estado}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      key: "status",
+      header: "Status",
+      width: "120px",
+      align: "center",
+      sortable: true,
+      render: (rep) => (
+        <div className="flex justify-center">
+          <div
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+              rep.status === "ativo"
+                ? "bg-[color-mix(in_oklab,var(--success-color)_15%,transparent)] text-[var(--success-color)] border border-[color-mix(in_oklab,var(--success-color)_30%,transparent)]"
+                : rep.status === "inativo"
+                  ? "bg-[color-mix(in_oklab,var(--muted-soft)_15%,transparent)] text-[var(--muted-soft)] border border-[color-mix(in_oklab,var(--muted-soft)_30%,transparent)]"
+                  : "bg-[color-mix(in_oklab,var(--warning-color)_15%,transparent)] text-[var(--warning-color)] border border-[color-mix(in_oklab,var(--warning-color)_30%,transparent)]"
+            )}
+          >
+            {rep.status === "ativo" ? (
+              <CheckCircle2 className="h-3 w-3" />
+            ) : (
+              <XCircle className="h-3 w-3" />
+            )}
+            <span className="capitalize">{rep.status}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Ações",
+      width: "100px",
+      align: "center",
+      render: (rep) => (
+        <div className="flex justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/representantes/${rep.representanteId}/edit`);
+            }}
+            className="gap-2"
+          >
+            <Edit className="h-4 w-4" />
+            Editar
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Filtros e busca */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-3">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]" />
-            <Input
-              type="search"
-              placeholder="Buscar representantes..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <FormSelect
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-[180px]"
+    <div className="space-y-6">
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-3">
+        {representantes.map((rep) => (
+          <div
+            key={rep.representanteId}
+            className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-[var(--radius-sm)] p-4 transition-all duration-200 hover:shadow-[0_4px_12px_-4px_hsl(var(--primary)/0.15)]"
           >
-            <option value="all">Todos</option>
-            <option value="ativo">Ativos</option>
-            <option value="inativo">Inativos</option>
-            <option value="suspenso">Suspensos</option>
-          </FormSelect>
-        </div>
-        <Button onClick={() => setShowForm(!showForm)} className="w-full sm:w-auto">
-          <Plus className="h-4 w-4" />
-          {showForm ? "Cancelar" : "Novo Representante"}
-        </Button>
+            {/* Header */}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-12 h-12 rounded-[var(--radius-sm)] bg-[hsl(var(--primary)/0.1)] flex items-center justify-center flex-shrink-0">
+                  <User className="w-6 h-6 text-[hsl(var(--primary))]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-base text-[hsl(var(--text-1))] truncate">{rep.nome}</h3>
+                  <p className="text-sm text-[hsl(var(--text-3))] truncate">{rep.documento}</p>
+                </div>
+              </div>
+              <span
+                className={cn(
+                  "px-2 py-1 text-xs font-medium rounded-[var(--radius-sm)] flex-shrink-0",
+                  rep.status === "ativo"
+                    ? "bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]"
+                    : rep.status === "inativo"
+                      ? "bg-[hsl(var(--text-3)/0.1)] text-[hsl(var(--text-3))]"
+                      : "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))]"
+                )}
+              >
+                {rep.status === "ativo" ? "Ativo" : rep.status === "inativo" ? "Inativo" : "Suspenso"}
+              </span>
+            </div>
+
+            {/* Client info */}
+            {rep.cliente && (
+              <div className="flex items-center gap-2 mb-2">
+                <Building2 className="w-4 h-4 text-[hsl(var(--text-3))] flex-shrink-0" />
+                <span className="text-sm text-[hsl(var(--text-2))] truncate">{rep.cliente.nome}</span>
+              </div>
+            )}
+
+            {/* Contact info */}
+            {(rep.email || rep.telefone || rep.celular) && (
+              <div className="space-y-1 mb-3">
+                {rep.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[hsl(var(--text-3))] flex-shrink-0" />
+                    <span className="text-sm text-[hsl(var(--text-2))] truncate">{rep.email}</span>
+                  </div>
+                )}
+                {(rep.telefone || rep.celular) && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-[hsl(var(--text-3))] flex-shrink-0" />
+                    <span className="text-sm text-[hsl(var(--text-2))]">
+                      {rep.celular || rep.telefone}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Commission */}
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-[hsl(var(--border))]">
+              <Percent className="w-4 h-4 text-[hsl(var(--text-3))] flex-shrink-0" />
+              <span className="text-sm font-medium text-[hsl(var(--text-1))]">
+                Comissão: {rep.percentualComissao}%
+              </span>
+            </div>
+
+            {/* Actions - Touch-friendly */}
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="default"
+                className="flex-1 h-11 tap-target no-select"
+                onClick={() => router.push(`/representantes/${rep.representanteId}/edit`)}
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Editar
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1 h-11 tap-target no-select"
+                onClick={() => router.push(`/representantes/${rep.representanteId}`)}
+              >
+                Ver Detalhes
+              </Button>
+            </div>
+          </div>
+        ))}
+
+        {representantes.length === 0 && !loading && (
+          <div className="text-center py-12">
+            <User className="w-12 h-12 mx-auto mb-3 text-[hsl(var(--text-3))]" />
+            <p className="text-[hsl(var(--text-2))]">Nenhum representante cadastrado</p>
+          </div>
+        )}
       </div>
 
-      {/* Formulário */}
-      {showForm && (
-        <GlassCard className="p-6">
-          <h2 className="mb-4 text-lg font-semibold">Novo Representante</h2>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormField label="Cliente" required fieldId="clienteId" className="md:col-span-2">
-                {loadingClientes ? (
-                  <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                    Carregando clientes...
-                  </p>
-                ) : (
-                  <FormSelect
-                    id="clienteId"
-                    value={formData.clienteId}
-                    onChange={(e) => setFormData({ ...formData, clienteId: e.target.value })}
-                    required
-                  >
-                    <option value="">Selecione um cliente</option>
-                    {clientes.map((cliente) => (
-                      <option key={cliente.clienteId} value={cliente.clienteId}>
-                        {cliente.nome} ({cliente.tipo === "fisica" ? "PF" : "PJ"})
-                      </option>
-                    ))}
-                  </FormSelect>
-                )}
-              </FormField>
-
-              <FormField label="Nome" required fieldId="nome">
-                <Input
-                  id="nome"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  required
-                />
-              </FormField>
-
-              <FormField label="CPF" required fieldId="documento">
-                <Input
-                  id="documento"
-                  value={formData.documento}
-                  onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-                  required
-                />
-              </FormField>
-
-              <FormField label="Email" fieldId="email">
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Telefone" fieldId="telefone">
-                <Input
-                  id="telefone"
-                  value={formData.telefone}
-                  onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Celular" fieldId="celular">
-                <Input
-                  id="celular"
-                  value={formData.celular}
-                  onChange={(e) => setFormData({ ...formData, celular: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Percentual de Comissão (%)" required fieldId="percentualComissao">
-                <Input
-                  id="percentualComissao"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  value={formData.percentualComissao}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      percentualComissao: parseFloat(e.target.value) || 0,
-                    })
-                  }
-                  required
-                />
-              </FormField>
-
-              <FormField label="CEP" fieldId="cep">
-                <Input
-                  id="cep"
-                  value={formData.cep}
-                  onChange={(e) => setFormData({ ...formData, cep: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Endereço" fieldId="endereco" className="md:col-span-2">
-                <Input
-                  id="endereco"
-                  value={formData.endereco}
-                  onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Cidade" fieldId="cidade">
-                <Input
-                  id="cidade"
-                  value={formData.cidade}
-                  onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Estado (UF)" fieldId="estado">
-                <Input
-                  id="estado"
-                  value={formData.estado}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      estado: e.target.value.toUpperCase().slice(0, 2),
-                    })
-                  }
-                  maxLength={2}
-                />
-              </FormField>
-
-              <FormTextarea
-                label="Observações"
-                id="observacoes"
-                value={formData.observacoes}
-                onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                className="md:col-span-2"
-              />
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="secondary" onClick={handleCancel}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={pending}>
-                {pending ? "Salvando..." : "Criar"}
-              </Button>
-            </div>
-          </form>
-        </GlassCard>
-      )}
-
-      {/* Lista de representantes */}
-      {loading ? (
-        <div className="py-12 text-center text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-          Carregando representantes...
-        </div>
-      ) : filteredRepresentantes.length === 0 ? (
-        <GlassCard className="p-12 text-center">
-          <User className="mx-auto h-12 w-12 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]" />
-          <p className="mt-4 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-            Nenhum representante encontrado.
-          </p>
-        </GlassCard>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredRepresentantes.map((representante) => (
-            <GlassCard key={representante.representanteId} className="p-6">
-              <div className="mb-4 flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-[var(--primary)]" />
-                  <div>
-                    <h3 className="font-semibold">{representante.nome}</h3>
-                    <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                      <Building2 className="mr-1 inline h-3 w-3" />
-                      {getClienteNome(representante.clienteId)}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {representante.status === "ativo" ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-red-500" />
-                  )}
-                  <span className="text-xs capitalize">{representante.status}</span>
-                </div>
-              </div>
-              <div className="space-y-2 text-sm">
-                <p className="text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                  CPF: {representante.documento}
-                </p>
-                <p className="flex items-center gap-2 font-semibold text-[var(--primary)]">
-                  <Percent className="h-4 w-4" />
-                  {representante.percentualComissao.toFixed(2)}% de comissão
-                </p>
-                {representante.email && (
-                  <p className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    {representante.email}
-                  </p>
-                )}
-                {representante.telefone && (
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-4 w-4" />
-                    {representante.telefone}
-                  </p>
-                )}
-                {representante.endereco && (
-                  <p className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    {representante.endereco}, {representante.cidade} - {representante.estado}
-                  </p>
-                )}
-              </div>
-            </GlassCard>
-          ))}
-        </div>
-      )}
+      {/* Desktop DataGrid */}
+      <div className="hidden md:block">
+        <DataGridMasterpiece
+          data={representantes}
+          columns={columns}
+          title="Representantes"
+          description="Gerencie os representantes de vendas e suas comissões"
+          loading={loading}
+          searchPlaceholder="Buscar por nome, documento, cliente..."
+          onAdd={() => router.push("/representantes/novo")}
+          onRowClick={(rep) => router.push(`/representantes/${rep.representanteId}`)}
+        />
+      </div>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   BarChart3,
   Building2,
-  ChevronLeft,
   ChevronRight,
   DollarSign,
   FileText,
@@ -119,12 +118,7 @@ const navItems: NavItem[] = [
   },
 ];
 
-type AppSidebarProps = {
-  collapsed: boolean;
-  onToggle: () => void;
-};
-
-export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
+export function AppSidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
@@ -139,68 +133,28 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   };
 
   return (
-    <motion.aside
-      initial={false}
-      animate={{
-        width: collapsed ? "80px" : "280px",
-      }}
-      transition={{
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
-      }}
+    <aside
       className={cn(
-        "relative flex h-screen flex-col border-r border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] backdrop-blur-xl",
-        "transition-all duration-300 ease-in-out",
+        "relative flex h-screen w-[280px] flex-col border-r border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] backdrop-blur-xl",
       )}
     >
       {/* Header da sidebar */}
-      <div className="flex h-16 items-center justify-between border-b border-[color-mix(in_oklab,var(--border)_90%,transparent)] px-4">
-        <AnimatePresence mode="wait">
-          {!collapsed ? (
-            <motion.div
-              key="logo-expanded"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="flex items-center gap-3"
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white">
-                ML
-              </div>
-              <span className="font-semibold text-[var(--fg)]">Morina Light</span>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="logo-collapsed"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white"
-            >
-              ML
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <button
-          onClick={onToggle}
-          className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-            "hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
-            "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
-          )}
-        >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </button>
+      <div className="flex h-16 items-center border-b border-[color-mix(in_oklab,var(--border)_90%,transparent)] px-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white">
+            ML
+          </div>
+          <span className="font-semibold text-[var(--fg)]">Morina Light</span>
+        </div>
       </div>
 
       {/* Navegação */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
+      <nav className="flex-1 overflow-y-auto px-4 py-6">
         <ul className="space-y-1">
           {navItems.map((item) => (
             <NavItemComponent
               key={item.href}
               item={item}
-              collapsed={collapsed}
               pathname={pathname}
               expandedItems={expandedItems}
               onToggleExpand={toggleExpand}
@@ -210,25 +164,18 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       </nav>
 
       {/* Footer da sidebar */}
-      <div className="border-t border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4">
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]"
-          >
-            <p className="font-medium">v1.0.0</p>
-            <p className="mt-1">Sistema Operacional</p>
-          </motion.div>
-        )}
+      <div className="border-t border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-6">
+        <div className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+          <p className="font-medium">v1.0.0</p>
+          <p className="mt-1">Sistema Operacional</p>
+        </div>
       </div>
-    </motion.aside>
+    </aside>
   );
 }
 
 type NavItemComponentProps = {
   item: NavItem;
-  collapsed: boolean;
   pathname: string;
   expandedItems: Set<string>;
   onToggleExpand: (href: string) => void;
@@ -236,7 +183,6 @@ type NavItemComponentProps = {
 
 function NavItemComponent({
   item,
-  collapsed,
   pathname,
   expandedItems,
   onToggleExpand,
@@ -248,30 +194,6 @@ function NavItemComponent({
 
   if (!hasPermission) {
     return null;
-  }
-
-  if (collapsed) {
-    return (
-      <li>
-        <Link
-          href={item.href}
-          className={cn(
-            "group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all",
-            isActive
-              ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)]"
-              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
-          )}
-          title={item.label}
-        >
-          <item.icon className="h-5 w-5" />
-          {item.badge && (
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] font-bold text-white">
-              {item.badge}
-            </span>
-          )}
-        </Link>
-      </li>
-    );
   }
 
   return (

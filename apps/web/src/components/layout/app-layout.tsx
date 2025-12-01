@@ -15,7 +15,6 @@ type AppLayoutProps = {
 };
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
@@ -25,17 +24,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   useEffect(() => {
     setMounted(true);
-    // Restaurar estado do sidebar do localStorage
-    const savedState = localStorage.getItem("sidebar-collapsed");
-    if (savedState !== null) {
-      setSidebarCollapsed(JSON.parse(savedState));
-    }
   }, []);
-
-  useEffect(() => {
-    // Salvar estado do sidebar no localStorage
-    localStorage.setItem("sidebar-collapsed", JSON.stringify(sidebarCollapsed));
-  }, [sidebarCollapsed]);
 
   if (isPublicRoute || !mounted) {
     return <>{children}</>;
@@ -47,15 +36,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       <AppBackgroundAdvanced />
 
       {/* Sidebar */}
-      <AppSidebar
-        collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
+      <AppSidebar />
 
       {/* Main content area */}
       <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <AppHeader onMenuClick={() => setSidebarCollapsed(!sidebarCollapsed)} />
+        <AppHeader />
 
         {/* Main content */}
         <main className="relative z-10 flex-1 overflow-y-auto">{children}</main>

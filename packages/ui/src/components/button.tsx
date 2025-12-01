@@ -6,24 +6,70 @@ import { forwardRef } from "react";
 import { cn } from "../lib/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-[var(--space-2)] rounded-[var(--r-pill)] border font-semibold uppercase tracking-[var(--tracking-wide)] leading-[var(--lh-tight)] transition-transform duration-[var(--motion-duration-base)] ease-[var(--motion-ease)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
+  [
+    "relative inline-flex items-center justify-center gap-2",
+    "font-semibold transition-all duration-200",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+    "disabled:cursor-not-allowed disabled:opacity-50",
+    "overflow-hidden", // For reflection effect
+    // Reflection gradient overlay
+    "before:absolute before:inset-0 before:bg-gradient-to-b before:from-white/10 before:to-transparent before:pointer-events-none before:opacity-0 before:transition-opacity before:duration-200",
+    "hover:before:opacity-100",
+  ],
   {
     variants: {
       variant: {
-        primary:
-          "border-[color-mix(in oklab,var(--primary-color) 45%,transparent)] bg-[linear-gradient(135deg,rgba(91,138,255,0.94),rgba(91,138,255,0.68))] text-[var(--primary-contrast)] shadow-[var(--shadow-soft)] hover:translate-y-[2px] hover:shadow-[var(--shadow-strong)] focus-visible:outline-[color-mix(in oklab,var(--primary-color) 70%,transparent)]",
-        secondary:
-          "border-[var(--border-color)] bg-[color-mix(in oklab,var(--surface-color) 88%,transparent)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] hover:border-[color-mix(in oklab,var(--primary-color) 40%,transparent)] hover:text-[var(--fg)] focus-visible:outline-[color-mix(in oklab,var(--primary-color) 55%,transparent)]",
-        ghost:
-          "border-transparent bg-transparent text-[color-mix(in oklab,var(--primary-color) 78%,var(--fg) 22%)] hover:text-[var(--primary-color)]",
+        default: [
+          "bg-[hsl(var(--primary))] text-white border border-[hsl(var(--primary))]",
+          "hover:bg-[hsl(var(--primary)/0.9)]",
+          "hover:shadow-[0_8px_16px_-4px_hsl(var(--primary)/0.4)]",
+          "active:translate-y-[1px]",
+          "focus-visible:ring-[hsl(var(--primary))]",
+        ],
+        secondary: [
+          "bg-[hsl(var(--secondary))] text-white border border-[hsl(var(--secondary))]",
+          "hover:bg-[hsl(var(--secondary)/0.9)]",
+          "hover:shadow-[0_8px_16px_-4px_hsl(var(--secondary)/0.4)]",
+          "active:translate-y-[1px]",
+          "focus-visible:ring-[hsl(var(--secondary))]",
+        ],
+        success: [
+          "bg-[hsl(var(--success))] text-white border border-[hsl(var(--success))]",
+          "hover:bg-[hsl(var(--success)/0.9)]",
+          "hover:shadow-[0_8px_16px_-4px_hsl(var(--success)/0.4)]",
+          "active:translate-y-[1px]",
+          "focus-visible:ring-[hsl(var(--success))]",
+        ],
+        danger: [
+          "bg-[hsl(var(--danger))] text-white border border-[hsl(var(--danger))]",
+          "hover:bg-[hsl(var(--danger)/0.9)]",
+          "hover:shadow-[0_8px_16px_-4px_hsl(var(--danger)/0.4)]",
+          "active:translate-y-[1px]",
+          "focus-visible:ring-[hsl(var(--danger))]",
+        ],
+        outline: [
+          "bg-transparent border-2 border-[hsl(var(--border))]",
+          "text-[hsl(var(--text-1))]",
+          "hover:bg-[hsl(var(--surface))]",
+          "hover:shadow-md",
+          "focus-visible:ring-[hsl(var(--primary))]",
+        ],
+        ghost: [
+          "bg-transparent border-transparent",
+          "text-[hsl(var(--text-2))]",
+          "hover:bg-[hsl(var(--surface))]",
+          "hover:text-[hsl(var(--text-1))]",
+        ],
       },
       size: {
-        md: "px-[var(--space-6)] py-[var(--space-3)] text-[var(--fs-sm)]",
-        sm: "px-[var(--space-4)] py-[var(--space-2)] text-[var(--fs-xs)]",
+        sm: "h-9 px-3 text-sm rounded-[var(--radius-sm)]",
+        md: "h-10 px-4 text-sm rounded-[var(--radius-md)]",
+        lg: "h-11 px-6 text-base rounded-[var(--radius-md)]",
+        xl: "h-12 px-8 text-base rounded-[var(--radius-lg)]",
       },
     },
     defaultVariants: {
-      variant: "primary",
+      variant: "default",
       size: "md",
     },
   },
@@ -31,7 +77,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
+  VariantProps<typeof buttonVariants> { }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => (

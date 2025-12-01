@@ -1,5 +1,11 @@
-import { AppLayout } from "@/components/layout";
+"use client";
 
-export default function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
-  return <AppLayout>{children}</AppLayout>;
+import { AppLayout as MainLayout } from "@/components/layout/app-layout";
+
+export default function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <MainLayout>{children}</MainLayout>;
 }

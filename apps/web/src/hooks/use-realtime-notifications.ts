@@ -88,11 +88,11 @@ export function useRealtimeNotifications(
         isConnectingRef.current = false;
       },
       onError: (error) => {
-        // Não logar erros de conexão como críticos (podem ser temporários)
+        // WebSocket errors are non-critical - log as warnings
         if (error instanceof Error && error.message.includes("Failed to fetch")) {
           console.warn("[RealtimeNotifications] Servidor não disponível, tentando reconectar...");
         } else {
-          console.error("[RealtimeNotifications] Erro na conexão:", error);
+          console.warn("[RealtimeNotifications] Erro na conexão (não crítico):", error);
         }
         clientRef.current = null;
         isConnectingRef.current = false;

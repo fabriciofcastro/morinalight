@@ -9,7 +9,8 @@ export function ConnectionProviders() {
     <>
       <ConnectionStatusIndicator />
       <OfflineSyncNotification />
-      <RealtimeNotificationsProvider />
+      {/* Temporarily disabled - WebSocket server not configured */}
+      {/* <RealtimeNotificationsProvider /> */}
     </>
   );
 }
