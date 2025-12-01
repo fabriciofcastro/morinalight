@@ -91,7 +91,6 @@ const DEPARTMENTS: Department[] = [
 
 export function EnterpriseSidebar() {
     const pathname = usePathname();
-    const [collapsed, setCollapsed] = useState(false);
     const [expandedDepts, setExpandedDepts] = useState<string[]>(["comercial"]);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -106,24 +105,16 @@ export function EnterpriseSidebar() {
     const SidebarContent = () => (
         <div className="flex h-full flex-col bg-gradient-to-b from-[#0F172A] to-[#1E293B] text-white">
             {/* Header */}
-            <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
+            <div className="flex h-16 items-center border-b border-white/10 px-6">
                 <Link href="/dashboard" className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] shadow-lg shadow-[hsl(var(--primary)/0.3)]">
                         <Building2 className="h-6 w-6 text-white" />
                     </div>
-                    {!collapsed && (
-                        <div className="flex flex-col">
-                            <span className="font-bold text-lg tracking-tight">MORINA</span>
-                            <span className="text-[10px] text-white/50 font-medium">Enterprise System</span>
-                        </div>
-                    )}
+                    <div className="flex flex-col">
+                        <span className="font-bold text-lg tracking-tight">MORINA</span>
+                        <span className="text-[10px] text-white/50 font-medium">Enterprise System</span>
+                    </div>
                 </Link>
-                <button
-                    onClick={() => setCollapsed(!collapsed)}
-                    className="hidden lg:flex h-8 w-8 items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-                >
-                    <Menu className="h-4 w-4" />
-                </button>
             </div>
 
             {/* Navigation */}
@@ -139,18 +130,16 @@ export function EnterpriseSidebar() {
                     )}
                 >
                     <LayoutDashboard className="h-5 w-5 flex-shrink-0" />
-                    {!collapsed && <span>Dashboard</span>}
+                    <span>Dashboard</span>
                 </Link>
 
                 {/* Departments */}
                 <div className="pt-4 space-y-1">
-                    {!collapsed && (
-                        <div className="px-3 pb-2">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-                                Departamentos
-                            </p>
-                        </div>
-                    )}
+                    <div className="px-3 pb-2">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
+                            Departamentos
+                        </p>
+                    </div>
 
                     {DEPARTMENTS.map((dept) => {
                         const Icon = dept.icon;
@@ -172,21 +161,17 @@ export function EnterpriseSidebar() {
                                     <div className={cn("flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br", dept.color, "shadow-lg")}>
                                         <Icon className="h-4 w-4 text-white" />
                                     </div>
-                                    {!collapsed && (
-                                        <>
-                                            <span className="flex-1 text-left">{dept.name}</span>
-                                            {isExpanded ? (
-                                                <ChevronDown className="h-4 w-4" />
-                                            ) : (
-                                                <ChevronRight className="h-4 w-4" />
-                                            )}
-                                        </>
+                                    <span className="flex-1 text-left">{dept.name}</span>
+                                    {isExpanded ? (
+                                        <ChevronDown className="h-4 w-4" />
+                                    ) : (
+                                        <ChevronRight className="h-4 w-4" />
                                     )}
                                 </button>
 
                                 {/* Solutions */}
                                 <AnimatePresence>
-                                    {isExpanded && !collapsed && (
+                                    {isExpanded && (
                                         <motion.div
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
@@ -230,7 +215,7 @@ export function EnterpriseSidebar() {
                         )}
                     >
                         <BarChart3 className="h-5 w-5 flex-shrink-0" />
-                        {!collapsed && <span>Analytics</span>}
+                        <span>Analytics</span>
                     </Link>
                 </div>
             </div>
@@ -242,14 +227,14 @@ export function EnterpriseSidebar() {
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white/70 hover:bg-white/5 hover:text-white transition-all"
                 >
                     <Users className="h-5 w-5 flex-shrink-0" />
-                    {!collapsed && <span>Usuários</span>}
+                    <span>Usuários</span>
                 </Link>
                 <Link
                     href="/settings"
                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white/70 hover:bg-white/5 hover:text-white transition-all"
                 >
                     <Settings className="h-5 w-5 flex-shrink-0" />
-                    {!collapsed && <span>Configurações</span>}
+                    <span>Configurações</span>
                 </Link>
             </div>
         </div>
@@ -259,10 +244,7 @@ export function EnterpriseSidebar() {
         <>
             {/* Desktop Sidebar */}
             <aside
-                className={cn(
-                    "hidden lg:flex flex-col border-r border-white/10 bg-[#0F172A] transition-all duration-300",
-                    collapsed ? "w-20" : "w-72"
-                )}
+                className="hidden lg:flex flex-col w-72 border-r border-white/10 bg-[#0F172A] transition-all duration-300"
             >
                 <SidebarContent />
             </aside>
