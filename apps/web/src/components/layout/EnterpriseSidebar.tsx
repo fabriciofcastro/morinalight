@@ -6,14 +6,10 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     LayoutDashboard,
-    ChevronDown,
-    ChevronRight,
     Settings,
     Bell,
     User,
-    LogOut,
     Menu,
-    X,
     Building2,
     Shirt,
     DollarSign,
@@ -21,7 +17,9 @@ import {
     Package,
     Users,
     BarChart3,
-    FileText,
+    Search,
+    LogOut,
+    HelpCircle,
 } from "lucide-react";
 import { cn } from "@morina/ui";
 
@@ -91,163 +89,244 @@ const DEPARTMENTS: Department[] = [
 
 export function EnterpriseSidebar() {
     const pathname = usePathname();
-    const [expandedDepts, setExpandedDepts] = useState<string[]>(["comercial"]);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
 
-    const toggleDepartment = (deptId: string) => {
-        setExpandedDepts((prev) =>
-            prev.includes(deptId) ? prev.filter((id) => id !== deptId) : [...prev, deptId]
+    const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
+
+    // Componente para Item do Sidebar (Rail)
+    const SidebarItem = ({
+        id,
+        icon: Icon,
+        label,
+        active,
+        color,
+        onClick,
+        href,
+        badge,
+    }: {
+        id: string;
+        icon: any;
+        label: string;
+        active?: boolean;
+        color?: string;
+        onClick?: () => void;
+        href?: string;
+        badge?: number;
+    }) => {
+        const isHovered = hoveredItem === id;
+
+        const Content = (
+            <div
+                className={cn(
+                    "relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300",
+                    active
+                        ? "bg-white/10 text-white shadow-lg shadow-white/5"
+                        : "text-white/60 hover:bg-white/5 hover:text-white",
+                    isHovered && !active && "bg-white/5 text-white scale-110"
+                )}
+            >
+                <Icon className={cn("h-5 w-5", active && "text-[hsl(var(--primary))]")} />
+
+                {/* Active Indicator Dot */}
+                {active && (
+                    <motion.div
+                        layoutId="active-dot"
+                        className="absolute -right-1 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[hsl(var(--primary))]"
+                    />
+                )}
+
+                {/* Badge */}
+                {badge && (
+                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                        {badge}
+                    </span>
+                )}
+            </div>
+        );
+
+        return (
+            <div
+                className="relative flex w-full justify-center py-2"
+                onMouseEnter={() => setHoveredItem(id)}
+                onMouseLeave={() => setHoveredItem(null)}
+            >
+                {href ? (
+                    <Link href={href} onClick={onClick}>
+                        {Content}
+                    </Link>
+                ) : (
+                    <button onClick={onClick}>{Content}</button>
+                )}
+
+                {/* Floating Menu / Tooltip */}
+                <AnimatePresence>
+                    {isHovered && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, x: 20, scale: 1 }}
+                            exit={{ opacity: 0, x: 10, scale: 0.95 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            className="fixed left-[80px] z-50 min-w-[240px] overflow-hidden rounded-xl border border-white/10 bg-[#0F172A]/95 p-4 shadow-2xl backdrop-blur-xl"
+                            style={{ top: "auto" }} // Positioning logic handled by layout flow usually, but fixed here for simplicity
+                        >
+                            {/* Header do Menu Flutuante */}
+                            <div className="mb-3 flex items-center gap-3 border-b border-white/10 pb-3">
+                                <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br", color || "from-gray-500 to-slate-500")}>
+                                    <Icon className="h-4 w-4 text-white" />
+                                </div>
+                                <span className="font-semibold text-white">{label}</span>
+                            </div>
+
+                            {/* Conteúdo do Menu (Links ou Descrição) */}
+                            <div className="space-y-1">
+                                {id === "dashboard" && (
+                                    <p className="text-xs text-white/50">Visão geral e métricas principais.</p>
+                                )}
+                                {id === "analytics" && (
+                                    <p className="text-xs text-white/50">Relatórios detalhados e insights.</p>
+                                )}
+                                {id === "search" && (
+                                    <div className="flex items-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-sm text-white/50">
+                                        <Search className="h-4 w-4" />
+                                        <span>Buscar... (Ctrl+K)</span>
+                                    </div>
+                                )}
+                                {id === "profile" && (
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-3 rounded-lg p-2 hover:bg-white/5">
+                                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500" />
+                                            <div>
+                                                <p className="text-sm font-medium text-white">Fabrício Castro</p>
+                                                <p className="text-xs text-white/50">Admin</p>
+                                            </div>
+                                        </div>
+                                        <div className="h-px bg-white/10" />
+                                        <button className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-white/70 hover:bg-white/5 hover:text-white">
+                                            <User className="h-4 w-4" /> Perfil
+                                        </button>
+                                        <button className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-white/70 hover:bg-white/5 hover:text-white">
+                                            <Settings className="h-4 w-4" /> Configurações
+                                        </button>
+                                        <button className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300">
+                                            <LogOut className="h-4 w-4" /> Sair
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Links de Departamentos */}
+                                {DEPARTMENTS.find((d) => d.id === id)?.solutions.map((sol) => (
+                                    <Link
+                                        key={sol.id}
+                                        href={sol.path}
+                                        className={cn(
+                                            "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+                                            isActive(sol.path)
+                                                ? "bg-[hsl(var(--primary)/0.15)] text-[hsl(var(--primary))]"
+                                                : "text-white/70 hover:bg-white/10 hover:text-white"
+                                        )}
+                                    >
+                                        <div className="h-1.5 w-1.5 rounded-full bg-current opacity-50" />
+                                        {sol.name}
+                                    </Link>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         );
     };
 
-    const isActive = (path: string) => pathname === path;
-
     const SidebarContent = () => (
-        <div className="flex h-full flex-col bg-gradient-to-b from-[#0F172A] to-[#1E293B] text-white">
-            {/* Header */}
-            <div className="flex h-16 items-center border-b border-white/10 px-6">
-                <Link href="/dashboard" className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] shadow-lg shadow-[hsl(var(--primary)/0.3)]">
-                        <Building2 className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="font-bold text-lg tracking-tight">MORINA</span>
-                        <span className="text-[10px] text-white/50 font-medium">Enterprise System</span>
-                    </div>
+        <div className="flex h-full flex-col items-center bg-[#0F172A] py-4">
+            {/* Logo */}
+            <div className="mb-8">
+                <Link href="/dashboard" className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] shadow-lg shadow-[hsl(var(--primary)/0.3)] hover:scale-105 transition-transform">
+                    <Building2 className="h-6 w-6 text-white" />
                 </Link>
             </div>
 
-            {/* Navigation */}
-            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-                {/* Dashboard */}
-                <Link
+            {/* Main Navigation */}
+            <div className="flex w-full flex-1 flex-col gap-2 overflow-y-auto px-2 scrollbar-none">
+                {/* Search Trigger */}
+                <SidebarItem
+                    id="search"
+                    icon={Search}
+                    label="Busca Rápida"
+                    onClick={() => { }} // Implement search modal trigger
+                />
+
+                <div className="my-2 h-px w-full bg-white/10" />
+
+                <SidebarItem
+                    id="dashboard"
+                    icon={LayoutDashboard}
+                    label="Dashboard"
                     href="/dashboard"
-                    className={cn(
-                        "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
-                        isActive("/dashboard")
-                            ? "bg-[hsl(var(--primary)/0.15)] text-[hsl(var(--primary))] shadow-lg shadow-[hsl(var(--primary)/0.1)]"
-                            : "text-white/70 hover:bg-white/5 hover:text-white"
-                    )}
-                >
-                    <LayoutDashboard className="h-5 w-5 flex-shrink-0" />
-                    <span>Dashboard</span>
-                </Link>
+                    active={isActive("/dashboard")}
+                    color="from-blue-500 to-indigo-500"
+                />
+
+                <SidebarItem
+                    id="analytics"
+                    icon={BarChart3}
+                    label="Analytics"
+                    href="/analytics"
+                    active={isActive("/analytics")}
+                    color="from-violet-500 to-fuchsia-500"
+                />
+
+                <div className="my-2 h-px w-full bg-white/10" />
 
                 {/* Departments */}
-                <div className="pt-4 space-y-1">
-                    <div className="px-3 pb-2">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-                            Departamentos
-                        </p>
-                    </div>
-
-                    {DEPARTMENTS.map((dept) => {
-                        const Icon = dept.icon;
-                        const isExpanded = expandedDepts.includes(dept.id);
-                        const hasActiveSolution = dept.solutions.some((sol) => isActive(sol.path));
-
-                        return (
-                            <div key={dept.id}>
-                                {/* Department Header */}
-                                <button
-                                    onClick={() => toggleDepartment(dept.id)}
-                                    className={cn(
-                                        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
-                                        hasActiveSolution
-                                            ? "bg-white/10 text-white"
-                                            : "text-white/70 hover:bg-white/5 hover:text-white"
-                                    )}
-                                >
-                                    <div className={cn("flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br", dept.color, "shadow-lg")}>
-                                        <Icon className="h-4 w-4 text-white" />
-                                    </div>
-                                    <span className="flex-1 text-left">{dept.name}</span>
-                                    {isExpanded ? (
-                                        <ChevronDown className="h-4 w-4" />
-                                    ) : (
-                                        <ChevronRight className="h-4 w-4" />
-                                    )}
-                                </button>
-
-                                {/* Solutions */}
-                                <AnimatePresence>
-                                    {isExpanded && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="overflow-hidden"
-                                        >
-                                            <div className="ml-11 mt-1 space-y-1 border-l-2 border-white/10 pl-3">
-                                                {dept.solutions.map((solution) => (
-                                                    <Link
-                                                        key={solution.id}
-                                                        href={solution.path}
-                                                        className={cn(
-                                                            "block rounded-md px-3 py-1.5 text-sm transition-all",
-                                                            isActive(solution.path)
-                                                                ? "bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium"
-                                                                : "text-white/60 hover:bg-white/5 hover:text-white/90"
-                                                        )}
-                                                    >
-                                                        {solution.name}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Analytics */}
-                <div className="pt-4">
-                    <Link
-                        href="/analytics"
-                        className={cn(
-                            "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
-                            isActive("/analytics")
-                                ? "bg-[hsl(var(--primary)/0.15)] text-[hsl(var(--primary))]"
-                                : "text-white/70 hover:bg-white/5 hover:text-white"
-                        )}
-                    >
-                        <BarChart3 className="h-5 w-5 flex-shrink-0" />
-                        <span>Analytics</span>
-                    </Link>
-                </div>
+                {DEPARTMENTS.map((dept) => (
+                    <SidebarItem
+                        key={dept.id}
+                        id={dept.id}
+                        icon={dept.icon}
+                        label={dept.name}
+                        color={dept.color}
+                        active={dept.solutions.some((sol) => isActive(sol.path))}
+                    />
+                ))}
             </div>
 
-            {/* Footer */}
-            <div className="border-t border-white/10 p-3 space-y-1">
-                <Link
-                    href="/users"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white/70 hover:bg-white/5 hover:text-white transition-all"
-                >
-                    <Users className="h-5 w-5 flex-shrink-0" />
-                    <span>Usuários</span>
-                </Link>
-                <Link
-                    href="/settings"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white/70 hover:bg-white/5 hover:text-white transition-all"
-                >
-                    <Settings className="h-5 w-5 flex-shrink-0" />
-                    <span>Configurações</span>
-                </Link>
+            {/* Footer Actions */}
+            <div className="mt-auto flex w-full flex-col gap-2 px-2 pt-4">
+                <SidebarItem
+                    id="notifications"
+                    icon={Bell}
+                    label="Notificações"
+                    badge={3}
+                    color="from-yellow-500 to-orange-500"
+                />
+                <SidebarItem
+                    id="help"
+                    icon={HelpCircle}
+                    label="Ajuda"
+                    color="from-green-500 to-emerald-500"
+                />
+                <div className="my-2 h-px w-full bg-white/10" />
+                <SidebarItem
+                    id="profile"
+                    icon={User}
+                    label="Perfil"
+                    active={isActive("/settings")} // Highlight if in settings
+                />
             </div>
         </div>
     );
 
     return (
         <>
-            {/* Desktop Sidebar */}
-            <aside
-                className="hidden lg:flex flex-col w-72 border-r border-white/10 bg-[#0F172A] transition-all duration-300"
-            >
+            {/* Desktop Sidebar (Rail) */}
+            <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 w-[80px] flex-col border-r border-white/10 bg-[#0F172A]">
                 <SidebarContent />
             </aside>
+
+            {/* Spacer to push content */}
+            <div className="hidden lg:block w-[80px] flex-shrink-0" />
 
             {/* Mobile Sidebar */}
             <AnimatePresence>
@@ -267,7 +346,29 @@ export function EnterpriseSidebar() {
                             transition={{ type: "spring", damping: 30, stiffness: 300 }}
                             className="fixed inset-y-0 left-0 z-50 w-72 lg:hidden"
                         >
-                            <SidebarContent />
+                            {/* Mobile uses a different layout or adapts this one - for now reusing content but might need adjustment for mobile width */}
+                            <div className="h-full w-full bg-[#0F172A] p-4">
+                                <div className="flex items-center justify-between mb-6">
+                                    <span className="font-bold text-white text-xl">Menu</span>
+                                    <button onClick={() => setMobileOpen(false)}>
+                                        <X className="h-6 w-6 text-white" />
+                                    </button>
+                                </div>
+                                {/* Simplified Mobile Menu List - could be expanded */}
+                                <div className="space-y-4">
+                                    <Link href="/dashboard" className="block text-white">Dashboard</Link>
+                                    {DEPARTMENTS.map(d => (
+                                        <div key={d.id}>
+                                            <p className="text-white/50 text-sm mb-2">{d.name}</p>
+                                            <div className="pl-4 space-y-2">
+                                                {d.solutions.map(s => (
+                                                    <Link key={s.id} href={s.path} className="block text-white">{s.name}</Link>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </motion.aside>
                     </>
                 )}
