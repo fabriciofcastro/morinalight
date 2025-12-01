@@ -13,4 +13,5 @@ export interface PermissionRepository {
   encontrarPorChave(resource: string, action: string): Promise<Permission | null>;
   listar(filtro?: PermissionFiltro): Promise<Permission[]>;
   encontrarPorIds(ids: string[]): Promise<Permission[]>;
+  deletar(permissionId: string): Promise<void>;
 }

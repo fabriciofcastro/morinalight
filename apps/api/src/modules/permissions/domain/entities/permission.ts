@@ -1,25 +1,27 @@
 export type PermissionProps = {
   id: string;
+  code: string;
   name: string;
   description: string | null;
   module: string;
-  category: string;
-  resource: string;
-  action: string;
+  level: string;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export class Permission {
   constructor(private readonly props: PermissionProps) {
+    if (!props.code) {
+      throw new Error("Permission requer code");
+    }
     if (!props.name) {
       throw new Error("Permission requer name");
     }
-    if (!props.resource) {
-      throw new Error("Permission requer resource");
+    if (!props.module) {
+      throw new Error("Permission requer module");
     }
-    if (!props.action) {
-      throw new Error("Permission requer action");
+    if (!props.level) {
+      throw new Error("Permission requer level");
     }
   }
 
@@ -50,6 +52,6 @@ export class Permission {
   }
 
   get permissionKey() {
-    return `${this.props.resource}:${this.props.action}`;
+    return this.props.code;
   }
 }

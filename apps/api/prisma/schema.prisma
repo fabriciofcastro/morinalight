@@ -114,6 +114,12 @@ model Organization {
   departmentPermissions DepartmentPermission[]
   permissionAuditLogs   PermissionAuditLog[]
   permissionTemplates   PermissionTemplate[]
+  
+  // New Relations
+  branches              Branch[]
+  roles                 Role[]
+  segments              TenantSegment[]
+  workflowPolicies      WorkflowPolicy[]
 }
 
 model User {
@@ -127,12 +133,23 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  // Organizational Fields
+  branchId     String?
+  positionId   String?
+
+  branch       Branch?    @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  position     Position?  @relation(fields: [positionId], references: [id], onDelete: SetNull)
+
   memberships           OrganizationMembership[]
   invitesAuthored       UserInvite[]             @relation("InviteAuthor")
   acceptedInvites       UserInvite[]             @relation("AcceptedUser")
   departmentMemberships DepartmentMembership[]   @relation("UserDepartmentMemberships")
   sectorMemberships     SectorMembership[]       @relation("UserSectorMemberships")
   positionMemberships   PositionMembership[]     @relation("UserPositionMemberships")
+  roles                 UserRole[]
+
+  @@index([branchId])
+  @@index([positionId])
 }
 
 model OrganizationMembership {
@@ -538,6 +555,7 @@ model Comissao {
 model Department {
   id          String           @id @default(uuid())
   orgId       String
+  branchId    String?  // Optional: department can be specific to a branch
   name        String
   code        String           @db.VarChar(50) // Código único (ex: "DPT-001")
   description String?          @db.VarChar(1024)
@@ -551,6 +569,7 @@ model Department {
   updatedAt   DateTime         @updatedAt
 
   organization Organization           @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  branch       Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
   parent       Department?            @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children     Department[]           @relation("DepartmentHierarchy")
   sectors      Sector[] // Setores pertencem a departamentos
@@ -566,6 +585,7 @@ model Department {
 model Sector {
   id           String       @id @default(uuid())
   orgId        String
+  branchId     String? // Optional: sector can be specific to a branch
   departmentId String // Setor pertence a um departamento
   name         String
   code         String       @db.VarChar(50) // Código único (ex: "SEC-001")
@@ -579,7 +599,10 @@ model Sector {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
+
+
   organization Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  branch       Branch?            @relation(fields: [branchId], references: [id], onDelete: SetNull)
   department   Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   parent       Sector?            @relation("SectorHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
   children     Sector[]           @relation("SectorHierarchy")
@@ -616,6 +639,7 @@ model Position {
 
   organization Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
   sector       Sector               @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  users        User[]
   memberships  PositionMembership[]
   permissions  PositionPermission[]
 
@@ -793,23 +817,154 @@ model PermissionAuditLog {
 }
 
 // Templates de permissões (conjuntos predefinidos)
-model PermissionTemplate {
-  id          String   @id @default(uuid())
-  orgId       String
-  name        String   @db.VarChar(200)
-  description String?  @db.VarChar(500)
-  entityType  String   // "position" | "sector" | "department" | "all"
-  permissions Json     // Array de { permissionId: string, granted: boolean }
-  isDefault   Boolean  @default(false) // Template padrão para o tipo de entidade
-  isSystem    Boolean  @default(false) // Template do sistema (não pode ser editado/deletado)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  createdBy   String
-  updatedBy   String
+// Templates de permissões (conjuntos predefinidos)
+// (Moved to end of file)
 
-  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  // ... existing models ...
 
-  @@index([orgId, entityType])
-  @@index([orgId, isDefault])
-  @@unique([orgId, name, entityType], name: "unique_template_name_per_entity")
-}
+  // --- Organizational Structure Extensions ---
+
+  model Branch {
+    id                String   @id @default(uuid())
+    orgId             String
+    name              String   @db.VarChar(255)
+    type              String   @db.VarChar(50) // FABRICA, LOJA, CD, ESCRITORIO
+    internalCode      String?  @db.VarChar(20)
+    cnpj              String?  @db.VarChar(18)
+    stateRegistration String?  @db.VarChar(20)
+    address           Json?    // logradouro, numero, bairro, cidade, uf, cep
+    phone             String?  @db.VarChar(20)
+    email             String?  @db.VarChar(255)
+    active            Boolean  @default(true)
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    users        User[]
+    departments  Department[]
+    sectors      Sector[]
+
+    @@index([orgId, active])
+  }
+
+  model Role {
+    id          String   @id @default(uuid())
+    orgId       String
+    name        String   @db.VarChar(100) // ADMIN, GESTOR_COMERCIAL
+    code        String   @db.VarChar(50)
+    description String?  @db.Text
+    scope       String   @db.VarChar(50) // GLOBAL, FILIAL, DEPARTAMENTO, SETOR
+    active      Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    permissions  RolePermission[]
+    users        UserRole[]
+
+    @@unique([orgId, code])
+    @@index([orgId, active])
+  }
+
+  model Permission {
+    id          String   @id @default(uuid())
+    code        String   @unique @db.VarChar(100) // CRM_LEAD_VIEW
+    name        String   @db.VarChar(150)
+    description String?  @db.Text
+    module      String   @db.VarChar(50) // CRM, CLM, PCP
+    level       String   @db.VarChar(50) // READ, WRITE, ADMIN
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    roles       RolePermission[]
+    // Also linked to Position/Sector/Department permissions if needed, but Role is primary for RBAC
+  }
+
+  model RolePermission {
+    roleId       String
+    permissionId String
+    createdAt    DateTime @default(now())
+
+    role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+    permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+    @@id([roleId, permissionId])
+  }
+
+  model UserRole {
+    userId    String
+    roleId    String
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+    @@id([userId, roleId])
+  }
+
+  model BusinessSegment {
+    id          String   @id @default(uuid())
+    code        String   @unique @db.VarChar(50) // INFANTIL, ADULTO, UNIFORME
+    description String?  @db.Text
+    active      Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    tenants     TenantSegment[]
+  }
+
+  model TenantSegment {
+    orgId     String
+    segmentId String
+    config    Json?    // Regras específicas
+    createdAt DateTime @default(now())
+
+    organization Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    segment      BusinessSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+
+    @@id([orgId, segmentId])
+  }
+
+  model WorkflowPolicy {
+    id        String   @id @default(uuid())
+    orgId     String
+    module    String   @db.VarChar(50) // CRM, PRE_VENDA
+    flowType  String   @db.VarChar(50) // APROVACAO_PROPOSTA
+    config    Json     // DSL com etapas e aprovadores
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+    @@index([orgId, module])
+  }
+
+  // --- Updates to Existing Models ---
+
+  // Update Organization to include new relations
+  // (This part is handled by the relation fields in the new models, 
+  // but we need to ensure the reverse relations exist in Organization if we were editing it directly.
+  // Since I am appending/replacing, I will rely on Prisma to infer or I need to edit Organization model too.
+  // I will use a separate edit for Organization and User to be safe and clean.)
+
+  model PermissionTemplate {
+    id          String   @id @default(uuid())
+    orgId       String
+    name        String   @db.VarChar(200)
+    description String?  @db.VarChar(500)
+    entityType  String   // "position" | "sector" | "department" | "all"
+    permissions Json     // Array de { permissionId: string, granted: boolean }
+    isDefault   Boolean  @default(false) // Template padrão para o tipo de entidade
+    isSystem    Boolean  @default(false) // Template do sistema (não pode ser editado/deletado)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    createdBy   String
+    updatedBy   String
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+    @@index([orgId, entityType])
+    @@index([orgId, isDefault])
+    @@unique([orgId, name, entityType], name: "unique_template_name_per_entity")
+  }

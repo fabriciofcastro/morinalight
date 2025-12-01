@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { EnterpriseSidebar } from "@/components/layout/EnterpriseSidebar";
 import { EnterpriseHeader } from "@/components/layout/EnterpriseHeader";
+import { PageBackground } from "@/components/layout/PageBackground";
 
 export default function AppLayout({
   children,
@@ -10,12 +11,15 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-[#030712]">
+    <div className="flex h-screen overflow-hidden relative">
+      {/* Dynamic Background */}
+      <PageBackground />
+
       {/* Sidebar */}
       <EnterpriseSidebar />
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Header */}
         <EnterpriseHeader />
 

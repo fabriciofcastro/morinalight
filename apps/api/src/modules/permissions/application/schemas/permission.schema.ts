@@ -25,6 +25,18 @@ export const criarPermissionInputSchema = z.object({
 
 export type CriarPermissionInput = z.infer<typeof criarPermissionInputSchema>;
 
+export const atualizarPermissionInputSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(2).max(255).optional(),
+  description: z.string().max(512).optional().nullable(),
+  module: z.string().min(1).max(100).optional(),
+  category: z.string().min(1).max(100).optional(),
+  resource: z.string().min(1).max(100).optional(),
+  action: z.string().min(1).max(50).optional(),
+});
+
+export type AtualizarPermissionInput = z.infer<typeof atualizarPermissionInputSchema>;
+
 export const listarPermissionsInputSchema = z.object({
   module: z.string().optional(),
   category: z.string().optional(),
@@ -33,3 +45,9 @@ export const listarPermissionsInputSchema = z.object({
 });
 
 export type ListarPermissionsInput = z.infer<typeof listarPermissionsInputSchema>;
+
+export const listarPermissionsResultadoSchema = z.object({
+  itens: z.array(permissionViewSchema),
+});
+
+export type ListarPermissionsResultado = z.infer<typeof listarPermissionsResultadoSchema>;
