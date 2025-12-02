@@ -32,6 +32,13 @@ export const atualizarWorkflowPolicyInputSchema = z.object({
 
 export type AtualizarWorkflowPolicyInput = z.infer<typeof atualizarWorkflowPolicyInputSchema>;
 
+export const atualizarWorkflowPolicyBodySchema = z.object({
+    module: z.string().min(2).max(50).optional(),
+    flowType: z.string().min(2).max(50).optional(),
+    config: z.record(z.any()).optional(),
+    active: z.boolean().optional(),
+});
+
 export const listarWorkflowPoliciesInputSchema = z
     .object({
         orgId: z.string().uuid(),
@@ -42,6 +49,14 @@ export const listarWorkflowPoliciesInputSchema = z
     .strict();
 
 export type ListarWorkflowPoliciesInput = z.infer<typeof listarWorkflowPoliciesInputSchema>;
+
+export const listarWorkflowPoliciesQuerySchema = z
+    .object({
+        module: z.string().optional(),
+        flowType: z.string().optional(),
+        active: z.enum(["true", "false"]).transform((val) => val === "true").optional(),
+    })
+    .strict();
 
 export const listarWorkflowPoliciesResultadoSchema = z.object({
     itens: z.array(workflowPolicyViewSchema),

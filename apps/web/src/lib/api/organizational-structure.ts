@@ -4,7 +4,20 @@ export interface Branch {
     id: string;
     name: string;
     type: string;
-    code: string;
+    code: string; // internalCode
+    cnpj?: string;
+    stateRegistration?: string;
+    address?: {
+        zipCode: string;
+        street: string;
+        number: string;
+        complement?: string;
+        neighborhood: string;
+        city: string;
+        state: string;
+    };
+    phone?: string;
+    email?: string;
     active: boolean;
     createdAt: string;
     updatedAt: string;
@@ -16,7 +29,15 @@ export interface CreateBranchInput {
     code: string;
     cnpj?: string;
     stateRegistration?: string;
-    address?: any;
+    address?: {
+        zipCode: string;
+        street: string;
+        number: string;
+        complement?: string;
+        neighborhood: string;
+        city: string;
+        state: string;
+    };
     phone?: string;
     email?: string;
     active?: boolean;
@@ -27,6 +48,7 @@ export interface UpdateBranchInput extends Partial<CreateBranchInput> {
 }
 
 export const organizationalStructureApi = {
+    // ... (methods remain the same, they use the interfaces)
     // Branches
     getBranches: async () => {
         return api.get<Branch[]>("/branches");
@@ -168,6 +190,8 @@ export interface Department {
     type: string;
     active: boolean;
     filialId?: string;
+    parentId?: string;
+    metadata?: any;
     createdAt: string;
     updatedAt: string;
 }
@@ -179,6 +203,8 @@ export interface CreateDepartmentInput {
     type: string;
     active?: boolean;
     filialId?: string;
+    parentId?: string;
+    metadata?: any;
 }
 
 export interface UpdateDepartmentInput extends Partial<CreateDepartmentInput> {
@@ -194,6 +220,8 @@ export interface Sector {
     active: boolean;
     departmentId: string;
     filialId?: string;
+    parentId?: string;
+    metadata?: any;
     createdAt: string;
     updatedAt: string;
 }
@@ -206,6 +234,8 @@ export interface CreateSectorInput {
     active?: boolean;
     departmentId: string;
     filialId?: string;
+    parentId?: string;
+    metadata?: any;
 }
 
 export interface UpdateSectorInput extends Partial<CreateSectorInput> {
@@ -220,6 +250,10 @@ export interface Position {
     seniority: string;
     baseSalary?: number;
     active: boolean;
+    responsabilidades?: string;
+    requisitos?: string;
+    salarioMin?: number;
+    salarioMax?: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -231,6 +265,10 @@ export interface CreatePositionInput {
     seniority: string;
     baseSalary?: number;
     active?: boolean;
+    responsabilidades?: string;
+    requisitos?: string;
+    salarioMin?: number;
+    salarioMax?: number;
 }
 
 export interface UpdatePositionInput extends Partial<CreatePositionInput> {

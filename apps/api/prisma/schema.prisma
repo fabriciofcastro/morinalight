@@ -86,6 +86,14 @@ model Organization {
   name        String
   slug        String   @unique
   description String?  @db.VarChar(2048)
+  
+  // Registration Data
+  legalName   String?  @db.VarChar(255)
+  cnpj        String?  @db.VarChar(20)
+  address     String?  @db.VarChar(512)
+  phone       String?  @db.VarChar(20)
+  email       String?  @db.VarChar(255)
+  website     String?  @db.VarChar(255)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

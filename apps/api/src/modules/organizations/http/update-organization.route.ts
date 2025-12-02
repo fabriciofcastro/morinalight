@@ -7,6 +7,12 @@ import type { OrganizationAuditLogRepository } from "../repositories/organizatio
 const updateOrganizationSchema = z.object({
   name: z.string().min(1).optional(),
   description: z.string().optional().nullable(),
+  legalName: z.string().optional().nullable(),
+  cnpj: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  email: z.string().email().optional().nullable(),
+  website: z.string().url().optional().nullable(),
 });
 
 type UpdateOrganizationDeps = {
@@ -50,6 +56,12 @@ export async function registerUpdateOrganizationRoute(
       organizationId: orgId,
       name: body.name,
       description: body.description,
+      legalName: body.legalName,
+      cnpj: body.cnpj,
+      address: body.address,
+      phone: body.phone,
+      email: body.email,
+      website: body.website,
     });
 
     if (!updated) {

@@ -225,3 +225,159 @@
   background: rgba(14, 165, 233, 0.3);
   color: white;
 }
+
+/* ============================================
+   DESIGN SYSTEM - VALIDATION COLORS & STATES
+   ============================================ */
+
+/* Valid state - Verde */
+:root {
+  --valid-color: hsl(158 72% 55%);
+  --valid-light: hsl(158 72% 85%);
+  --valid-lighter: hsl(158 72% 95%);
+  --valid-bg: hsl(158 72% 95% / 0.5);
+  --valid-border: hsl(158 72% 55%);
+}
+
+[data-theme="dark"] {
+  --valid-color: hsl(158 72% 55%);
+  --valid-light: hsl(158 72% 35%);
+  --valid-lighter: hsl(158 72% 25%);
+  --valid-bg: hsl(158 72% 30% / 0.3);
+}
+
+/* Invalid state - Vermelho */
+:root {
+  --invalid-color: hsl(0 82% 60%);
+  --invalid-light: hsl(0 82% 85%);
+  --invalid-lighter: hsl(0 82% 95%);
+  --invalid-bg: hsl(0 82% 95% / 0.5);
+  --invalid-border: hsl(0 82% 60%);
+}
+
+[data-theme="dark"] {
+  --invalid-color: hsl(0 82% 60%);
+  --invalid-light: hsl(0 82% 35%);
+  --invalid-lighter: hsl(0 82% 25%);
+  --invalid-bg: hsl(0 82% 30% / 0.3);
+}
+
+/* Pending state - Amarelo */
+:root {
+  --pending-color: hsl(45 100% 60%);
+  --pending-light: hsl(45 100% 80%);
+  --pending-lighter: hsl(45 100% 95%);
+  --pending-bg: hsl(45 100% 95% / 0.5);
+}
+
+[data-theme="dark"] {
+  --pending-color: hsl(45 100% 60%);
+  --pending-light: hsl(45 100% 35%);
+  --pending-lighter: hsl(45 100% 25%);
+  --pending-bg: hsl(45 100% 30% / 0.3);
+}
+
+/* Disabled state */
+:root {
+  --disabled-color: hsl(0 0% 64%);
+  --disabled-bg: hsl(0 0% 94%);
+  --disabled-text: hsl(0 0% 45%);
+  --disabled-opacity: 0.5;
+}
+
+[data-theme="dark"] {
+  --disabled-color: hsl(0 0% 45%);
+  --disabled-bg: hsl(0 0% 20%);
+  --disabled-text: hsl(0 0% 50%);
+}
+
+/* ============================================
+   ANIMATION TIMING SCALE
+   ============================================ */
+
+:root {
+  --duration-instant: 0ms;
+  --duration-fastest: 75ms;
+  --duration-faster: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+  --duration-slowest: 700ms;
+}
+
+/* ============================================
+   EASING FUNCTIONS
+   ============================================ */
+
+:root {
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ============================================
+   FOCUS RING STYLES
+   ============================================ */
+
+:root {
+  --focus-ring-offset: 2px;
+  --focus-ring-width: 2px;
+  --focus-ring-color: hsl(227 100% 58%);
+}
+
+@layer base {
+  *:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+/* ============================================
+   BORDER WIDTH SCALE
+   ============================================ */
+
+:root {
+  --border-0: 0px;
+  --border-1: 1px;
+  --border-2: 2px;
+  --border-3: 3px;
+}
+
+/* ============================================
+   RADIUS SCALE (MELHORADO)
+   ============================================ */
+
+:root {
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+}
+
+/* ============================================
+   OPACITY SCALE
+   ============================================ */
+
+:root {
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.8;
+  --opacity-active: 0.9;
+  --opacity-placeholder: 0.6;
+}
+
+/* ============================================
+   SPACING PRESETS FOR FORMS
+   ============================================ */
+
+:root {
+  --form-gap-compact: 8px;
+  --form-gap-normal: 16px;
+  --form-gap-loose: 24px;
+  --field-label-gap: 4px;
+  --input-py: 10px;
+  --input-px: 12px;
+  --input-height: 40px;
+}

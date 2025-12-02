@@ -95,6 +95,7 @@ const DEPARTMENTS: Department[] = [
         icon: Settings,
         color: "from-slate-500 to-zinc-500",
         solutions: [
+            { id: "empresa", name: "Dados da Empresa", path: "/admin/company/edit", description: "Dados cadastrais e fiscais." },
             { id: "filiais", name: "Filiais", path: "/admin/branches", description: "Gestão de unidades e filiais." },
             { id: "departamentos", name: "Departamentos", path: "/admin/departments", description: "Estrutura de departamentos." },
             { id: "setores", name: "Setores", path: "/admin/sectors", description: "Divisões e setores funcionais." },
@@ -313,6 +314,8 @@ export function EnterpriseSidebar() {
                     color="from-violet-500 to-fuchsia-500"
                 />
 
+
+
                 <div className="my-2 h-px w-10 mx-auto bg-white/10" />
 
                 {/* Departments */}
@@ -330,19 +333,6 @@ export function EnterpriseSidebar() {
 
             {/* Footer Actions */}
             <div className="mt-auto flex w-full flex-col gap-3 px-0 pt-6">
-                <SidebarItem
-                    id="notifications"
-                    icon={Bell}
-                    label="Notificações"
-                    badge={3}
-                    color="from-yellow-500 to-orange-500"
-                />
-                <SidebarItem
-                    id="help"
-                    icon={HelpCircle}
-                    label="Ajuda"
-                    color="from-green-500 to-emerald-500"
-                />
                 <div className="my-2 h-px w-10 mx-auto bg-white/10" />
                 <SidebarItem
                     id="profile"

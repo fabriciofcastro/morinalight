@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { listarWorkflowPoliciesInputSchema, listarWorkflowPoliciesResultadoSchema } from "../application/schemas/workflow-policy.schema";
+import { listarWorkflowPoliciesQuerySchema, listarWorkflowPoliciesResultadoSchema } from "../application/schemas/workflow-policy.schema";
 import { ListarWorkflowPoliciesUseCase } from "../application/use-cases/listar-workflow-policies.use-case";
 import type { WorkflowPolicyRepository } from "../domain/repositories/workflow-policy-repository";
 
@@ -14,7 +14,7 @@ export async function registerListWorkflowPoliciesRoute(
             schema: {
                 summary: "Listar políticas de workflow",
                 tags: ["Organizational Structure"],
-                querystring: listarWorkflowPoliciesInputSchema.omit({ orgId: true }),
+                querystring: listarWorkflowPoliciesQuerySchema,
                 response: {
                     200: listarWorkflowPoliciesResultadoSchema,
                 },

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { listarBusinessSegmentsInputSchema, listarBusinessSegmentsResultadoSchema } from "../application/schemas/business-segment.schema";
+import { listarBusinessSegmentsQuerySchema, listarBusinessSegmentsResultadoSchema } from "../application/schemas/business-segment.schema";
 import { ListarBusinessSegmentsUseCase } from "../application/use-cases/listar-business-segments.use-case";
 import type { BusinessSegmentRepository } from "../domain/repositories/business-segment-repository";
 
@@ -14,7 +14,7 @@ export async function registerListBusinessSegmentsRoute(
             schema: {
                 summary: "Listar segmentos de negócio",
                 tags: ["Organizational Structure"],
-                querystring: listarBusinessSegmentsInputSchema.omit({ orgId: true }),
+                querystring: listarBusinessSegmentsQuerySchema,
                 response: {
                     200: listarBusinessSegmentsResultadoSchema,
                 },

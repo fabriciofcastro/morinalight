@@ -52,6 +52,12 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       name: record.name,
       slug: record.slug,
       description: record.description,
+      legalName: record.legalName,
+      cnpj: record.cnpj,
+      address: record.address,
+      phone: record.phone,
+      email: record.email,
+      website: record.website,
     };
   }
 
@@ -63,6 +69,12 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       name: record.name,
       slug: record.slug,
       description: record.description,
+      legalName: record.legalName,
+      cnpj: record.cnpj,
+      address: record.address,
+      phone: record.phone,
+      email: record.email,
+      website: record.website,
     };
   }
 
@@ -74,6 +86,12 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       name: record.name,
       slug: record.slug,
       description: record.description,
+      legalName: record.legalName,
+      cnpj: record.cnpj,
+      address: record.address,
+      phone: record.phone,
+      email: record.email,
+      website: record.website,
     };
   }
 
@@ -172,16 +190,34 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
     name?: string;
     slug?: string;
     description?: string | null;
+    legalName?: string | null;
+    cnpj?: string | null;
+    address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    website?: string | null;
   }): Promise<OrganizationRecord | null> {
     const updateData: {
       name?: string;
       slug?: string;
       description?: string | null;
+      legalName?: string | null;
+      cnpj?: string | null;
+      address?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      website?: string | null;
     } = {};
 
     if (input.name !== undefined) updateData.name = input.name;
     if (input.slug !== undefined) updateData.slug = input.slug;
     if (input.description !== undefined) updateData.description = input.description;
+    if (input.legalName !== undefined) updateData.legalName = input.legalName;
+    if (input.cnpj !== undefined) updateData.cnpj = input.cnpj;
+    if (input.address !== undefined) updateData.address = input.address;
+    if (input.phone !== undefined) updateData.phone = input.phone;
+    if (input.email !== undefined) updateData.email = input.email;
+    if (input.website !== undefined) updateData.website = input.website;
 
     const record = await prisma.organization.update({
       where: { id: input.organizationId },
@@ -193,6 +229,12 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       name: record.name,
       slug: record.slug,
       description: record.description,
+      legalName: record.legalName,
+      cnpj: record.cnpj,
+      address: record.address,
+      phone: record.phone,
+      email: record.email,
+      website: record.website,
     };
   }
 

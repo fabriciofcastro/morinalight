@@ -30,6 +30,12 @@ export const atualizarBusinessSegmentInputSchema = z.object({
 
 export type AtualizarBusinessSegmentInput = z.infer<typeof atualizarBusinessSegmentInputSchema>;
 
+export const atualizarBusinessSegmentBodySchema = z.object({
+    name: z.string().min(2).max(100).optional(),
+    description: z.string().max(500).optional().nullable(),
+    active: z.boolean().optional(),
+});
+
 export const listarBusinessSegmentsInputSchema = z
     .object({
         orgId: z.string().uuid(),
@@ -39,6 +45,13 @@ export const listarBusinessSegmentsInputSchema = z
     .strict();
 
 export type ListarBusinessSegmentsInput = z.infer<typeof listarBusinessSegmentsInputSchema>;
+
+export const listarBusinessSegmentsQuerySchema = z
+    .object({
+        busca: z.string().min(2).max(120).optional(),
+        active: z.enum(["true", "false"]).transform((val) => val === "true").optional(),
+    })
+    .strict();
 
 export const listarBusinessSegmentsResultadoSchema = z.object({
     itens: z.array(businessSegmentViewSchema),

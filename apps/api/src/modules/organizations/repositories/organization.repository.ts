@@ -10,6 +10,12 @@ export type OrganizationRecord = {
   name: string;
   slug: string;
   description?: string | null;
+  legalName?: string | null;
+  cnpj?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
 };
 
 export type OrganizationMembershipRecord = {
@@ -39,6 +45,12 @@ export interface OrganizationRepository {
     name?: string;
     slug?: string;
     description?: string | null;
+    legalName?: string | null;
+    cnpj?: string | null;
+    address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    website?: string | null;
   }): Promise<OrganizationRecord | null>;
   deletar?(organizationId: string): Promise<void>;
   encontrarPorId?(organizationId: string): Promise<OrganizationRecord | null>;

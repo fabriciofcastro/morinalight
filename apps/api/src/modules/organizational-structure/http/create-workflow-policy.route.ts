@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { criarWorkflowPolicyInputSchema, workflowPolicyViewSchema } from "../application/schemas/workflow-policy.schema";
+import { criarWorkflowPolicyInputSchema, workflowPolicyBaseSchema, workflowPolicyViewSchema } from "../application/schemas/workflow-policy.schema";
 import { CriarWorkflowPolicyUseCase } from "../application/use-cases/criar-workflow-policy.use-case";
 import type { WorkflowPolicyRepository } from "../domain/repositories/workflow-policy-repository";
 
@@ -14,7 +14,7 @@ export async function registerCreateWorkflowPolicyRoute(
             schema: {
                 summary: "Criar nova política de workflow",
                 tags: ["Organizational Structure"],
-                body: criarWorkflowPolicyInputSchema.omit({ orgId: true }),
+                body: workflowPolicyBaseSchema,
                 response: {
                     201: workflowPolicyViewSchema,
                 },

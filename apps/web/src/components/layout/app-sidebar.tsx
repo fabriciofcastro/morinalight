@@ -84,18 +84,13 @@ const navItems: NavItem[] = [
     icon: BarChart3,
     permission: "reports:view",
   },
+
   {
     label: "Configurações",
     href: "/settings",
     icon: Settings,
     permission: "settings:view",
     children: [
-      {
-        label: "Empresa",
-        href: "/settings/company",
-        icon: Building2,
-        permission: "settings:company:view",
-      },
       {
         label: "Equipe",
         href: "/settings/team",
@@ -113,6 +108,12 @@ const navItems: NavItem[] = [
         href: "/settings/organizational-structure",
         icon: Building2,
         permission: "settings:organizational-structure:view",
+      },
+      {
+        label: "Dados da Empresa",
+        href: "/admin/company/edit",
+        icon: Building2,
+        permission: "settings:company:view",
       },
     ],
   },

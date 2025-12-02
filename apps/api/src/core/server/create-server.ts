@@ -1,6 +1,7 @@
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import fastify from "fastify";
+import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { registerHttp } from "../../app/http/routes";
 import type { AuthModuleOptions as CoreAuthModuleOptions } from "../../core/auth/auth.module";
 import type { AuthModuleOptions } from "../../modules/auth/auth.module";
@@ -34,6 +35,9 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
       transport: env.NODE_ENV === "development" ? { target: "pino-pretty" } : undefined,
     },
   });
+
+  app.setValidatorCompiler(validatorCompiler);
+  app.setSerializerCompiler(serializerCompiler);
 
   await app.register(cors, {
     origin: env.NODE_ENV === "production" ? env.FRONTEND_URL?.split(",") || true : true,

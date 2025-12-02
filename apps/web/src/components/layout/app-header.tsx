@@ -2,7 +2,7 @@
 
 import { cn } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogOut, Menu, Monitor, Moon, Search, Settings, Sun, User } from "lucide-react";
+import { HelpCircle, LogOut, Menu, Monitor, Moon, Search, Settings, Sun, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -80,7 +80,21 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        {/* Help */}
+        <button
+          onClick={() => window.open('/help', '_blank')}
+          className={cn(
+            "flex h-9 w-9 items-center justify-center rounded-lg transition-all",
+            "hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+            "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+          )}
+          title="Central de Ajuda"
+          aria-label="Abrir central de ajuda"
+        >
+          <HelpCircle className="h-5 w-5" />
+        </button>
+
         {/* Theme toggle */}
         <button
           onClick={cycleTheme}
@@ -90,12 +104,10 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
             "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
           )}
           title={`Tema: ${mounted ? theme : "sistema"}`}
+          aria-label="Alternar tema"
         >
           <ThemeIcon className="h-5 w-5" />
         </button>
-
-        {/* Notifications */}
-        <NotificationCenter />
 
         {/* User menu */}
         <div className="relative">

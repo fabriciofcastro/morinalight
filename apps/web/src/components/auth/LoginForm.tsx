@@ -63,19 +63,84 @@ export function LoginForm() {
             console.error('📋 [LOGIN] Detalhes do erro:', {
                 message: err.message,
                 response: err.response?.data,
-                status: err.response?.status
+                status: err.response?.status,
+                code: err.code,
+                name: err.name
             });
 
             setLoginAttempts(prev => prev + 1);
-            const errorMessage = err.response?.data?.error || err.response?.data?.message;
-            if (errorMessage === 'invalid_credentials') {
-                setError('Acesso Negado: Credenciais inválidas.');
-            } else if (errorMessage === 'account_locked') {
-                setError('Bloqueio de Segurança: Contate admin.');
-            } else if (errorMessage === 'too_many_attempts') {
-                setError('Muitas tentativas. Aguarde cooldown.');
-            } else {
-                setError('Erro de Conexão. Tente novamente.');
+
+            // Tratamento específico de erros
+            const status = err.response?.status;
+            const errorData = err.response?.data;
+            const errorMessage = errorData?.error || errorData?.message;
+            const errorCode = errorData?.code;
+
+            // Erro de rede/conexão
+            if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
+                setError('🔌 Falha de Conexão: Verifique sua internet e tente novamente.');
+                return;
+            }
+
+            // Timeout
+            if (err.code === 'ECONNABORTED' || err.message.includes('timeout')) {
+                setError('⏱️ Tempo Esgotado: Servidor demorou para responder. Tente novamente.');
+                return;
+            }
+
+            // Erros HTTP específicos
+            switch (status) {
+                case 400:
+                    setError('⚠️ Dados Inválidos: Verifique email e senha.');
+                    break;
+
+                case 401:
+                    // Mensagens específicas baseadas no erro retornado
+                    if (errorMessage === 'invalid_credentials' || errorCode === 'INVALID_CREDENTIALS') {
+                        setError('🔐 Acesso Negado: Email ou senha incorretos.');
+                    } else if (errorMessage === 'user_not_found' || errorCode === 'USER_NOT_FOUND') {
+                        setError('👤 Usuário Não Encontrado: Email não cadastrado.');
+                    } else if (errorMessage === 'invalid_password' || errorCode === 'INVALID_PASSWORD') {
+                        setError('🔑 Senha Incorreta: Verifique sua senha e tente novamente.');
+                    } else {
+                        setError('🚫 Não Autorizado: Credenciais inválidas.');
+                    }
+                    break;
+
+                case 403:
+                    if (errorMessage === 'account_locked' || errorCode === 'ACCOUNT_LOCKED') {
+                        setError('🔒 Conta Bloqueada: Contate o administrador do sistema.');
+                    } else if (errorMessage === 'account_disabled' || errorCode === 'ACCOUNT_DISABLED') {
+                        setError('⛔ Conta Desativada: Entre em contato com o suporte.');
+                    } else {
+                        setError('🚷 Acesso Proibido: Você não tem permissão para acessar.');
+                    }
+                    break;
+
+                case 429:
+                    setError('⏸️ Muitas Tentativas: Aguarde 5 minutos antes de tentar novamente.');
+                    break;
+
+                case 500:
+                    setError('⚙️ Erro no Servidor: Problema interno. Tente novamente em instantes.');
+                    break;
+
+                case 502:
+                case 503:
+                    setError('🔧 Servidor Indisponível: Sistema em manutenção. Tente mais tarde.');
+                    break;
+
+                case 504:
+                    setError('⏱️ Gateway Timeout: Servidor não respondeu a tempo. Tente novamente.');
+                    break;
+
+                default:
+                    // Mensagem genérica mais informativa
+                    if (status) {
+                        setError(`❌ Erro ${status}: ${errorMessage || 'Falha ao processar login. Tente novamente.'}`);
+                    } else {
+                        setError('🔴 Erro Desconhecido: Não foi possível conectar ao servidor.');
+                    }
             }
         } finally {
             setIsLoading(false);
@@ -98,17 +163,77 @@ export function LoginForm() {
         <TooltipProvider>
             <form onSubmit={handleSubmit} className="flex flex-col gap-6 relative">
 
-                {/* Error Notification - Squared Tech */}
+                {/* Error Notification - Enhanced with Help */}
                 <AnimatePresence>
                     {error && (
                         <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            className="bg-red-500/10 border-l-2 border-red-500 text-red-200 px-4 py-3 flex items-center gap-3 text-xs font-mono tracking-tight backdrop-blur-sm"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="space-y-2"
                         >
-                            <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
-                            <span className="uppercase">{error}</span>
+                            {/* Main Error Message */}
+                            <div className="bg-red-500/10 border-l-4 border-red-500 text-red-200 px-4 py-3 flex items-start gap-3 text-sm backdrop-blur-sm rounded-r">
+                                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                                <div className="flex-1 space-y-1">
+                                    <p className="font-medium">{error}</p>
+
+                                    {/* Contextual Help */}
+                                    {loginAttempts >= 3 && (
+                                        <p className="text-xs text-red-300/70">
+                                            💡 Dica: Verifique se o Caps Lock está ativado ou tente recuperar sua senha.
+                                        </p>
+                                    )}
+
+                                    {/* Attempt Counter */}
+                                    {loginAttempts > 0 && loginAttempts < 5 && (
+                                        <p className="text-xs text-red-300/50 font-mono">
+                                            Tentativa {loginAttempts} de 5
+                                        </p>
+                                    )}
+
+                                    {loginAttempts >= 5 && (
+                                        <p className="text-xs text-red-300/70">
+                                            ⚠️ Limite de tentativas atingido. Aguarde alguns minutos ou recupere sua senha.
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Close Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => setError(null)}
+                                    className="text-red-300/50 hover:text-red-300 transition-colors"
+                                    aria-label="Fechar mensagem de erro"
+                                >
+                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Help Actions */}
+                            <div className="flex items-center gap-2 text-xs">
+                                <Link
+                                    href="/forgot-password"
+                                    className="text-white/50 hover:text-[hsl(var(--primary))] transition-colors flex items-center gap-1 font-mono"
+                                >
+                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                                    </svg>
+                                    Recuperar Senha
+                                </Link>
+                                <span className="text-white/20">•</span>
+                                <Link
+                                    href="/help"
+                                    className="text-white/50 hover:text-[hsl(var(--primary))] transition-colors flex items-center gap-1 font-mono"
+                                >
+                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Central de Ajuda
+                                </Link>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>

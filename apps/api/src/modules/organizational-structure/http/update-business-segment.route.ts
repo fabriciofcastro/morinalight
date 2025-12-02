@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { atualizarBusinessSegmentInputSchema, businessSegmentViewSchema } from "../application/schemas/business-segment.schema";
+import { atualizarBusinessSegmentBodySchema, atualizarBusinessSegmentInputSchema, businessSegmentViewSchema } from "../application/schemas/business-segment.schema";
+// ...
 import { AtualizarBusinessSegmentUseCase } from "../application/use-cases/atualizar-business-segment.use-case";
 import type { BusinessSegmentRepository } from "../domain/repositories/business-segment-repository";
 
@@ -21,7 +22,7 @@ export async function registerUpdateBusinessSegmentRoute(
                     },
                     required: ["id"],
                 },
-                body: atualizarBusinessSegmentInputSchema.omit({ id: true }),
+                body: atualizarBusinessSegmentBodySchema,
                 response: {
                     200: businessSegmentViewSchema,
                 },

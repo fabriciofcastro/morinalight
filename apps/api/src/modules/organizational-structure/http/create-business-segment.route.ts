@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { businessSegmentViewSchema, criarBusinessSegmentInputSchema } from "../application/schemas/business-segment.schema";
+import { businessSegmentBaseSchema, businessSegmentViewSchema, criarBusinessSegmentInputSchema } from "../application/schemas/business-segment.schema";
 import { CriarBusinessSegmentUseCase } from "../application/use-cases/criar-business-segment.use-case";
 import type { BusinessSegmentRepository } from "../domain/repositories/business-segment-repository";
 
@@ -14,7 +14,7 @@ export async function registerCreateBusinessSegmentRoute(
             schema: {
                 summary: "Criar novo segmento de negócio",
                 tags: ["Organizational Structure"],
-                body: criarBusinessSegmentInputSchema.omit({ orgId: true }),
+                body: businessSegmentBaseSchema,
                 response: {
                     201: businessSegmentViewSchema,
                 },

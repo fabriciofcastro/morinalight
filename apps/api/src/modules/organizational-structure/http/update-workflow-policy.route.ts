@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
-import { atualizarWorkflowPolicyInputSchema, workflowPolicyViewSchema } from "../application/schemas/workflow-policy.schema";
+import { atualizarWorkflowPolicyBodySchema, atualizarWorkflowPolicyInputSchema, workflowPolicyViewSchema } from "../application/schemas/workflow-policy.schema";
 import { AtualizarWorkflowPolicyUseCase } from "../application/use-cases/atualizar-workflow-policy.use-case";
 import type { WorkflowPolicyRepository } from "../domain/repositories/workflow-policy-repository";
 
@@ -21,7 +21,7 @@ export async function registerUpdateWorkflowPolicyRoute(
                     },
                     required: ["id"],
                 },
-                body: atualizarWorkflowPolicyInputSchema.omit({ id: true }),
+                body: atualizarWorkflowPolicyBodySchema,
                 response: {
                     200: workflowPolicyViewSchema,
                 },

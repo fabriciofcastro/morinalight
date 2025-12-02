@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, User, ChevronDown, LogOut, Settings as SettingsIcon } from "lucide-react";
+import { Bell, Search, User, ChevronDown, LogOut, Settings as SettingsIcon, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -24,7 +24,17 @@ export function EnterpriseHeader() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+                {/* Help */}
+                <button
+                    onClick={() => window.open('/help', '_blank')}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 hover:text-white transition-all"
+                    title="Central de Ajuda"
+                    aria-label="Abrir central de ajuda"
+                >
+                    <HelpCircle className="h-5 w-5" />
+                </button>
+
                 {/* Notifications */}
                 <div className="relative">
                     <button

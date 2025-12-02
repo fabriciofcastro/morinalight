@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { EnterpriseSidebar } from "@/components/layout/EnterpriseSidebar";
 import { EnterpriseHeader } from "@/components/layout/EnterpriseHeader";
 import { PageBackground } from "@/components/layout/PageBackground";
@@ -10,6 +11,9 @@ export default function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isFullWidth = pathname?.startsWith("/admin/company/edit");
+
   return (
     <div className="flex h-screen overflow-hidden relative">
       {/* Dynamic Background */}
@@ -25,7 +29,7 @@ export default function AppLayout({
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="container mx-auto p-6">
+          <div className={isFullWidth ? "w-full" : "container mx-auto p-6"}>
             {children}
           </div>
         </main>
