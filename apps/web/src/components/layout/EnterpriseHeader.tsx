@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell, Search, User, ChevronDown, LogOut, Settings as SettingsIcon, HelpCircle } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 

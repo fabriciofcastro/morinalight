@@ -44,7 +44,9 @@ export class DeletarTeamUseCase {
       }
     }
 
-    await this.deps.teamRepository.deletar(input.orgId, input.teamId);
+    // Arquivar ao invés de deletar fisicamente para manter histórico
+    team.arquivar(this.deps.actorId);
+    await this.deps.teamRepository.salvar(team);
 
     // Registrar auditoria
     if (this.deps.auditLogRepository) {

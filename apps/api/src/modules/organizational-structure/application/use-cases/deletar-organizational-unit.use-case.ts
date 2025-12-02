@@ -73,7 +73,9 @@ export class DeletarOrganizationalUnitUseCase {
       }
     }
 
-    await this.deps.organizationalUnitRepository.deletar(input.orgId, input.unitId);
+    // Arquivar ao invés de deletar fisicamente para manter histórico
+    unit.arquivar(this.deps.actorId);
+    await this.deps.organizationalUnitRepository.salvar(unit);
 
     // Registrar auditoria
     if (this.deps.auditLogRepository) {

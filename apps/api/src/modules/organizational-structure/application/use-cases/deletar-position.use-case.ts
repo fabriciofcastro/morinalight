@@ -43,7 +43,9 @@ export class DeletarPositionUseCase {
       }
     }
 
-    await this.deps.positionRepository.deletar(input.orgId, input.positionId);
+    // Arquivar ao invés de deletar fisicamente para manter histórico
+    position.arquivar(this.deps.actorId);
+    await this.deps.positionRepository.salvar(position);
 
     // Registrar auditoria
     if (this.deps.auditLogRepository) {

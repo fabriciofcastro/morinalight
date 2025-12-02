@@ -73,7 +73,9 @@ export class DeletarDepartmentUseCase {
       }
     }
 
-    await this.deps.departmentRepository.deletar(input.orgId, input.departmentId);
+    // Arquivar ao invés de deletar fisicamente para manter histórico
+    department.arquivar(this.deps.actorId);
+    await this.deps.departmentRepository.salvar(department);
 
     // Registrar auditoria
     if (this.deps.auditLogRepository) {

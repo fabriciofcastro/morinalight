@@ -68,7 +68,9 @@ export class DeletarSectorUseCase {
       }
     }
 
-    await this.deps.sectorRepository.deletar(input.orgId, input.sectorId);
+    // Arquivar ao invés de deletar fisicamente para manter histórico
+    sector.arquivar(this.deps.actorId);
+    await this.deps.sectorRepository.salvar(sector);
 
     // Registrar auditoria
     if (this.deps.auditLogRepository) {
