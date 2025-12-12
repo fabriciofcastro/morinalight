@@ -13,6 +13,7 @@ yarn.lock
 .env
 .env.*
 !.env.example
+!.env.production.example
 
 # Artefatos e binários
 *.log

@@ -11,9 +11,33 @@ COMPOSE_FILE="docker-compose.prod.yml"
 
 echo -e "${GREEN}=== Morina System Health Check ===${NC}\n"
 
+# Compose wrapper (Docker ou Podman)
+compose() {
+  if command -v docker > /dev/null 2>&1 && docker compose version > /dev/null 2>&1; then
+    docker compose "$@"
+    return $?
+  fi
+  if command -v podman-compose > /dev/null 2>&1; then
+    podman-compose "$@"
+    return $?
+  fi
+  if command -v podman > /dev/null 2>&1 && podman compose version > /dev/null 2>&1; then
+    podman compose "$@"
+    return $?
+  fi
+
+  echo -e "${RED}Error: Docker Compose (docker compose) or Podman Compose not found!${NC}"
+  exit 1
+}
+
+# Load environment variables (para REDIS_PASSWORD etc)
+if [ -f ".env.production" ]; then
+  export $(grep -v '^#' .env.production | xargs)
+fi
+
 # Check Docker Compose services
 echo -e "${YELLOW}Service Status:${NC}"
-docker compose -f $COMPOSE_FILE ps
+compose -f $COMPOSE_FILE ps
 
 echo -e "\n${YELLOW}Health Checks:${NC}"
 
@@ -39,20 +63,20 @@ else
 fi
 
 # Check PostgreSQL
-if docker compose -f $COMPOSE_FILE exec -T postgres-master pg_isready -U morina > /dev/null 2>&1; then
+if compose -f $COMPOSE_FILE exec -T postgres-master pg_isready -U morina > /dev/null 2>&1; then
     echo -e "${GREEN}✓ PostgreSQL Master: Healthy${NC}"
 else
     echo -e "${RED}✗ PostgreSQL Master: Unhealthy${NC}"
 fi
 
-if docker compose -f $COMPOSE_FILE exec -T postgres-replica pg_isready -U morina > /dev/null 2>&1; then
+if compose -f $COMPOSE_FILE exec -T postgres-replica pg_isready -U morina > /dev/null 2>&1; then
     echo -e "${GREEN}✓ PostgreSQL Replica: Healthy${NC}"
 else
     echo -e "${RED}✗ PostgreSQL Replica: Unhealthy${NC}"
 fi
 
 # Check Redis
-if docker compose -f $COMPOSE_FILE exec -T redis-master redis-cli ping > /dev/null 2>&1; then
+if compose -f $COMPOSE_FILE exec -T redis-master redis-cli -a "$REDIS_PASSWORD" ping > /dev/null 2>&1; then
     echo -e "${GREEN}✓ Redis Master: Healthy${NC}"
 else
     echo -e "${RED}✗ Redis Master: Unhealthy${NC}"
@@ -61,11 +85,11 @@ fi
 # Resource usage
 echo -e "\n${YELLOW}Resource Usage:${NC}"
 docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" \
-  $(docker compose -f $COMPOSE_FILE ps -q)
+  $(compose -f $COMPOSE_FILE ps -q)
 
 # Database replication status
 echo -e "\n${YELLOW}PostgreSQL Replication Status:${NC}"
-docker compose -f $COMPOSE_FILE exec -T postgres-master \
+compose -f $COMPOSE_FILE exec -T postgres-master \
   psql -U morina -c "SELECT client_addr, state, sync_state FROM pg_stat_replication;" 2>/dev/null || \
   echo "No replication connections found"
 

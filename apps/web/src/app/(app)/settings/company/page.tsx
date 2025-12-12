@@ -12,7 +12,15 @@ export const metadata: Metadata = {
 
 export default function CompanySettingsPage() {
   return (
-    <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-8 md:px-10">
+    <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-8 md:px-10 overflow-hidden rounded-[var(--r-lg)]">
+      {/* Overlays futuristas */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 holo-grid opacity-20" />
+        <div className="beam-line absolute left-[10%] top-0 h-full w-[1px] opacity-35" />
+        <div className="beam-line absolute right-[18%] top-0 h-full w-[1px] opacity-25" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(109,213,255,0.08),transparent_38%)]" />
+      </div>
+
       <header className="flex flex-col gap-[var(--space-3)]">
         <Link
           href="/"
@@ -30,7 +38,10 @@ export default function CompanySettingsPage() {
         </p>
       </header>
 
-      <GlassCard glow className="bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/60">
+      <GlassCard
+        glow
+        className="bg-[color-mix(in oklab,var(--surface) 90%,transparent_10%)]/70 border-[color-mix(in_oklab,var(--border)_80%,transparent_20%)] shadow-[0_22px_90px_-32px_rgba(109,213,255,0.3)] backdrop-blur-2xl"
+      >
         <div className="grid gap-[var(--space-4)] text-[var(--fs-sm)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] md:grid-cols-2">
           <div className="flex flex-col gap-[var(--space-2)]">
             <span className="text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 68%,var(--fg) 32%)]">

@@ -22,8 +22,10 @@ export async function registerPermissionAuditLogRoute(app: FastifyInstance, deps
 
     try {
       const { searchParams } = new URL(request.url);
+      const limiteRaw = searchParams.get("limite");
       const input = {
         orgId,
+        search: searchParams.get("search") || undefined,
         entityType: searchParams.get("entityType") as
           | "position"
           | "sector"
@@ -34,10 +36,11 @@ export async function registerPermissionAuditLogRoute(app: FastifyInstance, deps
         permissionId: searchParams.get("permissionId") || undefined,
         action: searchParams.get("action") as "granted" | "denied" | "removed" | undefined,
         actorId: searchParams.get("actorId") || undefined,
+        userId: searchParams.get("userId") || undefined,
         dataInicio: searchParams.get("dataInicio") || undefined,
         dataFim: searchParams.get("dataFim") || undefined,
         cursor: searchParams.get("cursor") || undefined,
-        limite: searchParams.get("limite") ? parseInt(searchParams.get("limite")!, 10) : undefined,
+        limite: limiteRaw ? parseInt(limiteRaw, 10) : undefined,
       };
 
       const useCase = new ListarPermissionAuditLogUseCase({

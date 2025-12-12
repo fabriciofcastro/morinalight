@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
 
@@ -61,10 +62,11 @@ export async function POST(request: NextRequest) {
     const response = await fetch(`${API_URL}/realtime/token`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "x-org-id": orgId,
-        "x-actor-id": actorId,
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...buildAuthHeaders({
+          "Content-Type": "application/json",
+          "x-org-id": orgId,
+          "x-actor-id": actorId,
+        }),
       },
       body: JSON.stringify(body),
     });

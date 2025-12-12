@@ -34,8 +34,8 @@ COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY apps/api/package.json ./apps/api/
 COPY packages ./packages/
 
-# Install only production dependencies
-RUN pnpm install --frozen-lockfile --prod
+# Install dependencies (inclui prisma CLI para migrations/generate em produção)
+RUN pnpm install --frozen-lockfile
 
 # Copy built files from builder
 COPY --from=builder /app/apps/api/dist ./apps/api/dist

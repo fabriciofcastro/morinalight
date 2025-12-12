@@ -11,6 +11,11 @@ export async function getPrismaClient(): Promise<PrismaClient | null> {
     return null;
   }
 
+  // Se não há banco configurado, não tentar Prisma (evita erro ruidoso e deixa fallback trabalhar).
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
   if (prismaInstance) {
     return prismaInstance;
   }

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
 import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
@@ -19,6 +20,7 @@ type Dependencies = {
   permissionRepository: PermissionRepository;
   auditLogRepository?: PermissionAuditLogRepository;
   actorId: string;
+  eventBus?: DomainEventBus;
 };
 
 export class AtribuirPermissaoSetorUseCase {
@@ -105,6 +107,29 @@ export class AtribuirPermissaoSetorUseCase {
           permissionKey: permission?.permissionKey || permissionId,
         },
         createdAt: new Date(),
+      });
+    }
+
+    // Publicar evento (mensageria)
+    if (this.deps.eventBus) {
+      await this.deps.eventBus.publish({
+        name: "Permissions.SectorPermissionChanged",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
+          entityType: "sector",
+          entityId: input.sectorId,
+          permissionId,
+          permissionKey: permission?.permissionKey || permissionId,
+          granted: input.granted,
+          previousValue,
+          reason: input.reason ?? null,
+        },
       });
     }
 

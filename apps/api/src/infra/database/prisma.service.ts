@@ -1,11 +1,13 @@
-import { PrismaClient } from "@prisma/client";
+import * as Prisma from "@prisma/client";
 import { env } from "../../core/config/env";
+
+type PrismaClient = Prisma.PrismaClient;
 
 let prisma: PrismaClient | null = null;
 
 export function getPrisma() {
   if (!prisma) {
-    const prismaOptions: any = {
+    const prismaOptions: Prisma.Prisma.PrismaClientOptions = {
       log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
     };
 
@@ -21,7 +23,7 @@ export function getPrisma() {
       // For now, we'll use the main connection and optimize at query level
     }
 
-    prisma = new PrismaClient(prismaOptions);
+    prisma = new Prisma.PrismaClient(prismaOptions);
   }
 
   return prisma;
@@ -34,7 +36,7 @@ export function getPrismaRead() {
   if (!prismaRead) {
     const replicaUrl = process.env.DATABASE_REPLICA_URL || env.DATABASE_URL;
 
-    prismaRead = new PrismaClient({
+    prismaRead = new Prisma.PrismaClient({
       datasources: {
         db: {
           url: replicaUrl,

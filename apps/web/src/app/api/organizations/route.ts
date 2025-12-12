@@ -1,27 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-
-async function getAuthHeaders(): Promise<HeadersInit> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token) {
-    return {};
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
+import { buildAuthHeaders } from "../_lib/auth-headers";
 
 export async function GET(_request: Request) {
   const response = await fetch(`${apiUrl}/organizations`, {
-    headers: {
-      ...(await getAuthHeaders()),
-      "Content-Type": "application/json",
-    },
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -41,10 +25,7 @@ export async function POST(request: Request) {
 
   const response = await fetch(`${apiUrl}/organizations`, {
     method: "POST",
-    headers: {
-      ...(await getAuthHeaders()),
-      "Content-Type": "application/json",
-    },
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
     cache: "no-store",
   });

@@ -13,6 +13,7 @@ import {
   companySettingsSchema,
   DEFAULT_COMPANY_SETTINGS,
 } from "@/schemas/company-settings";
+import { CinematicPresetPanel } from "./CinematicPresetPanel";
 
 type FormValues = CompanySettingsPayload;
 
@@ -237,8 +238,7 @@ export function PersonalizationPanel() {
             </div>
 
             {feedback && (
-              <div
-                role="status"
+              <output
                 aria-live="polite"
                 aria-atomic="true"
                 className={cn(
@@ -249,7 +249,7 @@ export function PersonalizationPanel() {
                 )}
               >
                 {feedback.message}
-              </div>
+              </output>
             )}
 
             <div className="flex flex-wrap items-center gap-[var(--space-3)]">
@@ -267,6 +267,8 @@ export function PersonalizationPanel() {
           </form>
         </div>
       </GlassCard>
+
+      <CinematicPresetPanel />
     </section>
   );
 }

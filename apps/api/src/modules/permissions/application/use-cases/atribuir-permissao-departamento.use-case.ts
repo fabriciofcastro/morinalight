@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
 import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
@@ -19,6 +20,7 @@ type Dependencies = {
   permissionRepository: PermissionRepository;
   auditLogRepository?: PermissionAuditLogRepository;
   actorId: string;
+  eventBus?: DomainEventBus;
 };
 
 export class AtribuirPermissaoDepartamentoUseCase {
@@ -109,6 +111,29 @@ export class AtribuirPermissaoDepartamentoUseCase {
           permissionKey: permission?.permissionKey || permissionId,
         },
         createdAt: new Date(),
+      });
+    }
+
+    // Publicar evento (mensageria)
+    if (this.deps.eventBus) {
+      await this.deps.eventBus.publish({
+        name: "Permissions.DepartmentPermissionChanged",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
+          entityType: "department",
+          entityId: input.departmentId,
+          permissionId,
+          permissionKey: permission?.permissionKey || permissionId,
+          granted: input.granted,
+          previousValue,
+          reason: input.reason ?? null,
+        },
       });
     }
 

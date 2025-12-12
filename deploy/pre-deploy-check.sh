@@ -30,11 +30,23 @@ fi
 
 # Check 2: Docker is running
 echo -n "Checking Docker... "
-if ! docker info > /dev/null 2>&1; then
-    echo -e "${RED}✗ Docker is not running${NC}"
-    FAILED=1
+if command -v docker > /dev/null 2>&1; then
+    if ! docker info > /dev/null 2>&1; then
+        echo -e "${RED}✗ Docker is not running${NC}"
+        FAILED=1
+    else
+        echo -e "${GREEN}✓${NC}"
+    fi
+elif command -v podman > /dev/null 2>&1; then
+    if ! podman info > /dev/null 2>&1; then
+        echo -e "${RED}✗ Podman is not running${NC}"
+        FAILED=1
+    else
+        echo -e "${GREEN}✓${NC}"
+    fi
 else
-    echo -e "${GREEN}✓${NC}"
+    echo -e "${RED}✗ Docker/Podman not found${NC}"
+    FAILED=1
 fi
 
 # Check 3: Disk space
@@ -47,13 +59,19 @@ else
     echo -e "${GREEN}✓ (${AVAILABLE}GB available)${NC}"
 fi
 
-# Check 4: Required ports
+# Check 4: Required ports (apenas as portas publicadas no host pelo stack)
 echo -n "Checking required ports... "
-PORTS=(80 443 3333 3334 5432 6379)
+PORTS=(80 443)
 PORT_CONFLICTS=0
 for port in "${PORTS[@]}"; do
-    if netstat -tuln 2>/dev/null | grep -q ":$port "; then
-        PORT_CONFLICTS=$((PORT_CONFLICTS + 1))
+    if command -v ss > /dev/null 2>&1; then
+        if ss -tuln 2>/dev/null | grep -q ":$port "; then
+            PORT_CONFLICTS=$((PORT_CONFLICTS + 1))
+        fi
+    elif command -v netstat > /dev/null 2>&1; then
+        if netstat -tuln 2>/dev/null | grep -q ":$port "; then
+            PORT_CONFLICTS=$((PORT_CONFLICTS + 1))
+        fi
     fi
 done
 if [ $PORT_CONFLICTS -gt 0 ]; then

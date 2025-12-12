@@ -62,10 +62,10 @@ const buttonVariants = cva(
         ],
       },
       size: {
-        sm: "h-9 px-3 text-sm rounded-[var(--radius-sm)]",
-        md: "h-10 px-4 text-sm rounded-[var(--radius-md)]",
-        lg: "h-11 px-6 text-base rounded-[var(--radius-md)]",
-        xl: "h-12 px-8 text-base rounded-[var(--radius-lg)]",
+        sm: "h-9 px-3 text-sm rounded-none",
+        md: "h-10 px-4 text-sm rounded-none",
+        lg: "h-11 px-6 text-base rounded-none",
+        xl: "h-12 px-8 text-base rounded-none",
       },
     },
     defaultVariants: {
@@ -77,7 +77,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-  VariantProps<typeof buttonVariants> { }
+    VariantProps<typeof buttonVariants> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => (

@@ -1,3 +1,4 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
@@ -21,6 +22,7 @@ type Dependencies = {
   sectorRepository?: SectorRepository;
   departmentRepository?: DepartmentRepository;
   auditLogRepository?: PermissionAuditLogRepository;
+  eventBus?: DomainEventBus;
 };
 
 export async function registerPermissionTemplatesRoute(app: FastifyInstance, deps: Dependencies) {
@@ -101,6 +103,7 @@ export async function registerPermissionTemplatesRoute(app: FastifyInstance, dep
       const useCase = new CriarPermissionTemplateUseCase({
         templateRepository: deps.templateRepository,
         actorId: userId,
+        eventBus: deps.eventBus,
       });
 
       const input = {
@@ -157,6 +160,7 @@ export async function registerPermissionTemplatesRoute(app: FastifyInstance, dep
           departmentRepository: deps.departmentRepository,
           auditLogRepository: deps.auditLogRepository,
           actorId: userId,
+          eventBus: deps.eventBus,
         });
 
         const input = {

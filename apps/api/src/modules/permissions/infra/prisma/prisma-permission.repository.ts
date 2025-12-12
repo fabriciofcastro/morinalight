@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import { Permission } from "../../domain/entities/permission";
 import type {
@@ -70,16 +71,7 @@ export class PrismaPermissionRepository implements PermissionRepository {
   }
 
   async encontrarPorChave(resource: string, action: string) {
-    // Legacy support: try to match code if possible, or return null
-    // Ideally this method should be renamed to encontrarPorCode(code: string)
-    // For now, let's assume resource is the code if action is empty, or construct code?
-    // Let's assume the caller might pass code as resource.
-
-    // Actually, let's just search by code if we can map it.
-    // But since the interface defines (resource, action), we might need to change the interface too.
-    // For now, let's try to find by code = resource (assuming action is irrelevant or part of code)
-
-    const code = resource; // Simplified assumption
+    const code = `${resource}:${action}`;
 
     const record = await prisma.permission.findUnique({
       where: {
@@ -95,7 +87,7 @@ export class PrismaPermissionRepository implements PermissionRepository {
   }
 
   async listar(filtro?: PermissionFiltro) {
-    const where: any = {};
+    const where: Prisma.PermissionWhereInput = {};
 
     if (filtro?.module) {
       where.module = filtro.module;
@@ -121,10 +113,7 @@ export class PrismaPermissionRepository implements PermissionRepository {
 
     const records = await prisma.permission.findMany({
       where,
-      orderBy: [
-        { module: "asc" },
-        { name: "asc" },
-      ],
+      orderBy: [{ module: "asc" }, { name: "asc" }],
     });
 
     return records.map(toDomain);

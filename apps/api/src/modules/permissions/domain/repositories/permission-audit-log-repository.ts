@@ -14,6 +14,7 @@ export type PermissionAuditLog = {
 };
 
 export type PermissionAuditLogFilter = {
+  search?: string;
   entityType?: "position" | "sector" | "department" | "user";
   entityId?: string;
   permissionId?: string;

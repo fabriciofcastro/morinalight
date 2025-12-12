@@ -1,18 +1,25 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { PositionRepository } from "../../organizational-structure/domain/repositories/position-repository";
+import type { WorkflowPolicyRepository } from "../../organizational-structure/domain/repositories/workflow-policy-repository";
 import { AtribuirPermissaoCargoUseCase } from "../application/use-cases/atribuir-permissao-cargo.use-case";
 import { ListarPermissoesCargoUseCase } from "../application/use-cases/listar-permissoes-cargo.use-case";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
+import type { PermissionChangeRequestRepository } from "../domain/repositories/permission-change-request-repository";
 import type { PermissionRepository } from "../domain/repositories/permission-repository";
 import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
+import { maybeRequireApprovalForRbacChange } from "./permission-change-requests.route";
 
 type Dependencies = {
   positionPermissionRepository: PositionPermissionRepository;
   positionRepository: PositionRepository;
   permissionRepository: PermissionRepository;
+  permissionChangeRequestRepository?: PermissionChangeRequestRepository;
+  workflowPolicyRepository?: WorkflowPolicyRepository;
   auditLogRepository?: PermissionAuditLogRepository;
+  eventBus?: DomainEventBus;
 };
 
 export async function registerPositionPermissionsRoute(app: FastifyInstance, deps: Dependencies) {
@@ -87,6 +94,7 @@ export async function registerPositionPermissionsRoute(app: FastifyInstance, dep
           permissionRepository: deps.permissionRepository,
           auditLogRepository: deps.auditLogRepository,
           actorId: userId,
+          eventBus: deps.eventBus,
         });
 
         const input = {
@@ -96,6 +104,25 @@ export async function registerPositionPermissionsRoute(app: FastifyInstance, dep
           granted: body.granted,
           reason: body.reason,
         };
+
+        if (deps.permissionChangeRequestRepository && deps.workflowPolicyRepository) {
+          const approval = await maybeRequireApprovalForRbacChange({
+            workflowPolicyRepository: deps.workflowPolicyRepository,
+            permissionChangeRequestRepository: deps.permissionChangeRequestRepository,
+            permissionRepository: deps.permissionRepository,
+            orgId,
+            actorId: userId,
+            entityType: "position",
+            entityId: positionId,
+            permissionId: body.permissionId,
+            granted: body.granted,
+            reason: body.reason,
+            eventBus: deps.eventBus,
+          });
+          if (approval.required) {
+            return reply.status(202).send({ pending: true, ...approval });
+          }
+        }
 
         const resultado = await useCase.execute(input);
 
@@ -163,6 +190,26 @@ export async function registerPositionPermissionsRoute(app: FastifyInstance, dep
             reason: null,
             metadata: null,
             createdAt: new Date(),
+          });
+        }
+
+        // Publicar evento de remoção (mensageria)
+        if (deps.eventBus && existente) {
+          await deps.eventBus.publish({
+            name: "Permissions.PositionPermissionRemoved",
+            version: "v1",
+            metadata: {
+              eventId: randomUUID(),
+              orgId,
+              actorId: userId,
+              timestamp: new Date(),
+            },
+            payload: {
+              entityType: "position",
+              entityId: positionId,
+              permissionId,
+              previousValue: existente.granted,
+            },
           });
         }
 

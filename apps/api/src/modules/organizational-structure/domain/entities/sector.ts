@@ -16,6 +16,8 @@ export type SectorProps = {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;
+  deletedBy?: string | null;
 };
 
 export class Sector {
@@ -54,6 +56,8 @@ export class Sector {
         ordem: input.ordem ?? 0,
         createdAt: agora,
         updatedAt: agora,
+        deletedAt: null,
+        deletedBy: null,
       },
       SectorId.create(crypto.randomUUID()),
     );
@@ -121,6 +125,8 @@ export class Sector {
 
   ativar(actorId: string) {
     this.props.status = "ativo";
+    this.props.deletedAt = null;
+    this.props.deletedBy = null;
     this.props.updatedBy = actorId;
     this.props.updatedAt = new Date();
   }
@@ -133,6 +139,8 @@ export class Sector {
 
   arquivar(actorId: string) {
     this.props.status = "arquivado";
+    this.props.deletedAt = new Date();
+    this.props.deletedBy = actorId;
     this.props.updatedBy = actorId;
     this.props.updatedAt = new Date();
   }

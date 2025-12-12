@@ -86,6 +86,20 @@ export class PrismaPermissionAuditLogRepository implements PermissionAuditLogRep
       andFilters.push({ actorId: filtro.actorId });
     }
 
+    if (filtro.search) {
+      const s = filtro.search.trim();
+      if (s.length > 0) {
+        andFilters.push({
+          OR: [
+            { permissionId: { contains: s, mode: "insensitive" } },
+            { reason: { contains: s, mode: "insensitive" } },
+            { entityId: { contains: s, mode: "insensitive" } },
+            { actorId: { contains: s, mode: "insensitive" } },
+          ],
+        });
+      }
+    }
+
     if (filtro.dataInicio || filtro.dataFim) {
       const dateFilter: { gte?: Date; lte?: Date } = {};
       if (filtro.dataInicio) {

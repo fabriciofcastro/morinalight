@@ -25,6 +25,8 @@ function toDomain(record: {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
+  deletedBy: string | null;
 }) {
   const props: DepartmentProps = {
     orgId: record.orgId,
@@ -40,6 +42,8 @@ function toDomain(record: {
     updatedBy: record.updatedBy,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    deletedAt: record.deletedAt,
+    deletedBy: record.deletedBy,
   };
 
   return Department.restaurar(props, record.id);
@@ -66,6 +70,8 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
         updatedBy: dados.updatedBy,
         createdAt: dados.createdAt,
         updatedAt: dados.updatedAt,
+        deletedAt: dados.deletedAt,
+        deletedBy: dados.deletedBy,
       },
       update: {
         unitId: dados.unitId,
@@ -78,6 +84,8 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
         metadata: dados.metadata,
         updatedBy: dados.updatedBy,
         updatedAt: dados.updatedAt,
+        deletedAt: dados.deletedAt,
+        deletedBy: dados.deletedBy,
       },
     });
   }
@@ -94,7 +102,8 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
 
   async encontrarPorCode(orgId: string, code: string) {
     const record = await prisma.department.findFirst({
-      where: { orgId, code },
+      // Por padrão, não considerar departamentos inativos/arquivados
+      where: { orgId, code, status: "ativo", deletedAt: null },
     });
 
     return record ? toDomain(record) : null;
@@ -107,9 +116,10 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
     const andFilters = [];
-    if (filtro.status) {
-      andFilters.push({ status: filtro.status });
-    }
+    // Por padrão, listar apenas itens ativos. Para incluir outros status, passar filtro.status.
+    andFilters.push({ status: filtro.status ?? "ativo" });
+    // Sempre excluir soft-deletes por padrão
+    andFilters.push({ deletedAt: null });
     if (filtro.unitId !== undefined) {
       andFilters.push({ unitId: filtro.unitId });
     }
@@ -162,14 +172,17 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
     return prisma.department.count({
       where: {
         orgId,
-        ...(status && { status }),
+        status: status ?? "ativo",
+        deletedAt: null,
       },
     });
   }
 
   async deletar(orgId: string, departmentId: string): Promise<void> {
-    await prisma.department.delete({
+    // Soft delete por padrão: arquivar (mantém histórico)
+    await prisma.department.updateMany({
       where: { id: departmentId, orgId },
+      data: { status: "arquivado", deletedAt: new Date(), deletedBy: null },
     });
   }
 }

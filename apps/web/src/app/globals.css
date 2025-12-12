@@ -58,6 +58,58 @@
 }
 
 @layer base {
+  :root {
+    --bg-gradient:
+      radial-gradient(circle at 20% 20%, rgba(109, 211, 255, 0.16) 0%, transparent 32%),
+      radial-gradient(circle at 80% 15%, rgba(192, 132, 252, 0.16) 0%, transparent 34%),
+      radial-gradient(circle at 60% 70%, rgba(55, 224, 246, 0.12) 0%, transparent 36%),
+      linear-gradient(135deg, rgba(4, 7, 15, 0.94) 0%, rgba(7, 10, 22, 0.92) 50%, rgba(5, 7, 15, 0.96) 100%);
+    --scanline: linear-gradient(90deg, transparent, rgba(109, 211, 255, 0.6), transparent);
+    --grid-line: rgba(111, 138, 255, 0.16);
+    --login-surface: #030712;
+    --login-grid-line: rgba(255, 255, 255, 0.02);
+    /* Auth Design Tokens (login, register, etc.) */
+    --auth-surface: var(--login-surface);
+    --auth-grid-line: var(--login-grid-line);
+    --auth-glow-primary: hsla(var(--primary) / 0.15);
+    --auth-glow-secondary: hsla(var(--secondary) / 0.15);
+    --auth-card-bg: rgba(0, 0, 0, 0.20);
+    --auth-card-border: rgba(255, 255, 255, 0.10);
+    --auth-card-blur: 12px;
+    --auth-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+    --auth-shine-opacity: 1;
+    --auth-noise-opacity: 0.06;
+    --auth-vignette-opacity: 0.70;
+    --auth-grid-opacity: 1;
+    /* Cinematic System Tokens (padrão para o app inteiro) */
+    --cinematic-noise-opacity: var(--auth-noise-opacity);
+    --cinematic-vignette-opacity: var(--auth-vignette-opacity);
+    --cinematic-grid-opacity: 0.35;
+    --cinematic-scanlines-opacity: 0.04;
+    --cinematic-glow-opacity: 0.08;
+    --neon-cyan: #37e0f6;
+    --neon-magenta: #c084fc;
+    --neon-lime: #a6ff4d;
+    --surface-veil: rgba(6, 10, 20, 0.6);
+  }
+
+  /* Preferências do usuário: reduzir movimento / transparência */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --auth-shine-opacity: 0;
+      --cinematic-scanlines-opacity: 0;
+    }
+  }
+
+  /* Nem todo browser suporta, mas é seguro manter */
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --auth-card-blur: 0px;
+      --auth-noise-opacity: 0;
+      --cinematic-noise-opacity: 0;
+    }
+  }
+
   html {
     color-scheme: dark;
     @apply transition-colors duration-500;
@@ -134,7 +186,148 @@
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500;
+    @apply bg-clip-text text-transparent bg-linear-to-r from-cyan-400 to-blue-500;
+  }
+
+  /* Auth overlays (reutilizável em outras telas futuristas) */
+  .auth-vignette {
+    background: radial-gradient(ellipse 80% 70% at 50% 20%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.82) 75%);
+    opacity: var(--auth-vignette-opacity, 0.7);
+  }
+
+  /* Noise via SVG data-uri (leve, sem asset externo) */
+  .auth-noise {
+    opacity: var(--auth-noise-opacity, 0.06);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  /* Cinematic overlays (padrão app) */
+  .cinematic-vignette {
+    background: radial-gradient(ellipse 85% 70% at 50% 18%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.86) 78%);
+    opacity: var(--cinematic-vignette-opacity, 0.7);
+  }
+
+  .cinematic-noise {
+    opacity: var(--cinematic-noise-opacity, 0.06);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  .cinematic-scanlines {
+    opacity: var(--cinematic-scanlines-opacity, 0.04);
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.08) 0px,
+      rgba(255, 255, 255, 0.08) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
+  }
+
+  .cinematic-glow {
+    opacity: var(--cinematic-glow-opacity, 0.08);
+    background-image:
+      radial-gradient(circle at 30% 20%, hsl(var(--primary)) / 0.12, transparent 55%),
+      radial-gradient(circle at 75% 70%, hsl(var(--secondary)) / 0.10, transparent 60%);
+  }
+
+  @keyframes jarvis-hud-sweep {
+    0% { transform: translateX(-40%); opacity: 0; }
+    12% { opacity: 0.35; }
+    45% { opacity: 0.7; }
+    100% { transform: translateX(40%); opacity: 0; }
+  }
+
+  .jarvis-hud-sweep {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsla(var(--primary) / 0.35) 30%,
+      hsla(var(--accent) / 0.28) 55%,
+      transparent 100%
+    );
+    animation: jarvis-hud-sweep 6.5s linear infinite;
+    filter: blur(0.2px);
+    mix-blend-mode: screen;
+  }
+
+  @keyframes jarvis-telemetry {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .jarvis-telemetry {
+    animation: jarvis-telemetry 22s linear infinite;
+  }
+
+  @keyframes jarvis-404-glitch {
+    0% { transform: translateX(0); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+    6% { transform: translateX(-1px); }
+    7% { transform: translateX(2px); }
+    8% { transform: translateX(0); }
+    46% { transform: translateX(0); }
+    47% { transform: translateX(1px); }
+    48% { transform: translateX(-2px); }
+    49% { transform: translateX(0); }
+    100% { transform: translateX(0); }
+  }
+
+  .jarvis-404 {
+    animation: jarvis-404-glitch 6.5s linear infinite;
+  }
+
+  /* ============================================================
+     ZERO ROUNDING OVERRIDE (diretriz global)
+     - Garante "tudo quadrado" mesmo em código legado.
+     ============================================================ */
+  .rounded,
+  .rounded-none,
+  .rounded-sm,
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl,
+  .rounded-2xl,
+  .rounded-3xl,
+  .rounded-full {
+    border-radius: 0 !important;
+  }
+
+  /* Tailwind v4: rounded-(...) */
+  [class*="rounded-("] {
+    border-radius: 0 !important;
+  }
+
+  @keyframes auth-mirror-glint {
+    0% { transform: translateX(-160%) rotate(18deg); opacity: 0; }
+    12% { opacity: 0.35; }
+    40% { opacity: 0.9; }
+    65% { opacity: 0.35; }
+    100% { transform: translateX(220%) rotate(18deg); opacity: 0; }
+  }
+
+  /* Reflexo contínuo “luz no vidro” no formulário */
+  .auth-mirror-glint {
+    opacity: var(--auth-mirror-glint-opacity, 0.12);
+    animation: auth-mirror-glint var(--auth-mirror-glint-duration, 5.2s)
+      cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    animation-delay: var(--auth-mirror-glint-delay, 0.6s);
+    will-change: transform, opacity;
+  }
+
+  :where(.group\/form:focus-within) .auth-mirror-glint {
+    opacity: var(--auth-mirror-glint-opacity-focus, 0.18);
+  }
+
+  @keyframes auth-scanline {
+    0% { transform: translateY(-120%); opacity: 0; }
+    20% { opacity: 0.6; }
+    100% { transform: translateY(120%); opacity: 0; }
+  }
+
+  .animate-auth-scanline {
+    animation: auth-scanline 2.4s linear infinite;
   }
 
   /* Animations */
@@ -350,11 +543,12 @@
    ============================================ */
 
 :root {
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
-  --radius-2xl: 16px;
+  /* ZERO arredondamento (diretriz confirmada) */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
 }
 
 /* ============================================

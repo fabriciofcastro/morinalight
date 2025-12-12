@@ -4,31 +4,70 @@ import type { PermissionRepository } from "../../domain/repositories/permission-
 import { atualizarPermissionInputSchema, permissionViewSchema } from "../schemas/permission.schema";
 
 type Dependencies = {
-    permissionRepository: PermissionRepository;
-    eventBus?: DomainEventBus;
-    actorId: string;
+  permissionRepository: PermissionRepository;
+  eventBus?: DomainEventBus;
+  actorId: string;
 };
 
 export class AtualizarPermissionUseCase {
-    constructor(private readonly deps: Dependencies) { }
+  constructor(private readonly deps: Dependencies) {}
 
-    async execute(rawInput: unknown) {
-        const input = atualizarPermissionInputSchema.parse(rawInput);
+  async execute(rawInput: unknown) {
+    const input = atualizarPermissionInputSchema.parse(rawInput);
 
-        const permission = await this.deps.permissionRepository.encontrarPorId(input.id);
+    const permission = await this.deps.permissionRepository.encontrarPorId(input.id);
 
-        if (!permission) {
-            throw new Error("Permissão não encontrada");
-        }
-
-        // Update logic would go here if Permission entity supported updates.
-        // Assuming Permission entity is immutable or we need to add update methods.
-        // For now, let's assume we can't update core permission properties easily without migration scripts,
-        // but let's check the entity again.
-
-        // Based on previous view, Permission entity has no update method.
-        // I will add one if needed, but for now I'll just throw if not implemented.
-
-        throw new Error("Atualização de permissão não implementada");
+    if (!permission) {
+      throw new Error("Permissão não encontrada");
     }
+
+    const existingKey = permission.permissionKey;
+    const [existingResource, existingAction] = existingKey.includes(":")
+      ? existingKey.split(":", 2)
+      : [existingKey, permission.dados.level];
+
+    const nextResource = input.resource ?? existingResource;
+    const nextAction = input.action ?? existingAction;
+    const nextCode = `${nextResource}:${nextAction}`;
+
+    permission.atualizarDados({
+      name: input.name,
+      description: input.description,
+      module: input.module,
+      code: nextCode,
+      level: nextAction,
+    });
+
+    await this.deps.permissionRepository.salvar(permission);
+
+    if (this.deps.eventBus) {
+      await this.deps.eventBus.publish({
+        name: "Permissions.PermissionUpdated",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: "unknown",
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
+          permissionId: permission.permissionId,
+          name: permission.dados.name,
+          code: permission.dados.code,
+        },
+      });
+    }
+
+    return permissionViewSchema.parse({
+      permissionId: permission.permissionId,
+      name: permission.dados.name,
+      description: permission.dados.description ?? null,
+      module: permission.dados.module,
+      category: input.category ?? permission.dados.module,
+      resource: nextResource,
+      action: nextAction,
+      createdAt: permission.dados.createdAt,
+      updatedAt: permission.dados.updatedAt,
+    });
+  }
 }

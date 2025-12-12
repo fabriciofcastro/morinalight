@@ -1,18 +1,25 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
+import type { WorkflowPolicyRepository } from "../../organizational-structure/domain/repositories/workflow-policy-repository";
 import { AtribuirPermissaoDepartamentoUseCase } from "../application/use-cases/atribuir-permissao-departamento.use-case";
 import { ListarPermissoesDepartamentoUseCase } from "../application/use-cases/listar-permissoes-departamento.use-case";
 import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
+import type { PermissionChangeRequestRepository } from "../domain/repositories/permission-change-request-repository";
 import type { PermissionRepository } from "../domain/repositories/permission-repository";
+import { maybeRequireApprovalForRbacChange } from "./permission-change-requests.route";
 
 type Dependencies = {
   departmentPermissionRepository: DepartmentPermissionRepository;
   departmentRepository: DepartmentRepository;
   permissionRepository: PermissionRepository;
+  permissionChangeRequestRepository?: PermissionChangeRequestRepository;
+  workflowPolicyRepository?: WorkflowPolicyRepository;
   auditLogRepository?: PermissionAuditLogRepository;
+  eventBus?: DomainEventBus;
 };
 
 export async function registerDepartmentPermissionsRoute(app: FastifyInstance, deps: Dependencies) {
@@ -91,6 +98,7 @@ export async function registerDepartmentPermissionsRoute(app: FastifyInstance, d
           permissionRepository: deps.permissionRepository,
           auditLogRepository: deps.auditLogRepository,
           actorId: userId,
+          eventBus: deps.eventBus,
         });
 
         const input = {
@@ -100,6 +108,25 @@ export async function registerDepartmentPermissionsRoute(app: FastifyInstance, d
           granted: body.granted,
           reason: body.reason,
         };
+
+        if (deps.permissionChangeRequestRepository && deps.workflowPolicyRepository) {
+          const approval = await maybeRequireApprovalForRbacChange({
+            workflowPolicyRepository: deps.workflowPolicyRepository,
+            permissionChangeRequestRepository: deps.permissionChangeRequestRepository,
+            permissionRepository: deps.permissionRepository,
+            orgId,
+            actorId: userId,
+            entityType: "department",
+            entityId: departmentId,
+            permissionId: body.permissionId,
+            granted: body.granted,
+            reason: body.reason,
+            eventBus: deps.eventBus,
+          });
+          if (approval.required) {
+            return reply.status(202).send({ pending: true, ...approval });
+          }
+        }
 
         const resultado = await useCase.execute(input);
 
@@ -168,6 +195,26 @@ export async function registerDepartmentPermissionsRoute(app: FastifyInstance, d
             reason: null,
             metadata: null,
             createdAt: new Date(),
+          });
+        }
+
+        // Publicar evento de remoção (mensageria)
+        if (deps.eventBus && existente) {
+          await deps.eventBus.publish({
+            name: "Permissions.DepartmentPermissionRemoved",
+            version: "v1",
+            metadata: {
+              eventId: randomUUID(),
+              orgId,
+              actorId: userId,
+              timestamp: new Date(),
+            },
+            payload: {
+              entityType: "department",
+              entityId: departmentId,
+              permissionId,
+              previousValue: existente.granted,
+            },
           });
         }
 

@@ -14,7 +14,9 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     <label
       ref={ref}
       className={cn(
-        "text-[var(--fs-xs)] font-medium uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 72%,var(--fg) 28%)]",
+        // LAB / SECURE TERMINAL LABEL (coeso com o login)
+        "text-[10px] font-bold uppercase tracking-[0.22em] font-mono",
+        "text-[hsl(var(--primary))]",
         className,
       )}
       htmlFor={htmlFor}

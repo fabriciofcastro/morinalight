@@ -19,6 +19,8 @@ export type PositionProps = {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt?: Date | null;
+  deletedBy?: string | null;
 };
 
 export class Position {
@@ -57,6 +59,8 @@ export class Position {
         ordem: input.ordem ?? 0,
         createdAt: agora,
         updatedAt: agora,
+        deletedAt: null,
+        deletedBy: null,
       },
       PositionId.create(crypto.randomUUID()),
     );
@@ -136,6 +140,8 @@ export class Position {
 
   ativar(actorId: string) {
     this.props.status = "ativo";
+    this.props.deletedAt = null;
+    this.props.deletedBy = null;
     this.props.updatedBy = actorId;
     this.props.updatedAt = new Date();
   }
@@ -148,6 +154,8 @@ export class Position {
 
   arquivar(actorId: string) {
     this.props.status = "arquivado";
+    this.props.deletedAt = new Date();
+    this.props.deletedBy = actorId;
     this.props.updatedBy = actorId;
     this.props.updatedAt = new Date();
   }

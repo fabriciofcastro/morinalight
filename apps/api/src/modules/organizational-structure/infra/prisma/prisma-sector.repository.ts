@@ -25,6 +25,8 @@ function toDomain(record: {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
+  deletedBy: string | null;
 }) {
   const props: SectorProps = {
     orgId: record.orgId,
@@ -40,6 +42,8 @@ function toDomain(record: {
     updatedBy: record.updatedBy,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    deletedAt: record.deletedAt,
+    deletedBy: record.deletedBy,
   };
 
   return Sector.restaurar(props, record.id);
@@ -66,6 +70,8 @@ export class PrismaSectorRepository implements SectorRepository {
         updatedBy: dados.updatedBy,
         createdAt: dados.createdAt,
         updatedAt: dados.updatedAt,
+        deletedAt: dados.deletedAt,
+        deletedBy: dados.deletedBy,
       },
       update: {
         name: dados.name,
@@ -77,6 +83,8 @@ export class PrismaSectorRepository implements SectorRepository {
         metadata: dados.metadata,
         updatedBy: dados.updatedBy,
         updatedAt: dados.updatedAt,
+        deletedAt: dados.deletedAt,
+        deletedBy: dados.deletedBy,
       },
     });
   }
@@ -93,7 +101,8 @@ export class PrismaSectorRepository implements SectorRepository {
 
   async encontrarPorCode(orgId: string, code: string) {
     const record = await prisma.sector.findFirst({
-      where: { orgId, code },
+      // Por padrão, não considerar setores inativos/arquivados
+      where: { orgId, code, status: "ativo", deletedAt: null },
     });
 
     return record ? toDomain(record) : null;
@@ -103,9 +112,10 @@ export class PrismaSectorRepository implements SectorRepository {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
     const andFilters = [];
-    if (filtro.status) {
-      andFilters.push({ status: filtro.status });
-    }
+    // Por padrão, listar apenas itens ativos. Para incluir outros status, passar filtro.status.
+    andFilters.push({ status: filtro.status ?? "ativo" });
+    // Sempre excluir soft-deletes por padrão
+    andFilters.push({ deletedAt: null });
     if (filtro.departmentId) {
       andFilters.push({ departmentId: filtro.departmentId });
     }
@@ -158,14 +168,17 @@ export class PrismaSectorRepository implements SectorRepository {
     return prisma.sector.count({
       where: {
         orgId,
-        ...(status && { status }),
+        status: status ?? "ativo",
+        deletedAt: null,
       },
     });
   }
 
   async deletar(orgId: string, sectorId: string): Promise<void> {
-    await prisma.sector.delete({
+    // Soft delete por padrão: arquivar (mantém histórico)
+    await prisma.sector.updateMany({
       where: { id: sectorId, orgId },
+      data: { status: "arquivado", deletedAt: new Date(), deletedBy: null },
     });
   }
 }

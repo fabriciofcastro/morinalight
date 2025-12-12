@@ -135,38 +135,16 @@ export function OrganizationalStructureClient() {
     ordem: 0,
   });
 
-  // Carregar dados quando a aba mudar
-  useEffect(() => {
-    setShowForm(false);
-    setSelectedNode(null);
-    if (activeTab === "hierarchy") {
-      loadAllData();
-    } else {
-      loadData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, loadAllData, loadData]);
-
-  // Carregar dados quando a busca mudar (debounce)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      loadData();
-    }, 500);
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadData]);
-
-  async function loadAllData() {
+  const loadAllData = useCallback(async () => {
     setLoading(true);
     try {
       await Promise.all([loadDepartments(), loadSectors(), loadPositions()]);
     } finally {
       setLoading(false);
     }
-  }
+  }, [loadDepartments, loadPositions, loadSectors]);
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === "departments") {
@@ -182,7 +160,27 @@ export function OrganizationalStructureClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [activeTab, loadDepartments, loadPositions, loadSectors]);
+
+  // Carregar dados quando a aba mudar
+  useEffect(() => {
+    setShowForm(false);
+    setSelectedNode(null);
+    if (activeTab === "hierarchy") {
+      void loadAllData();
+    } else {
+      void loadData();
+    }
+  }, [activeTab, loadAllData, loadData]);
+
+  // Carregar dados quando a busca mudar (debounce)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void loadData();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [loadData]);
 
   async function loadDepartments() {
     try {
@@ -650,17 +648,24 @@ export function OrganizationalStructureClient() {
   }
 
   return (
-    <div className="flex flex-col gap-[var(--space-6)]">
+    <div className="relative flex flex-col gap-[var(--space-6)] rounded-[var(--r-lg)] p-[var(--space-2)] overflow-hidden">
+      {/* Overlays futuristas */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 holo-grid opacity-25" />
+        <div className="beam-line absolute left-[6%] top-0 h-full w-[1px] opacity-40" />
+        <div className="beam-line absolute right-[14%] top-0 h-full w-[1px] opacity-30" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(109,213,255,0.08),transparent_35%)]" />
+      </div>
       {/* Tabs */}
-      <div className="flex gap-[var(--space-2)] border-b border-[var(--border)]">
+      <div className="relative flex gap-[var(--space-2)] rounded-[var(--r-lg)] border border-[var(--border)] bg-[color-mix(in_oklab,var(--surface-muted)_85%,transparent_15%)] px-[var(--space-3)] py-[var(--space-2)] backdrop-blur-xl shadow-[0_20px_80px_-32px_rgba(55,224,246,0.25)]">
         <button
           type="button"
           onClick={() => setActiveTab("hierarchy")}
           className={cn(
-            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-colors",
+            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-all rounded-[var(--r-md)]",
             activeTab === "hierarchy"
-              ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+              ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-[var(--primary)] shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)] hover:bg-white/5",
           )}
         >
           <Network className="h-4 w-4" />
@@ -670,10 +675,10 @@ export function OrganizationalStructureClient() {
           type="button"
           onClick={() => setActiveTab("departments")}
           className={cn(
-            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-colors",
+            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-all rounded-[var(--r-md)]",
             activeTab === "departments"
-              ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+              ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-[var(--primary)] shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)] hover:bg-white/5",
           )}
         >
           <Building2 className="h-4 w-4" />
@@ -683,10 +688,10 @@ export function OrganizationalStructureClient() {
           type="button"
           onClick={() => setActiveTab("sectors")}
           className={cn(
-            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-colors",
+            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-all rounded-[var(--r-md)]",
             activeTab === "sectors"
-              ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+              ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-[var(--primary)] shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)] hover:bg-white/5",
           )}
         >
           <FolderTree className="h-4 w-4" />
@@ -696,10 +701,10 @@ export function OrganizationalStructureClient() {
           type="button"
           onClick={() => setActiveTab("positions")}
           className={cn(
-            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-colors",
+            "flex items-center gap-[var(--space-2)] px-[var(--space-4)] py-[var(--space-3)] font-semibold transition-all rounded-[var(--r-md)]",
             activeTab === "positions"
-              ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+              ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-[var(--primary)] shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+              : "text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)] hover:text-[var(--fg)] hover:bg-white/5",
           )}
         >
           <Briefcase className="h-4 w-4" />
@@ -709,7 +714,7 @@ export function OrganizationalStructureClient() {
 
       {/* Filtros e busca */}
       {activeTab !== "hierarchy" && (
-        <div className="flex flex-col gap-[var(--space-4)] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-[var(--space-4)] sm:flex-row sm:items-center sm:justify-between bg-[color-mix(in_oklab,var(--surface-muted)_75%,transparent_25%)] border border-[var(--border)] rounded-[var(--r-lg)] p-[var(--space-4)] backdrop-blur-xl shadow-[0_16px_60px_-28px_rgba(55,224,246,0.25)]">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-[var(--space-3)] top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted-soft)_70%,var(--fg)_30%)]" />
             <Input
@@ -764,7 +769,7 @@ export function OrganizationalStructureClient() {
           onToggleExpand={handleToggleExpand}
         />
       ) : showForm ? (
-        <GlassCard>
+        <GlassCard className="shadow-[0_24px_96px_-32px_rgba(109,213,255,0.35)] border-[color-mix(in_oklab,var(--border)_80%,transparent_20%)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent_12%)]">
           <div className="flex items-center justify-between mb-[var(--space-6)]">
             <h2 className="text-[var(--fs-xl)] font-semibold">
               {editingDepartment || editingSector || editingPosition

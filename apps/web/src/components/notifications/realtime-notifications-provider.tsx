@@ -2,34 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
-import { getAuthToken, getAuthUser } from "@/lib/auth-client";
+import { getAuthUser } from "@/lib/auth-client";
 import { defaultActorId, defaultOrgId } from "@/lib/env";
-
-/**
- * Decodifica JWT para obter informações do usuário
- */
-function decodeJwt(token: string): {
-  sub?: string;
-  email?: string;
-  defaultOrgId?: string | null;
-} | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      return null;
-    }
-    const payload = parts[1];
-    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(decoded);
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Obtém orgId atual (do localStorage ou JWT)
  */
-function getCurrentOrgId(token: string | null): string | null {
+function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
     return null;
   }
@@ -38,14 +17,6 @@ function getCurrentOrgId(token: string | null): string | null {
   const selectedOrgId = localStorage.getItem("selected_org_id");
   if (selectedOrgId) {
     return selectedOrgId;
-  }
-
-  // Tentar obter do JWT
-  if (token) {
-    const payload = decodeJwt(token);
-    if (payload?.defaultOrgId) {
-      return payload.defaultOrgId;
-    }
   }
 
   // Tentar obter da primeira organização da lista
@@ -82,15 +53,14 @@ export function RealtimeNotificationsProvider() {
       return;
     }
 
-    const token = getAuthToken();
     const user = getAuthUser();
 
     // Obter orgId
-    const currentOrgId = getCurrentOrgId(token) ?? defaultOrgId;
+    const currentOrgId = getCurrentOrgId() ?? defaultOrgId;
     setOrgId(currentOrgId);
 
     // Obter userId
-    const currentUserId = user?.userId ?? (token ? decodeJwt(token)?.sub : null) ?? defaultActorId;
+    const currentUserId = user?.userId ?? defaultActorId;
     setUserId(currentUserId);
   }, [mounted]);
 

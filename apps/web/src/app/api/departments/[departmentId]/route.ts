@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
+import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 type RouteParams = {
   params: {
@@ -9,36 +9,12 @@ type RouteParams = {
   };
 };
 
-function getAuthHeaders(): HeadersInit {
-  const cookieStore = cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token) {
-    return {};
-  }
-
-  const headers: HeadersInit = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const orgId = cookieStore.get("selected_org_id")?.value;
-  if (orgId) {
-    headers["x-org-id"] = orgId;
-  }
-
-  return headers;
-}
-
-export async function GET(
-  request: Request,
-  { params }: RouteParams,
-) {
+export async function GET(_request: Request, { params }: RouteParams) {
   const { departmentId } = params;
 
   const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
     method: "GET",
-    headers: getAuthHeaders(),
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -51,4 +27,30 @@ export async function GET(
 
   const data = await response.json();
   return NextResponse.json(data);
+}
+
+export async function PUT(request: Request, { params }: RouteParams) {
+  const body = await request.json().catch(() => ({}));
+  const { departmentId } = params;
+
+  const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
+    method: "PUT",
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify(body),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  return NextResponse.json(data, { status: response.status });
+}
+
+export async function DELETE(_request: Request, { params }: RouteParams) {
+  const { departmentId } = params;
+
+  const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
+    method: "DELETE",
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  return NextResponse.json(data, { status: response.status });
 }

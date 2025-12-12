@@ -12,42 +12,27 @@ export type AuthSession = {
   organizations: Array<{ organizationId: string; name: string; role: string }>;
 };
 
-const AUTH_TOKEN_KEY = "auth_token";
 const AUTH_USER_KEY = "auth_user";
 
 /**
  * Obtém o token de autenticação do localStorage (client-side apenas)
  */
 export function getAuthToken(): string | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  return localStorage.getItem(AUTH_TOKEN_KEY);
+  return null;
 }
 
 /**
  * Salva o token de autenticação no localStorage e cookie
  */
-export function setAuthToken(token: string): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
-
-  // Também salvar em cookie para acesso server-side
-  document.cookie = `${AUTH_TOKEN_KEY}=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+export function setAuthToken(_token: string): void {
+  // Token é mantido apenas em cookie httpOnly (setado via rota /api/auth/login)
 }
 
 /**
  * Remove o token de autenticação
  */
 export function clearAuthToken(): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-  localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
-  document.cookie = `${AUTH_TOKEN_KEY}=; path=/; max-age=0`;
 }
 
 /**
@@ -80,7 +65,7 @@ export function setAuthUser(user: AuthUser): void {
  * Salva a sessão completa (token + user + organizations)
  */
 export function setAuthSession(session: AuthSession): void {
-  setAuthToken(session.token);
+  // Token permanece apenas em cookie httpOnly
   setAuthUser(session.user);
 
   // Salvar organizações também
@@ -93,7 +78,7 @@ export function setAuthSession(session: AuthSession): void {
  * Verifica se o usuário está autenticado
  */
 export function isAuthenticated(): boolean {
-  return getAuthToken() !== null;
+  return !!getAuthUser();
 }
 
 /**

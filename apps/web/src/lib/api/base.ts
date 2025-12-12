@@ -13,18 +13,14 @@ export class ApiClient {
       },
     });
 
-    // Request interceptor - add auth token and organization
+    // Request interceptor - add organization header (token é cookie httpOnly)
     this.client.interceptors.request.use(
       (config) => {
-        // Add JWT token if available
-        const token = this.getToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-
         // Add organization header if available
-        const orgId = this.getOrganizationId();
+        const orgId = this.getOrgId();
         if (orgId) {
+          // Backend espera x-org-id. Mantemos x-organization-id por compatibilidade.
+          config.headers["x-org-id"] = orgId;
           config.headers["x-organization-id"] = orgId;
         }
 
@@ -42,33 +38,23 @@ export class ApiClient {
           error.config?.url?.includes("/auth/login") ||
           error.config?.url?.includes("/auth/register");
 
-        if (error.response?.status === 401 && !isAuthEndpoint) {
-          // Token expired or invalid - redirect to login
-          this.clearAuth();
-          if (typeof window !== "undefined") {
-            window.location.href = "/login";
-          }
+        if (error.response?.status === 401 && !isAuthEndpoint && typeof window !== "undefined") {
+          window.location.href = "/login";
         }
         return Promise.reject(error);
       },
     );
   }
 
-  private getToken(): string | null {
+  private getOrgId(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem("auth_token");
-  }
-
-  private getOrganizationId(): string | null {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("current_organization_id");
-  }
-
-  private clearAuth(): void {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("current_organization_id");
-    localStorage.removeItem("user_data");
+    // Padrão do app: selected_org_id. Mantemos fallback para chaves antigas.
+    return (
+      localStorage.getItem("selected_org_id") ??
+      localStorage.getItem("current_organization_id") ??
+      localStorage.getItem("current_organization_id".toUpperCase()) ??
+      null
+    );
   }
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {

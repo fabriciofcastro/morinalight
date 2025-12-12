@@ -119,7 +119,7 @@ async function createAdmin() {
 
     console.log("\n🎉 Usuário administrador criado com sucesso!");
     console.log(`📧 Email: ${email}`);
-    console.log(`🔑 Senha: ${password}`);
+    console.log("🔑 Senha: (oculta)");
     console.log(`🏢 Organização: ${organization.name} (${organization.id})`);
     console.log(`👤 Role: owner`);
   } catch (error) {

@@ -122,6 +122,8 @@ model Organization {
   departmentPermissions DepartmentPermission[]
   permissionAuditLogs   PermissionAuditLog[]
   permissionTemplates   PermissionTemplate[]
+  userPermissions       UserPermission[]
+  permissionChangeRequests PermissionChangeRequest[]
   
   // New Relations
   branches              Branch[]
@@ -155,6 +157,7 @@ model User {
   sectorMemberships     SectorMembership[]       @relation("UserSectorMemberships")
   positionMemberships   PositionMembership[]     @relation("UserPositionMemberships")
   roles                 UserRole[]
+  userPermissions       UserPermission[]
 
   @@index([branchId])
   @@index([positionId])
@@ -575,6 +578,8 @@ model Department {
   updatedBy   String
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
+  deletedBy   String?
 
   organization Organization           @relation(fields: [orgId], references: [id], onDelete: Cascade)
   branch       Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
@@ -587,6 +592,7 @@ model Department {
   @@unique([orgId, code], name: "unique_department_code_per_org")
   @@index([orgId, parentId])
   @@index([orgId, status])
+  @@index([orgId, deletedAt])
   @@index([parentId])
 }
 
@@ -606,6 +612,8 @@ model Sector {
   updatedBy    String
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  deletedBy    String?
 
 
 
@@ -622,6 +630,7 @@ model Sector {
   @@index([orgId, departmentId])
   @@index([orgId, parentId])
   @@index([orgId, status])
+  @@index([orgId, deletedAt])
   @@index([departmentId])
   @@index([parentId])
 }
@@ -644,6 +653,8 @@ model Position {
   updatedBy         String
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?
 
   organization Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
   sector       Sector               @relation(fields: [sectorId], references: [id], onDelete: Cascade)
@@ -654,6 +665,7 @@ model Position {
   @@unique([orgId, code], name: "unique_position_code_per_org")
   @@index([orgId, sectorId])
   @@index([orgId, status])
+  @@index([orgId, deletedAt])
   @@index([sectorId])
 }
 
@@ -824,6 +836,65 @@ model PermissionAuditLog {
   @@index([actorId])
 }
 
+// Workflow de aprovação para mudanças sensíveis de RBAC
+model PermissionChangeRequest {
+  id            String   @id @default(uuid())
+  orgId         String
+
+  // target
+  entityType    String   // "position" | "sector" | "department" | "user"
+  entityId      String
+  permissionId  String
+  granted       Boolean? // true = grant, false = deny, null = remove (futuro)
+
+  // request
+  reason        String?  @db.VarChar(512)
+  status        String   @default("pending") // pending | approved | rejected | cancelled
+  requestedBy   String
+
+  // decision
+  decidedBy     String?
+  decidedAt     DateTime?
+  decisionReason String? @db.VarChar(512)
+
+  // SLA
+  slaDueAt      DateTime?
+  slaNotifiedAt DateTime?
+  slaBreachedAt DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, status, createdAt])
+  @@index([orgId, entityType, entityId])
+  @@index([permissionId])
+  @@index([requestedBy])
+}
+
+// Permissões customizadas por usuário (última camada do RBAC)
+model UserPermission {
+  id           String   @id @default(uuid())
+  orgId        String
+  userId       String
+  permissionId String
+  granted      Boolean  @default(true)
+  reason       String?  @db.VarChar(512)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission   @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId, permissionId], name: "unique_user_permission")
+  @@index([orgId, userId])
+  @@index([permissionId])
+}
+
 // Templates de permissões (conjuntos predefinidos)
 // Templates de permissões (conjuntos predefinidos)
 // (Moved to end of file)
@@ -885,6 +956,7 @@ model PermissionAuditLog {
     updatedAt   DateTime @updatedAt
 
     roles       RolePermission[]
+    userPermissions UserPermission[]
     // Also linked to Position/Sector/Department permissions if needed, but Role is primary for RBAC
   }
 

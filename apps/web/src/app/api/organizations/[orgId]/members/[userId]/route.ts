@@ -1,7 +1,7 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { apiUrl, defaultActorId, defaultOrgId } from "@/lib/env";
+import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,19 +19,6 @@ function resolveOrgId(paramOrgId?: string) {
 
 function resolveActorId(request: Request) {
   return request.headers.get("x-user-id") ?? defaultActorId;
-}
-
-function getAuthHeaders(): HeadersInit {
-  const cookieStore = cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token) {
-    return {};
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
 }
 
 async function proxy<T>(input: RequestInfo | URL, init?: RequestInit): Promise<NextResponse<T>> {
@@ -62,7 +49,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
   const orgId = resolveOrgId(params.orgId);
   const targetUserId = params.userId;
-  const authHeaders = getAuthHeaders();
+  const authHeaders = buildAuthHeaders();
 
   let body: unknown;
 
@@ -87,7 +74,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
   const orgId = resolveOrgId(params.orgId);
   const targetUserId = params.userId;
-  const authHeaders = getAuthHeaders();
+  const authHeaders = buildAuthHeaders();
 
   const response = await fetch(`${apiUrl}/organizations/${orgId}/members/${targetUserId}`, {
     method: "DELETE",

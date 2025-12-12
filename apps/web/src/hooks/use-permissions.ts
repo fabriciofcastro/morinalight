@@ -1,15 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { getAuthHeadersWithTenant, getAuthUser } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+import { getAuthHeadersWithTenant, getAuthUser } from "../lib/auth-client";
 
 // Cache de permissões em memória
-const permissionsCache = new Map<string, { permissions: string[]; timestamp: number }>();
+const permissionsCache = new Map<
+  string,
+  { effective: string[]; denied: string[]; timestamp: number }
+>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
-async function fetchUserPermissions(userId: string): Promise<string[]> {
+async function fetchUserPermissions(
+  userId: string,
+): Promise<{ effective: string[]; denied: string[] }> {
   try {
-    const response = await fetch(`/api/users/${userId}/permissions`, {
+    const response = await fetch(`/api/users/${userId}/permissions/effective`, {
       headers: {
         ...getAuthHeadersWithTenant(),
         "Content-Type": "application/json",
@@ -18,24 +23,49 @@ async function fetchUserPermissions(userId: string): Promise<string[]> {
 
     if (!response.ok) {
       console.warn("Erro ao buscar permissões, usando cache ou permissões padrão");
-      return getDefaultPermissions();
+      return { effective: getDefaultPermissions(), denied: [] };
     }
 
     const data = await response.json();
-    const permissionKeys =
-      data.permissions?.map((p: { permissionKey: string }) => p.permissionKey) || [];
+    const effective = Array.isArray(data?.effective)
+      ? data.effective.map((p: { permissionKey: string }) => p.permissionKey)
+      : [];
+    const denied = Array.isArray(data?.denied) ? data.denied : [];
 
     // Atualizar cache
     permissionsCache.set(userId, {
-      permissions: permissionKeys,
+      effective,
+      denied,
       timestamp: Date.now(),
     });
 
-    return permissionKeys;
+    return { effective, denied };
   } catch (error) {
     console.error("Erro ao buscar permissões:", error);
-    return getDefaultPermissions();
+    return { effective: getDefaultPermissions(), denied: [] };
   }
+}
+
+export function invalidatePermissionsCache(userId?: string) {
+  if (userId) {
+    permissionsCache.delete(userId);
+    return;
+  }
+  permissionsCache.clear();
+}
+
+export async function refreshPermissionsCache(userId: string) {
+  const result = await fetchUserPermissions(userId);
+  return result;
+}
+
+export function getPermissionsCacheSnapshot() {
+  return Array.from(permissionsCache.entries()).map(([userId, value]) => ({
+    userId,
+    effectiveCount: value.effective.length,
+    deniedCount: value.denied.length,
+    timestamp: value.timestamp,
+  }));
 }
 
 function getDefaultPermissions(): string[] {
@@ -64,89 +94,60 @@ function getDefaultPermissions(): string[] {
 
 export function useHasPermission(permission: string): boolean {
   const [hasPermission, setHasPermission] = useState(true); // Default true para não bloquear UI
-  const [mounted, setMounted] = useState(false);
+  const [ready, setReady] = useState(false);
   const user = getAuthUser();
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setReady(true));
   }, []);
 
   useEffect(() => {
-    if (!mounted || !user || !permission) {
-      setHasPermission(true); // Permitir por padrão
+    if (!ready || !user || !permission) {
       return;
     }
 
     // Verificar cache primeiro
     const cached = permissionsCache.get(user.userId);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      setHasPermission(cached.permissions.includes(permission));
+      const next = cached.effective.includes(permission) && !cached.denied.includes(permission);
+      queueMicrotask(() => setHasPermission(next));
       return;
     }
 
     // Buscar permissões da API
-    fetchUserPermissions(user.userId).then((permissions) => {
-      setHasPermission(permissions.includes(permission));
+    fetchUserPermissions(user.userId).then(({ effective, denied }) => {
+      setHasPermission(effective.includes(permission) && !denied.includes(permission));
     });
-  }, [user, permission, mounted]);
-
-  // Verificação rápida via API para permissões críticas
-  const _checkPermission = useCallback(
-    async (perm: string): Promise<boolean> => {
-      if (!user) return false;
-
-      try {
-        const response = await fetch(
-          `/api/users/${user.userId}/permissions/check?permission=${encodeURIComponent(perm)}`,
-          {
-            headers: {
-              ...getAuthHeadersWithTenant(),
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          return data.hasPermission === true;
-        }
-      } catch (error) {
-        console.error("Erro ao verificar permissão:", error);
-      }
-
-      return false;
-    },
-    [user],
-  );
+  }, [user, permission, ready]);
 
   return hasPermission;
 }
 
 export function usePermissions(): string[] {
   const [permissions, setPermissions] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const [ready, setReady] = useState(false);
   const user = getAuthUser();
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setReady(true));
   }, []);
 
   useEffect(() => {
-    if (!mounted || !user) {
-      setPermissions([]);
+    if (!ready || !user) {
       return;
     }
 
     // Verificar cache primeiro
     const cached = permissionsCache.get(user.userId);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      setPermissions(cached.permissions);
+      const next = cached.effective;
+      queueMicrotask(() => setPermissions(next));
       return;
     }
 
     // Buscar permissões da API
-    fetchUserPermissions(user.userId).then(setPermissions);
-  }, [user, mounted]);
+    fetchUserPermissions(user.userId).then(({ effective }) => setPermissions(effective));
+  }, [user, ready]);
 
   return permissions;
 }

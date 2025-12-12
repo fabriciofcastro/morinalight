@@ -1,32 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-
-function getAuthHeaders(): HeadersInit {
-  const cookieStore = cookies();
-  const token = cookieStore.get("auth_token")?.value;
-
-  if (!token) {
-    return {};
-  }
-
-  const headers: HeadersInit = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const orgId = cookieStore.get("selected_org_id")?.value;
-  if (orgId) {
-    headers["x-org-id"] = orgId;
-  }
-
-  return headers;
-}
+import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 export async function GET(_request: Request, { params }: { params: { departmentId: string } }) {
   const response = await fetch(`${apiUrl}/departments/${params.departmentId}/members`, {
-    headers: getAuthHeaders(),
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -46,7 +25,7 @@ export async function POST(request: Request, { params }: { params: { departmentI
 
   const response = await fetch(`${apiUrl}/departments/${params.departmentId}/members`, {
     method: "POST",
-    headers: getAuthHeaders(),
+    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

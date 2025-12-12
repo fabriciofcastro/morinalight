@@ -7,7 +7,7 @@ class PrefichaId {
     this.value = value;
   }
   static from(value) {
-    return new PrefichaId(value ?? (0, node_crypto_1.randomUUID)());
+    return new PrefichaId(value ?? node_crypto_1.randomUUID());
   }
   toString() {
     return this.value;

@@ -29,7 +29,7 @@ export function GlassCardEnhanced({
     <div
       className={cn(
         // Base: Quadrado, glass effect, blur
-        "relative overflow-hidden border border-[color-mix(in_oklab,hsl(var(--border))_60%,transparent_40%)]",
+        "relative overflow-hidden rounded-none border border-[color-mix(in_oklab,hsl(var(--border))_60%,transparent_40%)]",
         variantClasses[variant],
         blurClass,
         // Sombra glass
@@ -40,6 +40,14 @@ export function GlassCardEnhanced({
         className,
       )}
     >
+      {/* Tech corners */}
+      <div className="pointer-events-none absolute inset-0 opacity-90">
+        <div className="absolute left-0 top-0 h-3 w-3 border-l border-t border-[hsl(var(--primary)/0.55)]" />
+        <div className="absolute right-0 top-0 h-3 w-3 border-r border-t border-[hsl(var(--primary)/0.55)]" />
+        <div className="absolute left-0 bottom-0 h-3 w-3 border-l border-b border-[hsl(var(--primary)/0.55)]" />
+        <div className="absolute right-0 bottom-0 h-3 w-3 border-r border-b border-[hsl(var(--primary)/0.55)]" />
+      </div>
+
       {/* Gradient overlay sutil */}
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.05)_0%,transparent_65%)]" />

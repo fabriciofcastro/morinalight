@@ -14,6 +14,25 @@ ENV_FILE=".env.production"
 
 echo -e "${GREEN}Starting deployment for environment: ${ENVIRONMENT}${NC}"
 
+# Compose wrapper (Docker ou Podman)
+compose() {
+    if command -v docker > /dev/null 2>&1 && docker compose version > /dev/null 2>&1; then
+        docker compose "$@"
+        return $?
+    fi
+    if command -v podman-compose > /dev/null 2>&1; then
+        podman-compose "$@"
+        return $?
+    fi
+    if command -v podman > /dev/null 2>&1 && podman compose version > /dev/null 2>&1; then
+        podman compose "$@"
+        return $?
+    fi
+
+    echo -e "${RED}Error: Docker Compose (docker compose) or Podman Compose not found!${NC}"
+    exit 1
+}
+
 # Check if environment file exists
 if [ ! -f "$ENV_FILE" ]; then
     echo -e "${RED}Error: $ENV_FILE not found!${NC}"
@@ -35,15 +54,15 @@ done
 
 # Build images
 echo -e "${GREEN}Building Docker images...${NC}"
-docker compose -f $COMPOSE_FILE build --no-cache
+compose -f $COMPOSE_FILE build --no-cache
 
 # Stop existing containers
 echo -e "${GREEN}Stopping existing containers...${NC}"
-docker compose -f $COMPOSE_FILE down
+compose -f $COMPOSE_FILE down
 
 # Start services
 echo -e "${GREEN}Starting services...${NC}"
-docker compose -f $COMPOSE_FILE up -d
+compose -f $COMPOSE_FILE up -d
 
 # Wait for services to be healthy
 echo -e "${GREEN}Waiting for services to be healthy...${NC}"
@@ -51,11 +70,11 @@ sleep 10
 
 # Check health
 echo -e "${GREEN}Checking service health...${NC}"
-docker compose -f $COMPOSE_FILE ps
+compose -f $COMPOSE_FILE ps
 
 # Run database migrations
 echo -e "${GREEN}Running database migrations...${NC}"
-docker compose -f $COMPOSE_FILE exec -T api-1 pnpm --filter @morina/api exec prisma migrate deploy || true
+compose -f $COMPOSE_FILE exec -T api-1 pnpm --filter @morina/api exec prisma migrate deploy || true
 
 echo -e "${GREEN}Deployment completed successfully!${NC}"
 echo -e "${YELLOW}Services are available at:${NC}"

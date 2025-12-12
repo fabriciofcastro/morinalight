@@ -150,7 +150,7 @@ export function TeamInvites({ orgId, initialInvites }: TeamInvitesProps) {
   return (
     <GlassCard
       glow
-      className="flex flex-col gap-[var(--space-6)] bg-[color-mix(in oklab,var(--surface-color) 90%,transparent)]/60 p-[var(--space-6)]"
+      className="flex flex-col gap-[var(--space-6)] bg-[color-mix(in_oklab,var(--surface)_88%,transparent_12%)]/70 border-[color-mix(in_oklab,var(--border)_80%,transparent_20%)] shadow-[0_22px_90px_-32px_rgba(109,213,255,0.3)] backdrop-blur-2xl p-[var(--space-6)]"
     >
       <div className="flex flex-wrap items-center justify-between gap-[var(--space-3)]">
         <div className="flex flex-col gap-[var(--space-2)]">

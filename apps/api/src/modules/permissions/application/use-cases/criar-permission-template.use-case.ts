@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { PermissionTemplateRepository } from "../../domain/repositories/permission-template-repository";
 
@@ -19,6 +20,7 @@ const criarPermissionTemplateInputSchema = z.object({
 type Dependencies = {
   templateRepository: PermissionTemplateRepository;
   actorId: string;
+  eventBus?: DomainEventBus;
 };
 
 export class CriarPermissionTemplateUseCase {
@@ -54,6 +56,27 @@ export class CriarPermissionTemplateUseCase {
     };
 
     await this.deps.templateRepository.salvar(template);
+
+    // Publicar evento (mensageria)
+    if (this.deps.eventBus) {
+      await this.deps.eventBus.publish({
+        name: "Permissions.PermissionTemplateCreated",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
+          templateId: template.id,
+          name: template.name,
+          entityType: template.entityType,
+          isDefault: template.isDefault,
+          permissionsCount: template.permissions.length,
+        },
+      });
+    }
 
     return {
       id: template.id,

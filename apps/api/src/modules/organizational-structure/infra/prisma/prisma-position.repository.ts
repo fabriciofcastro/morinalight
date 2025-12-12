@@ -28,6 +28,8 @@ function toDomain(record: {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
+  deletedBy: string | null;
 }) {
   const props: PositionProps = {
     orgId: record.orgId,
@@ -46,6 +48,8 @@ function toDomain(record: {
     updatedBy: record.updatedBy,
     createdAt: record.createdAt,
     updatedAt: record.updatedAt,
+    deletedAt: record.deletedAt,
+    deletedBy: record.deletedBy,
   };
 
   return Position.restaurar(props, record.id);
@@ -75,6 +79,8 @@ export class PrismaPositionRepository implements PositionRepository {
         updatedBy: dados.updatedBy,
         createdAt: dados.createdAt,
         updatedAt: dados.updatedAt,
+        deletedAt: dados.deletedAt,
+        deletedBy: dados.deletedBy,
       },
       update: {
         name: dados.name,
@@ -89,6 +95,8 @@ export class PrismaPositionRepository implements PositionRepository {
         metadata: dados.metadata,
         updatedBy: dados.updatedBy,
         updatedAt: dados.updatedAt,
+        deletedAt: dados.deletedAt,
+        deletedBy: dados.deletedBy,
       },
     });
   }
@@ -105,7 +113,8 @@ export class PrismaPositionRepository implements PositionRepository {
 
   async encontrarPorCode(orgId: string, code: string) {
     const record = await prisma.position.findFirst({
-      where: { orgId, code },
+      // Por padrão, não considerar cargos inativos/arquivados
+      where: { orgId, code, status: "ativo", deletedAt: null },
     });
 
     return record ? toDomain(record) : null;
@@ -118,9 +127,10 @@ export class PrismaPositionRepository implements PositionRepository {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
     const andFilters = [];
-    if (filtro.status) {
-      andFilters.push({ status: filtro.status });
-    }
+    // Por padrão, listar apenas itens ativos. Para incluir outros status, passar filtro.status.
+    andFilters.push({ status: filtro.status ?? "ativo" });
+    // Sempre excluir soft-deletes por padrão
+    andFilters.push({ deletedAt: null });
     if (filtro.sectorId) {
       andFilters.push({ sectorId: filtro.sectorId });
     }
@@ -170,14 +180,17 @@ export class PrismaPositionRepository implements PositionRepository {
     return prisma.position.count({
       where: {
         orgId,
-        ...(status && { status }),
+        status: status ?? "ativo",
+        deletedAt: null,
       },
     });
   }
 
   async deletar(orgId: string, positionId: string): Promise<void> {
-    await prisma.position.delete({
+    // Soft delete por padrão: arquivar (mantém histórico)
+    await prisma.position.updateMany({
       where: { id: positionId, orgId },
+      data: { status: "arquivado", deletedAt: new Date(), deletedBy: null },
     });
   }
 }

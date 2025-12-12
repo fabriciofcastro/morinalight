@@ -1,25 +1,34 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
+import { env } from "../../core/config/env";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParamsOrHeaders } from "../../core/tenant/tenant.utils";
+import { RedisEventBus } from "../../infra/events/redis-event-bus";
 import type { DepartmentRepository } from "../organizational-structure/domain/repositories/department-repository";
 import type { PositionRepository } from "../organizational-structure/domain/repositories/position-repository";
 import type { SectorRepository } from "../organizational-structure/domain/repositories/sector-repository";
+import type { WorkflowPolicyRepository } from "../organizational-structure/domain/repositories/workflow-policy-repository";
 import type { PositionMembershipRepository } from "../organizational-structure/infra/prisma/prisma-position-membership.repository";
+import { PrismaWorkflowPolicyRepository } from "../organizational-structure/infra/prisma/prisma-workflow-policy.repository";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import type {
   DepartmentPermissionRepository,
   PermissionAuditLogRepository,
+  PermissionChangeRequestRepository,
   PermissionRepository,
   PermissionTemplateRepository,
   PositionPermissionRepository,
   RoleRepository,
   SectorPermissionRepository,
+  UserPermissionRepository,
 } from "./domain/repositories";
 import { registerPermissionsHttpRoutes } from "./http";
 import { registerCreatePermissionRoute } from "./http/create-permission.route";
 import { registerCreateRoleRoute } from "./http/create-role.route";
 import { registerDeletePermissionRoute } from "./http/delete-permission.route";
 import { registerDeleteRoleRoute } from "./http/delete-role.route";
+import { registerGetPermissionRoute } from "./http/get-permission.route";
+import { registerGetRoleRoute } from "./http/get-role.route";
 import { registerListPermissionsRoute } from "./http/list-permissions.route";
 import { registerListRolesRoute } from "./http/list-roles.route";
 import { registerUpdatePermissionRoute } from "./http/update-permission.route";
@@ -27,10 +36,12 @@ import { registerUpdateRoleRoute } from "./http/update-role.route";
 import { PrismaDepartmentPermissionRepository } from "./infra/prisma/prisma-department-permission.repository";
 import { PrismaPermissionRepository } from "./infra/prisma/prisma-permission.repository";
 import { PrismaPermissionAuditLogRepository } from "./infra/prisma/prisma-permission-audit-log.repository";
+import { PrismaPermissionChangeRequestRepository } from "./infra/prisma/prisma-permission-change-request.repository";
 import { PrismaPermissionTemplateRepository } from "./infra/prisma/prisma-permission-template.repository";
 import { PrismaPositionPermissionRepository } from "./infra/prisma/prisma-position-permission.repository";
-import { PrismaSectorPermissionRepository } from "./infra/prisma/prisma-sector-permission.repository";
 import { PrismaRoleRepository } from "./infra/prisma/prisma-role.repository";
+import { PrismaSectorPermissionRepository } from "./infra/prisma/prisma-sector-permission.repository";
+import { PrismaUserPermissionRepository } from "./infra/prisma/prisma-user-permission.repository";
 
 export type PermissionsModuleOptions = {
   permissionRepository?: PermissionRepository;
@@ -39,12 +50,16 @@ export type PermissionsModuleOptions = {
   sectorRepository?: SectorRepository;
   departmentRepository?: DepartmentRepository;
   positionMembershipRepository?: PositionMembershipRepository;
+  userPermissionRepository?: UserPermissionRepository;
+  permissionChangeRequestRepository?: PermissionChangeRequestRepository;
+  workflowPolicyRepository?: WorkflowPolicyRepository;
   positionPermissionRepository?: PositionPermissionRepository;
   sectorPermissionRepository?: SectorPermissionRepository;
   departmentPermissionRepository?: DepartmentPermissionRepository;
   auditLogRepository?: PermissionAuditLogRepository;
   templateRepository?: PermissionTemplateRepository;
   roleRepository?: RoleRepository;
+  eventBus?: DomainEventBus;
 };
 
 export async function registerPermissionsModule(
@@ -58,6 +73,18 @@ export async function registerPermissionsModule(
   const positionPermissionRepository =
     options.positionPermissionRepository ??
     (process.env.DATABASE_URL ? new PrismaPositionPermissionRepository() : undefined);
+
+  const userPermissionRepository =
+    options.userPermissionRepository ??
+    (process.env.DATABASE_URL ? new PrismaUserPermissionRepository() : undefined);
+
+  const permissionChangeRequestRepository =
+    options.permissionChangeRequestRepository ??
+    (process.env.DATABASE_URL ? new PrismaPermissionChangeRequestRepository() : undefined);
+
+  const workflowPolicyRepository =
+    options.workflowPolicyRepository ??
+    (process.env.DATABASE_URL ? new PrismaWorkflowPolicyRepository() : undefined);
 
   const sectorPermissionRepository =
     options.sectorPermissionRepository ??
@@ -76,8 +103,13 @@ export async function registerPermissionsModule(
     (process.env.DATABASE_URL ? new PrismaPermissionTemplateRepository() : undefined);
 
   const roleRepository =
-    options.roleRepository ??
-    (process.env.DATABASE_URL ? new PrismaRoleRepository() : undefined);
+    options.roleRepository ?? (process.env.DATABASE_URL ? new PrismaRoleRepository() : undefined);
+
+  const eventBus =
+    options.eventBus ??
+    (env.REDIS_URL
+      ? new RedisEventBus({ url: env.REDIS_URL, realtimeStream: "realtime.notifications" })
+      : undefined);
 
   // Aplicar hook de tenant nas rotas de permissões
   if (options.organizationRepository && permissionRepository) {
@@ -86,10 +118,18 @@ export async function registerPermissionsModule(
       extractOrgId: extractOrgIdFromParamsOrHeaders,
       routes: [
         "/users/:userId/permissions",
+        "/users/:userId/permissions/effective",
+        "/users/:userId/permissions/custom",
+        "/users/:userId/permissions/custom/:permissionId",
         "/positions/:positionId/permissions",
         "/sectors/:sectorId/permissions",
         "/departments/:departmentId/permissions",
         "/permissions/audit-log",
+        "/permissions/change-requests",
+        "/permissions/change-requests/sweep-sla",
+        "/permissions/change-requests/:id/approve",
+        "/permissions/change-requests/:id/reject",
+        "/permissions/change-requests/:id/cancel",
         "/permissions/templates",
         "/permissions/templates/:templateId/apply",
         "/roles",
@@ -102,6 +142,9 @@ export async function registerPermissionsModule(
     await registerPermissionsHttpRoutes(app, {
       permissionRepository,
       organizationRepository: options.organizationRepository,
+      userPermissionRepository,
+      permissionChangeRequestRepository,
+      workflowPolicyRepository,
       positionPermissionRepository,
       sectorPermissionRepository,
       departmentPermissionRepository,
@@ -111,32 +154,39 @@ export async function registerPermissionsModule(
       positionMembershipRepository: options.positionMembershipRepository,
       auditLogRepository,
       templateRepository,
+      eventBus,
     });
   }
 
   if (roleRepository) {
-    await registerCreateRoleRoute(app, { roleRepository });
-    await registerUpdateRoleRoute(app, { roleRepository });
+    await registerCreateRoleRoute(app, { roleRepository, eventBus });
+    await registerGetRoleRoute(app, { roleRepository });
+    await registerUpdateRoleRoute(app, { roleRepository, eventBus });
     await registerListRolesRoute(app, { roleRepository });
-    await registerDeleteRoleRoute(app, { roleRepository });
+    await registerDeleteRoleRoute(app, { roleRepository, eventBus });
   }
 
   if (permissionRepository) {
-    await registerCreatePermissionRoute(app, { permissionRepository });
-    await registerUpdatePermissionRoute(app, { permissionRepository });
+    await registerCreatePermissionRoute(app, { permissionRepository, eventBus });
+    await registerGetPermissionRoute(app, { permissionRepository });
+    await registerUpdatePermissionRoute(app, { permissionRepository, eventBus });
     await registerListPermissionsRoute(app, { permissionRepository });
-    await registerDeletePermissionRoute(app, { permissionRepository });
+    await registerDeletePermissionRoute(app, { permissionRepository, eventBus });
   }
 
   app.log.info("Módulo Permissions registrado");
 
   return {
     permissionRepository,
+    userPermissionRepository,
+    permissionChangeRequestRepository,
+    workflowPolicyRepository,
     positionPermissionRepository,
     sectorPermissionRepository,
     departmentPermissionRepository,
     auditLogRepository,
     templateRepository,
     roleRepository,
+    eventBus,
   };
 }

@@ -3,7 +3,7 @@
 import { cn } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Bell, CheckCircle2, Info, X, XCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useConnectionStatus } from "@/hooks/use-connection-status";
 
 type Notification = {
@@ -23,6 +23,38 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const { status, isOnline } = useConnectionStatus();
+
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  const markAllAsRead = useCallback(() => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  }, []);
+
+  const addNotification = useCallback(
+    (notification: Omit<Notification, "id" | "timestamp" | "read">) => {
+      const newNotification: Notification = {
+        ...notification,
+        id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
+        timestamp: new Date(),
+        read: false,
+      };
+
+      setNotifications((prev) => {
+        const updated = [newNotification, ...prev];
+        return updated.slice(0, maxNotifications);
+      });
+
+      // Auto-remover após 5 segundos (exceto erros)
+      if (notification.type !== "error") {
+        setTimeout(() => {
+          removeNotification(newNotification.id);
+        }, 5000);
+      }
+    },
+    [maxNotifications, removeNotification],
+  );
 
   useEffect(() => {
     // Adicionar notificação de conexão quando status muda
@@ -82,39 +114,6 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
     };
   }, [addNotification]);
 
-  function addNotification(notification: Omit<Notification, "id" | "timestamp" | "read">) {
-    const newNotification: Notification = {
-      ...notification,
-      id: `${Date.now()}-${Math.random().toString(36).substring(7)}`,
-      timestamp: new Date(),
-      read: false,
-    };
-
-    setNotifications((prev) => {
-      const updated = [newNotification, ...prev];
-      return updated.slice(0, maxNotifications);
-    });
-
-    // Auto-remover após 5 segundos (exceto erros)
-    if (notification.type !== "error") {
-      setTimeout(() => {
-        removeNotification(newNotification.id);
-      }, 5000);
-    }
-  }
-
-  function removeNotification(id: string) {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }
-
-  function _markAsRead(id: string) {
-    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
-  }
-
-  function markAllAsRead() {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  }
-
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const getIcon = (type: Notification["type"]) => {
@@ -133,13 +132,13 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
   const getColors = (type: Notification["type"]) => {
     switch (type) {
       case "success":
-        return "border-green-500/20 bg-green-500/10 text-green-600";
+        return "border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] text-[hsl(var(--success))]";
       case "error":
-        return "border-red-500/20 bg-red-500/10 text-red-600";
+        return "border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] text-[hsl(var(--danger))]";
       case "warning":
-        return "border-yellow-500/20 bg-yellow-500/10 text-yellow-600";
+        return "border-[hsl(var(--warning)/0.25)] bg-[hsl(var(--warning)/0.08)] text-[hsl(var(--warning))]";
       default:
-        return "border-blue-500/20 bg-blue-500/10 text-blue-600";
+        return "border-[hsl(var(--info)/0.25)] bg-[hsl(var(--info)/0.08)] text-[hsl(var(--info))]";
     }
   };
 
@@ -147,6 +146,7 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
     <div className="relative">
       {/* Botão do sino */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "relative flex h-9 w-9 items-center justify-center rounded-lg transition-all",
@@ -176,6 +176,7 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
               <h3 className="text-sm font-semibold text-[var(--fg)]">Notificações</h3>
               {unreadCount > 0 && (
                 <button
+                  type="button"
                   onClick={markAllAsRead}
                   className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]"
                 >
@@ -214,6 +215,7 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
                           </p>
                         </div>
                         <button
+                          type="button"
                           onClick={() => removeNotification(notification.id)}
                           className="shrink-0 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]"
                         >

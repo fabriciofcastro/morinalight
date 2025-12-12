@@ -1,11 +1,10 @@
 "use client";
 
-import { Button, cn, GlassCard, Input, notificationCenter } from "@morina/ui";
+import { Button, cn, GlassCard, Input } from "@morina/ui";
 import {
   Briefcase,
   Building2,
   Check,
-  Clock,
   FileText,
   History,
   Layers,
@@ -17,8 +16,10 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { useCallback, useEffect, useState } from "react";
+import { AuditLogPanel } from "./AuditLogPanel";
+
+const getAuthHeadersWithTenant = () => ({});
 
 type Permission = {
   id: string;
@@ -28,7 +29,7 @@ type Permission = {
   category: string;
 };
 
-type User = {
+type AppUser = {
   userId: string;
   email: string;
   displayName: string | null;
@@ -78,45 +79,171 @@ type PermissionTemplate = {
 // Mock de permissões - substituir por API real
 const allPermissions: Permission[] = [
   // Dashboard
-  { id: "dashboard:view", name: "Ver Dashboard", description: "Acessar a página inicial", module: "Dashboard", category: "Visualização" },
+  {
+    id: "dashboard:view",
+    name: "Ver Dashboard",
+    description: "Acessar a página inicial",
+    module: "Dashboard",
+    category: "Visualização",
+  },
 
   // Produtos
-  { id: "products:view", name: "Ver Produtos", description: "Visualizar lista de produtos", module: "Produtos", category: "Visualização" },
-  { id: "products:create", name: "Criar Produtos", description: "Criar novos produtos", module: "Produtos", category: "Criação" },
-  { id: "products:edit", name: "Editar Produtos", description: "Editar produtos existentes", module: "Produtos", category: "Edição" },
-  { id: "products:delete", name: "Excluir Produtos", description: "Excluir produtos", module: "Produtos", category: "Exclusão" },
+  {
+    id: "products:view",
+    name: "Ver Produtos",
+    description: "Visualizar lista de produtos",
+    module: "Produtos",
+    category: "Visualização",
+  },
+  {
+    id: "products:create",
+    name: "Criar Produtos",
+    description: "Criar novos produtos",
+    module: "Produtos",
+    category: "Criação",
+  },
+  {
+    id: "products:edit",
+    name: "Editar Produtos",
+    description: "Editar produtos existentes",
+    module: "Produtos",
+    category: "Edição",
+  },
+  {
+    id: "products:delete",
+    name: "Excluir Produtos",
+    description: "Excluir produtos",
+    module: "Produtos",
+    category: "Exclusão",
+  },
 
   // Catálogo
-  { id: "catalog:view", name: "Ver Catálogo", description: "Acessar catálogo e auditoria", module: "Catálogo", category: "Visualização" },
+  {
+    id: "catalog:view",
+    name: "Ver Catálogo",
+    description: "Acessar catálogo e auditoria",
+    module: "Catálogo",
+    category: "Visualização",
+  },
 
   // Clientes
-  { id: "clients:view", name: "Ver Clientes", description: "Visualizar lista de clientes", module: "Clientes", category: "Visualização" },
-  { id: "clients:create", name: "Criar Clientes", description: "Criar novos clientes", module: "Clientes", category: "Criação" },
-  { id: "clients:edit", name: "Editar Clientes", description: "Editar clientes existentes", module: "Clientes", category: "Edição" },
-  { id: "clients:delete", name: "Excluir Clientes", description: "Excluir clientes", module: "Clientes", category: "Exclusão" },
+  {
+    id: "clients:view",
+    name: "Ver Clientes",
+    description: "Visualizar lista de clientes",
+    module: "Clientes",
+    category: "Visualização",
+  },
+  {
+    id: "clients:create",
+    name: "Criar Clientes",
+    description: "Criar novos clientes",
+    module: "Clientes",
+    category: "Criação",
+  },
+  {
+    id: "clients:edit",
+    name: "Editar Clientes",
+    description: "Editar clientes existentes",
+    module: "Clientes",
+    category: "Edição",
+  },
+  {
+    id: "clients:delete",
+    name: "Excluir Clientes",
+    description: "Excluir clientes",
+    module: "Clientes",
+    category: "Exclusão",
+  },
 
   // Representantes
-  { id: "representatives:view", name: "Ver Representantes", description: "Visualizar representantes", module: "Representantes", category: "Visualização" },
-  { id: "representatives:create", name: "Criar Representantes", description: "Criar representantes", module: "Representantes", category: "Criação" },
+  {
+    id: "representatives:view",
+    name: "Ver Representantes",
+    description: "Visualizar representantes",
+    module: "Representantes",
+    category: "Visualização",
+  },
+  {
+    id: "representatives:create",
+    name: "Criar Representantes",
+    description: "Criar representantes",
+    module: "Representantes",
+    category: "Criação",
+  },
 
   // Comissões
-  { id: "commissions:view", name: "Ver Comissões", description: "Visualizar comissões", module: "Comissões", category: "Visualização" },
-  { id: "commissions:pay", name: "Pagar Comissões", description: "Pagar comissões", module: "Comissões", category: "Operações" },
+  {
+    id: "commissions:view",
+    name: "Ver Comissões",
+    description: "Visualizar comissões",
+    module: "Comissões",
+    category: "Visualização",
+  },
+  {
+    id: "commissions:pay",
+    name: "Pagar Comissões",
+    description: "Pagar comissões",
+    module: "Comissões",
+    category: "Operações",
+  },
 
   // Fornecedores
-  { id: "suppliers:view", name: "Ver Fornecedores", description: "Visualizar fornecedores", module: "Fornecedores", category: "Visualização" },
+  {
+    id: "suppliers:view",
+    name: "Ver Fornecedores",
+    description: "Visualizar fornecedores",
+    module: "Fornecedores",
+    category: "Visualização",
+  },
 
   // Vendas
-  { id: "sales:view", name: "Ver Vendas", description: "Visualizar vendas", module: "Vendas", category: "Visualização" },
+  {
+    id: "sales:view",
+    name: "Ver Vendas",
+    description: "Visualizar vendas",
+    module: "Vendas",
+    category: "Visualização",
+  },
 
   // Relatórios
-  { id: "reports:view", name: "Ver Relatórios", description: "Acessar relatórios", module: "Relatórios", category: "Visualização" },
+  {
+    id: "reports:view",
+    name: "Ver Relatórios",
+    description: "Acessar relatórios",
+    module: "Relatórios",
+    category: "Visualização",
+  },
 
   // Configurações
-  { id: "settings:view", name: "Ver Configurações", description: "Acessar configurações", module: "Configurações", category: "Visualização" },
-  { id: "settings:company:view", name: "Config. Empresa", description: "Editar configurações da empresa", module: "Configurações", category: "Edição" },
-  { id: "settings:team:view", name: "Config. Equipe", description: "Gerenciar equipe", module: "Configurações", category: "Edição" },
-  { id: "settings:permissions:view", name: "Config. Permissões", description: "Gerenciar permissões", module: "Configurações", category: "Edição" },
+  {
+    id: "settings:view",
+    name: "Ver Configurações",
+    description: "Acessar configurações",
+    module: "Configurações",
+    category: "Visualização",
+  },
+  {
+    id: "settings:company:view",
+    name: "Config. Empresa",
+    description: "Editar configurações da empresa",
+    module: "Configurações",
+    category: "Edição",
+  },
+  {
+    id: "settings:team:view",
+    name: "Config. Equipe",
+    description: "Gerenciar equipe",
+    module: "Configurações",
+    category: "Edição",
+  },
+  {
+    id: "settings:permissions:view",
+    name: "Config. Permissões",
+    description: "Gerenciar permissões",
+    module: "Configurações",
+    category: "Edição",
+  },
 ];
 
 // Mock de roles - substituir por API real
@@ -164,13 +291,13 @@ export function PermissionsClient() {
   const [activeTab, setActiveTab] = useState<Tab>("users");
 
   // Estados para usuários
-  const [users, setUsers] = useState<User[]>([]);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<AppUser[]>([]);
+  const [selectedUser, setSelectedUser] = useState<AppUser | null>(null);
   const [userPermissions, setUserPermissions] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [showRoleModal, setShowRoleModal] = useState(false);
-  const [selectedRole, _setSelectedRole] = useState<Role | null>(null);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   // Estados para cargos
   const [positions, setPositions] = useState<Position[]>([]);
@@ -181,17 +308,34 @@ export function PermissionsClient() {
   const [positionLoading, setPositionLoading] = useState(false);
 
   // Estados para setores
-  const [sectors, setSectors] = useState<Array<{ id: string; name: string; code: string; departmentId: string }>>([]);
-  const [selectedSector, setSelectedSector] = useState<{ id: string; name: string; code: string; departmentId: string } | null>(null);
-  const [sectorPermissions, setSectorPermissions] = useState<PositionPermission[]>([]);
+  const [sectors, setSectors] = useState<
+    Array<{ id: string; name: string; code: string; departmentId: string }>
+  >([]);
+  const [selectedSector, setSelectedSector] = useState<{
+    id: string;
+    name: string;
+    code: string;
+    departmentId: string;
+  } | null>(null);
+  const [sectorPermissions, setSectorPermissions] = useState<
+    Array<{ permissionKey: string; granted: boolean; sectorId?: string; permissionId: string }>
+  >([]);
   const [sectorPermissionsSet, setSectorPermissionsSet] = useState<Set<string>>(new Set());
   const [sectorSearch, setSectorSearch] = useState("");
   const [sectorLoading, setSectorLoading] = useState(false);
 
   // Estados para departamentos
-  const [departments, setDepartments] = useState<Array<{ id: string; name: string; code: string }>>([]);
-  const [selectedDepartment, setSelectedDepartment] = useState<{ id: string; name: string; code: string } | null>(null);
-  const [departmentPermissions, setDepartmentPermissions] = useState<PositionPermission[]>([]);
+  const [departments, setDepartments] = useState<Array<{ id: string; name: string; code: string }>>(
+    [],
+  );
+  const [selectedDepartment, setSelectedDepartment] = useState<{
+    id: string;
+    name: string;
+    code: string;
+  } | null>(null);
+  const [departmentPermissions, setDepartmentPermissions] = useState<
+    Array<{ permissionKey: string; granted: boolean; departmentId?: string; permissionId: string }>
+  >([]);
   const [departmentPermissionsSet, setDepartmentPermissionsSet] = useState<Set<string>>(new Set());
   const [departmentSearch, setDepartmentSearch] = useState("");
   const [departmentLoading, setDepartmentLoading] = useState(false);
@@ -199,81 +343,14 @@ export function PermissionsClient() {
   // Estados para templates
   const [templates, setTemplates] = useState<PermissionTemplate[]>([]);
   const [templatesLoading, setTemplatesLoading] = useState(false);
-  const [_selectedTemplate, _setSelectedTemplate] = useState<PermissionTemplate | null>(null);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showApplyTemplateModal, setShowApplyTemplateModal] = useState(false);
 
-  // Estados para audit log
-  type AuditLogEntry = {
-    id: string;
-    orgId: string;
-    entityType: "position" | "sector" | "department" | "user";
-    entityId: string;
-    permissionId: string;
-    action: "granted" | "denied" | "removed";
-    granted: boolean | null;
-    previousValue: boolean | null;
-    actorId: string;
-    reason: string | null;
-    metadata: Record<string, unknown> | null;
-    createdAt: Date | string;
-  };
-  const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
-  const [auditLogLoading, setAuditLogLoading] = useState(false);
-  const [auditLogFilters, setAuditLogFilters] = useState<{
-    entityType?: "position" | "sector" | "department" | "user";
-    entityId?: string;
-    action?: "granted" | "denied" | "removed";
-  }>({});
-
-  useEffect(() => {
-    if (activeTab === "users") {
-      loadUsers();
-    } else if (activeTab === "positions") {
-      loadPositions();
-      loadSectorsForReference();
-      loadDepartmentsForReference();
-    } else if (activeTab === "sectors") {
-      loadSectors();
-      loadDepartmentsForReference();
-    } else if (activeTab === "departments") {
-      loadDepartments();
-    } else if (activeTab === "templates") {
-      loadTemplates();
-    } else if (activeTab === "audit-log") {
-      loadAuditLogs();
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (selectedUser) {
-      setUserPermissions(new Set(selectedUser.permissions));
-    }
-  }, [selectedUser]);
-
-  useEffect(() => {
-    if (selectedPosition) {
-      loadPositionPermissions(selectedPosition.id);
-    }
-  }, [selectedPosition, loadPositionPermissions]);
-
-  useEffect(() => {
-    if (selectedSector) {
-      loadSectorPermissions(selectedSector.id);
-    }
-  }, [selectedSector, loadSectorPermissions]);
-
-  useEffect(() => {
-    if (selectedDepartment) {
-      loadDepartmentPermissions(selectedDepartment.id);
-    }
-  }, [selectedDepartment, loadDepartmentPermissions]);
-
-  async function loadUsers() {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       // TODO: Substituir por API real
-      const mockUsers: User[] = [
+      const mockUsers: AppUser[] = [
         {
           userId: "user-123",
           email: "admin@example.com",
@@ -302,7 +379,7 @@ export function PermissionsClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   function togglePermission(permissionId: string) {
     const newPermissions = new Set(userPermissions);
@@ -327,9 +404,7 @@ export function PermissionsClient() {
       // Atualizar usuário local
       setUsers(
         users.map((u) =>
-          u.userId === selectedUser.userId
-            ? { ...u, permissions: Array.from(userPermissions) }
-            : u,
+          u.userId === selectedUser.userId ? { ...u, permissions: Array.from(userPermissions) } : u,
         ),
       );
 
@@ -365,7 +440,7 @@ export function PermissionsClient() {
   const permissionsByModule = getPermissionsByModule();
 
   // Funções para cargos
-  async function loadPositions() {
+  const loadPositions = useCallback(async () => {
     setPositionLoading(true);
     try {
       const params = new URLSearchParams();
@@ -387,13 +462,13 @@ export function PermissionsClient() {
       }
     } catch (error) {
       console.error("Erro ao carregar cargos:", error);
-      notificationCenter.error("Erro ao carregar cargos");
+      console.error("Erro ao carregar cargos");
     } finally {
       setPositionLoading(false);
     }
-  }
+  }, [positionSearch]);
 
-  async function loadSectorsForReference() {
+  const loadSectorsForReference = useCallback(async () => {
     try {
       const response = await fetch("/api/sectors?status=ativo", {
         headers: {
@@ -403,15 +478,17 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ id: string; name: string; code: string; departmentId: string }> } = await response.json();
+        const data: {
+          itens: Array<{ id: string; name: string; code: string; departmentId: string }>;
+        } = await response.json();
         setSectors(data.itens || []);
       }
     } catch (error) {
       console.error("Erro ao carregar setores:", error);
     }
-  }
+  }, []);
 
-  async function loadSectors() {
+  const loadSectors = useCallback(async () => {
     setSectorLoading(true);
     try {
       const params = new URLSearchParams();
@@ -428,18 +505,20 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ id: string; name: string; code: string; departmentId: string }> } = await response.json();
+        const data: {
+          itens: Array<{ id: string; name: string; code: string; departmentId: string }>;
+        } = await response.json();
         setSectors(data.itens || []);
       }
     } catch (error) {
       console.error("Erro ao carregar setores:", error);
-      notificationCenter.error("Erro ao carregar setores");
+      console.error("Erro ao carregar setores");
     } finally {
       setSectorLoading(false);
     }
-  }
+  }, [sectorSearch]);
 
-  async function loadDepartmentsForReference() {
+  const loadDepartmentsForReference = useCallback(async () => {
     try {
       const response = await fetch("/api/departments?status=ativo", {
         headers: {
@@ -449,15 +528,22 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ departmentId: string; name: string; code: string }> } = await response.json();
-        setDepartments(data.itens || []);
+        const data: {
+          itens: Array<{ departmentId?: string; id?: string; name: string; code: string }>;
+        } = await response.json();
+        const mapped = (data.itens || []).map((item) => ({
+          id: item.departmentId || item.id || "",
+          name: item.name,
+          code: item.code,
+        }));
+        setDepartments(mapped);
       }
     } catch (error) {
       console.error("Erro ao carregar departamentos:", error);
     }
-  }
+  }, []);
 
-  async function loadDepartments() {
+  const loadDepartments = useCallback(async () => {
     setDepartmentLoading(true);
     try {
       const params = new URLSearchParams();
@@ -474,18 +560,21 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ departmentId: string; name: string; code: string }> } = await response.json();
-        setDepartments(data.itens.map((d) => ({ id: d.departmentId, name: d.name, code: d.code })) || []);
+        const data: { itens: Array<{ departmentId: string; name: string; code: string }> } =
+          await response.json();
+        setDepartments(
+          data.itens.map((d) => ({ id: d.departmentId, name: d.name, code: d.code })) || [],
+        );
       }
     } catch (error) {
       console.error("Erro ao carregar departamentos:", error);
-      notificationCenter.error("Erro ao carregar departamentos");
+      console.error("Erro ao carregar departamentos");
     } finally {
       setDepartmentLoading(false);
     }
-  }
+  }, [departmentSearch]);
 
-  async function loadPositionPermissions(positionId: string) {
+  const loadPositionPermissions = useCallback(async (positionId: string) => {
     setPositionLoading(true);
     try {
       const response = await fetch(`/api/positions/${positionId}/permissions`, {
@@ -505,11 +594,11 @@ export function PermissionsClient() {
       }
     } catch (error) {
       console.error("Erro ao carregar permissões do cargo:", error);
-      notificationCenter.error("Erro ao carregar permissões do cargo");
+      console.error("Erro ao carregar permissões do cargo");
     } finally {
       setPositionLoading(false);
     }
-  }
+  }, []);
 
   async function togglePositionPermission(permissionId: string, granted: boolean) {
     if (!selectedPosition) return;
@@ -539,18 +628,18 @@ export function PermissionsClient() {
 
         // Recarregar permissões para garantir sincronização
         await loadPositionPermissions(selectedPosition.id);
-        notificationCenter.success("Permissão atualizada com sucesso!");
+        console.info("Permissão atualizada com sucesso!");
       } else {
-        notificationCenter.error("Erro ao atualizar permissão");
+        console.error("Erro ao atualizar permissão");
       }
     } catch (error) {
       console.error("Erro ao atualizar permissão:", error);
-      notificationCenter.error("Erro ao atualizar permissão");
+      console.error("Erro ao atualizar permissão");
     }
   }
 
   // Funções para setores
-  async function loadSectorPermissions(sectorId: string) {
+  const loadSectorPermissions = useCallback(async (sectorId: string) => {
     setSectorLoading(true);
     try {
       const response = await fetch(`/api/sectors/${sectorId}/permissions`, {
@@ -561,8 +650,15 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ permissionKey: string; granted: boolean; sectorId?: string; permissionId: string }> } = await response.json();
-        setSectorPermissions(data.itens as any || []);
+        const data: {
+          itens: Array<{
+            permissionKey: string;
+            granted: boolean;
+            sectorId?: string;
+            permissionId: string;
+          }>;
+        } = await response.json();
+        setSectorPermissions(data.itens || []);
         const grantedPermissions = new Set(
           data.itens.filter((p) => p.granted).map((p) => p.permissionKey),
         );
@@ -570,11 +666,11 @@ export function PermissionsClient() {
       }
     } catch (error) {
       console.error("Erro ao carregar permissões do setor:", error);
-      notificationCenter.error("Erro ao carregar permissões do setor");
+      console.error("Erro ao carregar permissões do setor");
     } finally {
       setSectorLoading(false);
     }
-  }
+  }, []);
 
   async function toggleSectorPermission(permissionId: string, granted: boolean) {
     if (!selectedSector) return;
@@ -601,18 +697,18 @@ export function PermissionsClient() {
         }
         setSectorPermissionsSet(newSet);
         await loadSectorPermissions(selectedSector.id);
-        notificationCenter.success("Permissão atualizada com sucesso!");
+        console.info("Permissão atualizada com sucesso!");
       } else {
-        notificationCenter.error("Erro ao atualizar permissão");
+        console.error("Erro ao atualizar permissão");
       }
     } catch (error) {
       console.error("Erro ao atualizar permissão:", error);
-      notificationCenter.error("Erro ao atualizar permissão");
+      console.error("Erro ao atualizar permissão");
     }
   }
 
   // Funções para departamentos
-  async function loadDepartmentPermissions(departmentId: string) {
+  const loadDepartmentPermissions = useCallback(async (departmentId: string) => {
     setDepartmentLoading(true);
     try {
       const response = await fetch(`/api/departments/${departmentId}/permissions`, {
@@ -623,8 +719,15 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        const data: { itens: Array<{ permissionKey: string; granted: boolean; departmentId?: string; permissionId: string }> } = await response.json();
-        setDepartmentPermissions(data.itens as any || []);
+        const data: {
+          itens: Array<{
+            permissionKey: string;
+            granted: boolean;
+            departmentId?: string;
+            permissionId: string;
+          }>;
+        } = await response.json();
+        setDepartmentPermissions(data.itens || []);
         const grantedPermissions = new Set(
           data.itens.filter((p) => p.granted).map((p) => p.permissionKey),
         );
@@ -632,11 +735,11 @@ export function PermissionsClient() {
       }
     } catch (error) {
       console.error("Erro ao carregar permissões do departamento:", error);
-      notificationCenter.error("Erro ao carregar permissões do departamento");
+      console.error("Erro ao carregar permissões do departamento");
     } finally {
       setDepartmentLoading(false);
     }
-  }
+  }, []);
 
   async function toggleDepartmentPermission(permissionId: string, granted: boolean) {
     if (!selectedDepartment) return;
@@ -663,13 +766,13 @@ export function PermissionsClient() {
         }
         setDepartmentPermissionsSet(newSet);
         await loadDepartmentPermissions(selectedDepartment.id);
-        notificationCenter.success("Permissão atualizada com sucesso!");
+        console.info("Permissão atualizada com sucesso!");
       } else {
-        notificationCenter.error("Erro ao atualizar permissão");
+        console.error("Erro ao atualizar permissão");
       }
     } catch (error) {
       console.error("Erro ao atualizar permissão:", error);
-      notificationCenter.error("Erro ao atualizar permissão");
+      console.error("Erro ao atualizar permissão");
     }
   }
 
@@ -692,7 +795,7 @@ export function PermissionsClient() {
   );
 
   // Funções para templates
-  async function loadTemplates() {
+  const loadTemplates = useCallback(async () => {
     setTemplatesLoading(true);
     try {
       const response = await fetch("/api/permissions/templates", {
@@ -708,13 +811,17 @@ export function PermissionsClient() {
       }
     } catch (error) {
       console.error("Erro ao carregar templates:", error);
-      notificationCenter.error("Erro ao carregar templates de permissões");
+      console.error("Erro ao carregar templates de permissões");
     } finally {
       setTemplatesLoading(false);
     }
-  }
+  }, []);
 
-  async function aplicarTemplate(templateId: string, entityType: "position" | "sector" | "department", entityId: string) {
+  async function aplicarTemplate(
+    templateId: string,
+    entityType: "position" | "sector" | "department",
+    entityId: string,
+  ) {
     try {
       const response = await fetch(`/api/permissions/templates/${templateId}/apply`, {
         method: "POST",
@@ -729,7 +836,7 @@ export function PermissionsClient() {
       });
 
       if (response.ok) {
-        notificationCenter.success("Template aplicado com sucesso!");
+        console.info("Template aplicado com sucesso!");
         setShowApplyTemplateModal(false);
 
         // Recarregar permissões da entidade
@@ -742,157 +849,158 @@ export function PermissionsClient() {
         }
       } else {
         const error = await response.json().catch(() => ({ message: "Erro ao aplicar template" }));
-        notificationCenter.error(error.message || "Erro ao aplicar template");
+        console.error(error.message || "Erro ao aplicar template");
       }
     } catch (error) {
       console.error("Erro ao aplicar template:", error);
-      notificationCenter.error("Erro ao aplicar template");
+      console.error("Erro ao aplicar template");
     }
   }
 
-  function getTemplatesForEntityType(entityType: "position" | "sector" | "department"): PermissionTemplate[] {
+  function getTemplatesForEntityType(
+    entityType: "position" | "sector" | "department",
+  ): PermissionTemplate[] {
     return templates.filter(
       (template) => template.entityType === entityType || template.entityType === "all",
     );
   }
 
-  // Funções para audit log
-  async function loadAuditLogs() {
-    setAuditLogLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (auditLogFilters.entityType) {
-        params.append("entityType", auditLogFilters.entityType);
-      }
-      if (auditLogFilters.entityId) {
-        params.append("entityId", auditLogFilters.entityId);
-      }
-      if (auditLogFilters.action) {
-        params.append("action", auditLogFilters.action);
-      }
-      params.append("limite", "50");
-
-      const response = await fetch(`/api/permissions/audit-log?${params.toString()}`, {
-        headers: {
-          ...getAuthHeadersWithTenant(),
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data: { itens: AuditLogEntry[] } = await response.json();
-        setAuditLogs(data.itens || []);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar histórico:", error);
-      notificationCenter.error("Erro ao carregar histórico de permissões");
-    } finally {
-      setAuditLogLoading(false);
+  // Effects (após declarações para evitar uso antes da definição)
+  useEffect(() => {
+    if (activeTab === "users") {
+      loadUsers();
+    } else if (activeTab === "positions") {
+      loadPositions();
+      loadSectorsForReference();
+      loadDepartmentsForReference();
+    } else if (activeTab === "sectors") {
+      loadSectors();
+      loadDepartmentsForReference();
+    } else if (activeTab === "departments") {
+      loadDepartments();
+    } else if (activeTab === "templates") {
+      loadTemplates();
     }
-  }
+  }, [
+    activeTab,
+    loadUsers,
+    loadPositions,
+    loadSectorsForReference,
+    loadDepartmentsForReference,
+    loadSectors,
+    loadDepartments,
+    loadTemplates,
+  ]);
 
-  function formatEntityType(entityType: string): string {
-    const map: Record<string, string> = {
-      position: "Cargo",
-      sector: "Setor",
-      department: "Departamento",
-      user: "Usuário",
-    };
-    return map[entityType] || entityType;
-  }
+  useEffect(() => {
+    if (selectedUser) {
+      setUserPermissions(new Set(selectedUser.permissions));
+    }
+  }, [selectedUser]);
 
-  function formatAction(action: string): { label: string; color: string } {
-    const map: Record<string, { label: string; color: string }> = {
-      granted: { label: "Concedida", color: "var(--success)" },
-      denied: { label: "Negada", color: "var(--danger)" },
-      removed: { label: "Removida", color: "var(--warning)" },
-    };
-    return map[action] || { label: action, color: "var(--muted)" };
-  }
+  useEffect(() => {
+    if (selectedPosition) {
+      loadPositionPermissions(selectedPosition.id);
+    }
+  }, [selectedPosition, loadPositionPermissions]);
 
-  function formatDate(date: Date | string): string {
-    const d = typeof date === "string" ? new Date(date) : date;
-    return new Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(d);
-  }
+  useEffect(() => {
+    if (selectedSector) {
+      loadSectorPermissions(selectedSector.id);
+    }
+  }, [selectedSector, loadSectorPermissions]);
+
+  useEffect(() => {
+    if (selectedDepartment) {
+      loadDepartmentPermissions(selectedDepartment.id);
+    }
+  }, [selectedDepartment, loadDepartmentPermissions]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="relative flex flex-col gap-6 rounded-(--r-lg) p-(--space-2) overflow-hidden">
+      {/* Overlays futuristas */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 holo-grid opacity-25" />
+        <div className="beam-line absolute left-[8%] top-0 h-full w-px opacity-35" />
+        <div className="beam-line absolute right-[12%] top-0 h-full w-px opacity-25" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(109,213,255,0.08),transparent_38%)]" />
+      </div>
       {/* Tabs */}
-      <GlassCard className="p-6">
-        <div className="flex gap-4 border-b border-[color-mix(in_oklab,var(--border)_90%,transparent)]">
+      <GlassCard className="p-6 border-[color-mix(in_oklab,var(--border)_80%,transparent_20%)] shadow-[0_18px_80px_-28px_rgba(109,213,255,0.28)] bg-[color-mix(in_oklab,var(--surface)_90%,transparent_10%)]">
+        <div className="flex gap-4 border-b border-[color-mix(in_oklab,var(--border)_80%,transparent)]">
           <button
+            type="button"
             onClick={() => setActiveTab("users")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-medium transition-all rounded-(--r-md)",
               activeTab === "users"
-                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+                ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-(--primary) shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-(--fg) hover:bg-white/5",
             )}
           >
             <User className="mr-2 inline h-4 w-4" />
             Usuários
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("positions")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-medium transition-all rounded-(--r-md)",
               activeTab === "positions"
-                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+                ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-(--primary) shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-(--fg) hover:bg-white/5",
             )}
           >
             <Briefcase className="mr-2 inline h-4 w-4" />
             Cargos
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("sectors")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-medium transition-all rounded-(--r-md)",
               activeTab === "sectors"
-                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+                ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-(--primary) shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-(--fg) hover:bg-white/5",
             )}
           >
             <Layers className="mr-2 inline h-4 w-4" />
             Setores
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("departments")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-medium transition-all rounded-(--r-md)",
               activeTab === "departments"
-                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+                ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-(--primary) shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-(--fg) hover:bg-white/5",
             )}
           >
             <Building2 className="mr-2 inline h-4 w-4" />
             Departamentos
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("templates")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-medium transition-all rounded-(--r-md)",
               activeTab === "templates"
-                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+                ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-(--primary) shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-(--fg) hover:bg-white/5",
             )}
           >
             <FileText className="mr-2 inline h-4 w-4" />
             Templates
           </button>
           <button
+            type="button"
             onClick={() => setActiveTab("audit-log")}
             className={cn(
-              "px-4 py-2 text-sm font-medium transition-colors",
+              "px-4 py-2 text-sm font-medium transition-all rounded-(--r-md)",
               activeTab === "audit-log"
-                ? "border-b-2 border-[var(--primary)] text-[var(--primary)]"
-                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-[var(--fg)]",
+                ? "bg-[color-mix(in_oklab,var(--primary)_14%,transparent_86%)] text-(--primary) shadow-[0_0_24px_rgba(109,213,255,0.35)]"
+                : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:text-(--fg) hover:bg-white/5",
             )}
           >
             <History className="mr-2 inline h-4 w-4" />
@@ -906,7 +1014,7 @@ export function PermissionsClient() {
           {/* Lista de usuários */}
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--fg)]">Usuários</h2>
+              <h2 className="text-lg font-semibold text-(--fg)">Usuários</h2>
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                 <Input
@@ -932,21 +1040,22 @@ export function PermissionsClient() {
                   const role = roles.find((r) => r.id === user.role);
                   return (
                     <button
+                      type="button"
                       key={user.userId}
                       onClick={() => setSelectedUser(user)}
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
                         selectedUser?.userId === user.userId
-                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                          ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-(--primary) to-(--secondary) text-white">
                           <User className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--fg)]">
+                          <p className="font-medium text-(--fg)">
                             {user.displayName || user.email}
                           </p>
                           <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
@@ -958,7 +1067,7 @@ export function PermissionsClient() {
                         <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                           {user.permissions.length} permissões
                         </span>
-                        <Shield className="h-4 w-4 text-[var(--primary)]" />
+                        <Shield className="h-4 w-4 text-(--primary)" />
                       </div>
                     </button>
                   );
@@ -972,7 +1081,7 @@ export function PermissionsClient() {
             <GlassCard className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-[var(--fg)]">
+                  <h2 className="text-lg font-semibold text-(--fg)">
                     Permissões de {selectedUser.displayName || selectedUser.email}
                   </h2>
                   <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
@@ -980,11 +1089,7 @@ export function PermissionsClient() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowRoleModal(true)}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => setShowRoleModal(true)}>
                     <Shield className="h-4 w-4" />
                     Aplicar Role
                   </Button>
@@ -1010,24 +1115,24 @@ export function PermissionsClient() {
                             className={cn(
                               "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
                               hasPermission
-                                ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                                : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                                ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                                : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                             )}
                           >
                             <input
                               type="checkbox"
                               checked={hasPermission}
                               onChange={() => togglePermission(permission.id)}
-                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-(--primary) focus:ring-(--primary)"
                             />
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-[var(--fg)]">{permission.name}</p>
+                              <p className="text-sm font-medium text-(--fg)">{permission.name}</p>
                               <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                                 {permission.description}
                               </p>
                             </div>
                             {hasPermission ? (
-                              <Check className="h-4 w-4 text-[var(--primary)]" />
+                              <Check className="h-4 w-4 text-(--primary)" />
                             ) : (
                               <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                             )}
@@ -1045,25 +1150,27 @@ export function PermissionsClient() {
           {showRoleModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
               <GlassCard className="relative max-w-md p-6">
-                <h3 className="mb-4 text-lg font-semibold text-[var(--fg)]">
-                  Aplicar Role
-                </h3>
+                <h3 className="mb-4 text-lg font-semibold text-(--fg)">Aplicar Role</h3>
                 <p className="mb-4 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                   Selecione uma role para aplicar todas as permissões de uma vez
                 </p>
                 <div className="space-y-2">
                   {roles.map((role) => (
                     <button
+                      type="button"
                       key={role.id}
-                      onClick={() => applyRole(role)}
+                      onClick={() => {
+                        setSelectedRole(role);
+                        applyRole(role);
+                      }}
                       className={cn(
                         "w-full rounded-lg border p-4 text-left transition-all",
                         selectedRole?.id === role.id
-                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                          ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                       )}
                     >
-                      <p className="font-medium text-[var(--fg)]">{role.name}</p>
+                      <p className="font-medium text-(--fg)">{role.name}</p>
                       <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                         {role.description}
                       </p>
@@ -1084,13 +1191,12 @@ export function PermissionsClient() {
         </>
       )}
 
-
       {activeTab === "positions" && (
         <>
           {/* Lista de cargos */}
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--fg)]">Cargos</h2>
+              <h2 className="text-lg font-semibold text-(--fg)">Cargos</h2>
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                 <Input
@@ -1122,30 +1228,34 @@ export function PermissionsClient() {
               ) : (
                 filteredPositions.map((position) => {
                   const sector = sectors.find((s) => s.id === position.sectorId);
-                  const department = sector ? departments.find((d) => d.id === sector.departmentId) : null;
-                  const permissionCount = positionPermissions.filter((p) => p.positionId === position.id && p.granted).length;
+                  const department = sector
+                    ? departments.find((d) => d.id === sector.departmentId)
+                    : null;
+                  const permissionCount = positionPermissions.filter(
+                    (p) => p.positionId === position.id && p.granted,
+                  ).length;
 
                   return (
                     <button
+                      type="button"
                       key={position.id}
                       onClick={() => setSelectedPosition(position)}
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
                         selectedPosition?.id === position.id
-                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                          ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-(--primary) to-(--secondary) text-white">
                           <Briefcase className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--fg)]">
-                            {position.name}
-                          </p>
+                          <p className="font-medium text-(--fg)">{position.name}</p>
                           <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                            {position.code} {department && sector && `• ${department.name} → ${sector.name}`}
+                            {position.code}{" "}
+                            {department && sector && `• ${department.name} → ${sector.name}`}
                           </p>
                         </div>
                       </div>
@@ -1153,7 +1263,7 @@ export function PermissionsClient() {
                         <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                           {permissionCount} permissões
                         </span>
-                        <Shield className="h-4 w-4 text-[var(--primary)]" />
+                        <Shield className="h-4 w-4 text-(--primary)" />
                       </div>
                     </button>
                   );
@@ -1167,7 +1277,7 @@ export function PermissionsClient() {
             <GlassCard className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-[var(--fg)]">
+                  <h2 className="text-lg font-semibold text-(--fg)">
                     Permissões do Cargo: {selectedPosition.name}
                   </h2>
                   <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
@@ -1212,26 +1322,28 @@ export function PermissionsClient() {
                             className={cn(
                               "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
                               hasPermission
-                                ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                                ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
                                 : isDenied
                                   ? "border-[color-mix(in_oklab,var(--danger)_50%,transparent)] bg-[color-mix(in_oklab,var(--danger)_5%,transparent)]"
-                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                             )}
                           >
                             <input
                               type="checkbox"
                               checked={hasPermission}
-                              onChange={() => togglePositionPermission(permission.id, !hasPermission)}
-                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                              onChange={() =>
+                                togglePositionPermission(permission.id, !hasPermission)
+                              }
+                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-(--primary) focus:ring-(--primary)"
                             />
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-[var(--fg)]">{permission.name}</p>
+                              <p className="text-sm font-medium text-(--fg)">{permission.name}</p>
                               <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                                 {permission.description}
                               </p>
                             </div>
                             {hasPermission ? (
-                              <Check className="h-4 w-4 text-[var(--primary)]" />
+                              <Check className="h-4 w-4 text-(--primary)" />
                             ) : (
                               <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                             )}
@@ -1251,7 +1363,7 @@ export function PermissionsClient() {
           {/* Lista de setores */}
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--fg)]">Setores</h2>
+              <h2 className="text-lg font-semibold text-(--fg)">Setores</h2>
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                 <Input
@@ -1282,25 +1394,28 @@ export function PermissionsClient() {
               ) : (
                 filteredSectors.map((sector) => {
                   const department = departments.find((d) => d.id === sector.departmentId);
-                  const permissionCount = sectorPermissions.filter((p: any) => p.sectorId === sector.id && p.granted).length;
+                  const permissionCount = sectorPermissions.filter(
+                    (p) => p.sectorId === sector.id && p.granted,
+                  ).length;
 
                   return (
                     <button
+                      type="button"
                       key={sector.id}
                       onClick={() => setSelectedSector(sector)}
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
                         selectedSector?.id === sector.id
-                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                          ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-(--primary) to-(--secondary) text-white">
                           <Layers className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--fg)]">{sector.name}</p>
+                          <p className="font-medium text-(--fg)">{sector.name}</p>
                           <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                             {sector.code} {department && `• ${department.name}`}
                           </p>
@@ -1310,7 +1425,7 @@ export function PermissionsClient() {
                         <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                           {permissionCount} permissões
                         </span>
-                        <Shield className="h-4 w-4 text-[var(--primary)]" />
+                        <Shield className="h-4 w-4 text-(--primary)" />
                       </div>
                     </button>
                   );
@@ -1324,7 +1439,7 @@ export function PermissionsClient() {
             <GlassCard className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-[var(--fg)]">
+                  <h2 className="text-lg font-semibold text-(--fg)">
                     Permissões do Setor: {selectedSector.name}
                   </h2>
                   <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
@@ -1369,28 +1484,26 @@ export function PermissionsClient() {
                             className={cn(
                               "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
                               hasPermission
-                                ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                                ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
                                 : isDenied
                                   ? "border-[color-mix(in_oklab,var(--danger)_50%,transparent)] bg-[color-mix(in_oklab,var(--danger)_5%,transparent)]"
-                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                             )}
                           >
                             <input
                               type="checkbox"
                               checked={hasPermission}
                               onChange={() => toggleSectorPermission(permission.id, !hasPermission)}
-                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-(--primary) focus:ring-(--primary)"
                             />
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-[var(--fg)]">
-                                {permission.name}
-                              </p>
+                              <p className="text-sm font-medium text-(--fg)">{permission.name}</p>
                               <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                                 {permission.description}
                               </p>
                             </div>
                             {hasPermission ? (
-                              <Check className="h-4 w-4 text-[var(--primary)]" />
+                              <Check className="h-4 w-4 text-(--primary)" />
                             ) : (
                               <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                             )}
@@ -1411,7 +1524,7 @@ export function PermissionsClient() {
           {/* Lista de departamentos */}
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-[var(--fg)]">Departamentos</h2>
+              <h2 className="text-lg font-semibold text-(--fg)">Departamentos</h2>
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                 <Input
@@ -1442,26 +1555,27 @@ export function PermissionsClient() {
               ) : (
                 filteredDepartments.map((department) => {
                   const permissionCount = departmentPermissions.filter(
-                    (p: any) => p.departmentId === department.id && p.granted,
+                    (p) => p.departmentId === department.id && p.granted,
                   ).length;
 
                   return (
                     <button
+                      type="button"
                       key={department.id}
                       onClick={() => setSelectedDepartment(department)}
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg border p-4 text-left transition-all",
                         selectedDepartment?.id === department.id
-                          ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
-                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                          ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                          : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                       )}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-(--primary) to-(--secondary) text-white">
                           <Building2 className="h-5 w-5" />
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--fg)]">{department.name}</p>
+                          <p className="font-medium text-(--fg)">{department.name}</p>
                           <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                             {department.code}
                           </p>
@@ -1471,7 +1585,7 @@ export function PermissionsClient() {
                         <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                           {permissionCount} permissões
                         </span>
-                        <Shield className="h-4 w-4 text-[var(--primary)]" />
+                        <Shield className="h-4 w-4 text-(--primary)" />
                       </div>
                     </button>
                   );
@@ -1485,7 +1599,7 @@ export function PermissionsClient() {
             <GlassCard className="p-6">
               <div className="mb-6 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-[var(--fg)]">
+                  <h2 className="text-lg font-semibold text-(--fg)">
                     Permissões do Departamento: {selectedDepartment.name}
                   </h2>
                   <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
@@ -1533,10 +1647,10 @@ export function PermissionsClient() {
                             className={cn(
                               "flex items-center gap-3 rounded-lg border p-3 cursor-pointer transition-all",
                               hasPermission
-                                ? "border-[var(--primary)] bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
+                                ? "border-(--primary) bg-[color-mix(in_oklab,var(--primary)_10%,transparent)]"
                                 : isDenied
                                   ? "border-[color-mix(in_oklab,var(--danger)_50%,transparent)] bg-[color-mix(in_oklab,var(--danger)_5%,transparent)]"
-                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                                  : "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                             )}
                           >
                             <input
@@ -1545,18 +1659,16 @@ export function PermissionsClient() {
                               onChange={() =>
                                 toggleDepartmentPermission(permission.id, !hasPermission)
                               }
-                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                              className="h-4 w-4 rounded border-[color-mix(in_oklab,var(--border)_90%,transparent)] text-(--primary) focus:ring-(--primary)"
                             />
                             <div className="flex-1">
-                              <p className="text-sm font-medium text-[var(--fg)]">
-                                {permission.name}
-                              </p>
+                              <p className="text-sm font-medium text-(--fg)">{permission.name}</p>
                               <p className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                                 {permission.description}
                               </p>
                             </div>
                             {hasPermission ? (
-                              <Check className="h-4 w-4 text-[var(--primary)]" />
+                              <Check className="h-4 w-4 text-(--primary)" />
                             ) : (
                               <X className="h-4 w-4 text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]" />
                             )}
@@ -1576,7 +1688,7 @@ export function PermissionsClient() {
         <GlassCard className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-[var(--fg)]">Templates de Permissões</h2>
+              <h2 className="text-lg font-semibold text-(--fg)">Templates de Permissões</h2>
               <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
                 Conjuntos predefinidos de permissões para aplicar rapidamente
               </p>
@@ -1602,18 +1714,18 @@ export function PermissionsClient() {
                   key={template.id}
                   className={cn(
                     "flex items-center justify-between rounded-lg border p-4 transition-all",
-                    "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                    "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-(--primary) to-(--secondary) text-white">
                       <FileText className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-[var(--fg)]">{template.name}</p>
+                        <p className="font-medium text-(--fg)">{template.name}</p>
                         {template.isDefault && (
-                          <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
+                          <span className="rounded-full bg-(--primary) px-2 py-0.5 text-xs text-white">
                             Padrão
                           </span>
                         )}
@@ -1643,7 +1755,7 @@ export function PermissionsClient() {
       {showApplyTemplateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <GlassCard className="relative max-w-md p-6">
-            <h3 className="mb-4 text-lg font-semibold text-[var(--fg)]">
+            <h3 className="mb-4 text-lg font-semibold text-(--fg)">
               Aplicar Template de Permissões
             </h3>
             <p className="mb-4 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
@@ -1673,7 +1785,16 @@ export function PermissionsClient() {
                   );
                 }
 
-                const availableTemplates = getTemplatesForEntityType(entityType);
+                if (!entityType || !entityId) {
+                  return (
+                    <p className="text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+                      Selecione uma entidade primeiro
+                    </p>
+                  );
+                }
+
+                const safeEntityType = entityType as "position" | "sector" | "department";
+                const availableTemplates = getTemplatesForEntityType(safeEntityType);
 
                 if (availableTemplates.length === 0) {
                   return (
@@ -1690,19 +1811,21 @@ export function PermissionsClient() {
 
                 return availableTemplates.map((template) => (
                   <button
+                    type="button"
                     key={template.id}
                     onClick={() => {
-                      aplicarTemplate(template.id, entityType!, entityId!);
+                      if (!entityId) return;
+                      aplicarTemplate(template.id, safeEntityType, entityId);
                     }}
                     className={cn(
                       "w-full rounded-lg border p-4 text-left transition-all",
-                      "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
+                      "border-[color-mix(in_oklab,var(--border)_90%,transparent)] hover:border-(--primary) hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]",
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-[var(--fg)]">{template.name}</p>
+                      <p className="font-medium text-(--fg)">{template.name}</p>
                       {template.isDefault && (
-                        <span className="rounded-full bg-[var(--primary)] px-2 py-0.5 text-xs text-white">
+                        <span className="rounded-full bg-(--primary) px-2 py-0.5 text-xs text-white">
                           Padrão
                         </span>
                       )}
@@ -1726,129 +1849,13 @@ export function PermissionsClient() {
         </div>
       )}
 
-      {activeTab === "audit-log" && (
-        <>
-          <GlassCard className="p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-[var(--fg)]">Histórico de Permissões</h2>
-                <p className="mt-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  Registro de todas as mudanças nas permissões do sistema
-                </p>
-              </div>
-              <Button size="sm" variant="outline" onClick={() => loadAuditLogs()}>
-                <Clock className="h-4 w-4" />
-                Atualizar
-              </Button>
-            </div>
-
-            {/* Filtros */}
-            <div className="mb-4 flex flex-wrap gap-2">
-              <select
-                value={auditLogFilters.entityType || ""}
-                onChange={(e) =>
-                  setAuditLogFilters({
-                    ...auditLogFilters,
-                    entityType: (e.target.value as any) || undefined,
-                  })
-                }
-                className="rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[var(--surface)] px-3 py-2 text-sm"
-              >
-                <option value="">Todos os tipos</option>
-                <option value="position">Cargos</option>
-                <option value="sector">Setores</option>
-                <option value="department">Departamentos</option>
-                <option value="user">Usuários</option>
-              </select>
-              <select
-                value={auditLogFilters.action || ""}
-                onChange={(e) =>
-                  setAuditLogFilters({
-                    ...auditLogFilters,
-                    action: (e.target.value as any) || undefined,
-                  })
-                }
-                className="rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[var(--surface)] px-3 py-2 text-sm"
-              >
-                <option value="">Todas as ações</option>
-                <option value="granted">Concedidas</option>
-                <option value="denied">Negadas</option>
-                <option value="removed">Removidas</option>
-              </select>
-            </div>
-
-            {/* Lista de logs */}
-            <div className="space-y-2">
-              {auditLogLoading ? (
-                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  Carregando histórico...
-                </p>
-              ) : auditLogs.length === 0 ? (
-                <p className="py-8 text-center text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                  Nenhum registro encontrado
-                </p>
-              ) : (
-                auditLogs.map((log) => {
-                  const actionInfo = formatAction(log.action);
-                  return (
-                    <div
-                      key={log.id}
-                      className="rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4 transition-all hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]"
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="mb-2 flex items-center gap-2">
-                            <span
-                              className="rounded-full px-2 py-0.5 text-xs font-medium text-white"
-                              style={{ backgroundColor: actionInfo.color }}
-                            >
-                              {actionInfo.label}
-                            </span>
-                            <span className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                              {formatEntityType(log.entityType)}
-                            </span>
-                          </div>
-                          <p className="text-sm font-medium text-[var(--fg)]">
-                            Permissão: {log.permissionId}
-                          </p>
-                          {log.reason && (
-                            <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                              Motivo: {log.reason}
-                            </p>
-                          )}
-                          {log.previousValue !== null && (
-                            <p className="mt-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                              Valor anterior: {log.previousValue ? "Concedida" : "Negada"}
-                            </p>
-                          )}
-                          <div className="mt-2 flex items-center gap-2 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                            <User className="h-3 w-3" />
-                            <span>Ator: {log.actorId}</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="flex items-center gap-1 text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-                            <Clock className="h-3 w-3" />
-                            <span>{formatDate(log.createdAt)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </GlassCard>
-        </>
-      )}
+      {activeTab === "audit-log" && <AuditLogPanel getAuthHeaders={getAuthHeadersWithTenant} />}
 
       {/* Modal para criar template */}
       {showTemplateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <GlassCard className="relative max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-            <h3 className="mb-4 text-lg font-semibold text-[var(--fg)]">
-              Criar Template de Permissões
-            </h3>
+            <h3 className="mb-4 text-lg font-semibold text-(--fg)">Criar Template de Permissões</h3>
             <p className="mb-4 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
               Criar um template a partir das permissões selecionadas
             </p>
@@ -1867,4 +1874,3 @@ export function PermissionsClient() {
     </div>
   );
 }
-

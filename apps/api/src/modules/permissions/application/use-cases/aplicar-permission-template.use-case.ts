@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
 import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
@@ -27,6 +28,7 @@ type Dependencies = {
   departmentRepository?: DepartmentRepository;
   auditLogRepository?: PermissionAuditLogRepository;
   actorId: string;
+  eventBus?: DomainEventBus;
 };
 
 export class AplicarPermissionTemplateUseCase {
@@ -208,6 +210,28 @@ export class AplicarPermissionTemplateUseCase {
 
         applied.push(perm);
       }
+    }
+
+    // Publicar evento agregado (mensageria)
+    if (this.deps.eventBus) {
+      await this.deps.eventBus.publish({
+        name: "Permissions.PermissionTemplateApplied",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
+          templateId: template.id,
+          templateName: template.name,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          appliedPermissions: applied,
+          reason: input.reason ?? null,
+        },
+      });
     }
 
     return {
