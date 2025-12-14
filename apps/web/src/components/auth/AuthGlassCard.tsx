@@ -12,9 +12,15 @@ export function AuthGlassCard({ title, subtitle, children, className }: AuthGlas
   return (
     <div
       className={cn(
-        "relative overflow-hidden border border-(--auth-card-border,rgba(255,255,255,0.10)) bg-(--auth-card-bg,rgba(0,0,0,0.20)) p-6 lg:p-10 backdrop-blur-(--auth-card-blur,12px) shadow-(--auth-card-shadow,0_25px_50px_-12px_rgba(0,0,0,0.45)) group",
+        "relative overflow-hidden border p-6 lg:p-10 backdrop-blur-[12px] group",
         className,
       )}
+      style={{
+        borderColor: 'var(--auth-card-border, rgba(255,255,255,0.10))',
+        backgroundColor: 'var(--auth-card-bg, rgba(0,0,0,0.20))',
+        backdropFilter: 'blur(var(--auth-card-blur, 12px))',
+        boxShadow: 'var(--auth-card-shadow, 0_25px_50px_-12px_rgba(0,0,0,0.45))',
+      } as CSSProperties}
     >
       {/* Reflexo “luz no vidro/espelho” (loop, de fora a fora) */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">

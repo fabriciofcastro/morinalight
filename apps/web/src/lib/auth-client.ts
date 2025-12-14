@@ -26,6 +26,7 @@ export function getAuthToken(): string | null {
  */
 export function setAuthToken(_token: string): void {
   // Token é mantido apenas em cookie httpOnly (setado via rota /api/auth/login)
+  void _token;
 }
 
 /**

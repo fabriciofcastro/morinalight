@@ -2,7 +2,8 @@
 
 import { Button, cn, FormSelect, GlassCard, Input } from "@morina/ui";
 import { Plus, Search, User, X } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import Image from "next/image";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
@@ -51,12 +52,6 @@ const ROLE_OPTIONS = [
   { value: "viewer", label: ROLE_LABELS.viewer },
 ] as const;
 
-const _STATUS_LABELS: Record<string, string> = {
-  active: "Ativo",
-  pending: "Pendente",
-  suspended: "Suspenso",
-};
-
 export function MembersManager({ entityType, entityId, entityName, onClose }: MembersManagerProps) {
   const [members, setMembers] = useState<MemberInfo[]>([]);
   const [availableUsers, setAvailableUsers] = useState<UserData[]>([]);
@@ -77,10 +72,32 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
   }[entityType];
 
   useEffect(() => {
-    loadMembers();
+    void loadMembers();
   }, [loadMembers]);
 
-  async function loadMembers() {
+  const loadAvailableUsers = useCallback(async (currentMembers: MemberInfo[]) => {
+    try {
+      const response = await fetch("/api/users", {
+        headers: {
+          ...getAuthHeadersWithTenant(),
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const allUsers: UserData[] = data.itens || [];
+        // Filtrar usuários que já são membros
+        const memberUserIds = new Set(currentMembers.map((m) => m.userId));
+        setAvailableUsers(allUsers.filter((u) => !memberUserIds.has(u.userId)));
+      }
+    } catch (error) {
+      console.error("Erro ao carregar usuários:", error);
+    }
+  }, []);
+
+  const loadMembers = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(apiBasePath, {
@@ -112,29 +129,7 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
     } finally {
       setLoading(false);
     }
-  }
-
-  async function loadAvailableUsers(currentMembers: MemberInfo[] = members) {
-    try {
-      const response = await fetch("/api/users", {
-        headers: {
-          ...getAuthHeadersWithTenant(),
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const allUsers: UserData[] = data.itens || [];
-        // Filtrar usuários que já são membros
-        const memberUserIds = new Set(currentMembers.map((m) => m.userId));
-        setAvailableUsers(allUsers.filter((u) => !memberUserIds.has(u.userId)));
-      }
-    } catch (error) {
-      console.error("Erro ao carregar usuários:", error);
-    }
-  }
+  }, [apiBasePath, loadAvailableUsers]);
 
   async function handleAddMember() {
     if (!selectedUserId) {
@@ -184,7 +179,7 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
             message: errorMessage,
           });
         }
-      } catch (_error) {
+      } catch {
         const errorMessage = "Erro ao adicionar membro";
         notificationCenter.add({
           type: "error",
@@ -240,7 +235,7 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
             message: errorMessage,
           });
         }
-      } catch (_error) {
+      } catch {
         const errorMessage = "Erro ao remover membro";
         notificationCenter.add({
           type: "error",
@@ -289,7 +284,7 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
             message: errorMessage,
           });
         }
-      } catch (_error) {
+      } catch {
         const errorMessage = "Erro ao atualizar papel";
         notificationCenter.add({
           type: "error",
@@ -384,10 +379,13 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
                           {user.avatarUrl ? (
-                            <img
+                            <Image
                               src={user.avatarUrl}
                               alt={user.displayName || user.email}
+                              width={40}
+                              height={40}
                               className="h-10 w-10 rounded-full"
+                              unoptimized
                             />
                           ) : (
                             <User className="h-5 w-5" />
@@ -457,10 +455,13 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-white">
                   {member.user.avatarUrl ? (
-                    <img
+                    <Image
                       src={member.user.avatarUrl}
                       alt={member.user.displayName || member.user.email}
+                      width={40}
+                      height={40}
                       className="h-10 w-10 rounded-full"
+                      unoptimized
                     />
                   ) : (
                     <User className="h-5 w-5" />

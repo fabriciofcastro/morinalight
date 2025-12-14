@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import type { DomainEventBus } from "@morina/shared-kernel";
 
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   OrganizationAuditLogFilter,
@@ -73,7 +74,7 @@ export class PrismaOrganizationAuditLogRepository implements OrganizationAuditLo
         action: entry.action,
         actorId: entry.actorId,
         targetId: entry.targetId ?? null,
-        payload: entry.payload ?? undefined,
+        payload: entry.payload ? (entry.payload as Prisma.InputJsonValue) : undefined,
         createdAt,
       },
     });

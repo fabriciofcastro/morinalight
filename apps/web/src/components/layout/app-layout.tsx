@@ -67,7 +67,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           } satisfies CSSVarProps);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
 
     // Preferência local por usuário (client-only)
     function loadPreference() {

@@ -13,9 +13,22 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { NotificationCenter } from "@/components/notifications/notification-center";
+import { LogoutDialog } from "@/components/auth/LogoutDialog";
+import { InactivityWarning } from "@/components/auth/InactivityWarning";
+import { useLogout } from "@/hooks/use-logout";
 
 export function EnterpriseHeader() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const {
+    logoutDialogOpen,
+    setLogoutDialogOpen,
+    hasUnsavedChanges,
+    inactivityWarning,
+    timeRemaining,
+    handleLogout,
+    openLogoutDialog,
+    extendSession,
+  } = useLogout();
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[color-mix(in_oklab,hsl(var(--border))_70%,transparent_30%)] bg-[color-mix(in_oklab,hsl(var(--surface))_72%,transparent_28%)] backdrop-blur-2xl px-6 overflow-hidden">
@@ -110,7 +123,12 @@ export function EnterpriseHeader() {
                 <div className="my-2 h-px bg-white/10" />
                 <button
                   type="button"
+                  onClick={() => {
+                    setUserMenuOpen(false);
+                    openLogoutDialog();
+                  }}
                   className="flex w-full items-center gap-3 border border-transparent px-3 py-2 text-sm text-red-400 hover:border-red-500/20 hover:bg-red-500/10 transition-all"
+                  title="Sair (Ctrl+Shift+Q)"
                 >
                   <LogOut className="h-4 w-4" />
                   Sair
@@ -120,6 +138,22 @@ export function EnterpriseHeader() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Logout Dialog */}
+      <LogoutDialog
+        open={logoutDialogOpen}
+        onClose={() => setLogoutDialogOpen(false)}
+        onLogout={handleLogout}
+        hasUnsavedChanges={hasUnsavedChanges}
+      />
+
+      {/* Inactivity Warning */}
+      <InactivityWarning
+        open={inactivityWarning}
+        timeRemaining={timeRemaining}
+        onExtend={extendSession}
+        onLogout={() => handleLogout(false)}
+      />
     </header>
   );
 }

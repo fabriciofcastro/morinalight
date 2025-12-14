@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
@@ -52,6 +53,7 @@ export class RemoverMembroDepartamentoUseCase {
     // Registrar audit log
     if (this.deps.auditLogRepository) {
       await this.deps.auditLogRepository.registrar({
+        id: randomUUID(),
         orgId: input.orgId,
         entityType: "department",
         entityId: input.departmentId,
@@ -61,18 +63,24 @@ export class RemoverMembroDepartamentoUseCase {
           userId: input.userId,
           role: membership.role,
         },
+        createdAt: new Date(),
       });
     }
 
     // Publicar evento de domínio
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "organizational-structure.department.member-removed",
-        payload: {
+        name: "OrganizationalStructure.DepartmentMemberRemoved",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
           orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
           departmentId: input.departmentId,
           userId: input.userId,
-          actorId: this.deps.actorId,
         },
       });
     }

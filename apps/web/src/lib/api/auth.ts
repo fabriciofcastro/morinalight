@@ -83,19 +83,59 @@ export class AuthApi {
     return response;
   }
 
-  logout(): void {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("current_organization_id");
-      localStorage.removeItem("selected_org_id");
-      localStorage.removeItem("user_data");
-      localStorage.removeItem("auth_organizations");
+  async logout(logoutAllDevices = false): Promise<void> {
+    if (typeof window === "undefined") return;
 
-      // Limpar cookie de tenant (não httpOnly)
+    try {
+      // Limpar todos os storages
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Limpar IndexedDB (se existir)
+      if ("indexedDB" in window) {
+        try {
+          const databases = await indexedDB.databases();
+          await Promise.all(
+            databases.map((db) => {
+              if (db.name) {
+                return new Promise<void>((resolve) => {
+                  const deleteReq = indexedDB.deleteDatabase(db.name);
+                  deleteReq.onsuccess = () => resolve();
+                  deleteReq.onerror = () => resolve(); // Ignorar erros
+                  deleteReq.onblocked = () => resolve(); // Ignorar bloqueios
+                });
+              }
+              return Promise.resolve();
+            }),
+          );
+        } catch (e) {
+          // Ignorar erros do IndexedDB
+          console.warn("Erro ao limpar IndexedDB:", e);
+        }
+      }
+
+      // Limpar cookies
       // biome-ignore lint/suspicious/noDocumentCookie: necessário para limpar contexto de tenant no client.
       document.cookie = "selected_org_id=; path=/; max-age=0; SameSite=Lax";
+      // biome-ignore lint/suspicious/noDocumentCookie: necessário para limpar cookies no client.
+      document.cookie = "auth_token=; path=/; max-age=0; SameSite=Lax; HttpOnly=false";
 
-      // Tentar limpar cookie httpOnly no server
-      fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+      // Invalidar tokens no backend e registrar logout na auditoria
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ logoutAllDevices }),
+      }).catch(() => {
+        // Ignorar erros de rede, continuar com logout local
+      });
+
+      // Redirecionar para login
+      window.location.href = "/login?logout=success";
+    } catch (error) {
+      console.error("Erro durante logout:", error);
+      // Mesmo com erro, redirecionar para login
       window.location.href = "/login";
     }
   }

@@ -1,4 +1,5 @@
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { Prisma } from "@prisma/client";
 import type { VendaProps, VendaStatus } from "../../domain/entities/venda";
 import { Venda } from "../../domain/entities/venda";
 import type { VendaRepository } from "../services/venda-sync.service";
@@ -13,8 +14,8 @@ function toDomain(record: {
   numeroNotaFiscal: string | null;
   dataVenda: Date;
   dataPagamento: Date | null;
-  valorTotal: number;
-  valorComissao: number;
+  valorTotal: Prisma.Decimal | number;
+  valorComissao: Prisma.Decimal | number;
   status: string;
   observacoes: string | null;
   emillenniumPedidoId: string | null;

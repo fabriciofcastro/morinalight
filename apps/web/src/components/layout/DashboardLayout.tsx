@@ -20,7 +20,6 @@ import {
     X,
     ChevronDown,
 } from 'lucide-react';
-import { Button } from '@morina/ui';
 import { authApi } from '@/lib/api/auth';
 
 const navigation = [

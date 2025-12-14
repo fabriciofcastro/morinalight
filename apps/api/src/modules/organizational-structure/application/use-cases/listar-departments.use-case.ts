@@ -17,7 +17,7 @@ export class ListarDepartmentsUseCase {
 
     const pagina = await this.deps.departmentRepository.listarPorOrg(input.orgId, {
       status: input.status,
-      unitId: input.unitId,
+      branchId: input.branchId,
       parentId: input.parentId,
       busca: input.busca,
       cursor: input.cursor,
@@ -28,7 +28,7 @@ export class ListarDepartmentsUseCase {
       departmentViewSchema.parse({
         departmentId: department.departmentId,
         orgId: department.dados.orgId,
-        unitId: department.dados.unitId ?? null,
+        branchId: department.dados.branchId ?? null,
         name: department.dados.name,
         code: department.dados.code,
         description: department.dados.description ?? null,

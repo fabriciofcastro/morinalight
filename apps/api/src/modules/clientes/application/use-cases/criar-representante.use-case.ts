@@ -48,8 +48,8 @@ export class CriarRepresentanteUseCase {
       cep: input.cep ?? null,
       percentualComissao: input.percentualComissao,
       observacoes: input.observacoes ?? null,
-      criadoPor: this.deps.actorId,
-      atualizadoPor: this.deps.actorId,
+      createdBy: this.deps.actorId,
+      updatedBy: this.deps.actorId,
     });
 
     await this.deps.representanteRepository.salvar(representante);

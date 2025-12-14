@@ -5,16 +5,28 @@ import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParamsOrHeaders } from "../../core/tenant/tenant.utils";
 import { RedisEventBus } from "../../infra/events/redis-event-bus";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
+import type { UserRepository } from "../users/repositories/user.repository";
 import type {
+  BranchRepository,
   DepartmentRepository,
   OrganizationalStructureAuditLogRepository,
   PositionRepository,
   SectorRepository,
-  BranchRepository,
 } from "./domain/repositories";
 import { registerOrganizationalStructureHttpRoutes } from "./http";
-import { PrismaDepartmentRepository } from "./infra/prisma/prisma-department.repository";
+import { registerCreateBranchRoute } from "./http/create-branch.route";
+import { registerUpdateBranchRoute } from "./http/update-branch.route";
+import { registerListBranchesRoute } from "./http/list-branches.route";
+import { registerDeleteBranchRoute } from "./http/delete-branch.route";
+import { registerCreateWorkflowPolicyRoute } from "./http/create-workflow-policy.route";
+import { registerUpdateWorkflowPolicyRoute } from "./http/update-workflow-policy.route";
+import { registerListWorkflowPoliciesRoute } from "./http/list-workflow-policies.route";
+import { registerDeleteWorkflowPolicyRoute } from "./http/delete-workflow-policy.route";
+import { registerDepartmentMembersRoutes } from "./http/department-members.routes";
+import { registerSectorMembersRoutes } from "./http/sector-members.routes";
+import { registerPositionMembersRoutes } from "./http/position-members.routes";
 import { PrismaBranchRepository } from "./infra/prisma/prisma-branch.repository";
+import { PrismaDepartmentRepository } from "./infra/prisma/prisma-department.repository";
 import type { DepartmentMembershipRepository } from "./infra/prisma/prisma-department-membership.repository";
 import { PrismaDepartmentMembershipRepository } from "./infra/prisma/prisma-department-membership.repository";
 import { PrismaOrganizationalStructureAuditLogRepository } from "./infra/prisma/prisma-organizational-structure-audit-log.repository";
@@ -24,35 +36,6 @@ import { PrismaPositionMembershipRepository } from "./infra/prisma/prisma-positi
 import { PrismaSectorRepository } from "./infra/prisma/prisma-sector.repository";
 import type { SectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
 import { PrismaSectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
-import type { UserRepository } from "../users/repositories/user.repository";
-import { registerDepartmentMembersRoutes } from "./http/department-members.routes";
-import { registerPositionMembersRoutes } from "./http/position-members.routes";
-import { registerSectorMembersRoutes } from "./http/sector-members.routes";
-import { registerCreateBranchRoute } from "./http/create-branch.route";
-import { registerUpdateBranchRoute } from "./http/update-branch.route";
-import { registerListBranchesRoute } from "./http/list-branches.route";
-import { registerDeleteBranchRoute } from "./http/delete-branch.route";
-import { registerCreateBusinessSegmentRoute } from "./http/create-business-segment.route";
-import { registerCreateDepartmentRoute } from "./http/create-department.route";
-import { registerCreatePositionRoute } from "./http/create-position.route";
-import { registerCreateSectorRoute } from "./http/create-sector.route";
-import { registerCreateWorkflowPolicyRoute } from "./http/create-workflow-policy.route";
-import { registerDeleteBusinessSegmentRoute } from "./http/delete-business-segment.route";
-import { registerDeleteDepartmentRoute } from "./http/delete-department.route";
-import { registerDeletePositionRoute } from "./http/delete-position.route";
-import { registerDeleteSectorRoute } from "./http/delete-sector.route";
-import { registerDeleteWorkflowPolicyRoute } from "./http/delete-workflow-policy.route";
-import { registerListBusinessSegmentsRoute } from "./http/list-business-segments.route";
-import { registerListDepartmentsRoute } from "./http/list-departments.route";
-import { registerListPositionsRoute } from "./http/list-positions.route";
-import { registerListSectorsRoute } from "./http/list-sectors.route";
-import { registerListWorkflowPoliciesRoute } from "./http/list-workflow-policies.route";
-import { registerUpdateBusinessSegmentRoute } from "./http/update-business-segment.route";
-import { registerUpdateDepartmentRoute } from "./http/update-department.route";
-import { registerUpdatePositionRoute } from "./http/update-position.route";
-import { registerUpdateSectorRoute } from "./http/update-sector.route";
-import { registerUpdateWorkflowPolicyRoute } from "./http/update-workflow-policy.route";
-import { PrismaBusinessSegmentRepository } from "./infra/prisma/prisma-business-segment.repository";
 import { PrismaWorkflowPolicyRepository } from "./infra/prisma/prisma-workflow-policy.repository";
 
 export type OrganizationalStructureModuleOptions = {
@@ -78,7 +61,6 @@ export async function registerOrganizationalStructureModule(
     (process.env.DATABASE_URL ? new PrismaDepartmentRepository() : undefined);
 
   const branchRepository = new PrismaBranchRepository();
-  const businessSegmentRepository = new PrismaBusinessSegmentRepository();
   const workflowPolicyRepository = new PrismaWorkflowPolicyRepository();
 
   const sectorRepository =
@@ -93,9 +75,9 @@ export async function registerOrganizationalStructureModule(
     options.eventBus ??
     (env.REDIS_URL
       ? new RedisEventBus({
-        url: env.REDIS_URL,
-        realtimeStream: "realtime.organizational-structure",
-      })
+          url: env.REDIS_URL,
+          realtimeStream: "realtime.organizational-structure",
+        })
       : undefined);
 
   const auditLogRepository =
@@ -184,24 +166,29 @@ export async function registerOrganizationalStructureModule(
   }
 
   if (branchRepository) {
-    await registerCreateBranchRoute(app, { branchRepository });
-    await registerUpdateBranchRoute(app, { branchRepository });
+    await registerCreateBranchRoute(app, {
+      branchRepository,
+      auditLogRepository,
+      eventBus,
+    });
+    await registerUpdateBranchRoute(app, {
+      branchRepository,
+      auditLogRepository,
+      eventBus,
+    });
     await registerListBranchesRoute(app, { branchRepository });
-    await registerDeleteBranchRoute(app, { branchRepository });
-  }
-
-  if (businessSegmentRepository) {
-    await registerCreateBusinessSegmentRoute(app, { businessSegmentRepository });
-    await registerUpdateBusinessSegmentRoute(app, { businessSegmentRepository });
-    await registerListBusinessSegmentsRoute(app, { businessSegmentRepository });
-    await registerDeleteBusinessSegmentRoute(app, { businessSegmentRepository });
+    await registerDeleteBranchRoute(app, {
+      branchRepository,
+      auditLogRepository,
+      eventBus,
+    });
   }
 
   if (workflowPolicyRepository) {
-    await registerCreateWorkflowPolicyRoute(app, { workflowPolicyRepository });
-    await registerUpdateWorkflowPolicyRoute(app, { workflowPolicyRepository });
+    await registerCreateWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
+    await registerUpdateWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
     await registerListWorkflowPoliciesRoute(app, { workflowPolicyRepository });
-    await registerDeleteWorkflowPolicyRoute(app, { workflowPolicyRepository });
+    await registerDeleteWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
   }
 
   app.log.info("Módulo Estrutura Organizacional registrado");

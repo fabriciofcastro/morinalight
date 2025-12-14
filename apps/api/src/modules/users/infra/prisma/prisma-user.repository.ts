@@ -1,3 +1,4 @@
+import type { Prisma, UserStatus } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   CreateUserInput,
@@ -44,7 +45,7 @@ export class PrismaUserRepository implements UserRepository {
         email: input.email.toLowerCase(),
         displayName: input.displayName ?? null,
         passwordHash: input.passwordHash,
-        status: input.status ?? "active",
+        status: (input.status ?? "active") as UserStatus,
       },
     });
     return mapUser(user);
@@ -60,18 +61,12 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async update(input: UpdateUserInput): Promise<UserRecord | null> {
-    const updateData: {
-      email?: string;
-      displayName?: string | null;
-      avatarUrl?: string | null;
-      status?: string;
-      passwordHash?: string;
-    } = {};
+    const updateData: Prisma.UserUpdateInput = {};
 
     if (input.email !== undefined) updateData.email = input.email.toLowerCase();
     if (input.displayName !== undefined) updateData.displayName = input.displayName;
     if (input.avatarUrl !== undefined) updateData.avatarUrl = input.avatarUrl;
-    if (input.status !== undefined) updateData.status = input.status;
+    if (input.status !== undefined) updateData.status = input.status as UserStatus;
     if (input.passwordHash !== undefined) updateData.passwordHash = input.passwordHash;
 
     const user = await prisma.user.update({
@@ -100,20 +95,25 @@ function mapUser(user: {
   email: string;
   displayName: string | null;
   avatarUrl: string | null;
-  passwordHash: string;
+  passwordHash: string | null;
   status: string;
   lastLoginAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  branchId: string | null;
+  positionId: string | null;
 }): UserRecord {
+  if (!user.passwordHash) {
+    throw new Error("User passwordHash is required");
+  }
   return {
     userId: user.id,
     email: user.email,
-    displayName: user.displayName,
-    avatarUrl: user.avatarUrl,
+    displayName: user.displayName ?? undefined,
+    avatarUrl: user.avatarUrl ?? undefined,
     passwordHash: user.passwordHash,
     status: user.status,
-    lastLoginAt: user.lastLoginAt,
+    lastLoginAt: user.lastLoginAt ?? undefined,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

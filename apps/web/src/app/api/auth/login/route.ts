@@ -65,14 +65,48 @@ export async function POST(request: Request) {
   }
 
   try {
-    const response = await fetch(`${apiUrl}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(parsed.data),
-      cache: "no-store",
-    });
+    // Timeout de 10 segundos para não ficar esperando indefinidamente
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    let response: Response;
+    try {
+      response = await fetch(`${apiUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(parsed.data),
+        cache: "no-store",
+        signal: controller.signal,
+      });
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      if (fetchError instanceof Error && fetchError.name === "AbortError") {
+        return NextResponse.json(
+          { message: "Timeout: API não respondeu a tempo. Verifique se a API está rodando." },
+          { status: 504 },
+        );
+      }
+      // Erro de conexão (ECONNREFUSED, etc)
+      const isConnectionError =
+        fetchError instanceof Error &&
+        (fetchError.message.includes("ECONNREFUSED") ||
+          fetchError.message.includes("fetch failed") ||
+          fetchError.message.includes("network"));
+      if (isConnectionError) {
+        return NextResponse.json(
+          {
+            message: "API não está disponível. Verifique se o servidor está rodando em http://localhost:3333",
+            code: "API_UNAVAILABLE",
+          },
+          { status: 503 },
+        );
+      }
+      throw fetchError;
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     const contentType = response.headers.get("content-type") ?? "";
     const isJson = contentType.includes("application/json");
@@ -108,6 +142,12 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ message }, { status: 502 });
+    return NextResponse.json(
+      {
+        message: `Erro ao conectar com a API: ${message}. Verifique se a API está rodando.`,
+        code: "API_CONNECTION_ERROR",
+      },
+      { status: 502 },
+    );
   }
 }

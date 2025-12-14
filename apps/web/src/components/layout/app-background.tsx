@@ -7,8 +7,18 @@ export function AppBackground() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
+
+  const particles = Array.from({ length: 6 }).map((_, i) => {
+    const t = (Math.sin((i + 1) * 999) + 1) / 2; // 0..1 (determinístico)
+    return {
+      id: i,
+      left: `${(i * 17) % 100}%`,
+      top: `${(i * 23) % 100}%`,
+      xDrift: t * 20 - 10,
+    };
+  });
 
   if (!mounted) {
     return null;
@@ -80,24 +90,24 @@ export function AppBackground() {
       />
 
       {/* Partículas flutuantes leves */}
-      {Array.from({ length: 6 }).map((_, i) => (
+      {particles.map((p) => (
         <motion.div
-          key={i}
+          key={p.id}
           className="absolute h-1 w-1 rounded-full bg-[var(--primary)] opacity-20"
           style={{
-            left: `${(i * 17) % 100}%`,
-            top: `${(i * 23) % 100}%`,
+            left: p.left,
+            top: p.top,
           }}
           animate={{
             y: [0, -30, 0],
-            x: [0, Math.random() * 20 - 10, 0],
+            x: [0, p.xDrift, 0],
             opacity: [0.2, 0.4, 0.2],
           }}
           transition={{
-            duration: 8 + i * 2,
+            duration: 8 + p.id * 2,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: i * 0.5,
+            delay: p.id * 0.5,
           }}
         />
       ))}

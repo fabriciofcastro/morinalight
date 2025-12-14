@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { clearAuthToken, getAuthUser } from "@/lib/auth-client";
-import { NotificationCenter } from "../notifications/notification-center";
 
 type AppHeaderProps = {
   onMenuClick?: () => void;
@@ -21,7 +20,7 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
   const user = getAuthUser();
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   const handleLogout = () => {
@@ -29,19 +28,13 @@ export function AppHeader({ onMenuClick }: AppHeaderProps) {
     router.push("/login");
   };
 
-  const getThemeIcon = () => {
-    if (!mounted) return Monitor;
-    switch (theme) {
-      case "light":
-        return Sun;
-      case "dark":
-        return Moon;
-      default:
-        return Monitor;
-    }
-  };
-
-  const ThemeIcon = getThemeIcon();
+  const ThemeIcon = mounted
+    ? theme === "light"
+      ? Sun
+      : theme === "dark"
+        ? Moon
+        : Monitor
+    : Monitor;
 
   const cycleTheme = () => {
     if (!mounted) return;

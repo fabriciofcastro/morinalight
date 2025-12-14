@@ -5,33 +5,44 @@
 
 ---
 
-## 🎯 Quick Start
+## 🎯 Quick Start (Desenvolvimento Local)
 
-### Prerequisites
-- Node.js 18+ installed
-- pnpm installed (`npm install -g pnpm`)
-- PostgreSQL database running (optional - system works with fallbacks)
+### Pré-requisitos
+- Node.js 18+ instalado
+- pnpm instalado (`npm install -g pnpm`)
+- Docker ou Podman instalado (para PostgreSQL e Redis)
 
-### Start the System
+### Setup Rápido (3 passos)
 
-**Terminal 1 - Backend API:**
+**1. Configure os arquivos .env:**
 ```bash
-cd /home/fabricio/projects/morina2/apps/api
-pnpm dev
-# Runs on http://localhost:3333
+./setup-local-env.sh
 ```
 
-**Terminal 2 - Frontend Web:**
+**2. Inicie PostgreSQL e Redis:**
 ```bash
-cd /home/fabricio/projects/morina2/apps/web
-pnpm dev
-# Runs on http://localhost:3000
+./start-database.sh
 ```
 
-### Access the Application
-- **Login Page:** http://localhost:3000/login
-- **Dashboard:** http://localhost:3000/dashboard (requires authentication)
+**3. Inicie todos os serviços:**
+```bash
+pnpm turbo dev
+```
+
+### Acessar a Aplicação
+- **Login:** http://localhost:3000/login
+- **Credenciais padrão:**
+  - Email: `admin@morina.com`
+  - Senha: `Admin@123`
 - **API Health:** http://localhost:3333/health
+- **Realtime:** ws://localhost:3334
+
+### Serviços Disponíveis
+- **Web (Next.js):** http://localhost:3000
+- **API (Fastify):** http://localhost:3333
+- **Realtime (WebSocket):** ws://localhost:3334
+- **PostgreSQL:** localhost:5432
+- **Redis:** localhost:6379
 
 ---
 

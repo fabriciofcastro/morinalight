@@ -8,7 +8,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
   const response = await fetch(`${apiUrl}/clientes/${params.id}`, {
     method: "PUT",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

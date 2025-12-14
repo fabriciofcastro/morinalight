@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, MoreVertical } from 'lucide-react';
 import { Button, Input } from '@morina/ui';
 import { usersApi, type User } from '@/lib/api/users';
 

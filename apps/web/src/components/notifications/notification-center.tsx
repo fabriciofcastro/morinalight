@@ -59,17 +59,21 @@ export function NotificationCenter({ maxNotifications = 5 }: NotificationCenterP
   useEffect(() => {
     // Adicionar notificação de conexão quando status muda
     if (!isOnline && status === "offline") {
-      addNotification({
-        type: "warning",
-        title: "Conexão perdida",
-        message:
-          "Você está offline. Alterações serão sincronizadas quando a conexão for restaurada.",
+      queueMicrotask(() => {
+        addNotification({
+          type: "warning",
+          title: "Conexão perdida",
+          message:
+            "Você está offline. Alterações serão sincronizadas quando a conexão for restaurada.",
+        });
       });
     } else if (isOnline && status === "online") {
-      addNotification({
-        type: "success",
-        title: "Conectado",
-        message: "Conexão restaurada. Sincronizando alterações...",
+      queueMicrotask(() => {
+        addNotification({
+          type: "success",
+          title: "Conectado",
+          message: "Conexão restaurada. Sincronizando alterações...",
+        });
       });
     }
   }, [status, isOnline, addNotification]);

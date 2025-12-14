@@ -4,6 +4,7 @@ import { cn } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   BarChart3,
+  Bell,
   Building2,
   ChevronRight,
   DollarSign,
@@ -14,6 +15,8 @@ import {
   ShoppingCart,
   UserCog,
   Users,
+  ClipboardList,
+  FileCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,6 +50,18 @@ const navItems: NavItem[] = [
     href: "/catalogo/auditoria",
     icon: FileText,
     permission: "catalog:view",
+  },
+  {
+    label: "Pré-Fichas Técnicas",
+    href: "/pre-fichas-tecnicas",
+    icon: FileCheck,
+    permission: "pre-fichas-tecnicas:view",
+  },
+  {
+    label: "Fichas de Custo",
+    href: "/fichas-custo",
+    icon: ClipboardList,
+    permission: "fichas-custo:view",
   },
   {
     label: "Clientes",
@@ -84,7 +99,12 @@ const navItems: NavItem[] = [
     icon: BarChart3,
     permission: "reports:view",
   },
-
+  {
+    label: "Notificações",
+    href: "/notifications",
+    icon: Bell,
+    permission: "notifications:view",
+  },
   {
     label: "Configurações",
     href: "/settings",

@@ -55,7 +55,7 @@ export class Comissao {
   }
 
   static criar(
-    input: Omit<ComissaoProps, "id" | "dataCalculo" | "criadoEm" | "atualizadoEm" | "status"> & {
+    input: Omit<ComissaoProps, "id" | "dataCalculo" | "createdAt" | "updatedAt" | "status"> & {
       status?: ComissaoStatus;
     },
   ) {

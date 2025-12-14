@@ -13,7 +13,7 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";
@@ -59,11 +59,7 @@ export function SuppliersClient() {
     notes: "",
   });
 
-  useEffect(() => {
-    loadSuppliers();
-  }, [loadSuppliers]);
-
-  async function loadSuppliers() {
+  const loadSuppliers = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -90,7 +86,11 @@ export function SuppliersClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    void loadSuppliers();
+  }, [loadSuppliers]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

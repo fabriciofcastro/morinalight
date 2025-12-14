@@ -21,11 +21,7 @@ export interface SectorMembershipRepository {
     role: OrganizationRole,
   ): Promise<SectorMembershipData>;
   remover(orgId: string, sectorId: string, userId: string): Promise<void>;
-  encontrar(
-    orgId: string,
-    sectorId: string,
-    userId: string,
-  ): Promise<SectorMembershipData | null>;
+  encontrar(orgId: string, sectorId: string, userId: string): Promise<SectorMembershipData | null>;
   listarPorSector(orgId: string, sectorId: string): Promise<SectorMembershipData[]>;
   listarPorUser(orgId: string, userId: string): Promise<SectorMembershipData[]>;
   atualizarRole(
@@ -198,4 +194,3 @@ export class PrismaSectorMembershipRepository implements SectorMembershipReposit
     });
   }
 }
-

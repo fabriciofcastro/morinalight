@@ -47,36 +47,40 @@ const FORGE_SPARKS = [
 export function PageBackground() {
   const pathname = usePathname();
   const [bgType, setBgType] = useState<
-    "terminal" | "jarvis" | "flow" | "nodes" | "circuit" | "vault" | "realtime" | "forge"
+    "terminal" | "jarvis" | "flow" | "nodes" | "circuit" | "vault" | "realtime" | "forge" | "fichas-custo"
   >("terminal");
 
   useEffect(() => {
-    if (pathname.startsWith("/dashboard")) {
-      setBgType("jarvis");
-    } else if (pathname.startsWith("/admin/realtime-lab")) {
-      setBgType("realtime");
-    } else if (pathname.startsWith("/admin")) {
-      setBgType("vault");
-    } else if (pathname.startsWith("/analytics")) {
-      setBgType("flow");
-    } else if (
-      pathname.startsWith("/users") ||
-      pathname.startsWith("/team") ||
-      pathname.startsWith("/clientes") ||
-      pathname.startsWith("/clients")
-    ) {
-      setBgType("nodes");
-    } else if (pathname.startsWith("/settings")) {
-      setBgType("circuit");
-    } else if (
-      pathname.startsWith("/catalog") ||
-      pathname.startsWith("/products") ||
-      pathname.startsWith("/produtos")
-    ) {
-      setBgType("forge");
-    } else {
-      setBgType("terminal"); // Default: secure terminal for dashboard/home
-    }
+    queueMicrotask(() => {
+      if (pathname.startsWith("/dashboard")) {
+        setBgType("jarvis");
+      } else if (pathname.startsWith("/admin/realtime-lab")) {
+        setBgType("realtime");
+      } else if (pathname.startsWith("/admin")) {
+        setBgType("vault");
+      } else if (pathname.startsWith("/analytics")) {
+        setBgType("flow");
+      } else if (
+        pathname.startsWith("/users") ||
+        pathname.startsWith("/team") ||
+        pathname.startsWith("/clientes") ||
+        pathname.startsWith("/clients")
+      ) {
+        setBgType("nodes");
+      } else if (pathname.startsWith("/settings")) {
+        setBgType("circuit");
+      } else if (
+        pathname.startsWith("/catalog") ||
+        pathname.startsWith("/products") ||
+        pathname.startsWith("/produtos")
+      ) {
+        setBgType("forge");
+      } else if (pathname.startsWith("/fichas-custo")) {
+        setBgType("fichas-custo");
+      } else {
+        setBgType("terminal"); // Default: secure terminal for dashboard/home
+      }
+    });
   }, [pathname]);
 
   return (
@@ -99,6 +103,7 @@ export function PageBackground() {
           {bgType === "vault" && <VaultBackground />}
           {bgType === "realtime" && <RealtimeBackground />}
           {bgType === "forge" && <ForgeBackground />}
+          {bgType === "fichas-custo" && <FichasCustoBackground />}
         </motion.div>
       </AnimatePresence>
       {/* Cinematic system overlays (tokens controlam intensidade) */}
@@ -119,14 +124,16 @@ function JarvisBackground() {
   >([]);
 
   useEffect(() => {
-    setParticles(
-      [...Array(7)].map(() => ({
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        duration: 10 + Math.random() * 9,
-        delay: Math.random() * 4,
-      })),
-    );
+    queueMicrotask(() => {
+      setParticles(
+        [...Array(7)].map(() => ({
+          top: `${Math.random() * 100}%`,
+          left: `${Math.random() * 100}%`,
+          duration: 10 + Math.random() * 9,
+          delay: Math.random() * 4,
+        })),
+      );
+    });
   }, []);
 
   return (
@@ -291,14 +298,16 @@ function TerminalBackground() {
   >([]);
 
   useEffect(() => {
-    setParticles(
-      [...Array(5)].map(() => ({
-        top: `${Math.random() * 100}%`,
-        left: `${Math.random() * 100}%`,
-        duration: 12 + Math.random() * 10,
-        delay: Math.random() * 5,
-      })),
-    );
+    queueMicrotask(() => {
+      setParticles(
+        [...Array(5)].map(() => ({
+          top: `${Math.random() * 100}%`,
+          left: `${Math.random() * 100}%`,
+          duration: 12 + Math.random() * 10,
+          delay: Math.random() * 5,
+        })),
+      );
+    });
   }, []);
 
   return (
@@ -521,6 +530,213 @@ function ForgeBackground() {
           }}
         />
       ))}
+    </div>
+  );
+}
+
+function FichasCustoBackground() {
+  const [dataNodes, setDataNodes] = useState<
+    { id: string; top: string; left: string; delay: number; duration: number }[]
+  >([]);
+  const [circuitLines, setCircuitLines] = useState<
+    { id: string; path: string; delay: number; duration: number }[]
+  >([]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      // Nós de dados flutuantes
+      setDataNodes(
+        Array.from({ length: 12 }).map((_, i) => ({
+          id: `node-${i}`,
+          top: `${15 + (i % 4) * 25}%`,
+          left: `${10 + Math.floor(i / 4) * 30}%`,
+          delay: i * 0.3,
+          duration: 8 + Math.random() * 6,
+        })),
+      );
+
+      // Linhas de circuito conectando nós
+      setCircuitLines(
+        Array.from({ length: 8 }).map((_, i) => ({
+          id: `circuit-${i}`,
+          path: `M ${20 + i * 12} ${30 + (i % 3) * 20} L ${60 + i * 8} ${50 + (i % 2) * 25}`,
+          delay: i * 0.4,
+          duration: 6 + Math.random() * 4,
+        })),
+      );
+    });
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Base gradient com cores vibrantes */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0a0e27] via-[#1a1f3a] to-[#0f1629]" />
+      
+      {/* Grid holográfico animado */}
+      <motion.div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: "4rem 4rem",
+        }}
+        animate={{
+          opacity: [0.15, 0.25, 0.15],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      {/* Orbs de energia pulsantes */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 h-96 w-96 rounded-full bg-[radial-gradient(circle,hsl(var(--primary))/0.15,transparent_70%)] blur-[120px]"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.1, 0.25, 0.1],
+          x: [0, 40, 0],
+          y: [0, -30, 0],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 h-80 w-80 rounded-full bg-[radial-gradient(circle,hsl(var(--accent))/0.12,transparent_70%)] blur-[100px]"
+        animate={{
+          scale: [1, 1.4, 1],
+          opacity: [0.08, 0.22, 0.08],
+          x: [0, -50, 0],
+          y: [0, 40, 0],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
+      />
+      <motion.div
+        className="absolute top-1/2 right-1/3 h-72 w-72 rounded-full bg-[radial-gradient(circle,hsl(var(--secondary))/0.10,transparent_70%)] blur-[90px]"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.06, 0.18, 0.06],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 4,
+        }}
+      />
+
+      {/* Nós de dados flutuantes */}
+      {dataNodes.map((node) => (
+        <motion.div
+          key={node.id}
+          className="absolute"
+          style={{
+            top: node.top,
+            left: node.left,
+          }}
+          animate={{
+            y: [0, -20, 0],
+            opacity: [0.3, 0.8, 0.3],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: node.duration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: node.delay,
+          }}
+        >
+          <div className="h-2 w-2 rounded-full bg-[hsl(var(--primary))] shadow-[0_0_12px_hsl(var(--primary)/0.8)]" />
+          <motion.div
+            className="absolute inset-0 rounded-full bg-[hsl(var(--primary))]"
+            animate={{
+              scale: [1, 3, 1],
+              opacity: [0.6, 0, 0.6],
+            }}
+            transition={{
+              duration: node.duration * 0.7,
+              repeat: Infinity,
+              ease: "easeOut",
+              delay: node.delay,
+            }}
+          />
+        </motion.div>
+      ))}
+
+      {/* Linhas de circuito conectando nós */}
+      <svg className="absolute inset-0 opacity-30" style={{ mixBlendMode: "screen" }}>
+        {circuitLines.map((line) => (
+          <motion.path
+            key={line.id}
+            d={line.path}
+            stroke="hsl(var(--primary))"
+            strokeWidth="1.5"
+            fill="none"
+            strokeDasharray="4 4"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{
+              pathLength: [0, 1, 0],
+              opacity: [0, 0.6, 0],
+            }}
+            transition={{
+              duration: line.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: line.delay,
+            }}
+          />
+        ))}
+      </svg>
+
+      {/* Partículas de energia */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.div
+          key={`particle-${i}`}
+          className="absolute h-1 w-1 rounded-full bg-[hsl(var(--accent))]"
+          style={{
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -100, 0],
+            opacity: [0, 1, 0],
+            scale: [0.5, 1.5, 0.5],
+          }}
+          transition={{
+            duration: 4 + Math.random() * 3,
+            repeat: Infinity,
+            ease: "easeOut",
+            delay: Math.random() * 2,
+          }}
+        />
+      ))}
+
+      {/* Wave scan effect */}
+      <motion.div
+        className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[hsl(var(--primary)/0.15)] via-transparent to-transparent"
+        animate={{
+          y: ["-100%", "200%"],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "linear",
+        }}
+      />
+
+      {/* Holographic overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_30%,rgba(59,130,246,0.03)_50%,transparent_70%)] opacity-50" />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { Button, cn, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
 import { CheckCircle2, Clock, Edit, FileText, Plus, Search, Trash2, XCircle } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";
@@ -29,13 +29,6 @@ const STATUS_LABELS = {
   inativo: "Inativo",
 } as const;
 
-const _STATUS_VARIANTS = {
-  rascunho: "outline",
-  aguardando_aprovacao: "secondary",
-  ativo: "default",
-  inativo: "outline",
-} as const;
-
 export function ProductsClient() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,11 +43,7 @@ export function ProductsClient() {
     description: "",
   });
 
-  useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
-
-  async function loadProducts() {
+  const loadProducts = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -81,7 +70,11 @@ export function ProductsClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    void loadProducts();
+  }, [loadProducts]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

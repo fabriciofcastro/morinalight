@@ -22,7 +22,7 @@ export function ConnectionStatusIndicator({
   const { status, isOnline, backendOnline, realtimeConnected, lastChecked } = useConnectionStatus();
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   if (!mounted) {

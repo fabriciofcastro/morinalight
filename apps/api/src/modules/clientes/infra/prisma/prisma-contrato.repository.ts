@@ -1,4 +1,5 @@
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { Prisma } from "@prisma/client";
 import type { ContratoProps, ContratoStatus } from "../../domain/entities/contrato";
 import { Contrato } from "../../domain/entities/contrato";
 import type { ContratoRepository } from "../../domain/repositories/contrato-repository";
@@ -12,9 +13,9 @@ function toDomain(record: {
   numero: string;
   dataInicio: Date;
   dataFim: Date | null;
-  percentualComissao: number;
-  valorMinimo: number | null;
-  valorMaximo: number | null;
+  percentualComissao: Prisma.Decimal | number;
+  valorMinimo: Prisma.Decimal | number | null;
+  valorMaximo: Prisma.Decimal | number | null;
   termos: string | null;
   status: string;
   assinadoEm: Date | null;
@@ -118,11 +119,11 @@ export class PrismaContratoRepository implements ContratoRepository {
   async listarPorRepresentante(
     orgId: string,
     representanteId: string,
-    filtro?: { status?: string; cursor?: string; limite?: number },
+    filtro?: { status?: ContratoStatus; cursor?: string; limite?: number },
   ) {
     const limit = Math.min(Math.max(filtro?.limite ?? 20, 1), 50);
 
-    const andFilters = [{ representanteId }];
+    const andFilters: Prisma.ContratoWhereInput[] = [{ representanteId }];
     if (filtro?.status) {
       andFilters.push({ status: filtro.status });
     }
@@ -138,7 +139,7 @@ export class PrismaContratoRepository implements ContratoRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.ContratoWhereInput = {
       orgId,
       AND: andFilters,
     };

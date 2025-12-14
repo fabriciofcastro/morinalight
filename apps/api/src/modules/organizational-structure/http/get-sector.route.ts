@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { SectorRepository } from "../domain/repositories/sector-repository";
 import { sectorViewSchema } from "../application/schemas/sector.schema";
+import type { SectorRepository } from "../domain/repositories/sector-repository";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -53,4 +53,3 @@ export async function registerGetSectorRoute(app: FastifyInstance, deps: Depende
     },
   );
 }
-

@@ -47,7 +47,7 @@ export function useConnectionStatus() {
       }));
 
       return isOnline;
-    } catch (_error) {
+    } catch {
       setState((prev) => ({
         ...prev,
         backendOnline: false,
@@ -62,7 +62,7 @@ export function useConnectionStatus() {
     // Verificar se há um cliente realtime ativo
     // Por enquanto, apenas verificar se a URL está acessível
     try {
-      const _realtimeUrl = process.env.NEXT_PUBLIC_REALTIME_URL ?? "ws://localhost:3334";
+      void (process.env.NEXT_PUBLIC_REALTIME_URL ?? "ws://localhost:3334");
       // WebSocket não pode ser verificado via fetch, então assumimos conectado se backend está online
       setState((prev) => ({
         ...prev,
@@ -84,7 +84,9 @@ export function useConnectionStatus() {
 
   // Usar ref para manter referência do estado sem causar re-renders
   const stateRef = useRef(state);
-  stateRef.current = state;
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   useEffect(() => {
     // Só executar no cliente

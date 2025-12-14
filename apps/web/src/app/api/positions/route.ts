@@ -9,7 +9,7 @@ export async function GET(request: Request) {
 
   const response = await fetch(`${apiUrl}/positions?${query}`, {
     method: "GET",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   const data = await response.json();
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
   const response = await fetch(`${apiUrl}/positions`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

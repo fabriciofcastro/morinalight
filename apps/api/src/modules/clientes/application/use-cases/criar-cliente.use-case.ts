@@ -37,8 +37,8 @@ export class CriarClienteUseCase {
       estado: input.estado ?? null,
       cep: input.cep ?? null,
       observacoes: input.observacoes ?? null,
-      criadoPor: this.deps.actorId,
-      atualizadoPor: this.deps.actorId,
+      createdBy: this.deps.actorId,
+      updatedBy: this.deps.actorId,
     });
 
     await this.deps.clienteRepository.salvar(cliente);

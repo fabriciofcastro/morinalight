@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   PermissionTemplate,
@@ -54,7 +55,7 @@ export class PrismaPermissionTemplateRepository implements PermissionTemplateRep
         name: template.name,
         description: template.description,
         entityType: template.entityType,
-        permissions: template.permissions as unknown,
+        permissions: template.permissions as Prisma.InputJsonValue,
         isDefault: template.isDefault,
         isSystem: template.isSystem,
         createdBy: template.createdBy,
@@ -64,7 +65,7 @@ export class PrismaPermissionTemplateRepository implements PermissionTemplateRep
         name: template.name,
         description: template.description,
         entityType: template.entityType,
-        permissions: template.permissions as unknown,
+        permissions: template.permissions as Prisma.InputJsonValue,
         isDefault: template.isDefault,
         updatedBy: template.updatedBy,
         updatedAt: new Date(),

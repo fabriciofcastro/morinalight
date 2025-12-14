@@ -46,7 +46,7 @@ export class Representante {
   }
 
   static criar(
-    input: Omit<RepresentanteProps, "criadoEm" | "atualizadoEm" | "status"> & {
+    input: Omit<RepresentanteProps, "createdAt" | "updatedAt" | "status"> & {
       status?: RepresentanteStatus;
     },
   ) {

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const departmentBaseSchema = z.object({
   orgId: z.string().min(1, "orgId obrigatório"),
-  unitId: z.string().uuid().optional().nullable(),
+  branchId: z.string().uuid().optional().nullable(),
   name: z.string().min(2).max(255),
   code: z.string().min(1).max(50),
   description: z.string().max(1024).optional().nullable(),
@@ -14,7 +14,7 @@ export const departmentBaseSchema = z.object({
 
 export const criarDepartmentInputSchema = departmentBaseSchema.pick({
   orgId: true,
-  unitId: true,
+  branchId: true,
   name: true,
   code: true,
   description: true,
@@ -39,7 +39,7 @@ export type DepartmentView = z.infer<typeof departmentViewSchema>;
 export const atualizarDepartmentInputSchema = z.object({
   orgId: z.string().min(1),
   departmentId: z.string().uuid(),
-  unitId: z.string().uuid().optional().nullable(),
+  branchId: z.string().uuid().optional().nullable(),
   name: z.string().min(2).max(255).optional(),
   code: z.string().min(1).max(50).optional(),
   description: z.string().max(1024).optional().nullable(),
@@ -55,7 +55,7 @@ export const listarDepartmentsInputSchema = z
   .object({
     orgId: z.string().min(1),
     status: z.enum(["ativo", "inativo", "arquivado"]).optional(),
-    unitId: z.string().uuid().optional().nullable(),
+    branchId: z.string().uuid().optional().nullable(),
     parentId: z.string().uuid().optional().nullable(),
     busca: z.string().min(2).max(120).optional(),
     cursor: z.string().optional(),

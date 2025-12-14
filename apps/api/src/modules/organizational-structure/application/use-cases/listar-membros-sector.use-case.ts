@@ -1,7 +1,7 @@
 import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
 import type { SectorMembershipRepository } from "../../infra/prisma/prisma-sector-membership.repository";
-import type { MemberInfo } from "./listar-membros-unidade.use-case";
+import type { MemberInfo } from "./member-info";
 
 export class ListarMembrosSetorUseCase {
   constructor(
@@ -46,12 +46,11 @@ export class ListarMembrosSetorUseCase {
         updatedAt: membership.updatedAt,
         user: {
           email: user.email,
-          displayName: user.displayName,
-          avatarUrl: user.avatarUrl,
+          displayName: user.displayName ?? null,
+          avatarUrl: user.avatarUrl ?? null,
           status: user.status,
         },
       };
     });
   }
 }
-

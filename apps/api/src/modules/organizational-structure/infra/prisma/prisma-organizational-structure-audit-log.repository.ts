@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   OrganizationalStructureAuditLog,
@@ -42,7 +43,7 @@ export class PrismaOrganizationalStructureAuditLogRepository
         entityId: log.entityId,
         action: log.action,
         actorId: log.actorId,
-        payload: log.payload,
+        payload: log.payload ? (log.payload as Prisma.InputJsonValue) : Prisma.JsonNull,
         createdAt: log.createdAt,
       },
     });

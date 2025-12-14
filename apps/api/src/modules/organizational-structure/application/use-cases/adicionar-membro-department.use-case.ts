@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
@@ -60,6 +61,7 @@ export class AdicionarMembroDepartamentoUseCase {
     // Registrar audit log
     if (this.deps.auditLogRepository) {
       await this.deps.auditLogRepository.registrar({
+        id: randomUUID(),
         orgId: input.orgId,
         entityType: "department",
         entityId: input.departmentId,
@@ -69,19 +71,25 @@ export class AdicionarMembroDepartamentoUseCase {
           userId: input.userId,
           role: input.role,
         },
+        createdAt: new Date(),
       });
     }
 
     // Publicar evento de domínio
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "organizational-structure.department.member-added",
-        payload: {
+        name: "OrganizationalStructure.DepartmentMemberAdded",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
           orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
           departmentId: input.departmentId,
           userId: input.userId,
           role: input.role,
-          actorId: this.deps.actorId,
         },
       });
     }

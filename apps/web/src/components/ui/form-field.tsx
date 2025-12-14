@@ -4,7 +4,10 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { forwardRef, ReactNode } from "react";
 import { Tooltip } from "./tooltip";
 
-interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> {
+type FormFieldElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+interface FormFieldProps
+    extends React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> {
     label: string;
     name: string;
     type?: "text" | "email" | "number" | "select" | "textarea" | "password" | "url" | "date";
@@ -19,7 +22,7 @@ interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement | HT
     mask?: string;
 }
 
-export const FormField = forwardRef<any, FormFieldProps>(
+export const FormField = forwardRef<FormFieldElement, FormFieldProps>(
     (
         {
             label,
@@ -34,7 +37,6 @@ export const FormField = forwardRef<any, FormFieldProps>(
             rows = 4,
             className = "",
             leftIcon,
-            mask,
             ...props
         },
         ref
@@ -74,7 +76,7 @@ export const FormField = forwardRef<any, FormFieldProps>(
                         <select
                             id={inputId}
                             name={name}
-                            ref={ref as any}
+                            ref={ref as unknown as React.Ref<HTMLSelectElement>}
                             required={required}
                             aria-required={required}
                             aria-invalid={error ? "true" : "false"}
@@ -82,7 +84,7 @@ export const FormField = forwardRef<any, FormFieldProps>(
                                 .filter(Boolean)
                                 .join(" ")}
                             className={`${inputClasses} appearance-none bg-[url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'rgba(255,255,255,0.5)\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'%3e%3cpolyline points=\\'6 9 12 15 18 9\\'%3e%3c/polyline%3e%3c/svg%3e')] bg-[length:1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-10`}
-                            {...(props as any)}
+                            {...(props as unknown as React.SelectHTMLAttributes<HTMLSelectElement>)}
                         >
                             <option value="" className="bg-[#0A0A0A] text-zinc-400">
                                 Selecione...
@@ -97,7 +99,7 @@ export const FormField = forwardRef<any, FormFieldProps>(
                         <textarea
                             id={inputId}
                             name={name}
-                            ref={ref as any}
+                            ref={ref as unknown as React.Ref<HTMLTextAreaElement>}
                             required={required}
                             rows={rows}
                             aria-required={required}
@@ -106,14 +108,14 @@ export const FormField = forwardRef<any, FormFieldProps>(
                                 .filter(Boolean)
                                 .join(" ")}
                             className={inputClasses}
-                            {...(props as any)}
+                            {...(props as unknown as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
                         />
                     ) : (
                         <input
                             id={inputId}
                             name={name}
                             type={type}
-                            ref={ref as any}
+                            ref={ref as unknown as React.Ref<HTMLInputElement>}
                             required={required}
                             aria-required={required}
                             aria-invalid={error ? "true" : "false"}
@@ -121,7 +123,7 @@ export const FormField = forwardRef<any, FormFieldProps>(
                                 .filter(Boolean)
                                 .join(" ")}
                             className={inputClasses}
-                            {...(props as any)}
+                            {...(props as unknown as React.InputHTMLAttributes<HTMLInputElement>)}
                         />
                     )}
 

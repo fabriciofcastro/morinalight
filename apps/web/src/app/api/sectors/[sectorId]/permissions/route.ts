@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-import { buildAuthHeaders } from "../../../../_lib/auth-headers";
+import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 type RouteParams = {
   params: {
@@ -11,7 +11,7 @@ type RouteParams = {
 
 export async function GET(_request: Request, { params }: RouteParams) {
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -24,7 +24,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -46,7 +46,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions/${permissionId}`, {
     method: "DELETE",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   if (response.status === 204) {

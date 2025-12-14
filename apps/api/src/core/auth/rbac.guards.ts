@@ -48,7 +48,10 @@ export async function checkOrganizationAccess(
   userId: string,
   orgId: string,
   requiredRole?: OrganizationRole,
-): Promise<{ hasAccess: boolean; role?: OrganizationRole; error?: string }> {
+): Promise<
+  | { hasAccess: true; role: OrganizationRole }
+  | { hasAccess: false; role?: OrganizationRole; error?: string }
+> {
   const membership = await organizationRepository.encontrarMembership?.(orgId, userId);
 
   if (!membership) {

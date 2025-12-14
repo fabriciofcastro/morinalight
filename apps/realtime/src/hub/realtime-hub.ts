@@ -37,6 +37,9 @@ export class RealtimeHub {
     options: RealtimeHubOptions = {},
   ) {
     this.redis = new Redis(redisUrl, { lazyConnect: true });
+    this.redis.on("error", (err) => {
+      this.logger.error({ err }, "Erro de conexão com Redis (realtime)");
+    });
     this.stream = stream;
     this.pendingAlertThreshold = options.pendingAlertThreshold ?? 100;
     this.pendingAlertIntervalMs = options.pendingAlertIntervalMs ?? 30000;
@@ -157,12 +160,34 @@ export class RealtimeHub {
     const connections = this.connections.get(orgId);
     if (!connections) return;
 
-    connections.forEach(({ socket }) => {
+    // Para notificações, entregamos apenas ao usuário-alvo (metadata.actorId).
+    // Para outros eventos (Permissions.*, etc.), mantém broadcast por organização.
+    const isNotificationEvent =
+      eventName === "Notification.Created" ||
+      eventName === "notification.created" ||
+      (typeof eventName === "string" && eventName.includes("Notification"));
+
+    let targetActorId: string | null = null;
+    if (isNotificationEvent) {
+      try {
+        const parsed = JSON.parse(message) as { metadata?: { actorId?: string } };
+        targetActorId = typeof parsed?.metadata?.actorId === "string" ? parsed.metadata.actorId : null;
+      } catch {
+        targetActorId = null;
+      }
+    }
+
+    let delivered = 0;
+    connections.forEach(({ socket, actorId }) => {
+      if (targetActorId && actorId !== targetActorId) {
+        return;
+      }
       if (socket.readyState === socket.OPEN) {
         socket.send(message);
+        delivered += 1;
       }
     });
-    broadcastCounter.inc({ event_name: eventName ?? "unknown" }, connections.size);
+    broadcastCounter.inc({ event_name: eventName ?? "unknown" }, delivered);
   }
 
   private updateConnectionMetrics(orgId?: string) {

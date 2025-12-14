@@ -27,16 +27,18 @@ export function InsaneNotFound({
   const [isAuthed, setIsAuthed] = useState(false);
 
   useEffect(() => {
-    try {
-      setLastPath(window.sessionStorage.getItem("morina:lastPath"));
-    } catch {
-      // ignore
-    }
-    try {
-      setIsAuthed(!!window.localStorage.getItem("user_data"));
-    } catch {
-      // ignore
-    }
+    queueMicrotask(() => {
+      try {
+        setLastPath(window.sessionStorage.getItem("morina:lastPath"));
+      } catch {
+        // ignore
+      }
+      try {
+        setIsAuthed(!!window.localStorage.getItem("user_data"));
+      } catch {
+        // ignore
+      }
+    });
   }, []);
 
   const now = useMemo(() => {

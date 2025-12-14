@@ -3,7 +3,7 @@
 import { Button, FormField, FormTextarea, GlassCard, Input } from "@morina/ui";
 import { Building2, Edit, Eye, Plus, Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { useOfflineSync } from "@/hooks/use-offline-sync";
 import { getAuthHeaders } from "@/lib/auth-client";
@@ -30,17 +30,14 @@ export function OrganizationsClient() {
   const [editingOrganization, setEditingOrganization] = useState<Organization | null>(null);
   const [pending, startTransition] = useTransition();
   const { hasPendingOperations } = useOfflineSync();
+  void hasPendingOperations;
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
   });
 
-  useEffect(() => {
-    loadOrganizations();
-  }, [loadOrganizations]);
-
-  async function loadOrganizations() {
+  const loadOrganizations = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/organizations", {
@@ -59,7 +56,11 @@ export function OrganizationsClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    void loadOrganizations();
+  }, [loadOrganizations]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

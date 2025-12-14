@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { FastifyBaseLogger } from "fastify";
 import type { WebSocket } from "ws";
 
 const redisInstances = vi.hoisted(() => [] as Array<Record<string, any>>);
@@ -8,6 +9,7 @@ vi.mock("ioredis", () => {
     static instances = redisInstances;
 
     status = "ready";
+    on = vi.fn().mockReturnThis();
     connect = vi.fn().mockResolvedValue(null);
     quit = vi.fn().mockResolvedValue(null);
     xgroup = vi.fn().mockResolvedValue("OK");
@@ -42,10 +44,11 @@ const logger = {
   trace: vi.fn(),
   fatal: vi.fn(),
   child: vi.fn().mockReturnThis(),
-};
+} as unknown as FastifyBaseLogger;
 
 type MockSocket = {
   readyState: number;
+  OPEN: number;
   send: ReturnType<typeof vi.fn>;
   close: ReturnType<typeof vi.fn>;
   on: (event: string, listener: () => void) => void;
@@ -123,6 +126,29 @@ describe("RealtimeHub", () => {
     const broadcastMetric = await broadcastCounter.get();
     const totalBroadcasts = broadcastMetric.values?.[0]?.value ?? 0;
     expect(totalBroadcasts).toBeGreaterThanOrEqual(1);
+
+    await hub.stop();
+  });
+
+  it("filtra Notification.Created por actorId (entrega somente ao destinatário)", async () => {
+    const hub = new RealtimeHub("redis://test", "realtime.notifications", logger);
+
+    const socket1 = createSocket();
+    const socket2 = createSocket();
+    hub.addConnection("org-1", "actor-1", socket1 as unknown as WebSocket);
+    hub.addConnection("org-1", "actor-2", socket2 as unknown as WebSocket);
+
+    const payload = JSON.stringify({
+      name: "Notification.Created",
+      metadata: { orgId: "org-1", actorId: "actor-2" },
+      payload: { type: "info", title: "t", message: "m" },
+    });
+
+    // @ts-expect-error - acesso intencional ao método privado para fins de teste
+    hub.broadcast("org-1", payload, "Notification.Created");
+
+    expect(socket1.send).not.toHaveBeenCalled();
+    expect(socket2.send).toHaveBeenCalledWith(payload);
 
     await hub.stop();
   });

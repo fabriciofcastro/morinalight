@@ -1,3 +1,4 @@
+import type { OrganizationRole } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   OrganizationMembershipRecord,
@@ -106,10 +107,10 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
       create: {
         organizationId,
         userId,
-        role,
+        role: role as OrganizationRole,
       },
       update: {
-        role,
+        role: role as OrganizationRole,
       },
     });
   }
@@ -164,7 +165,7 @@ export class PrismaOrganizationRepository implements OrganizationRepository {
           userId,
         },
       },
-      data: { role },
+      data: { role: role as OrganizationRole },
     });
 
     return {

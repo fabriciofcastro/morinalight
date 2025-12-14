@@ -41,7 +41,7 @@ export const atualizarPositionInputSchema = positionBaseSchema
   .extend({
     positionId: z.string().uuid("positionId deve ser UUID válido"),
   })
-  .omit({ orgId: true, sectorId: true })
+  .omit({ sectorId: true })
   .strict();
 
 export type AtualizarPositionInput = z.infer<typeof atualizarPositionInputSchema>;

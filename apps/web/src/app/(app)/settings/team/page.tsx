@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { SettingsLayout } from "@/components/settings/SettingsLayout";
 import { apiUrl, defaultActorId, defaultOrgId } from "@/lib/env";
 import type {
   OrganizationInvite,
@@ -12,8 +13,8 @@ import { TeamClient } from "./team-client";
 import { TeamInvites } from "./team-invites";
 
 export const metadata: Metadata = {
-  title: "Gestão de Equipe — AlphaSysCore",
-  description: "Administre papéis e presença da equipe operacional na organização Morina Light.",
+  title: "Equipe — MORINA",
+  description: "Administre membros da equipe e seus papéis na organização.",
 };
 
 export const dynamic = "force-dynamic";
@@ -56,30 +57,16 @@ export default async function TeamSettingsPage() {
   const invites = await fetchInvites(orgId);
 
   return (
-    <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-8 md:px-10 overflow-hidden rounded-[var(--r-lg)]">
-      {/* Overlays futuristas */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 holo-grid opacity-20" />
-        <div className="beam-line absolute left-[10%] top-0 h-full w-[1px] opacity-35" />
-        <div className="beam-line absolute right-[18%] top-0 h-full w-[1px] opacity-25" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(109,213,255,0.08),transparent_38%)]" />
+    <SettingsLayout
+      title="Equipe"
+      description="Administre membros da equipe e seus papéis na organização"
+      showBackButton
+      backHref="/settings"
+    >
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-6">
+        <TeamClient orgId={orgId} initialMembers={members} />
+        <TeamInvites orgId={orgId} initialInvites={invites} />
       </div>
-      <header className="flex flex-col gap-[var(--space-3)]">
-        <span className="inline-flex max-w-max items-center gap-[var(--space-2)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-          <span className="h-2 w-2 rounded-full bg-[var(--primary)]" />
-          AlphaSysCore
-        </span>
-        <h1 className="text-[var(--fs-3xl)] font-semibold leading-[var(--lh-tight)] text-[var(--fg)]">
-          Equipe &amp; Papéis
-        </h1>
-        <p className="max-w-[62ch] text-[var(--fs-sm)] leading-[var(--lh-relaxed)] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-          Acompanhe quem tem acesso à sua operação, administre papéis e mantenha a governança em
-          dia. Toda alteração gera auditoria e reforça a segurança multi-tenant da Morina.
-        </p>
-      </header>
-
-      <TeamClient orgId={orgId} initialMembers={members} />
-      <TeamInvites orgId={orgId} initialInvites={invites} />
-    </div>
+    </SettingsLayout>
   );
 }

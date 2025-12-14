@@ -29,7 +29,7 @@ async function createUser() {
       where: { email },
     });
 
-    let user;
+    let user: { id: string };
     if (existingUser) {
       console.log(`⚠️  Usuário ${email} já existe. Atualizando senha...`);
 

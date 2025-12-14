@@ -59,6 +59,10 @@ export class ApiClient {
 
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.get<T>(url, config);
+    // Se responseType é 'text', retornar response.data diretamente
+    if (config?.responseType === "text") {
+      return response.data as T;
+    }
     return response.data;
   }
 

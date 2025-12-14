@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 
-import { requireOrganizationAccess } from "../../../core/auth/rbac.guards";
+import { checkOrganizationAccess } from "../../../core/auth/rbac.guards";
 import { getTenant } from "../../../core/tenant/tenant.utils";
 import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
 import type { SupplierRepository } from "../repositories/supplier.repository";
@@ -58,11 +58,14 @@ export async function registerSuppliersRoutes(app: FastifyInstance, deps: Suppli
     }
 
     // Verificar acesso à organização do fornecedor
-    await requireOrganizationAccess(deps.organizationRepository)(
-      { ...request, params: { orgId: supplier.orgId } } as any,
-      reply,
+    const access = await checkOrganizationAccess(
+      deps.organizationRepository,
+      request.auth.userId,
+      supplier.orgId,
     );
-    if (reply.sent) return;
+    if (!access.hasAccess) {
+      return reply.status(403).send({ message: access.error || "Acesso negado à organização" });
+    }
 
     return reply.send(supplier);
   });
@@ -109,11 +112,14 @@ export async function registerSuppliersRoutes(app: FastifyInstance, deps: Suppli
     }
 
     // Verificar acesso à organização do fornecedor
-    await requireOrganizationAccess(deps.organizationRepository)(
-      { ...request, params: { orgId: existing.orgId } } as any,
-      reply,
+    const access = await checkOrganizationAccess(
+      deps.organizationRepository,
+      request.auth.userId,
+      existing.orgId,
     );
-    if (reply.sent) return;
+    if (!access.hasAccess) {
+      return reply.status(403).send({ message: access.error || "Acesso negado à organização" });
+    }
 
     const supplier = await deps.supplierRepository.update(id, {
       ...body,
@@ -137,11 +143,14 @@ export async function registerSuppliersRoutes(app: FastifyInstance, deps: Suppli
     }
 
     // Verificar acesso à organização do fornecedor
-    await requireOrganizationAccess(deps.organizationRepository)(
-      { ...request, params: { orgId: existing.orgId } } as any,
-      reply,
+    const access = await checkOrganizationAccess(
+      deps.organizationRepository,
+      request.auth.userId,
+      existing.orgId,
     );
-    if (reply.sent) return;
+    if (!access.hasAccess) {
+      return reply.status(403).send({ message: access.error || "Acesso negado à organização" });
+    }
 
     await deps.supplierRepository.delete(id);
 

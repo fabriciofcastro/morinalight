@@ -149,10 +149,13 @@ export class ResolverPermissoesEfetivasUseCase {
         const positionIds = memberships.map((m) => m.positionId);
         const positions = await Promise.all(
           positionIds.map((positionId) =>
-            this.deps.positionRepository.encontrarPorId(input.orgId, positionId),
+            this.deps.positionRepository!.encontrarPorId(input.orgId, positionId),
           ),
         );
-        const sectorIds = positions.filter((p) => p !== null).map((p) => p?.dados.sectorId);
+        const validPositions = positions.filter(
+          (p): p is NonNullable<typeof p> => p !== null && p !== undefined,
+        );
+        const sectorIds = validPositions.map((p) => p.dados.sectorId).filter((id): id is string => id !== undefined);
         if (sectorIds.length > 0) {
           const perms = await this.deps.sectorPermissionRepository.listarPorSectors(
             input.orgId,
@@ -227,7 +230,7 @@ export class ResolverPermissoesEfetivasUseCase {
 
     return resolverPermissoesEfetivasResultadoSchema.parse({
       userId: membership.userId,
-      orgId: membership.orgId,
+      orgId: membership.organizationId,
       role: membership.role,
       effective,
       denied,

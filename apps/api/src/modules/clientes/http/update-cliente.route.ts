@@ -26,7 +26,8 @@ export async function registerUpdateClienteRoute(app: FastifyInstance, deps: Dep
         actorId: userId,
       });
 
-      const input = { ...request.body, orgId, clienteId } as unknown;
+      const body = (request.body ?? {}) as Record<string, unknown>;
+      const input = { ...body, orgId, clienteId } as unknown;
       const cliente = await useCase.execute(input);
 
       return reply.send(cliente);

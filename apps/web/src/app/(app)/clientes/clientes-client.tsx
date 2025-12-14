@@ -13,7 +13,7 @@ import {
   User,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
@@ -66,11 +66,7 @@ export function ClientesClient() {
     observacoes: "",
   });
 
-  useEffect(() => {
-    loadClientes();
-  }, [loadClientes]);
-
-  async function loadClientes() {
+  const loadClientes = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -97,7 +93,11 @@ export function ClientesClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    void loadClientes();
+  }, [loadClientes]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

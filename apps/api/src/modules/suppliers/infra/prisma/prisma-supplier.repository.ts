@@ -1,11 +1,11 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient, Supplier } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   CreateSupplierInput,
   SupplierRecord,
   SupplierRepository,
   UpdateSupplierInput,
-} from "../repositories/supplier.repository";
+} from "../../repositories/supplier.repository";
 
 export class PrismaSupplierRepository implements SupplierRepository {
   private prisma: PrismaClient;
@@ -30,7 +30,7 @@ export class PrismaSupplierRepository implements SupplierRepository {
     orgId: string,
     filters?: { status?: string; busca?: string },
   ): Promise<SupplierRecord[]> {
-    const where: any = { orgId };
+    const where: Prisma.SupplierWhereInput = { orgId };
 
     if (filters?.status) {
       where.status = filters.status;
@@ -102,7 +102,7 @@ export class PrismaSupplierRepository implements SupplierRepository {
     });
   }
 
-  private mapToRecord(supplier: any): SupplierRecord {
+  private mapToRecord(supplier: Supplier): SupplierRecord {
     return {
       id: supplier.id,
       orgId: supplier.orgId,

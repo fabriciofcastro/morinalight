@@ -6,6 +6,9 @@ import type {
   PositionRepository,
   SectorRepository,
 } from "../domain/repositories";
+import type { DepartmentMembershipRepository } from "../infra/prisma/prisma-department-membership.repository";
+import type { PositionMembershipRepository } from "../infra/prisma/prisma-position-membership.repository";
+import type { SectorMembershipRepository } from "../infra/prisma/prisma-sector-membership.repository";
 import { registerCreateDepartmentRoute } from "./create-department.route";
 import { registerCreatePositionRoute } from "./create-position.route";
 import { registerCreateSectorRoute } from "./create-sector.route";
@@ -21,10 +24,6 @@ import { registerListSectorsRoute } from "./list-sectors.route";
 import { registerUpdateDepartmentRoute } from "./update-department.route";
 import { registerUpdatePositionRoute } from "./update-position.route";
 import { registerUpdateSectorRoute } from "./update-sector.route";
-
-import type { DepartmentMembershipRepository } from "../infra/prisma/prisma-department-membership.repository";
-import type { PositionMembershipRepository } from "../infra/prisma/prisma-position-membership.repository";
-import type { SectorMembershipRepository } from "../infra/prisma/prisma-sector-membership.repository";
 
 type OrganizationalStructureHttpDeps = {
   departmentRepository: DepartmentRepository;

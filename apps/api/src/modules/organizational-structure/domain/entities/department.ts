@@ -4,7 +4,7 @@ export type DepartmentStatus = "ativo" | "inativo" | "arquivado";
 
 export type DepartmentProps = {
   orgId: string;
-  unitId?: string | null;
+  branchId?: string | null;
   name: string;
   code: string;
   description?: string | null;
@@ -93,8 +93,8 @@ export class Department {
       this.props.description = dados.description;
     }
 
-    if (dados.unitId !== undefined) {
-      this.props.unitId = dados.unitId;
+    if (dados.branchId !== undefined) {
+      this.props.branchId = dados.branchId;
     }
 
     if (dados.parentId !== undefined) {

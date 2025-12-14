@@ -3,10 +3,10 @@ import { Cliente } from "../../domain/entities/cliente";
 import type {
   ClienteListaFiltro,
   ClienteListaPagina,
-  ClienteProps,
   ClienteRepository,
-  ClienteStatus,
 } from "../../domain/repositories/cliente-repository";
+import type { Prisma } from "@prisma/client";
+import type { ClienteProps, ClienteStatus } from "../../domain/entities/cliente";
 
 const prisma = getPrisma();
 
@@ -122,7 +122,7 @@ export class PrismaClienteRepository implements ClienteRepository {
   async listarPorOrg(orgId: string, filtro: ClienteListaFiltro = {}): Promise<ClienteListaPagina> {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
-    const andFilters = [];
+    const andFilters: Prisma.ClienteWhereInput[] = [];
     if (filtro.status) {
       andFilters.push({ status: filtro.status });
     }
@@ -147,7 +147,7 @@ export class PrismaClienteRepository implements ClienteRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.ClienteWhereInput = {
       orgId,
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };

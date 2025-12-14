@@ -83,7 +83,7 @@ export default function NewWorkflowPolicyPage() {
       let parsedConfig: unknown;
       try {
         parsedConfig = JSON.parse(formData.config);
-      } catch (_err) {
+      } catch {
         alert("Configuração inválida. Certifique-se de que é um JSON válido.");
         return;
       }

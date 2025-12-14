@@ -191,7 +191,7 @@ export interface Department {
     active: boolean;
     filialId?: string;
     parentId?: string;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
     createdAt: string;
     updatedAt: string;
 }
@@ -204,7 +204,7 @@ export interface CreateDepartmentInput {
     active?: boolean;
     filialId?: string;
     parentId?: string;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
 }
 
 export interface UpdateDepartmentInput extends Partial<CreateDepartmentInput> {
@@ -221,7 +221,7 @@ export interface Sector {
     departmentId: string;
     filialId?: string;
     parentId?: string;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
     createdAt: string;
     updatedAt: string;
 }
@@ -235,7 +235,7 @@ export interface CreateSectorInput {
     departmentId: string;
     filialId?: string;
     parentId?: string;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
 }
 
 export interface UpdateSectorInput extends Partial<CreateSectorInput> {
@@ -300,7 +300,7 @@ export interface WorkflowPolicy {
     id: string;
     module: string;
     flowType: string;
-    config: any;
+    config: Record<string, unknown>;
     active: boolean;
     createdAt: string;
     updatedAt: string;
@@ -309,7 +309,7 @@ export interface WorkflowPolicy {
 export interface CreateWorkflowPolicyInput {
     module: string;
     flowType: string;
-    config: any;
+    config: Record<string, unknown>;
     active?: boolean;
 }
 

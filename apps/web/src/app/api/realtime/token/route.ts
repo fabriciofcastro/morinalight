@@ -62,11 +62,11 @@ export async function POST(request: NextRequest) {
     const response = await fetch(`${API_URL}/realtime/token`, {
       method: "POST",
       headers: {
-        ...buildAuthHeaders({
+        ...(await buildAuthHeaders({
           "Content-Type": "application/json",
           "x-org-id": orgId,
           "x-actor-id": actorId,
-        }),
+        })),
       },
       body: JSON.stringify(body),
     });

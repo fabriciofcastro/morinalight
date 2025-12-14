@@ -1,3 +1,4 @@
+import type { OrganizationRole } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   UserInviteRecord,
@@ -86,7 +87,7 @@ export class PrismaUserInviteRepository implements UserInviteRepository {
         id: input.inviteId,
         organizationId: input.organizationId,
         email: input.email.toLowerCase(),
-        role: input.role,
+        role: input.role as OrganizationRole,
         token: input.token,
         invitedById: input.invitedById,
         expiresAt: input.expiresAt ?? null,

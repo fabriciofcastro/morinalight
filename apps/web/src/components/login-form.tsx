@@ -33,8 +33,6 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const [_emailValue, setEmailValue] = useState("");
-  const [_passwordValue, setPasswordValue] = useState("");
 
   const {
     register,

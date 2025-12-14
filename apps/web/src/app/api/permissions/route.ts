@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const url = qs ? `${apiUrl}/permissions?${qs}` : `${apiUrl}/permissions`;
 
   const response = await fetch(url, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
   const response = await fetch(`${apiUrl}/permissions`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

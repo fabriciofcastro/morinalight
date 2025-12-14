@@ -32,7 +32,7 @@ async function updateUserPassword(email: string, newPassword: string) {
 
     console.log("✅ Senha atualizada com sucesso!");
     console.log(`   Email: ${user.email}`);
-    console.log(`   Nova senha: ${newPassword}`);
+    console.log("   Nova senha: ******** (oculta)");
   } catch (error) {
     console.error("❌ Erro ao atualizar senha:", error);
     process.exit(1);

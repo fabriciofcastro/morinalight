@@ -36,7 +36,7 @@ export const atualizarSectorInputSchema = sectorBaseSchema
   .extend({
     sectorId: z.string().uuid("sectorId deve ser UUID válido"),
   })
-  .omit({ orgId: true, departmentId: true })
+  .omit({ departmentId: true })
   .strict();
 
 export type AtualizarSectorInput = z.infer<typeof atualizarSectorInputSchema>;

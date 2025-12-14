@@ -122,7 +122,10 @@ export class VerificarPermissionUseCase {
           ),
         );
 
-        const sectorIds = positions.filter((p) => p !== null).map((p) => p?.dados.sectorId);
+        const sectorIds = positions
+          .filter((p): p is NonNullable<typeof p> => p !== null)
+          .map((p) => p.dados.sectorId)
+          .filter((id): id is string => id !== undefined);
 
         if (sectorIds.length > 0) {
           const sectorPermissions = await this.deps.sectorPermissionRepository.listarPorSectors(

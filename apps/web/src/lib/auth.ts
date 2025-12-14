@@ -13,7 +13,9 @@ export type AuthSession = {
 };
 
 const AUTH_TOKEN_KEY = "auth_token";
+// Mantido por compatibilidade histórica (migração parcial do storage do usuário)
 const _AUTH_USER_KEY = "auth_user";
+void _AUTH_USER_KEY;
 
 /**
  * Obtém o token de autenticação do cookie (server-side apenas)

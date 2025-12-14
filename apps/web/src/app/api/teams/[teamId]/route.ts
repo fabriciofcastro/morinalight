@@ -8,7 +8,7 @@ export async function PUT(request: Request, { params }: { params: { teamId: stri
 
   const response = await fetch(`${apiUrl}/teams/${params.teamId}`, {
     method: "PUT",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: { teamId: stri
 export async function DELETE(_request: Request, { params }: { params: { teamId: string } }) {
   const response = await fetch(`${apiUrl}/teams/${params.teamId}`, {
     method: "DELETE",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   if (!response.ok) {

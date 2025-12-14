@@ -106,15 +106,17 @@ export async function registerNotificationsRoutes(app: FastifyInstance, deps: No
         produto: null,
         preficha: null,
       })),
-      ...(prefichaFeed?.itens.map(
-        (item: {
+      ...(prefichaFeed?.itens.map((value) => {
+        const item = value as {
           id: string;
           acao: string;
           criadoEm: Date;
           actorId: string;
           payload: unknown;
           preficha: { prefichaId: string; produtoId: string; status: string } | null;
-        }) => ({
+        };
+
+        return {
           id: item.id,
           tipo: item.acao,
           criadoEm: item.criadoEm,
@@ -128,8 +130,8 @@ export async function registerNotificationsRoutes(app: FastifyInstance, deps: No
                 status: item.preficha.status,
               }
             : null,
-        }),
-      ) ?? []),
+        };
+      }) ?? []),
     ]
       .sort((a, b) => {
         const diff = b.criadoEm.getTime() - a.criadoEm.getTime();

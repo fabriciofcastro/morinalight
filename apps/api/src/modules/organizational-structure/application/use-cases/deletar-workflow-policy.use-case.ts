@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type { WorkflowPolicyRepository } from "../../domain/repositories/workflow-policy-repository";
 import { z } from "zod";
+import type { WorkflowPolicyRepository } from "../../domain/repositories/workflow-policy-repository";
 
 type Dependencies = {
   workflowPolicyRepository: WorkflowPolicyRepository;

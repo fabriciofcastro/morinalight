@@ -20,17 +20,19 @@ export default function SelectOrganizationPage() {
   useEffect(() => {
     // Buscar organizações salvas no login
     const orgsStr = localStorage.getItem("auth_organizations");
-    if (orgsStr) {
-      try {
-        const parsed = JSON.parse(orgsStr) as Organization[];
-        setOrganizations(Array.isArray(parsed) ? parsed : []);
-      } catch {
+    queueMicrotask(() => {
+      if (orgsStr) {
+        try {
+          const parsed = JSON.parse(orgsStr) as Organization[];
+          setOrganizations(Array.isArray(parsed) ? parsed : []);
+        } catch {
+          setOrganizations([]);
+        }
+      } else {
         setOrganizations([]);
       }
-    } else {
-      setOrganizations([]);
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    });
   }, []);
 
   const handleSelectOrganization = (orgId: string) => {

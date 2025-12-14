@@ -19,7 +19,8 @@ export async function registerListComissoesRoute(app: FastifyInstance, deps: Dep
         comissaoRepository: deps.comissaoRepository,
       });
 
-      const input = { ...request.query, orgId } as unknown;
+      const query = (request.query ?? {}) as Record<string, unknown>;
+      const input = { ...query, orgId } as unknown;
       const resultado = await useCase.execute(input);
 
       return reply.send(resultado);

@@ -13,7 +13,7 @@ import {
   User,
   XCircle,
 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Comissao = {
@@ -63,12 +63,7 @@ export function ComissoesClient() {
   const [dataFim, setDataFim] = useState("");
   const [pending, startTransition] = useTransition();
 
-  useEffect(() => {
-    loadRepresentantes();
-    loadComissoes();
-  }, [loadComissoes, loadRepresentantes]);
-
-  async function loadRepresentantes() {
+  const loadRepresentantes = useCallback(async () => {
     setLoadingRepresentantes(true);
     try {
       const response = await fetch(`/api/representantes`, {
@@ -87,9 +82,9 @@ export function ComissoesClient() {
     } finally {
       setLoadingRepresentantes(false);
     }
-  }
+  }, []);
 
-  async function loadComissoes() {
+  const loadComissoes = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -122,7 +117,12 @@ export function ComissoesClient() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [dataFim, dataInicio, representanteFilter, statusFilter]);
+
+  useEffect(() => {
+    void loadRepresentantes();
+    void loadComissoes();
+  }, [loadComissoes, loadRepresentantes]);
 
   async function handleAssinarComissao(comissaoId: string) {
     if (!confirm("Tem certeza que deseja assinar esta comissão?")) {

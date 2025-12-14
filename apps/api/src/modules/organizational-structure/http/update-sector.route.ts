@@ -31,7 +31,8 @@ export async function registerUpdateSectorRoute(app: FastifyInstance, deps: Depe
         actorId: userId,
       });
 
-      const input = { ...request.body, orgId, sectorId: params.sectorId } as unknown;
+      const body = request.body as Record<string, unknown>;
+      const input = { ...body, orgId, sectorId: params.sectorId };
       const sector = await useCase.execute(input);
 
       return reply.status(200).send(sector);

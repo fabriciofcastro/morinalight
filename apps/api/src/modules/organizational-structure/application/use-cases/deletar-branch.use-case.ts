@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import { z } from "zod";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { BranchRepository } from "../../domain/repositories/branch-repository";
-import { z } from "zod";
 
 type Dependencies = {
   branchRepository: BranchRepository;

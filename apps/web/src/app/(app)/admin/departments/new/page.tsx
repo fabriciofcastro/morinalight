@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { ArrowLeft, Save, Loader2, Building, Settings } from "lucide-react";
 import Link from "next/link";
 import { PageBackground } from "@/components/page-background";
@@ -49,7 +48,7 @@ export default function NewDepartmentPage() {
             let parsedMetadata;
             try {
                 parsedMetadata = JSON.parse(formData.metadata);
-            } catch (err) {
+            } catch {
                 alert("Metadados inválidos. Certifique-se de que é um JSON válido.");
                 return;
             }

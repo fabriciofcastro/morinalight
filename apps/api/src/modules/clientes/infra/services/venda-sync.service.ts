@@ -10,6 +10,7 @@
 
 import { Comissao } from "../../domain/entities/comissao";
 import { Venda } from "../../domain/entities/venda";
+import type { VendaStatus } from "../../domain/entities/venda";
 import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
 import type { ComissaoRepository } from "../../domain/repositories/comissao-repository";
 import type { ContratoRepository } from "../../domain/repositories/contrato-repository";
@@ -90,6 +91,14 @@ export class VendaSyncService {
             continue;
           }
 
+          const normalizedStatus = (pedido.status ?? "").toLowerCase();
+          const status: VendaStatus =
+            normalizedStatus === "confirmada"
+              ? "confirmada"
+              : normalizedStatus === "cancelada"
+                ? "cancelada"
+                : "pendente";
+
           // Buscar representante do cliente
           const representante = await this.deps.representanteRepository.encontrarPorClienteId(
             params.orgId,
@@ -107,7 +116,7 @@ export class VendaSyncService {
               dataPagamento: pedido.dataPagamento ? new Date(pedido.dataPagamento) : null,
               valorTotal: Number(pedido.valorTotal),
               valorComissao: 0,
-              status: pedido.status,
+              status,
               emillenniumPedidoId: pedido.id,
               emillenniumSyncAt: new Date(),
               createdBy: params.actorId,
@@ -138,7 +147,7 @@ export class VendaSyncService {
               dataPagamento: pedido.dataPagamento ? new Date(pedido.dataPagamento) : null,
               valorTotal: Number(pedido.valorTotal),
               valorComissao: 0,
-              status: pedido.status,
+              status,
               emillenniumPedidoId: pedido.id,
               emillenniumSyncAt: new Date(),
               createdBy: params.actorId,
@@ -170,7 +179,7 @@ export class VendaSyncService {
             dataPagamento: pedido.dataPagamento ? new Date(pedido.dataPagamento) : null,
             valorTotal: Number(pedido.valorTotal),
             valorComissao,
-            status: pedido.status,
+            status,
             emillenniumPedidoId: pedido.id,
             emillenniumSyncAt: new Date(),
             createdBy: params.actorId,

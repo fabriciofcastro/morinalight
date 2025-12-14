@@ -65,6 +65,7 @@ export async function registerUserCustomPermissionsRoute(app: FastifyInstance, d
           workflowPolicyRepository: deps.workflowPolicyRepository,
           permissionChangeRequestRepository: deps.permissionChangeRequestRepository,
           permissionRepository: deps.permissionRepository,
+          organizationRepository: deps.organizationRepository,
           orgId,
           actorId,
           entityType: "user",

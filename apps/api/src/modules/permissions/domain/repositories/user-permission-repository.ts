@@ -21,3 +21,5 @@ export interface UserPermissionRepository {
   listarPorUser(orgId: string, userId: string): Promise<UserPermission[]>;
   deletarPorUserEPermission(orgId: string, userId: string, permissionId: string): Promise<void>;
 }
+
+

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-import { buildAuthHeaders } from "../../../../../_lib/auth-headers";
+import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function DELETE(
   _request: Request,
@@ -9,7 +9,7 @@ export async function DELETE(
 ) {
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members/${params.userId}`, {
     method: "DELETE",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -31,7 +31,7 @@ export async function PATCH(
 
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members/${params.userId}`, {
     method: "PATCH",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

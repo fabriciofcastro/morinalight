@@ -4,6 +4,7 @@ import type {
   ProdutoAuditoriaRepository,
 } from "@morina/catalogo-domain";
 import { ProdutoAuditoria } from "@morina/catalogo-domain";
+import type { Prisma } from "@prisma/client";
 
 import { getPrisma } from "../../../../infra/database/prisma.service";
 
@@ -20,7 +21,7 @@ export class PrismaProdutoAuditoriaRepository implements ProdutoAuditoriaReposit
         orgId: dados.orgId,
         action: dados.acao,
         actorId: dados.actorId,
-        payload: dados.payload ?? undefined,
+        payload: (dados.payload as Prisma.InputJsonValue | undefined) ?? undefined,
         createdAt: dados.criadoEm,
       },
     });
@@ -60,7 +61,7 @@ async function listar({
 }): Promise<ProdutoAuditoriaPagina> {
   const take = Math.min(filtro.limite ?? 20, 100);
 
-  const andFilters: Array<Record<string, unknown>> = [{ orgId }];
+  const andFilters: Prisma.ProductAuditLogWhereInput[] = [{ orgId }];
   if (produtoId) {
     andFilters.push({ productId: produtoId });
   }

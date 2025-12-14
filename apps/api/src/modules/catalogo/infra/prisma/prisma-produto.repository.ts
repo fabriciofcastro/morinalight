@@ -6,6 +6,7 @@ import type {
   ProdutoStatus,
 } from "@morina/catalogo-domain";
 import { Produto } from "@morina/catalogo-domain";
+import type { Prisma } from "@prisma/client";
 
 import { getPrisma } from "../../../../infra/database/prisma.service";
 
@@ -89,7 +90,7 @@ export class PrismaProdutoRepository implements ProdutoRepository {
   async listarPorOrg(orgId: string, filtro: ProdutoListaFiltro = {}): Promise<ProdutoListaPagina> {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 50);
 
-    const andFilters = [];
+    const andFilters: Prisma.ProductWhereInput[] = [];
     if (filtro.status) {
       andFilters.push({ status: filtro.status });
     }
@@ -113,7 +114,7 @@ export class PrismaProdutoRepository implements ProdutoRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.ProductWhereInput = {
       orgId,
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };

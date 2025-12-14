@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
 import { departmentViewSchema } from "../application/schemas/department.schema";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -27,16 +27,16 @@ export async function registerGetDepartmentRoute(app: FastifyInstance, deps: Dep
         }
 
         const view = departmentViewSchema.parse({
-          departmentId: department.dados.id,
+          departmentId: department.departmentId,
           orgId: department.dados.orgId,
-          unitId: department.dados.unitId,
+          branchId: department.dados.branchId ?? null,
           name: department.dados.name,
           code: department.dados.code,
-          description: department.dados.description,
-          parentId: department.dados.parentId,
+          description: department.dados.description ?? null,
+          parentId: department.dados.parentId ?? null,
           status: department.dados.status,
           ordem: department.dados.ordem,
-          metadata: department.dados.metadata,
+          metadata: department.dados.metadata ?? null,
           createdBy: department.dados.createdBy,
           updatedBy: department.dados.updatedBy,
           createdAt: department.dados.createdAt,
@@ -56,4 +56,3 @@ export async function registerGetDepartmentRoute(app: FastifyInstance, deps: Dep
     },
   );
 }
-

@@ -57,8 +57,15 @@ export function RegisterForm() {
             } else {
                 router.push('/dashboard');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Erro ao criar conta. Tente novamente.');
+        } catch (err: unknown) {
+            const message =
+                typeof err === "object" &&
+                err &&
+                "response" in err &&
+                typeof (err as { response?: { data?: { message?: unknown } } }).response?.data?.message === "string"
+                    ? (err as { response: { data: { message: string } } }).response.data.message
+                    : null;
+            setError(message || 'Erro ao criar conta. Tente novamente.');
         } finally {
             setIsLoading(false);
         }

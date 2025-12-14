@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1500));
             setSuccess(true);
-        } catch (err: any) {
+        } catch {
             setError('Erro ao enviar email. Tente novamente.');
         } finally {
             setIsLoading(false);

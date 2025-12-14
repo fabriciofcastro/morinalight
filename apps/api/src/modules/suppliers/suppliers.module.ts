@@ -17,18 +17,20 @@ export async function registerSuppliersModule(
 ) {
   const supplierRepository = options.supplierRepository ?? new PrismaSupplierRepository();
 
-  // Aplicar hook de tenant nas rotas de fornecedores se organizationRepository estiver disponível
-  if (options.organizationRepository) {
-    registerTenantHook(app, {
-      organizationRepository: options.organizationRepository,
-      extractOrgId: extractOrgIdFromParamsOrHeaders,
-      routes: ["/suppliers"],
-    });
+  if (!options.organizationRepository) {
+    throw new Error("SuppliersModule: organizationRepository é obrigatório");
   }
+
+  // Aplicar hook de tenant nas rotas de fornecedores se organizationRepository estiver disponível
+  registerTenantHook(app, {
+    organizationRepository: options.organizationRepository,
+    extractOrgId: extractOrgIdFromParamsOrHeaders,
+    routes: ["/suppliers"],
+  });
 
   await registerSuppliersRoutes(app, {
     supplierRepository,
-    organizationRepository: options.organizationRepository!,
+    organizationRepository: options.organizationRepository,
   });
 
   return {

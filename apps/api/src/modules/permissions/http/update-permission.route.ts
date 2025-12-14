@@ -39,9 +39,10 @@ export async function registerUpdatePermissionRoute(
         eventBus: deps.eventBus,
       });
 
+      const body = request.body as Record<string, unknown>;
       const result = await useCase.execute({
         id,
-        ...request.body,
+        ...body,
       });
 
       return reply.status(200).send(result);

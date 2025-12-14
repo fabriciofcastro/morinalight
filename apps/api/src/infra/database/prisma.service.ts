@@ -7,21 +7,39 @@ let prisma: PrismaClient | null = null;
 
 export function getPrisma() {
   if (!prisma) {
+    // Verificar DATABASE_URL de múltiplas fontes
+    const databaseUrl = env.DATABASE_URL || process.env.DATABASE_URL;
+
+    // Log da DATABASE_URL (sem senha) para debug
+    if (env.NODE_ENV === "development") {
+      if (databaseUrl) {
+        const maskedUrl = databaseUrl.replace(/:\/\/[^:]+:[^@]+@/, "://***:***@");
+        console.log("🔵 [PRISMA] Conectando ao banco:", maskedUrl);
+      } else {
+        console.error("🔴 [PRISMA] DATABASE_URL não configurada!");
+        console.error("   env.DATABASE_URL:", env.DATABASE_URL ? "✅" : "❌");
+        console.error("   process.env.DATABASE_URL:", process.env.DATABASE_URL ? "✅" : "❌");
+        console.error("   Verifique se o arquivo .env existe na raiz do projeto");
+        throw new Error(
+          "DATABASE_URL não configurada. Verifique se o arquivo .env existe na raiz do projeto e contém DATABASE_URL",
+        );
+      }
+    }
+
+    if (!databaseUrl) {
+      throw new Error(
+        "DATABASE_URL não configurada. Verifique se o arquivo .env existe na raiz do projeto e contém DATABASE_URL",
+      );
+    }
+
     const prismaOptions: Prisma.Prisma.PrismaClientOptions = {
       log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-    };
-
-    // Configure read replica if available
-    if (process.env.DATABASE_REPLICA_URL) {
-      prismaOptions.datasources = {
+      datasources: {
         db: {
-          url: env.DATABASE_URL,
+          url: databaseUrl,
         },
-      };
-      // Prisma doesn't natively support read replicas in the same client,
-      // but we can use connection pooling or separate clients
-      // For now, we'll use the main connection and optimize at query level
-    }
+      },
+    };
 
     prisma = new Prisma.PrismaClient(prismaOptions);
   }

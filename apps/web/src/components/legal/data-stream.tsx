@@ -18,9 +18,9 @@ export function DataStream() {
                         opacity: [0, 1, 0],
                     }}
                     transition={{
-                        duration: 2 + Math.random(),
+                        duration: 2 + ((i * 0.13) % 1),
                         repeat: Infinity,
-                        delay: Math.random() * 2,
+                        delay: ((i * 0.21) % 2),
                         ease: "linear",
                     }}
                 />

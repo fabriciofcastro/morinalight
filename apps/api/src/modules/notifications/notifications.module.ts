@@ -8,6 +8,23 @@ import { PrismaOrganizationAuditLogRepository } from "../organizations/infra/pri
 import type { OrganizationAuditLogRepository } from "../organizations/repositories/organization-audit-log.repository";
 import { PrismaPrefichaRepository } from "../preficha/infra/prisma/prisma-preficha.repository";
 import { PrismaPrefichaAuditoriaRepository } from "../preficha/infra/prisma/prisma-preficha-auditoria.repository";
+import { PrismaNotificationRepository } from "./infra/prisma/prisma-notification.repository";
+import {
+  registerBulkActionNotificationsRoute,
+  registerCreateNotificationRoute,
+  registerDeleteNotificationRoute,
+  registerGetNotificationHistoryRoute,
+  registerGetNotificationPreferencesRoute,
+  registerGetNotificationRoute,
+  registerGetNotificationStatsRoute,
+  registerListNotificationsRoute,
+  registerMarkAllReadRoute,
+  registerMarkNotificationReadRoute,
+  registerMarkNotificationUnreadRoute,
+  registerTestNotificationRoute,
+  registerUpdateNotificationPreferencesRoute,
+  registerUpdateNotificationRoute,
+} from "./http";
 import { registerNotificationsRoutes } from "./notifications.routes";
 
 export type NotificationsModuleOptions = {
@@ -16,6 +33,7 @@ export type NotificationsModuleOptions = {
   organizationAuditRepository?: OrganizationAuditLogRepository;
   prefichaRepository?: PrefichaRepository;
   prefichaAuditoriaRepository?: PrefichaAuditoriaRepository;
+  notificationRepository?: PrismaNotificationRepository;
 };
 
 export async function registerNotificationsModule(
@@ -32,7 +50,10 @@ export async function registerNotificationsModule(
   const prefichaAuditoriaRepository =
     options.prefichaAuditoriaRepository ??
     (process.env.DATABASE_URL ? new PrismaPrefichaAuditoriaRepository() : undefined);
+  const notificationRepository =
+    options.notificationRepository ?? new PrismaNotificationRepository();
 
+  // Rotas do feed de notificações (baseado em auditoria)
   await registerNotificationsRoutes(app, {
     produtoRepository,
     auditoriaRepository,
@@ -40,4 +61,22 @@ export async function registerNotificationsModule(
     prefichaRepository,
     prefichaAuditoriaRepository,
   });
+
+  // Rotas CRUD de notificações
+  await registerListNotificationsRoute(app, { notificationRepository });
+  await registerCreateNotificationRoute(app, { notificationRepository });
+  await registerGetNotificationRoute(app, { notificationRepository });
+  await registerUpdateNotificationRoute(app, { notificationRepository });
+  await registerDeleteNotificationRoute(app, { notificationRepository });
+  await registerMarkNotificationReadRoute(app, { notificationRepository });
+  await registerMarkNotificationUnreadRoute(app, { notificationRepository });
+  await registerMarkAllReadRoute(app, { notificationRepository });
+  await registerGetNotificationStatsRoute(app, { notificationRepository });
+  await registerGetNotificationHistoryRoute(app, { notificationRepository });
+  await registerGetNotificationPreferencesRoute(app);
+  await registerUpdateNotificationPreferencesRoute(app);
+  await registerTestNotificationRoute(app, { notificationRepository });
+  await registerBulkActionNotificationsRoute(app, { notificationRepository });
+
+  app.log.info("✅ Módulo Notifications registrado com todas as rotas CRUD");
 }

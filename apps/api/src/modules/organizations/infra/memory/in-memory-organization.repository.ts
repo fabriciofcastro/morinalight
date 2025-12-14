@@ -20,20 +20,21 @@ export class InMemoryOrganizationRepository implements OrganizationRepository {
   async listarPorUsuario(userId: string): Promise<OrganizationView[]> {
     const memberships = this.memberships.filter((membership) => membership.userId === userId);
 
-    return memberships
-      .map((membership) => {
-        const org = this.organizations.find(
-          (organization) => organization.organizationId === membership.organizationId,
-        );
-        if (!org) return null;
-        return {
+    const result: OrganizationView[] = [];
+    for (const membership of memberships) {
+      const org = this.organizations.find(
+        (organization) => organization.organizationId === membership.organizationId,
+      );
+      if (org) {
+        result.push({
           organizationId: org.organizationId,
           name: org.name,
           slug: org.slug,
           role: membership.role,
-        } satisfies OrganizationView;
-      })
-      .filter((item): item is OrganizationView => Boolean(item));
+        });
+      }
+    }
+    return result;
   }
 
   async criar(input: OrganizationRecord): Promise<OrganizationRecord> {

@@ -1,6 +1,5 @@
+import type { OrganizationRole } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
-
-import type { OrganizationRole } from "../../../organizations/domain/organization";
 
 const prisma = getPrisma();
 

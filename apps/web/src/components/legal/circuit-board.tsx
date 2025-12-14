@@ -10,8 +10,8 @@ export function CircuitBoard() {
                     key={i}
                     className="absolute"
                     style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
+                        left: `${((i * 37) % 100).toFixed(2)}%`,
+                        top: `${((i * 61) % 100).toFixed(2)}%`,
                     }}
                 >
                     <motion.div
@@ -23,7 +23,7 @@ export function CircuitBoard() {
                         transition={{
                             duration: 2,
                             repeat: Infinity,
-                            delay: Math.random() * 2,
+                            delay: ((i * 0.17) % 2),
                         }}
                     />
                     <motion.div
@@ -36,7 +36,7 @@ export function CircuitBoard() {
                         transition={{
                             duration: 3,
                             repeat: Infinity,
-                            delay: Math.random() * 2,
+                            delay: ((i * 0.29) % 2),
                         }}
                     />
                 </motion.div>

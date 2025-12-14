@@ -45,7 +45,7 @@ export function RealtimeNotificationsProvider() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   useEffect(() => {
@@ -57,11 +57,11 @@ export function RealtimeNotificationsProvider() {
 
     // Obter orgId
     const currentOrgId = getCurrentOrgId() ?? defaultOrgId;
-    setOrgId(currentOrgId);
+    queueMicrotask(() => setOrgId(currentOrgId));
 
     // Obter userId
     const currentUserId = user?.userId ?? defaultActorId;
-    setUserId(currentUserId);
+    queueMicrotask(() => setUserId(currentUserId));
   }, [mounted]);
 
   useRealtimeNotifications({

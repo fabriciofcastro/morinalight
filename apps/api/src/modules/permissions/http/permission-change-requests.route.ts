@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { NotificationPublisherService } from "../../notifications/infra/notification-publisher.service";
 import type { WorkflowPolicyRepository } from "../../organizational-structure/domain/repositories/workflow-policy-repository";
 import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
 import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
@@ -29,6 +30,7 @@ export async function maybeRequireApprovalForRbacChange(input: {
   workflowPolicyRepository: WorkflowPolicyRepository;
   permissionChangeRequestRepository: PermissionChangeRequestRepository;
   permissionRepository: PermissionRepository;
+  organizationRepository: OrganizationRepository;
   orgId: string;
   actorId: string;
   entityType: "position" | "sector" | "department" | "user";
@@ -118,29 +120,43 @@ export async function maybeRequireApprovalForRbacChange(input: {
       },
     });
 
-    // Notificação in-app (via mensageria)
-    await input.eventBus.publish({
-      name: "Notification.Created",
-      version: "v1",
-      metadata: {
-        eventId: randomUUID(),
-        orgId: input.orgId,
-        actorId: input.actorId,
-        timestamp: now,
-      },
-      payload: {
-        type: "warning",
-        title: "Mudança de permissão pendente",
-        message: `Solicitação RBAC ${reqId} enviada para aprovação (SLA: ${slaMinutes} min).`,
-        action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
-        metadata: {
-          requestId: reqId,
-          entityType: input.entityType,
-          entityId: input.entityId,
-          permissionId,
+    // Notificação direcionada por papel: aprovers recebem "pendente"
+    const notificationService = new NotificationPublisherService(input.eventBus);
+    const approverOrgRoles = config.approverOrgRoles ?? ["owner", "admin"];
+    const approverIds = await listApproverIds(
+      input.orgId,
+      input.organizationRepository,
+      approverOrgRoles,
+    );
+    for (const approverId of approverIds) {
+      await notificationService.publishWarning(
+        input.orgId,
+        approverId,
+        "Mudança de permissão pendente",
+        `Solicitação RBAC ${reqId} enviada para aprovação (SLA: ${slaMinutes} min).`,
+        {
+          action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+          metadata: {
+            requestId: reqId,
+            entityType: input.entityType,
+            entityId: input.entityId,
+            permissionId,
+          },
         },
+      );
+    }
+
+    // Notificar também o solicitante (feedback imediato na UX)
+    await notificationService.publishInfo(
+      input.orgId,
+      input.actorId,
+      "Solicitação RBAC enviada",
+      `Request ${reqId} enviado para aprovação (SLA: ${slaMinutes} min).`,
+      {
+        action: { label: "Ver status", url: "/admin/permissions/approvals" },
+        metadata: { requestId: reqId, status: "pending" },
       },
-    });
+    );
   }
 
   return {
@@ -155,6 +171,19 @@ export async function maybeRequireApprovalForRbacChange(input: {
 function normalizeConfig(config: unknown): RbacApprovalPolicyConfig {
   if (!config || typeof config !== "object") return {};
   return config as RbacApprovalPolicyConfig;
+}
+
+async function listApproverIds(
+  orgId: string,
+  organizationRepository: OrganizationRepository,
+  approverOrgRoles: Array<"owner" | "admin" | "manager">,
+): Promise<string[]> {
+  const membros = await organizationRepository.listarMembros?.(orgId);
+  if (!membros) return [];
+  const isOrgRole = (value: string): value is "owner" | "admin" | "manager" =>
+    value === "owner" || value === "admin" || value === "manager";
+  const allowed = new Set(approverOrgRoles);
+  return membros.filter((m) => isOrgRole(m.role) && allowed.has(m.role)).map((m) => m.userId);
 }
 
 async function findActiveRbacApprovalPolicy(opts: {
@@ -521,6 +550,13 @@ export async function registerPermissionChangeRequestsRoute(
       let notified = 0;
       let breached = 0;
 
+      const approverOrgRoles = config.approverOrgRoles ?? ["owner", "admin"];
+      const approverIds = await listApproverIds(
+        orgId,
+        deps.organizationRepository,
+        approverOrgRoles,
+      );
+
       for (const r of page.itens) {
         if (!r.slaDueAt) continue;
 
@@ -535,18 +571,19 @@ export async function registerPermissionChangeRequestsRoute(
           breached += 1;
 
           if (deps.eventBus) {
-            await deps.eventBus.publish({
-              name: "Notification.Created",
-              version: "v1",
-              metadata: { eventId: randomUUID(), orgId, actorId, timestamp: now },
-              payload: {
-                type: "error",
-                title: "SLA estourado (RBAC)",
-                message: `Request ${r.id} está atrasado e ainda pendente.`,
-                action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
-                metadata: { requestId: r.id, slaDueAt: r.slaDueAt.toISOString() },
-              },
-            });
+            const notificationService = new NotificationPublisherService(deps.eventBus);
+            for (const approverId of approverIds) {
+              await notificationService.publishError(
+                orgId,
+                approverId,
+                "SLA estourado (RBAC)",
+                `Request ${r.id} está atrasado e ainda pendente.`,
+                {
+                  action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+                  metadata: { requestId: r.id, slaDueAt: r.slaDueAt.toISOString() },
+                },
+              );
+            }
           }
           continue;
         }
@@ -558,18 +595,19 @@ export async function registerPermissionChangeRequestsRoute(
           notified += 1;
 
           if (deps.eventBus) {
-            await deps.eventBus.publish({
-              name: "Notification.Created",
-              version: "v1",
-              metadata: { eventId: randomUUID(), orgId, actorId, timestamp: now },
-              payload: {
-                type: "warning",
-                title: "SLA próximo do limite (RBAC)",
-                message: `Request ${r.id} vence em ~${Math.ceil(msLeft / 60_000)} min.`,
-                action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
-                metadata: { requestId: r.id, slaDueAt: r.slaDueAt.toISOString() },
-              },
-            });
+            const notificationService = new NotificationPublisherService(deps.eventBus);
+            for (const approverId of approverIds) {
+              await notificationService.publishWarning(
+                orgId,
+                approverId,
+                "SLA próximo do limite (RBAC)",
+                `Request ${r.id} vence em ~${Math.ceil(msLeft / 60_000)} min.`,
+                {
+                  action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+                  metadata: { requestId: r.id, slaDueAt: r.slaDueAt.toISOString() },
+                },
+              );
+            }
           }
         }
       }
@@ -661,6 +699,13 @@ export async function registerPermissionChangeRequestsRoute(
       await deps.permissionChangeRequestRepository.salvar(updated);
 
       if (deps.eventBus) {
+        const notificationService = new NotificationPublisherService(deps.eventBus);
+        const approverOrgRoles = config.approverOrgRoles ?? ["owner", "admin"];
+        const approverIds = await listApproverIds(
+          orgId,
+          deps.organizationRepository,
+          approverOrgRoles,
+        );
         await deps.eventBus.publish({
           name: "Permissions.PermissionChangeRequestApproved",
           version: "v1",
@@ -672,18 +717,45 @@ export async function registerPermissionChangeRequestsRoute(
           },
         });
 
-        await deps.eventBus.publish({
-          name: "Notification.Created",
-          version: "v1",
-          metadata: { eventId: randomUUID(), orgId, actorId, timestamp: new Date() },
-          payload: {
-            type: "success",
-            title: "Mudança RBAC aprovada",
-            message: `Request ${updated.id} foi aprovado e aplicado.`,
+        // Notificação direcionada: solicitante (requestedBy)
+        await notificationService.publishSuccess(
+          orgId,
+          updated.requestedBy,
+          "Mudança RBAC aprovada",
+          `Request ${updated.id} foi aprovado e aplicado.`,
+          {
             action: { label: "Abrir Matriz", url: "/admin/permissions/matrix" },
             metadata: { requestId: updated.id },
           },
-        });
+        );
+
+        // Notificação especial para o próprio aprovador
+        await notificationService.publishSuccess(
+          orgId,
+          actorId,
+          "Você aprovou uma mudança RBAC",
+          `Request ${updated.id} foi aprovado e aplicado.`,
+          {
+            action: { label: "Abrir Matriz", url: "/admin/permissions/matrix" },
+            metadata: { requestId: updated.id },
+          },
+        );
+
+        // Broadcast para o time de approvers (clareza de fila, evita duplicidade)
+        for (const approverId of approverIds) {
+          // Pular o próprio aprovador (já notificado acima)
+          if (approverId === actorId) continue;
+          await notificationService.publishInfo(
+            orgId,
+            approverId,
+            "Request RBAC resolvido",
+            `Request ${updated.id} foi aprovado por ${actorId}.`,
+            {
+              action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+              metadata: { requestId: updated.id, status: updated.status, decidedBy: actorId },
+            },
+          );
+        }
       }
 
       return reply
@@ -731,6 +803,13 @@ export async function registerPermissionChangeRequestsRoute(
       await deps.permissionChangeRequestRepository.salvar(updated);
 
       if (deps.eventBus) {
+        const notificationService = new NotificationPublisherService(deps.eventBus);
+        const approverOrgRoles = config.approverOrgRoles ?? ["owner", "admin"];
+        const approverIds = await listApproverIds(
+          orgId,
+          deps.organizationRepository,
+          approverOrgRoles,
+        );
         await deps.eventBus.publish({
           name: "Permissions.PermissionChangeRequestRejected",
           version: "v1",
@@ -742,18 +821,45 @@ export async function registerPermissionChangeRequestsRoute(
           },
         });
 
-        await deps.eventBus.publish({
-          name: "Notification.Created",
-          version: "v1",
-          metadata: { eventId: randomUUID(), orgId, actorId, timestamp: new Date() },
-          payload: {
-            type: "error",
-            title: "Mudança RBAC rejeitada",
-            message: `Request ${updated.id} foi rejeitado.`,
+        // Notificação direcionada: solicitante
+        await notificationService.publishError(
+          orgId,
+          updated.requestedBy,
+          "Mudança RBAC rejeitada",
+          `Request ${updated.id} foi rejeitado.`,
+          {
             action: { label: "Ver fila", url: "/admin/permissions/approvals" },
             metadata: { requestId: updated.id },
           },
-        });
+        );
+
+        // Notificação especial para o próprio aprovador
+        await notificationService.publishInfo(
+          orgId,
+          actorId,
+          "Você rejeitou uma mudança RBAC",
+          `Request ${updated.id} foi rejeitado.`,
+          {
+            action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+            metadata: { requestId: updated.id },
+          },
+        );
+
+        // Broadcast para o time de approvers (clareza de fila, evita duplicidade)
+        for (const approverId of approverIds) {
+          // Pular o próprio aprovador (já notificado acima)
+          if (approverId === actorId) continue;
+          await notificationService.publishInfo(
+            orgId,
+            approverId,
+            "Request RBAC resolvido",
+            `Request ${updated.id} foi rejeitado por ${actorId}.`,
+            {
+              action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+              metadata: { requestId: updated.id, status: updated.status, decidedBy: actorId },
+            },
+          );
+        }
       }
 
       return reply
@@ -791,6 +897,19 @@ export async function registerPermissionChangeRequestsRoute(
       await deps.permissionChangeRequestRepository.salvar(updated);
 
       if (deps.eventBus) {
+        const notificationService = new NotificationPublisherService(deps.eventBus);
+        const policy = await findActiveRbacApprovalPolicy({
+          workflowPolicyRepository: deps.workflowPolicyRepository,
+          orgId,
+        });
+        const config = normalizeConfig(policy?.dados.config);
+        const approverOrgRoles = config.approverOrgRoles ?? ["owner", "admin"];
+        const approverIds = await listApproverIds(
+          orgId,
+          deps.organizationRepository,
+          approverOrgRoles,
+        );
+
         await deps.eventBus.publish({
           name: "Permissions.PermissionChangeRequestCancelled",
           version: "v1",
@@ -802,18 +921,31 @@ export async function registerPermissionChangeRequestsRoute(
           },
         });
 
-        await deps.eventBus.publish({
-          name: "Notification.Created",
-          version: "v1",
-          metadata: { eventId: randomUUID(), orgId, actorId, timestamp: new Date() },
-          payload: {
-            type: "info",
-            title: "Mudança RBAC cancelada",
-            message: `Request ${updated.id} foi cancelado pelo solicitante.`,
+        // Notificação direcionada: solicitante (o próprio cancelou)
+        await notificationService.publishInfo(
+          orgId,
+          updated.requestedBy,
+          "Mudança RBAC cancelada",
+          `Request ${updated.id} foi cancelado.`,
+          {
             action: { label: "Ver fila", url: "/admin/permissions/approvals" },
             metadata: { requestId: updated.id },
           },
-        });
+        );
+
+        // Notificar todos os approvers sobre o cancelamento
+        for (const approverId of approverIds) {
+          await notificationService.publishInfo(
+            orgId,
+            approverId,
+            "Request RBAC cancelado",
+            `Request ${updated.id} foi cancelado pelo solicitante.`,
+            {
+              action: { label: "Abrir aprovações", url: "/admin/permissions/approvals" },
+              metadata: { requestId: updated.id, status: updated.status, cancelledBy: actorId },
+            },
+          );
+        }
       }
 
       return reply

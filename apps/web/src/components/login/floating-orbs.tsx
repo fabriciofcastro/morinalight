@@ -22,7 +22,7 @@ export function FloatingOrbs() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   const orbs = useMemo<Orb[]>(() => {

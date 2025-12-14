@@ -148,7 +148,10 @@ export class ListarUserPermissionsUseCase {
           ),
         );
 
-        const sectorIds = positions.filter((p) => p !== null).map((p) => p?.dados.sectorId);
+        const sectorIds = positions
+          .filter((p): p is NonNullable<typeof p> => p !== null)
+          .map((p) => p.dados.sectorId)
+          .filter((id): id is string => id !== undefined);
 
         if (sectorIds.length > 0) {
           const sectorPermissions = await this.deps.sectorPermissionRepository.listarPorSectors(
@@ -183,16 +186,24 @@ export class ListarUserPermissionsUseCase {
     // Combinar permissões do role, dos departamentos, setores, cargos e customizadas
     // Ordem de precedência: role < departamento < setor < cargo < customizada
     const allPermissionIds = new Set<string>();
-    rolePermissions.forEach((p) => allPermissionIds.add(p));
+    rolePermissions.forEach((p) => {
+      allPermissionIds.add(p);
+    });
 
     // Permissões dos departamentos sobrescrevem role
-    departmentPermissionIds.forEach((p) => allPermissionIds.add(p));
+    departmentPermissionIds.forEach((p) => {
+      allPermissionIds.add(p);
+    });
 
     // Permissões dos setores sobrescrevem departamento e role
-    sectorPermissionIds.forEach((p) => allPermissionIds.add(p));
+    sectorPermissionIds.forEach((p) => {
+      allPermissionIds.add(p);
+    });
 
     // Permissões dos cargos sobrescrevem setor, departamento e role
-    positionPermissionIds.forEach((p) => allPermissionIds.add(p));
+    positionPermissionIds.forEach((p) => {
+      allPermissionIds.add(p);
+    });
 
     // Permissões customizadas sobrescrevem tudo
     customPermissions.forEach((p) => {
@@ -211,7 +222,7 @@ export class ListarUserPermissionsUseCase {
     const views = permissions.map((permission) =>
       userPermissionViewSchema.parse({
         userId: membership.userId,
-        orgId: membership.orgId,
+        orgId: membership.organizationId,
         permissionId: permission.permissionId,
         granted: true,
         permissionKey: permission.permissionKey,

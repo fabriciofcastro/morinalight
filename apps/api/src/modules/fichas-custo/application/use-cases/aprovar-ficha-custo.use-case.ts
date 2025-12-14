@@ -1,0 +1,75 @@
+import { randomUUID } from "node:crypto";
+
+import type { DomainEventBus } from "@morina/shared-kernel";
+
+import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
+import type { FichaCustoAprovadaEvent } from "../../domain/events/ficha-custo-aprovada.event";
+import { aprovarFichaCustoSchema } from "../schemas/ficha-custo.schema";
+
+type Dependencies = {
+  fichaCustoRepository: FichaCustoRepository;
+  eventBus?: DomainEventBus;
+  actorId: string;
+  orgId: string;
+};
+
+export class AprovarFichaCustoUseCase {
+  constructor(private readonly deps: Dependencies) {}
+
+  async execute(rawInput: unknown) {
+    const input = aprovarFichaCustoSchema.parse(rawInput);
+
+    // Buscar ficha
+    const ficha = await this.deps.fichaCustoRepository.buscarPorId(
+      input.fichaCustoId,
+      this.deps.orgId,
+    );
+
+    if (!ficha) {
+      throw new Error("Ficha de custo não encontrada");
+    }
+
+    // Verificar se pertence à organização
+    if (ficha.dados.orgId !== this.deps.orgId) {
+      throw new Error("Ficha de custo não pertence à organização");
+    }
+
+    // Aprovar (valida internamente)
+    ficha.aprovar(input.aprovadorId, this.deps.actorId);
+
+    // Salvar alterações
+    await this.deps.fichaCustoRepository.salvar(ficha);
+
+    // Publicar evento de domínio
+    if (this.deps.eventBus) {
+      const dados = ficha.dados;
+      await this.deps.eventBus.publish<FichaCustoAprovadaEvent>({
+        name: "FichaCusto.Aprovada",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: this.deps.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
+          fichaCustoId: ficha.fichaCustoId,
+          orgId: dados.orgId,
+          numeroSequencial: dados.numeroSequencial,
+          referenciaPeca: dados.referenciaPeca,
+          aprovadoPor: input.aprovadorId,
+          custoFinalPeca: dados.custoFinalPeca,
+          departmentId: dados.departmentId ?? null,
+          sectorId: dados.sectorId ?? null,
+        },
+      });
+    }
+
+    return {
+      fichaCustoId: ficha.fichaCustoId,
+      status: ficha.status.valor,
+      dataAprovacao: ficha.dados.dataAprovacao,
+      aprovadoPor: ficha.dados.aprovadoPor,
+    };
+  }
+}

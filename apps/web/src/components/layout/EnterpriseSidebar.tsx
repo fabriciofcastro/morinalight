@@ -67,6 +67,12 @@ const DEPARTMENTS: Department[] = [
         path: "/producao/planejamento",
         description: "Cronogramas e alocação de recursos.",
       },
+      {
+        id: "fichas-custo",
+        name: "Fichas de Custo",
+        path: "/fichas-custo",
+        description: "Gestão de fichas de custo de aviamentos.",
+      },
     ],
   },
   {

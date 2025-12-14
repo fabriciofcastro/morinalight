@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
@@ -56,6 +57,7 @@ export class AdicionarMembroSetorUseCase {
     // Registrar audit log
     if (this.deps.auditLogRepository) {
       await this.deps.auditLogRepository.registrar({
+        id: randomUUID(),
         orgId: input.orgId,
         entityType: "sector",
         entityId: input.sectorId,
@@ -65,19 +67,25 @@ export class AdicionarMembroSetorUseCase {
           userId: input.userId,
           role: input.role,
         },
+        createdAt: new Date(),
       });
     }
 
     // Publicar evento de domínio
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "organizational-structure.sector.member-added",
-        payload: {
+        name: "OrganizationalStructure.SectorMemberAdded",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
           orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
           sectorId: input.sectorId,
           userId: input.userId,
           role: input.role,
-          actorId: this.deps.actorId,
         },
       });
     }
@@ -85,4 +93,3 @@ export class AdicionarMembroSetorUseCase {
     return membership;
   }
 }
-

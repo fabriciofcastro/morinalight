@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-import { buildAuthHeaders } from "../../../../_lib/auth-headers";
+import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 export async function GET(_request: Request, { params }: { params: { sectorId: string } }) {
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -25,7 +25,7 @@ export async function POST(request: Request, { params }: { params: { sectorId: s
 
   const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

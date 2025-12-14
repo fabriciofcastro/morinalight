@@ -55,15 +55,19 @@ export function RealtimePermissionsProvider() {
   const lastRefreshAtRef = useRef<number>(0);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
 
     const user = getAuthUser();
-    setOrgId(getCurrentOrgId() ?? defaultOrgId);
-    setUserId(user?.userId ?? defaultActorId);
+    const nextOrgId = getCurrentOrgId() ?? defaultOrgId;
+    const nextUserId = user?.userId ?? defaultActorId;
+    queueMicrotask(() => {
+      setOrgId(nextOrgId);
+      setUserId(nextUserId);
+    });
   }, [mounted]);
 
   useEffect(() => {

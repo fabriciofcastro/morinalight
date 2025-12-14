@@ -1,4 +1,5 @@
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { Prisma } from "@prisma/client";
 import type { ComissaoProps, ComissaoStatus } from "../../domain/entities/comissao";
 import { Comissao } from "../../domain/entities/comissao";
 import type {
@@ -14,8 +15,8 @@ function toDomain(record: {
   representanteId: string;
   clienteId: string;
   vendaId: string;
-  valorComissao: number;
-  percentualAplicado: number;
+  valorComissao: Prisma.Decimal | number;
+  percentualAplicado: Prisma.Decimal | number;
   dataVenda: Date;
   dataCalculo: Date;
   dataPagamento: Date | null;
@@ -123,7 +124,7 @@ export class PrismaComissaoRepository implements ComissaoRepository {
   async listarPorOrg(orgId: string, filtro?: ComissaoFiltro) {
     const limit = Math.min(Math.max(filtro?.limite ?? 20, 1), 50);
 
-    const andFilters = [];
+    const andFilters: Prisma.ComissaoWhereInput[] = [];
     if (filtro?.status) {
       andFilters.push({ status: filtro.status });
     }
@@ -153,7 +154,7 @@ export class PrismaComissaoRepository implements ComissaoRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.ComissaoWhereInput = {
       orgId,
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };
@@ -208,19 +209,19 @@ export class PrismaComissaoRepository implements ComissaoRepository {
     return records.map(toDomain);
   }
 
-  async contarPorStatus(orgId: string, status: string): Promise<number> {
+  async contarPorStatus(orgId: string, status: ComissaoStatus): Promise<number> {
     return prisma.comissao.count({
       where: { orgId, status },
     });
   }
 
-  async somarValorPorStatus(orgId: string, status: string): Promise<number> {
+  async somarValorPorStatus(orgId: string, status: ComissaoStatus): Promise<number> {
     const result = await prisma.comissao.aggregate({
       where: { orgId, status },
       _sum: { valorComissao: true },
     });
 
-    return Number(result._sum.valorComissao ?? 0);
+    return Number(result._sum?.valorComissao ?? 0);
   }
 }
 

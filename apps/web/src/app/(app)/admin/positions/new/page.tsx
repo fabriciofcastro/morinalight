@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { ArrowLeft, Save, Loader2, Briefcase, FileText, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { PageBackground } from "@/components/page-background";

@@ -2,7 +2,7 @@ import type { Department } from "../entities/department";
 
 export type DepartmentListaFiltro = {
   status?: "ativo" | "inativo" | "arquivado";
-  unitId?: string | null;
+  branchId?: string | null;
   parentId?: string | null;
   busca?: string;
   cursor?: string;

@@ -4,6 +4,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
 import type { WorkflowPolicyRepository } from "../../organizational-structure/domain/repositories/workflow-policy-repository";
+import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
 import { AtribuirPermissaoDepartamentoUseCase } from "../application/use-cases/atribuir-permissao-departamento.use-case";
 import { ListarPermissoesDepartamentoUseCase } from "../application/use-cases/listar-permissoes-departamento.use-case";
 import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
@@ -16,6 +17,7 @@ type Dependencies = {
   departmentPermissionRepository: DepartmentPermissionRepository;
   departmentRepository: DepartmentRepository;
   permissionRepository: PermissionRepository;
+  organizationRepository: OrganizationRepository;
   permissionChangeRequestRepository?: PermissionChangeRequestRepository;
   workflowPolicyRepository?: WorkflowPolicyRepository;
   auditLogRepository?: PermissionAuditLogRepository;
@@ -114,6 +116,7 @@ export async function registerDepartmentPermissionsRoute(app: FastifyInstance, d
             workflowPolicyRepository: deps.workflowPolicyRepository,
             permissionChangeRequestRepository: deps.permissionChangeRequestRepository,
             permissionRepository: deps.permissionRepository,
+            organizationRepository: deps.organizationRepository,
             orgId,
             actorId: userId,
             entityType: "department",

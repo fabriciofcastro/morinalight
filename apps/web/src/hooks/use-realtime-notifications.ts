@@ -1,7 +1,7 @@
 "use client";
 
 import { createRealtimeClient, type RealtimeEvent } from "@morina/realtime-client";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { defaultActorId, defaultOrgId, realtimeUrl } from "@/lib/env";
 
 type NotificationEvent = RealtimeEvent<{
@@ -32,6 +32,7 @@ export function useRealtimeNotifications(
   const { enabled = true, onNotification, orgId = defaultOrgId, userId = defaultActorId } = options;
   const clientRef = useRef<ReturnType<typeof createRealtimeClient> | null>(null);
   const isConnectingRef = useRef(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   const handleEvent = useCallback(
     (event: RealtimeEvent) => {
@@ -81,11 +82,13 @@ export function useRealtimeNotifications(
       onEvent: handleEvent,
       onOpen: () => {
         console.log("[RealtimeNotifications] Conectado ao WebSocket");
+        setIsConnected(true);
       },
       onClose: () => {
         console.log("[RealtimeNotifications] Desconectado do WebSocket");
         clientRef.current = null;
         isConnectingRef.current = false;
+        setIsConnected(false);
       },
       onError: (error) => {
         // WebSocket errors are non-critical - log as warnings
@@ -96,6 +99,7 @@ export function useRealtimeNotifications(
         }
         clientRef.current = null;
         isConnectingRef.current = false;
+        setIsConnected(false);
       },
       reconnectAttempts: 10,
       reconnectIntervalMs: 3000,
@@ -110,17 +114,19 @@ export function useRealtimeNotifications(
         clientRef.current = null;
         isConnectingRef.current = false;
       }
+      setIsConnected(false);
     };
   }, [enabled, orgId, userId, handleEvent]);
 
   return {
-    isConnected: clientRef.current?.state === "connected",
+    isConnected,
     disconnect: () => {
       if (clientRef.current) {
         clientRef.current.disconnect();
         clientRef.current = null;
         isConnectingRef.current = false;
       }
+      setIsConnected(false);
     },
   };
 }

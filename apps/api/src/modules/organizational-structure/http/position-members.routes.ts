@@ -227,4 +227,3 @@ export async function registerPositionMembersRoutes(app: FastifyInstance, deps: 
     },
   );
 }
-

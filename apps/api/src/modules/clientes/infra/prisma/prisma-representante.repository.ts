@@ -1,4 +1,5 @@
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { Prisma } from "@prisma/client";
 import type { RepresentanteProps, RepresentanteStatus } from "../../domain/entities/representante";
 import { Representante } from "../../domain/entities/representante";
 import type { RepresentanteRepository } from "../../domain/repositories/representante-repository";
@@ -18,7 +19,7 @@ function toDomain(record: {
   cidade: string | null;
   estado: string | null;
   cep: string | null;
-  percentualComissao: number;
+  percentualComissao: Prisma.Decimal | number;
   status: string;
   observacoes: string | null;
   createdBy: string;
@@ -122,7 +123,7 @@ export class PrismaRepresentanteRepository implements RepresentanteRepository {
   ) {
     const limit = Math.min(Math.max(filtro?.limite ?? 20, 1), 50);
 
-    const andFilters = [];
+    const andFilters: Prisma.RepresentanteWhereInput[] = [];
     if (filtro?.status) {
       andFilters.push({ status: filtro.status });
     }
@@ -138,7 +139,7 @@ export class PrismaRepresentanteRepository implements RepresentanteRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.RepresentanteWhereInput = {
       orgId,
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };

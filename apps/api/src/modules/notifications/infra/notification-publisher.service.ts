@@ -32,7 +32,7 @@ export class NotificationPublisherService {
         eventId: randomUUID(),
         orgId,
         actorId,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       },
       payload: notification,
     });

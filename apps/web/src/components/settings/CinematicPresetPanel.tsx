@@ -27,7 +27,7 @@ export function CinematicPresetPanel() {
     try {
       const saved = window.localStorage.getItem("cinematic_preset") as CinematicPreference | null;
       if (saved === "auto" || saved === "on" || saved === "clean" || saved === "off") {
-        setValue(saved);
+        queueMicrotask(() => setValue(saved));
       }
     } catch {
       // ignore

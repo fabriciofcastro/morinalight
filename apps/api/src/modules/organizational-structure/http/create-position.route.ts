@@ -31,7 +31,8 @@ export async function registerCreatePositionRoute(app: FastifyInstance, deps: De
         actorId: userId,
       });
 
-      const input = { ...request.body, orgId } as unknown;
+      const body = request.body as Record<string, unknown>;
+      const input = { ...body, orgId };
       const position = await useCase.execute(input);
 
       return reply.status(201).send(position);

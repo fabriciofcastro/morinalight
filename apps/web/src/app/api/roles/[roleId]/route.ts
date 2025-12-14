@@ -5,7 +5,7 @@ import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 export async function GET(_request: Request, { params }: { params: { roleId: string } }) {
   const response = await fetch(`${apiUrl}/roles/${params.roleId}`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -22,7 +22,7 @@ export async function PUT(request: Request, { params }: { params: { roleId: stri
 
   const response = await fetch(`${apiUrl}/roles/${params.roleId}`, {
     method: "PUT",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -38,7 +38,7 @@ export async function PUT(request: Request, { params }: { params: { roleId: stri
 export async function DELETE(_request: Request, { params }: { params: { roleId: string } }) {
   const response = await fetch(`${apiUrl}/roles/${params.roleId}`, {
     method: "DELETE",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   if (!response.ok) {

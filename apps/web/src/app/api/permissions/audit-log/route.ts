@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { apiUrl } from "../../../../lib/env";
+import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 export async function GET(request: Request) {
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
 
   const response = await fetch(`${apiUrl}/permissions/audit-log?${params.toString()}`, {
     method: "GET",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 

@@ -4,6 +4,7 @@ import type {
   ProductVariantRepository,
 } from "@morina/catalogo-domain";
 import { ProductVariant as ProductVariantEntity } from "@morina/catalogo-domain";
+import type { Prisma } from "@prisma/client";
 
 import { getPrisma } from "../../../../infra/database/prisma.service";
 
@@ -113,7 +114,7 @@ export class PrismaProductVariantRepository implements ProductVariantRepository 
   ) {
     const limit = Math.min(Math.max(options.limite ?? 20, 1), 50);
 
-    const andFilters: Array<unknown> = [{ productId, orgId }];
+    const andFilters: Prisma.ProductVariantWhereInput[] = [{ productId, orgId }];
 
     if (options.ativo !== undefined) {
       andFilters.push({ ativo: options.ativo });
@@ -131,7 +132,7 @@ export class PrismaProductVariantRepository implements ProductVariantRepository 
       });
     }
 
-    const where = {
+    const where: Prisma.ProductVariantWhereInput = {
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };
 
@@ -159,7 +160,7 @@ export class PrismaProductVariantRepository implements ProductVariantRepository 
   ) {
     const limit = Math.min(Math.max(options.limite ?? 20, 1), 50);
 
-    const andFilters: Array<unknown> = [{ orgId }];
+    const andFilters: Prisma.ProductVariantWhereInput[] = [{ orgId }];
 
     if (options.ativo !== undefined) {
       andFilters.push({ ativo: options.ativo });
@@ -177,7 +178,7 @@ export class PrismaProductVariantRepository implements ProductVariantRepository 
       });
     }
 
-    const where = {
+    const where: Prisma.ProductVariantWhereInput = {
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };
 

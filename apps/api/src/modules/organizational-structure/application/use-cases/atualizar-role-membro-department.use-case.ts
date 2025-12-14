@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 
@@ -69,6 +70,7 @@ export class AtualizarRoleMembroDepartamentoUseCase {
     // Registrar audit log
     if (this.deps.auditLogRepository) {
       await this.deps.auditLogRepository.registrar({
+        id: randomUUID(),
         orgId: input.orgId,
         entityType: "department",
         entityId: input.departmentId,
@@ -79,20 +81,26 @@ export class AtualizarRoleMembroDepartamentoUseCase {
           roleAnterior,
           novoRole: input.role,
         },
+        createdAt: new Date(),
       });
     }
 
     // Publicar evento de domínio
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "organizational-structure.department.member-role-updated",
-        payload: {
+        name: "OrganizationalStructure.DepartmentMemberRoleUpdated",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
           orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
           departmentId: input.departmentId,
           userId: input.userId,
           roleAnterior,
           novoRole: input.role,
-          actorId: this.deps.actorId,
         },
       });
     }

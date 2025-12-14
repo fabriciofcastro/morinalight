@@ -8,6 +8,8 @@ import { registerCatalogoModule } from "../../modules/catalogo/catalogo.module";
 import type { ClientesModuleOptions } from "../../modules/clientes/clientes.module";
 import { registerClientesModule } from "../../modules/clientes/clientes.module";
 import { registerCompanySettingsModule } from "../../modules/company-settings/company-settings.module";
+import type { FichasCustoModuleOptions } from "../../modules/fichas-custo/fichas-custo.module";
+import { registerFichasCustoModule } from "../../modules/fichas-custo/fichas-custo.module";
 import type { NotificationsModuleOptions } from "../../modules/notifications/notifications.module";
 import { registerNotificationsModule } from "../../modules/notifications/notifications.module";
 import type { OrganizationalStructureModuleOptions } from "../../modules/organizational-structure/organizational-structure.module";
@@ -18,6 +20,9 @@ import type { PermissionsModuleOptions } from "../../modules/permissions/permiss
 import { registerPermissionsModule } from "../../modules/permissions/permissions.module";
 import type { PrefichaModuleOptions } from "../../modules/preficha/preficha.module";
 import { registerPrefichaModule } from "../../modules/preficha/preficha.module";
+import { registerPreFichaTecnicaModule } from "../../modules/pre-ficha-tecnica/pre-ficha-tecnica.module";
+import type { ProfileModuleOptions } from "../../modules/profile/profile.module";
+import { registerProfileModule } from "../../modules/profile/profile.module";
 import { registerRealtimeRoutes } from "../../modules/realtime/realtime.routes";
 import type { SuppliersModuleOptions } from "../../modules/suppliers/suppliers.module";
 import { registerSuppliersModule } from "../../modules/suppliers/suppliers.module";
@@ -30,6 +35,7 @@ type HttpModulesOptions = {
   suppliers?: SuppliersModuleOptions;
   users?: UsersModuleOptions;
   clientes?: ClientesModuleOptions;
+  fichasCusto?: FichasCustoModuleOptions;
   permissions?: PermissionsModuleOptions;
   organizationalStructure?: OrganizationalStructureModuleOptions;
   realtime?: { enabled?: boolean };
@@ -38,6 +44,7 @@ type HttpModulesOptions = {
   organizations?: OrganizationsModuleOptions;
   auth?: AuthModuleOptions;
   coreAuth?: CoreAuthModuleOptions;
+  profile?: ProfileModuleOptions;
 };
 
 export async function registerHttp(app: FastifyInstance, options: HttpModulesOptions = {}) {
@@ -73,11 +80,32 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
     organizationRepository,
   });
 
-  const usersResult = await registerUsersModule(app, options.users);
+  const usersResult = await registerUsersModule(app, {
+    ...options.users,
+    organizationRepository,
+  });
   const userRepository = usersResult?.userRepository;
+
+  // Registrar módulo de perfil
+  await registerProfileModule(app, {
+    ...options.profile,
+    userRepository,
+  });
 
   await registerClientesModule(app, {
     ...options.clientes,
+    organizationRepository,
+  });
+
+  // Registrar módulo de Pré-Fichas Técnicas (Moldes Liberados)
+  await registerPreFichaTecnicaModule(app, {
+    ...options.preFichaTecnica,
+    organizationRepository,
+  });
+
+  // Registrar módulo de Fichas de Custo de Aviamentos
+  await registerFichasCustoModule(app, {
+    ...options.fichasCusto,
     organizationRepository,
   });
 
@@ -96,7 +124,6 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
     sectorRepository: organizationalStructureResult?.sectorRepository,
     departmentRepository: organizationalStructureResult?.departmentRepository,
     positionMembershipRepository: organizationalStructureResult?.positionMembershipRepository,
-    departmentMembershipRepository: organizationalStructureResult?.departmentMembershipRepository,
   });
 
   if (options.realtime?.enabled ?? true) {

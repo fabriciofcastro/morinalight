@@ -1,9 +1,7 @@
 "use client";
 
 import { Button, cn, Label, TooltipProvider } from "@morina/ui";
-import { AnimatePresence, motion } from "framer-motion";
 import {
-  AlertCircle,
   ArrowRight,
   Eye,
   EyeOff,
@@ -17,15 +15,33 @@ import Link from "next/link";
 import { useState } from "react";
 import { authApi } from "@/lib/api/auth";
 
-export function LoginForm() {
+type LoginNoticePayload = {
+  message: string;
+  attempts?: number;
+  status?: number;
+  category?: string;
+  origin?: string;
+  code?: string;
+};
+
+export function LoginForm({
+  onNotice,
+  onDismissNotice,
+}: {
+  onNotice?: (payload: LoginNoticePayload) => void;
+  onDismissNotice?: () => void;
+}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
+
+  function emitNotice(payload: LoginNoticePayload) {
+    onNotice?.(payload);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,27 +50,36 @@ export function LoginForm() {
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      setError("⚠️ Preencha email e senha.");
+      emitNotice({ message: "⚠️ Preencha email e senha.", attempts: loginAttempts, category: "VALIDATION", origin: "CLIENT" });
       return;
     }
 
     const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
     if (!emailIsValid) {
-      setError("⚠️ E-mail inválido.");
+      emitNotice({ message: "⚠️ E-mail inválido.", attempts: loginAttempts, category: "VALIDATION", origin: "CLIENT" });
       return;
     }
 
     if (trimmedPassword.length < 8) {
-      setError("⚠️ Senha deve ter pelo menos 8 caracteres.");
+      emitNotice({
+        message: "⚠️ Senha deve ter pelo menos 8 caracteres.",
+        attempts: loginAttempts,
+        category: "VALIDATION",
+        origin: "CLIENT",
+      });
       return;
     }
 
     if (!termsAccepted) {
-      setError("Protocolo de segurança: Aceite os termos.");
+      emitNotice({
+        message: "Protocolo de segurança: Aceite os termos.",
+        attempts: loginAttempts,
+        category: "VALIDATION",
+        origin: "CLIENT",
+      });
       return;
     }
 
-    setError(null);
     setIsLoading(true);
 
     try {
@@ -76,6 +101,7 @@ export function LoginForm() {
         response?: { status?: number; data?: { error?: string; message?: string; code?: string } };
       };
       setLoginAttempts((prev) => prev + 1);
+      const nextAttempts = loginAttempts + 1;
 
       // Tratamento específico de erros
       const status = error.response?.status;
@@ -85,70 +111,192 @@ export function LoginForm() {
 
       // Erro de rede/conexão
       if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
-        setError("🔌 Falha de Conexão: Verifique sua internet e tente novamente.");
+        emitNotice({
+          message: "🔌 Falha de Conexão: Verifique sua internet e tente novamente.",
+          attempts: nextAttempts,
+          status: 0,
+          category: "NETWORK",
+          origin: "NETWORK",
+          code: error.code ?? "ERR_NETWORK",
+        });
         return;
       }
 
       // Timeout
       if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
-        setError("⏱️ Tempo Esgotado: Servidor demorou para responder. Tente novamente.");
+        emitNotice({
+          message: "⏱️ Tempo Esgotado: Servidor demorou para responder. Tente novamente.",
+          attempts: nextAttempts,
+          status: 0,
+          category: "TIMEOUT",
+          origin: "NETWORK",
+          code: error.code ?? "TIMEOUT",
+        });
         return;
       }
 
       // Erros HTTP específicos
       switch (status) {
         case 400:
-          setError("⚠️ Dados Inválidos: Verifique email e senha.");
+          emitNotice({
+            message: "⚠️ Dados Inválidos: Verifique email e senha.",
+            attempts: nextAttempts,
+            status,
+            category: "BAD_REQUEST",
+            origin: "API",
+            code: errorCode ?? String(errorMessage ?? "BAD_REQUEST"),
+          });
           break;
 
         case 401:
           // Mensagens específicas baseadas no erro retornado
           if (errorMessage === "invalid_credentials" || errorCode === "INVALID_CREDENTIALS") {
-            setError("🔐 Acesso Negado: Email ou senha incorretos.");
+            emitNotice({
+              message: "🔐 Acesso Negado: Email ou senha incorretos.",
+              attempts: nextAttempts,
+              status,
+              category: "AUTH",
+              origin: "API",
+              code: errorCode ?? "INVALID_CREDENTIALS",
+            });
           } else if (errorMessage === "user_not_found" || errorCode === "USER_NOT_FOUND") {
-            setError("👤 Usuário Não Encontrado: Email não cadastrado.");
+            emitNotice({
+              message: "👤 Usuário Não Encontrado: Email não cadastrado.",
+              attempts: nextAttempts,
+              status,
+              category: "AUTH",
+              origin: "API",
+              code: errorCode ?? "USER_NOT_FOUND",
+            });
           } else if (errorMessage === "invalid_password" || errorCode === "INVALID_PASSWORD") {
-            setError("🔑 Senha Incorreta: Verifique sua senha e tente novamente.");
+            emitNotice({
+              message: "🔑 Senha Incorreta: Verifique sua senha e tente novamente.",
+              attempts: nextAttempts,
+              status,
+              category: "AUTH",
+              origin: "API",
+              code: errorCode ?? "INVALID_PASSWORD",
+            });
           } else {
-            setError("🚫 Não Autorizado: Credenciais inválidas.");
+            emitNotice({
+              message: "🚫 Não Autorizado: Credenciais inválidas.",
+              attempts: nextAttempts,
+              status,
+              category: "AUTH",
+              origin: "API",
+              code: errorCode ?? String(errorMessage ?? "UNAUTHORIZED"),
+            });
           }
           break;
 
         case 403:
           if (errorMessage === "account_locked" || errorCode === "ACCOUNT_LOCKED") {
-            setError("🔒 Conta Bloqueada: Contate o administrador do sistema.");
+            emitNotice({
+              message: "🔒 Conta Bloqueada: Contate o administrador do sistema.",
+              attempts: nextAttempts,
+              status,
+              category: "SECURITY",
+              origin: "API",
+              code: errorCode ?? "ACCOUNT_LOCKED",
+            });
           } else if (errorMessage === "account_disabled" || errorCode === "ACCOUNT_DISABLED") {
-            setError("⛔ Conta Desativada: Entre em contato com o suporte.");
+            emitNotice({
+              message: "⛔ Conta Desativada: Entre em contato com o suporte.",
+              attempts: nextAttempts,
+              status,
+              category: "SECURITY",
+              origin: "API",
+              code: errorCode ?? "ACCOUNT_DISABLED",
+            });
           } else {
-            setError("🚷 Acesso Proibido: Você não tem permissão para acessar.");
+            emitNotice({
+              message: "🚷 Acesso Proibido: Você não tem permissão para acessar.",
+              attempts: nextAttempts,
+              status,
+              category: "SECURITY",
+              origin: "API",
+              code: errorCode ?? String(errorMessage ?? "FORBIDDEN"),
+            });
           }
           break;
 
         case 429:
-          setError("⏸️ Muitas Tentativas: Aguarde 5 minutos antes de tentar novamente.");
+          emitNotice({
+            message: "⏸️ Muitas Tentativas: Aguarde 5 minutos antes de tentar novamente.",
+            attempts: nextAttempts,
+            status,
+            category: "RATE_LIMIT",
+            origin: "API",
+            code: errorCode ?? "RATE_LIMIT",
+          });
           break;
 
         case 500:
-          setError("⚙️ Erro no Servidor: Problema interno. Tente novamente em instantes.");
+          emitNotice({
+            message: "⚙️ Erro no Servidor: Problema interno. Tente novamente em instantes.",
+            attempts: nextAttempts,
+            status,
+            category: "SERVER",
+            origin: "API",
+            code: errorCode ?? "INTERNAL_ERROR",
+          });
           break;
 
         case 502:
-        case 503:
-          setError("🔧 Servidor Indisponível: Sistema em manutenção. Tente mais tarde.");
+        case 503: {
+          // Verificar se há mensagem mais específica do backend
+          const isApiUnavailable =
+            errorCode === "API_UNAVAILABLE" ||
+            errorCode === "API_CONNECTION_ERROR" ||
+            (typeof errorMessage === "string" &&
+              (errorMessage.includes("não está disponível") ||
+                errorMessage.includes("não está rodando") ||
+                errorMessage.includes("ECONNREFUSED")));
+          emitNotice({
+            message: isApiUnavailable
+              ? "🔌 API não está rodando. Execute: pnpm turbo dev (ou ./start-database.sh se necessário)"
+              : "🔧 Servidor Indisponível: Sistema em manutenção. Tente mais tarde.",
+            attempts: nextAttempts,
+            status,
+            category: "UPSTREAM",
+            origin: "API",
+            code: errorCode ?? `HTTP_${status}`,
+          });
           break;
+        }
 
         case 504:
-          setError("⏱️ Gateway Timeout: Servidor não respondeu a tempo. Tente novamente.");
+          emitNotice({
+            message: "⏱️ Gateway Timeout: Servidor não respondeu a tempo. Tente novamente.",
+            attempts: nextAttempts,
+            status,
+            category: "TIMEOUT",
+            origin: "API",
+            code: errorCode ?? "GATEWAY_TIMEOUT",
+          });
           break;
 
         default:
           // Mensagem genérica mais informativa
           if (status) {
-            setError(
-              `❌ Erro ${status}: ${errorMessage || "Falha ao processar login. Tente novamente."}`,
-            );
+            const msg = `❌ Erro ${status}: ${errorMessage || "Falha ao processar login. Tente novamente."}`;
+            emitNotice({
+              message: msg,
+              attempts: nextAttempts,
+              status,
+              category: "UNKNOWN",
+              origin: "API",
+              code: errorCode ?? String(errorMessage ?? `HTTP_${status}`),
+            });
           } else {
-            setError("🔴 Erro Desconhecido: Não foi possível conectar ao servidor.");
+            emitNotice({
+              message: "🔴 Erro Desconhecido: Não foi possível conectar ao servidor.",
+              attempts: nextAttempts,
+              status: 0,
+              category: "UNKNOWN",
+              origin: "CLIENT",
+              code: error.code ?? "UNKNOWN",
+            });
           }
       }
     } finally {
@@ -172,123 +320,13 @@ export function LoginForm() {
     <TooltipProvider>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-6 relative group/form"
+        className="flex flex-col gap-6 relative group/form [@media(max-height:760px)]:gap-4"
         aria-label="Formulário de login"
       >
         {/* Scanline "terminal" no foco */}
         <div className="absolute inset-0 pointer-events-none opacity-0 group-focus-within/form:opacity-100 transition-opacity duration-300">
           <div className="absolute left-0 right-0 top-0 h-0.5 bg-linear-to-r from-transparent via-[hsl(var(--primary)/0.55)] to-transparent animate-auth-scanline" />
         </div>
-
-        {/* Error Notification - Enhanced with Help */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-2"
-              role="alert"
-              aria-live="polite"
-            >
-              {/* Main Error Message */}
-              <div className="bg-red-500/10 border-l-4 border-red-500 text-red-200 px-4 py-3 flex items-start gap-3 text-sm backdrop-blur-sm rounded-r">
-                <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
-                <div className="flex-1 space-y-1">
-                  <p className="font-medium">{error}</p>
-
-                  {/* Contextual Help */}
-                  {loginAttempts >= 3 && (
-                    <p className="text-xs text-red-300/70">
-                      💡 Dica: Verifique se o Caps Lock está ativado ou tente recuperar sua senha.
-                    </p>
-                  )}
-
-                  {/* Attempt Counter */}
-                  {loginAttempts > 0 && loginAttempts < 5 && (
-                    <p className="text-xs text-red-300/50 font-mono">
-                      Tentativa {loginAttempts} de 5
-                    </p>
-                  )}
-
-                  {loginAttempts >= 5 && (
-                    <p className="text-xs text-red-300/70">
-                      ⚠️ Limite de tentativas atingido. Aguarde alguns minutos ou recupere sua senha.
-                    </p>
-                  )}
-                </div>
-
-                {/* Close Button */}
-                <button
-                  type="button"
-                  onClick={() => setError(null)}
-                  className="text-red-300/50 hover:text-red-300 transition-colors"
-                  aria-label="Fechar mensagem de erro"
-                >
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Help Actions */}
-              <div className="flex items-center gap-2 text-xs">
-                <Link
-                  href="/forgot-password"
-                  className="text-white/50 hover:text-[hsl(var(--primary))] transition-colors flex items-center gap-1 font-mono"
-                >
-                  <svg
-                    className="h-3 w-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-                    />
-                  </svg>
-                  Recuperar Senha
-                </Link>
-                <span className="text-white/20">•</span>
-                <Link
-                  href="/help"
-                  className="text-white/50 hover:text-[hsl(var(--primary))] transition-colors flex items-center gap-1 font-mono"
-                >
-                  <svg
-                    className="h-3 w-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Central de Ajuda
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <div className="space-y-6">
           {/* Email Input - Squared & Technical */}
@@ -310,7 +348,10 @@ export function LoginForm() {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    onDismissNotice?.();
+                    setEmail(e.target.value);
+                  }}
                   placeholder="USUARIO@MORINA.COM"
                   className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/20 px-4 h-full font-mono tracking-wide"
                   required
@@ -351,7 +392,10 @@ export function LoginForm() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    onDismissNotice?.();
+                    setPassword(e.target.value);
+                  }}
                   placeholder="••••••••"
                   className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/20 px-4 h-full font-mono tracking-wide"
                   required
@@ -371,53 +415,37 @@ export function LoginForm() {
               </div>
             </div>
 
-            {/* Technical Password Strength - Squared Blocks */}
-            <AnimatePresence>
-              {password && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="pt-1"
-                >
-                  <div className="flex gap-0.5 h-1">
-                    {[0, 1, 2, 3, 4].map((step) => (
-                      <motion.div
-                        key={`strength-${step}`}
-                        initial={{ scaleY: 0 }}
-                        animate={{ scaleY: 1 }}
-                        transition={{ delay: step * 0.05 }}
-                        className={cn(
-                          "flex-1 transition-colors duration-300",
-                          step < strength
-                            ? strength <= 2
-                              ? "bg-red-500"
-                              : strength <= 3
-                                ? "bg-yellow-500"
-                                : "bg-[hsl(var(--primary))]"
-                            : "bg-white/5",
-                        )}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex justify-between mt-1">
-                    <span className="text-[9px] font-mono text-white/30 uppercase">Segurança</span>
-                    <span
-                      className={cn(
-                        "text-[9px] font-mono uppercase tracking-wider",
-                        strength <= 2
-                          ? "text-red-500"
-                          : strength <= 3
-                            ? "text-yellow-500"
-                            : "text-[hsl(var(--primary))]",
-                      )}
-                    >
-                      {strength <= 2 ? "Vulnerável" : strength <= 3 ? "Moderada" : "Blindada"}
-                    </span>
-                  </div>
-                </motion.div>
+            {/* Password strength (abaixo do input) — espaço reservado, não empurra layout */}
+            <div
+              className={cn(
+                "mt-2 h-3",
+                "[@media(max-height:760px)]:mt-1.5 [@media(max-height:760px)]:h-2.5",
               )}
-            </AnimatePresence>
+              aria-hidden="true"
+            >
+              <div
+                className={cn(
+                  "flex h-full gap-0.5",
+                  password ? "opacity-100" : "opacity-40",
+                )}
+              >
+                {[0, 1, 2, 3, 4].map((step) => (
+                  <div
+                    key={`strength-below-${step}`}
+                    className={cn(
+                      "flex-1 transition-colors duration-200",
+                      step < strength
+                        ? strength <= 2
+                          ? "bg-red-500"
+                          : strength <= 3
+                            ? "bg-yellow-500"
+                            : "bg-[hsl(var(--primary))]"
+                        : "bg-white/10",
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

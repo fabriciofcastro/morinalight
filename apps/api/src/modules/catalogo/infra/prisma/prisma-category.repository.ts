@@ -1,5 +1,6 @@
 import type { Category, CategoryProps, CategoryRepository } from "@morina/catalogo-domain";
 import { Category as CategoryEntity } from "@morina/catalogo-domain";
+import type { Prisma } from "@prisma/client";
 
 import { getPrisma } from "../../../../infra/database/prisma.service";
 
@@ -100,7 +101,7 @@ export class PrismaCategoryRepository implements CategoryRepository {
   ) {
     const limit = Math.min(Math.max(options.limite ?? 20, 1), 50);
 
-    const andFilters: Array<unknown> = [];
+    const andFilters: Prisma.CategoryWhereInput[] = [];
 
     if (options.parentId !== undefined) {
       andFilters.push({ parentId: options.parentId });
@@ -122,7 +123,7 @@ export class PrismaCategoryRepository implements CategoryRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.CategoryWhereInput = {
       orgId,
       ...(andFilters.length > 0 ? { AND: andFilters } : {}),
     };

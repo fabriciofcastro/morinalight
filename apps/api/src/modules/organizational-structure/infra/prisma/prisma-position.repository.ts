@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import { Position } from "../../domain/entities/position";
 import type {
@@ -74,7 +75,7 @@ export class PrismaPositionRepository implements PositionRepository {
         salarioMax: dados.salarioMax,
         status: dados.status,
         ordem: dados.ordem,
-        metadata: dados.metadata,
+        metadata: dados.metadata ? (dados.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         createdBy: dados.createdBy,
         updatedBy: dados.updatedBy,
         createdAt: dados.createdAt,
@@ -92,7 +93,7 @@ export class PrismaPositionRepository implements PositionRepository {
         salarioMax: dados.salarioMax,
         status: dados.status,
         ordem: dados.ordem,
-        metadata: dados.metadata,
+        metadata: dados.metadata ? (dados.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         updatedBy: dados.updatedBy,
         updatedAt: dados.updatedAt,
         deletedAt: dados.deletedAt,
@@ -137,9 +138,9 @@ export class PrismaPositionRepository implements PositionRepository {
     if (filtro.busca) {
       andFilters.push({
         OR: [
-          { name: { contains: filtro.busca, mode: "insensitive" } },
-          { code: { contains: filtro.busca, mode: "insensitive" } },
-          { description: { contains: filtro.busca, mode: "insensitive" } },
+          { name: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
+          { code: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
+          { description: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
         ],
       });
     }
@@ -155,9 +156,9 @@ export class PrismaPositionRepository implements PositionRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.PositionWhereInput = {
       orgId,
-      ...(andFilters.length > 0 ? { AND: andFilters } : {}),
+      ...(andFilters.length > 0 ? { AND: andFilters as Prisma.PositionWhereInput[] } : {}),
     };
 
     const records = await prisma.position.findMany({

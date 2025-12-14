@@ -1,11 +1,11 @@
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import { Department } from "../../domain/entities/department";
+import type { DepartmentStatus, DepartmentProps } from "../../domain/entities/department";
 import type {
   DepartmentListaFiltro,
   DepartmentListaPagina,
-  DepartmentProps,
   DepartmentRepository,
-  DepartmentStatus,
 } from "../../domain/repositories/department-repository";
 
 const prisma = getPrisma();
@@ -13,7 +13,7 @@ const prisma = getPrisma();
 function toDomain(record: {
   id: string;
   orgId: string;
-  unitId: string | null;
+  branchId: string | null;
   name: string;
   code: string;
   description: string | null;
@@ -30,7 +30,7 @@ function toDomain(record: {
 }) {
   const props: DepartmentProps = {
     orgId: record.orgId,
-    unitId: record.unitId,
+    branchId: record.branchId,
     name: record.name,
     code: record.code,
     description: record.description,
@@ -58,14 +58,14 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
       create: {
         id: department.departmentId,
         orgId: dados.orgId,
-        unitId: dados.unitId,
+        branchId: dados.branchId,
         name: dados.name,
         code: dados.code,
         description: dados.description,
         parentId: dados.parentId,
         status: dados.status,
         ordem: dados.ordem,
-        metadata: dados.metadata,
+        metadata: dados.metadata ? (dados.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         createdBy: dados.createdBy,
         updatedBy: dados.updatedBy,
         createdAt: dados.createdAt,
@@ -74,14 +74,14 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
         deletedBy: dados.deletedBy,
       },
       update: {
-        unitId: dados.unitId,
+        branchId: dados.branchId,
         name: dados.name,
         code: dados.code,
         description: dados.description,
         parentId: dados.parentId,
         status: dados.status,
         ordem: dados.ordem,
-        metadata: dados.metadata,
+        metadata: dados.metadata ? (dados.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         updatedBy: dados.updatedBy,
         updatedAt: dados.updatedAt,
         deletedAt: dados.deletedAt,
@@ -120,8 +120,8 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
     andFilters.push({ status: filtro.status ?? "ativo" });
     // Sempre excluir soft-deletes por padrão
     andFilters.push({ deletedAt: null });
-    if (filtro.unitId !== undefined) {
-      andFilters.push({ unitId: filtro.unitId });
+    if (filtro.branchId !== undefined) {
+      andFilters.push({ branchId: filtro.branchId });
     }
     if (filtro.parentId !== undefined) {
       andFilters.push({ parentId: filtro.parentId });
@@ -129,9 +129,9 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
     if (filtro.busca) {
       andFilters.push({
         OR: [
-          { name: { contains: filtro.busca, mode: "insensitive" } },
-          { code: { contains: filtro.busca, mode: "insensitive" } },
-          { description: { contains: filtro.busca, mode: "insensitive" } },
+          { name: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
+          { code: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
+          { description: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
         ],
       });
     }
@@ -147,9 +147,9 @@ export class PrismaDepartmentRepository implements DepartmentRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.DepartmentWhereInput = {
       orgId,
-      ...(andFilters.length > 0 ? { AND: andFilters } : {}),
+      ...(andFilters.length > 0 ? { AND: andFilters as Prisma.DepartmentWhereInput[] } : {}),
     };
 
     const records = await prisma.department.findMany({

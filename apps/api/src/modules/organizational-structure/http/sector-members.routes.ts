@@ -21,101 +21,95 @@ type Dependencies = {
 
 export async function registerSectorMembersRoutes(app: FastifyInstance, deps: Dependencies) {
   // Listar membros de um setor
-  app.get(
-    "/sectors/:sectorId/members",
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const orgId = request.headers["x-org-id"] as string;
-      const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
+  app.get("/sectors/:sectorId/members", async (request: FastifyRequest, reply: FastifyReply) => {
+    const orgId = request.headers["x-org-id"] as string;
+    const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
 
-      if (!orgId) {
-        return reply.status(400).send({ message: "x-org-id é obrigatório" });
+    if (!orgId) {
+      return reply.status(400).send({ message: "x-org-id é obrigatório" });
+    }
+
+    if (!userId) {
+      return reply.status(400).send({ message: "Usuário não identificado" });
+    }
+
+    try {
+      const { sectorId } = z.object({ sectorId: z.string().uuid() }).parse(request.params);
+
+      const useCase = new ListarMembrosSetorUseCase({
+        sectorMembershipRepository: deps.sectorMembershipRepository,
+        sectorRepository: deps.sectorRepository,
+        userRepository: deps.userRepository,
+      });
+
+      const members = await useCase.execute(orgId, sectorId);
+
+      return reply.status(200).send({ itens: members });
+    } catch (error) {
+      app.log.error(error, "Erro ao listar membros do setor");
+
+      if (error instanceof Error) {
+        return reply.status(400).send({ message: error.message });
       }
 
-      if (!userId) {
-        return reply.status(400).send({ message: "Usuário não identificado" });
-      }
-
-      try {
-        const { sectorId } = z.object({ sectorId: z.string().uuid() }).parse(request.params);
-
-        const useCase = new ListarMembrosSetorUseCase({
-          sectorMembershipRepository: deps.sectorMembershipRepository,
-          sectorRepository: deps.sectorRepository,
-          userRepository: deps.userRepository,
-        });
-
-        const members = await useCase.execute(orgId, sectorId);
-
-        return reply.status(200).send({ itens: members });
-      } catch (error) {
-        app.log.error(error, "Erro ao listar membros do setor");
-
-        if (error instanceof Error) {
-          return reply.status(400).send({ message: error.message });
-        }
-
-        return reply.status(500).send({ message: "Erro ao listar membros do setor" });
-      }
-    },
-  );
+      return reply.status(500).send({ message: "Erro ao listar membros do setor" });
+    }
+  });
 
   // Adicionar membro a um setor
-  app.post(
-    "/sectors/:sectorId/members",
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      const orgId = request.headers["x-org-id"] as string;
-      const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
+  app.post("/sectors/:sectorId/members", async (request: FastifyRequest, reply: FastifyReply) => {
+    const orgId = request.headers["x-org-id"] as string;
+    const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
 
-      if (!orgId) {
-        return reply.status(400).send({ message: "x-org-id é obrigatório" });
-      }
+    if (!orgId) {
+      return reply.status(400).send({ message: "x-org-id é obrigatório" });
+    }
 
-      if (!userId) {
-        return reply.status(400).send({ message: "Usuário não identificado" });
-      }
+    if (!userId) {
+      return reply.status(400).send({ message: "Usuário não identificado" });
+    }
 
-      try {
-        const { sectorId } = z.object({ sectorId: z.string().uuid() }).parse(request.params);
-        const body = z
-          .object({
-            userId: z.string().uuid(),
-            role: organizationRoleSchema.default("member"),
-          })
-          .parse(request.body);
+    try {
+      const { sectorId } = z.object({ sectorId: z.string().uuid() }).parse(request.params);
+      const body = z
+        .object({
+          userId: z.string().uuid(),
+          role: organizationRoleSchema.default("member"),
+        })
+        .parse(request.body);
 
-        const useCase = new AdicionarMembroSetorUseCase({
-          sectorMembershipRepository: deps.sectorMembershipRepository,
-          sectorRepository: deps.sectorRepository,
-          userRepository: deps.userRepository,
-          auditLogRepository: deps.auditLogRepository,
-          eventBus: deps.eventBus,
-          actorId: userId,
-        });
+      const useCase = new AdicionarMembroSetorUseCase({
+        sectorMembershipRepository: deps.sectorMembershipRepository,
+        sectorRepository: deps.sectorRepository,
+        userRepository: deps.userRepository,
+        auditLogRepository: deps.auditLogRepository,
+        eventBus: deps.eventBus,
+        actorId: userId,
+      });
 
-        const input = {
-          orgId,
-          sectorId,
-          userId: body.userId,
-          role: body.role,
-        };
+      const input = {
+        orgId,
+        sectorId,
+        userId: body.userId,
+        role: body.role,
+      };
 
-        const membership = await useCase.execute(input);
+      const membership = await useCase.execute(input);
 
-        return reply.status(201).send(membership);
-      } catch (error) {
-        app.log.error(error, "Erro ao adicionar membro ao setor");
+      return reply.status(201).send(membership);
+    } catch (error) {
+      app.log.error(error, "Erro ao adicionar membro ao setor");
 
-        if (error instanceof Error) {
-          if (error.message.includes("já é membro")) {
-            return reply.status(409).send({ message: error.message });
-          }
-          return reply.status(400).send({ message: error.message });
+      if (error instanceof Error) {
+        if (error.message.includes("já é membro")) {
+          return reply.status(409).send({ message: error.message });
         }
-
-        return reply.status(500).send({ message: "Erro ao adicionar membro ao setor" });
+        return reply.status(400).send({ message: error.message });
       }
-    },
-  );
+
+      return reply.status(500).send({ message: "Erro ao adicionar membro ao setor" });
+    }
+  });
 
   // Remover membro de um setor
   app.delete(
@@ -227,4 +221,3 @@ export async function registerSectorMembersRoutes(app: FastifyInstance, deps: De
     },
   );
 }
-

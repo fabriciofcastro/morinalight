@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
   const response = await fetch(`${apiUrl}/positions/${positionId}`, {
     method: "GET",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -32,7 +32,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
   const response = await fetch(`${apiUrl}/positions/${positionId}`, {
     method: "PUT",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -45,7 +45,7 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
 
   const response = await fetch(`${apiUrl}/positions/${positionId}`, {
     method: "DELETE",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   const data = await response.json().catch(() => ({}));

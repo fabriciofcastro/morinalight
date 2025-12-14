@@ -23,7 +23,7 @@ export function AnimatedParticles() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => setMounted(true));
   }, []);
 
   const particles = useMemo<Particle[]>(() => {

@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireOrganizationAccess } from "../../../core/auth/rbac.guards";
 import type { OrganizationRepository } from "../repositories/organization.repository";
@@ -24,9 +24,12 @@ export async function registerUpdateOrganizationRoute(
   app: FastifyInstance,
   deps: UpdateOrganizationDeps,
 ) {
-  app.put("/organizations/:orgId", async (request, reply) => {
+  app.put<{ Params: { orgId: string } }>("/organizations/:orgId", async (request, reply) => {
     // Validar autenticação e acesso (requer admin ou owner)
-    await requireOrganizationAccess(deps.organizationRepository, "admin")(request, reply);
+    await requireOrganizationAccess(deps.organizationRepository, "admin")(
+      request as FastifyRequest<{ Params: { orgId?: string } }>,
+      reply,
+    );
     if (reply.sent) return;
 
     if (!request.auth) {

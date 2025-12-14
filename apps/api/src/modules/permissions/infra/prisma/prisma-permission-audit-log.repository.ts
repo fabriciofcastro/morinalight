@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
   PermissionAuditLog,
@@ -52,7 +53,7 @@ export class PrismaPermissionAuditLogRepository implements PermissionAuditLogRep
         previousValue: log.previousValue,
         actorId: log.actorId,
         reason: log.reason,
-        metadata: log.metadata,
+        metadata: log.metadata ? (log.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         createdAt: log.createdAt,
       },
     });

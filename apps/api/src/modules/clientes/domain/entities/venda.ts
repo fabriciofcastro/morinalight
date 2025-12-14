@@ -47,7 +47,7 @@ export class Venda {
   }
 
   static criar(
-    input: Omit<VendaProps, "id" | "criadoEm" | "atualizadoEm" | "status"> & {
+    input: Omit<VendaProps, "id" | "createdAt" | "updatedAt" | "status"> & {
       status?: VendaStatus;
     },
   ) {

@@ -6,16 +6,17 @@
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "dev": "tsx watch src/main.ts",
+    "dev": "bash scripts/free-port-auto.sh 3333 && tsx watch src/main.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/main.js",
+    "start": "bash scripts/free-port-auto.sh 3333 && node dist/main.js",
     "lint": "pnpm -w biome check apps/api/src",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest --run",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "create-user": "tsx src/scripts/create-user.ts",
     "update-password": "tsx scripts/update-user-password.ts",
-    "list-users": "tsx scripts/list-users.ts"
+    "list-users": "tsx scripts/list-users.ts",
+    "studio": "bash scripts/run-studio.sh"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

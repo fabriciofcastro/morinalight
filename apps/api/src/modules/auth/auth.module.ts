@@ -15,6 +15,9 @@ import { InMemoryUserRepository } from "../users/infra/memory/in-memory-user.rep
 import { PrismaUserRepository } from "../users/infra/prisma/prisma-user.repository";
 import type { UserRepository } from "../users/repositories/user.repository";
 import { registerLoginRoute } from "./http/login.route";
+import { registerLogoutRoute } from "./http/logout.route";
+import { registerLogoutAllRoute } from "./http/logout-all.route";
+import { registerLogoutSessionRoute } from "./http/logout-session.route";
 import { registerRegisterRoute } from "./http/register.route";
 
 export type AuthModuleOptions = {
@@ -64,6 +67,21 @@ export async function registerAuthModule(app: FastifyInstance, options: AuthModu
   await registerLoginRoute(app, {
     userRepository,
     organizationRepository,
+    auditRepository,
+  });
+
+  await registerLogoutRoute(app, {
+    userRepository,
+    auditRepository,
+  });
+
+  await registerLogoutAllRoute(app, {
+    userRepository,
+    auditRepository,
+  });
+
+  await registerLogoutSessionRoute(app, {
+    userRepository,
     auditRepository,
   });
 }

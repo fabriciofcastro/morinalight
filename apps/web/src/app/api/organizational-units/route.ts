@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   });
 
   const response = await fetch(`${apiUrl}/organizational-units?${params.toString()}`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
   const response = await fetch(`${apiUrl}/organizational-units`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

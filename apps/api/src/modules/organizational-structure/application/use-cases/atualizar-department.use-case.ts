@@ -2,12 +2,12 @@ import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { OrganizationalUnitRepository } from "../../domain/repositories/organizational-unit-repository";
+import type { BranchRepository } from "../../domain/repositories/branch-repository";
 import { atualizarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
-  organizationalUnitRepository?: OrganizationalUnitRepository;
+  branchRepository?: BranchRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
   actorId: string;
@@ -40,19 +40,15 @@ export class AtualizarDepartmentUseCase {
       }
     }
 
-    // Verificar se unitId existe (se fornecido)
-    if (
-      input.unitId !== undefined &&
-      input.unitId !== null &&
-      this.deps.organizationalUnitRepository
-    ) {
-      const unit = await this.deps.organizationalUnitRepository.encontrarPorId(
+    // Verificar se branchId existe (se fornecido)
+    if (input.branchId !== undefined && input.branchId !== null && this.deps.branchRepository) {
+      const branch = await this.deps.branchRepository.encontrarPorId(
         input.orgId,
-        input.unitId,
+        input.branchId,
       );
 
-      if (!unit) {
-        throw new Error("Unidade organizacional não encontrada");
+      if (!branch) {
+        throw new Error("Filial não encontrada");
       }
     }
 
@@ -75,7 +71,7 @@ export class AtualizarDepartmentUseCase {
 
     department.atualizarDados(
       {
-        unitId: input.unitId,
+        branchId: input.branchId,
         name: input.name,
         code: input.code,
         description: input.description,
@@ -130,7 +126,7 @@ export class AtualizarDepartmentUseCase {
     return departmentViewSchema.parse({
       departmentId: department.departmentId,
       orgId: department.dados.orgId,
-      unitId: department.dados.unitId ?? null,
+      branchId: department.dados.branchId ?? null,
       name: department.dados.name,
       code: department.dados.code,
       description: department.dados.description ?? null,

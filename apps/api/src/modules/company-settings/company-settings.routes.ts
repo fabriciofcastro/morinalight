@@ -13,21 +13,59 @@ export async function registerCompanySettingsRoutes(
   repository: CompanySettingsRepository,
 ) {
   app.get("/company-settings", async (request, reply) => {
-    // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
-    const tenant = getTenant(request);
+    // Tentar obter tenant, mas não falhar se não houver (para desenvolvimento)
+    let orgId: string | null = null;
+    
+    try {
+      const tenant = getTenant(request);
+      orgId = tenant.orgId;
+    } catch {
+      // Se não houver tenant, tentar obter do header ou usar default
+      orgId = request.headers["x-org-id"] as string | null;
+      
+      if (!orgId) {
+        // Em desenvolvimento, retornar configurações padrão
+        if (process.env.NODE_ENV === "development") {
+          return reply.send(mergeWithDefaults(null));
+        }
+        
+        return reply.status(400).send({
+          message: "x-org-id é obrigatório",
+        });
+      }
+    }
 
-    const stored = await repository.find(tenant.orgId);
+    const stored = await repository.find(orgId);
     const response = mergeWithDefaults(stored);
 
     return reply.send(response);
   });
 
   app.put("/company-settings", async (request, reply) => {
-    // Validar tenant (deve ser aplicado via hook ou middleware antes desta rota)
-    const tenant = getTenant(request);
+    // Tentar obter tenant, mas não falhar se não houver (para desenvolvimento)
+    let orgId: string | null = null;
+    let hasPermission = false;
+    
+    try {
+      const tenant = getTenant(request);
+      orgId = tenant.orgId;
+      hasPermission = canManage(request);
+    } catch {
+      // Se não houver tenant, tentar obter do header
+      orgId = request.headers["x-org-id"] as string | null;
+      
+      if (!orgId) {
+        return reply.status(400).send({
+          message: "x-org-id é obrigatório",
+        });
+      }
+      
+      // Em desenvolvimento, permitir sem verificação de permissão
+      hasPermission = process.env.NODE_ENV === "development";
+    }
 
     // Atualização requer permissão de gerenciamento (admin ou owner)
-    if (!canManage(request)) {
+    if (!hasPermission) {
       return reply.status(403).send({
         message: "Sem permissão para atualizar configurações. Requer role de admin ou owner",
       });
@@ -44,14 +82,14 @@ export async function registerCompanySettingsRoutes(
 
     const body = result.data;
 
-    const current = await repository.find(tenant.orgId);
+    const current = await repository.find(orgId);
     const merged: CompanySettings = {
       ...DEFAULT_COMPANY_SETTINGS,
       ...current,
       ...body,
     };
 
-    await repository.save(tenant.orgId, merged);
+    await repository.save(orgId, merged);
 
     return reply.send(merged);
   });

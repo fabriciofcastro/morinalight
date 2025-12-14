@@ -13,7 +13,7 @@ import { RealtimePermissionsProvider } from "@/components/permissions/realtime-p
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isFullWidth = pathname?.startsWith("/admin/company/edit");
+  const isFullWidth = pathname?.startsWith("/admin/company/edit") || pathname?.startsWith("/dashboard");
   const showJarvisHud = pathname?.startsWith("/dashboard");
 
   // Guarda a última rota “válida” (para 404 contextual sugerir retorno)
@@ -46,7 +46,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Page Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className={isFullWidth ? "w-full" : "container mx-auto p-6"}>{children}</div>
+          <div className={isFullWidth ? "w-full px-6 py-6" : "container mx-auto p-6"}>{children}</div>
         </main>
 
         {/* Footer */}

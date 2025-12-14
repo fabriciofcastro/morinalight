@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import { Sector } from "../../domain/entities/sector";
 import type {
@@ -65,7 +66,7 @@ export class PrismaSectorRepository implements SectorRepository {
         parentId: dados.parentId,
         status: dados.status,
         ordem: dados.ordem,
-        metadata: dados.metadata,
+        metadata: dados.metadata ? (dados.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         createdBy: dados.createdBy,
         updatedBy: dados.updatedBy,
         createdAt: dados.createdAt,
@@ -80,7 +81,7 @@ export class PrismaSectorRepository implements SectorRepository {
         parentId: dados.parentId,
         status: dados.status,
         ordem: dados.ordem,
-        metadata: dados.metadata,
+        metadata: dados.metadata ? (dados.metadata as Prisma.InputJsonValue) : Prisma.JsonNull,
         updatedBy: dados.updatedBy,
         updatedAt: dados.updatedAt,
         deletedAt: dados.deletedAt,
@@ -125,9 +126,9 @@ export class PrismaSectorRepository implements SectorRepository {
     if (filtro.busca) {
       andFilters.push({
         OR: [
-          { name: { contains: filtro.busca, mode: "insensitive" } },
-          { code: { contains: filtro.busca, mode: "insensitive" } },
-          { description: { contains: filtro.busca, mode: "insensitive" } },
+          { name: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
+          { code: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
+          { description: { contains: filtro.busca, mode: Prisma.QueryMode.insensitive } },
         ],
       });
     }
@@ -143,9 +144,9 @@ export class PrismaSectorRepository implements SectorRepository {
       });
     }
 
-    const where = {
+    const where: Prisma.SectorWhereInput = {
       orgId,
-      ...(andFilters.length > 0 ? { AND: andFilters } : {}),
+      ...(andFilters.length > 0 ? { AND: andFilters as Prisma.SectorWhereInput[] } : {}),
     };
 
     const records = await prisma.sector.findMany({

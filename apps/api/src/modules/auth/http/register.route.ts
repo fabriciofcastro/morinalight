@@ -170,7 +170,7 @@ export async function registerRegisterRoute(app: FastifyInstance, deps: Register
 async function ensureOrganizationExists(
   repository: OrganizationRepository,
   name: string,
-): Promise<{ organizationId: string; name: string }> {
+): Promise<{ organizationId: string; name: string; slug: string }> {
   const organizationId = randomUUID();
   if (!repository.criar || !repository.encontrarPorSlug) {
     throw new Error("Repositório de organização não suporta criação.");

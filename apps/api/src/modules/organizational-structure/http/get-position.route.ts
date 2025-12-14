@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { PositionRepository } from "../domain/repositories/position-repository";
 import { positionViewSchema } from "../application/schemas/position.schema";
+import type { PositionRepository } from "../domain/repositories/position-repository";
 
 type Dependencies = {
   positionRepository: PositionRepository;
@@ -17,7 +17,10 @@ export async function registerGetPositionRoute(app: FastifyInstance, deps: Depen
       }
 
       try {
-        const position = await deps.positionRepository.encontrarPorId(orgId, request.params.positionId);
+        const position = await deps.positionRepository.encontrarPorId(
+          orgId,
+          request.params.positionId,
+        );
 
         if (!position) {
           return reply.status(404).send({ message: "Cargo não encontrado" });
@@ -56,4 +59,3 @@ export async function registerGetPositionRoute(app: FastifyInstance, deps: Depen
     },
   );
 }
-

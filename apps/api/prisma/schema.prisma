@@ -81,55 +81,125 @@ enum PositionStatus {
   arquivado
 }
 
-model Organization {
-  id          String   @id @default(uuid())
-  name        String
-  slug        String   @unique
-  description String?  @db.VarChar(2048)
-  
-  // Registration Data
-  legalName   String?  @db.VarChar(255)
-  cnpj        String?  @db.VarChar(20)
-  address     String?  @db.VarChar(512)
-  phone       String?  @db.VarChar(20)
-  email       String?  @db.VarChar(255)
-  website     String?  @db.VarChar(255)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+enum FichaCustoStatus {
+  rascunho
+  enviada_para_conferencia
+  aprovada
+  reprovada
+}
 
-  products              Product[]
-  prefichas             Preficha[]
-  settings              CompanySettings?
-  memberships           OrganizationMembership[]
-  invites               UserInvite[]
-  auditLogs             OrganizationAuditLog[]
-  suppliers             Supplier[]
-  categories            Category[]
-  clientes              Cliente[]
-  representantes        Representante[]
-  contratos             Contrato[]
-  vendas                Venda[]
-  comissoes             Comissao[]
-  departments           Department[]
-  structureAuditLogs    OrganizationalStructureAuditLog[]
-  departmentMemberships DepartmentMembership[]            @relation("OrganizationDepartmentMemberships")
-  sectorMemberships     SectorMembership[]                @relation("OrganizationSectorMemberships")
-  positionMemberships   PositionMembership[]              @relation("OrganizationPositionMemberships")
-  Sector                Sector[]
-  Position              Position[]
-  positionPermissions   PositionPermission[]
-  sectorPermissions     SectorPermission[]
-  departmentPermissions DepartmentPermission[]
-  permissionAuditLogs   PermissionAuditLog[]
-  permissionTemplates   PermissionTemplate[]
-  userPermissions       UserPermission[]
+enum TipoInsumo {
+  aviamento
+  servico
+  terceirizacao
+  outros
+}
+
+enum TipoDocumento {
+  foto_peca
+  nota_fiscal
+  boleto
+  comprovante_pagamento
+  outros
+}
+
+enum StatusBoleto {
+  pendente
+  pago
+  cancelado
+  vencido
+}
+
+enum PreFichaTecnicaStatus {
+  rascunho
+  submetida_para_revisao_tecnica
+  em_revisao_ficha_tecnica
+  aprovada_tecnicamente
+  aguardando_aval_diretoria
+  liberada_para_producao_piloto
+  reprovada
+}
+
+enum TipoTecido {
+  principal
+  forro
+  entretela
+  outros
+}
+
+enum TipoInsumoTecnico {
+  linha
+  ziper
+  botao
+  etiqueta
+  outros
+}
+
+enum UnidadeMedida {
+  cm
+  unidade
+  metro
+  kg
+  litro
+}
+
+model Organization {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String? @db.VarChar(2048)
+
+  // Registration Data
+  legalName String?  @db.VarChar(255)
+  cnpj      String?  @db.VarChar(20)
+  address   String?  @db.VarChar(512)
+  phone     String?  @db.VarChar(20)
+  email     String?  @db.VarChar(255)
+  website   String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products                 Product[]
+  prefichas                Preficha[]
+  settings                 CompanySettings?
+  memberships              OrganizationMembership[]
+  invites                  UserInvite[]
+  auditLogs                OrganizationAuditLog[]
+  suppliers                Supplier[]
+  categories               Category[]
+  clientes                 Cliente[]
+  representantes           Representante[]
+  contratos                Contrato[]
+  vendas                   Venda[]
+  comissoes                Comissao[]
+  departments              Department[]
+  structureAuditLogs       OrganizationalStructureAuditLog[]
+  departmentMemberships    DepartmentMembership[]            @relation("OrganizationDepartmentMemberships")
+  sectorMemberships        SectorMembership[]                @relation("OrganizationSectorMemberships")
+  positionMemberships      PositionMembership[]              @relation("OrganizationPositionMemberships")
+  Sector                   Sector[]
+  Position                 Position[]
+  positionPermissions      PositionPermission[]
+  sectorPermissions        SectorPermission[]
+  departmentPermissions    DepartmentPermission[]
+  permissionAuditLogs      PermissionAuditLog[]
+  permissionTemplates      PermissionTemplate[]
+  userPermissions          UserPermission[]
   permissionChangeRequests PermissionChangeRequest[]
-  
+
   // New Relations
-  branches              Branch[]
-  roles                 Role[]
-  segments              TenantSegment[]
-  workflowPolicies      WorkflowPolicy[]
+  branches         Branch[]
+  roles            Role[]
+  segments         TenantSegment[]
+  workflowPolicies WorkflowPolicy[]
+
+  // Fichas de Custo
+  fichasCusto           FichaCusto[]
+  fichasCustoAuditorias AuditoriaFichaCusto[] @relation("FichaCustoAuditoria")
+
+  // Pré-Fichas Técnicas
+  preFichasTecnicas           PreFichaTecnica[]
+  preFichasTecnicasAuditorias AuditoriaPreFichaTecnica[] @relation("PreFichaTecnicaAuditoria")
 }
 
 model User {
@@ -144,11 +214,11 @@ model User {
   updatedAt    DateTime   @updatedAt
 
   // Organizational Fields
-  branchId     String?
-  positionId   String?
+  branchId   String?
+  positionId String?
 
-  branch       Branch?    @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  position     Position?  @relation(fields: [positionId], references: [id], onDelete: SetNull)
+  branch   Branch?   @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  position Position? @relation(fields: [positionId], references: [id], onDelete: SetNull)
 
   memberships           OrganizationMembership[]
   invitesAuthored       UserInvite[]             @relation("InviteAuthor")
@@ -158,6 +228,10 @@ model User {
   positionMemberships   PositionMembership[]     @relation("UserPositionMemberships")
   roles                 UserRole[]
   userPermissions       UserPermission[]
+
+  // Notificações
+  notifications           Notification[]           @relation("UserNotifications")
+  notificationPreferences NotificationPreference[] @relation("UserNotificationPreferences")
 
   @@index([branchId])
   @@index([positionId])
@@ -566,7 +640,7 @@ model Comissao {
 model Department {
   id          String           @id @default(uuid())
   orgId       String
-  branchId    String?  // Optional: department can be specific to a branch
+  branchId    String? // Optional: department can be specific to a branch
   name        String
   code        String           @db.VarChar(50) // Código único (ex: "DPT-001")
   description String?          @db.VarChar(1024)
@@ -588,6 +662,7 @@ model Department {
   sectors      Sector[] // Setores pertencem a departamentos
   memberships  DepartmentMembership[]
   permissions  DepartmentPermission[]
+  fichasCusto  FichaCusto[] // Fichas de custo vinculadas ao departamento
 
   @@unique([orgId, code], name: "unique_department_code_per_org")
   @@index([orgId, parentId])
@@ -615,8 +690,6 @@ model Sector {
   deletedAt    DateTime?
   deletedBy    String?
 
-
-
   organization Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
   branch       Branch?            @relation(fields: [branchId], references: [id], onDelete: SetNull)
   department   Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
@@ -625,6 +698,7 @@ model Sector {
   positions    Position[]
   memberships  SectorMembership[]
   permissions  SectorPermission[]
+  fichasCusto  FichaCusto[]
 
   @@unique([orgId, code], name: "unique_sector_code_per_org")
   @@index([orgId, departmentId])
@@ -750,15 +824,15 @@ model OrganizationalStructureAuditLog {
 
 // Permissões por cargo (Matriz de Permissões RBAC)
 model PositionPermission {
-  id         String   @id @default(uuid())
-  orgId      String
-  positionId String
+  id           String   @id @default(uuid())
+  orgId        String
+  positionId   String
   permissionId String // Referência à permissão
-  granted    Boolean  @default(true) // true = permitido, false = negado explícito
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  createdBy  String
-  updatedBy  String
+  granted      Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   position     Position     @relation(fields: [positionId], references: [id], onDelete: Cascade)
@@ -771,18 +845,18 @@ model PositionPermission {
 
 // Permissões por setor (Matriz de Permissões RBAC)
 model SectorPermission {
-  id         String   @id @default(uuid())
-  orgId      String
-  sectorId   String
+  id           String   @id @default(uuid())
+  orgId        String
+  sectorId     String
   permissionId String // Referência à permissão
-  granted    Boolean  @default(true) // true = permitido, false = negado explícito
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  createdBy  String
-  updatedBy  String
+  granted      Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  sector        Sector       @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  sector       Sector       @relation(fields: [sectorId], references: [id], onDelete: Cascade)
 
   @@unique([sectorId, permissionId], name: "unique_sector_permission")
   @@index([orgId, sectorId])
@@ -792,18 +866,18 @@ model SectorPermission {
 
 // Permissões por departamento (Matriz de Permissões RBAC)
 model DepartmentPermission {
-  id         String   @id @default(uuid())
-  orgId      String
+  id           String   @id @default(uuid())
+  orgId        String
   departmentId String
   permissionId String // Referência à permissão
-  granted    Boolean  @default(true) // true = permitido, false = negado explícito
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  createdBy  String
-  updatedBy  String
+  granted      Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  department    Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  department   Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
 
   @@unique([departmentId, permissionId], name: "unique_department_permission")
   @@index([orgId, departmentId])
@@ -813,18 +887,18 @@ model DepartmentPermission {
 
 // Auditoria de mudanças de permissões
 model PermissionAuditLog {
-  id           String   @id @default(uuid())
-  orgId        String
-  entityType   String   // "position" | "sector" | "department" | "user"
-  entityId     String   // ID do cargo, setor, departamento ou usuário
-  permissionId String   // ID ou chave da permissão (ex: "products:view")
-  action       String   // "granted" | "denied" | "removed"
-  granted      Boolean? // true = concedido, false = negado, null = removido
+  id            String   @id @default(uuid())
+  orgId         String
+  entityType    String // "position" | "sector" | "department" | "user"
+  entityId      String // ID do cargo, setor, departamento ou usuário
+  permissionId  String // ID ou chave da permissão (ex: "products:view")
+  action        String // "granted" | "denied" | "removed"
+  granted       Boolean? // true = concedido, false = negado, null = removido
   previousValue Boolean? // Valor anterior (para rastreamento)
-  actorId      String   // ID do usuário que fez a mudança
-  reason       String?  @db.VarChar(512) // Motivo da mudança (opcional)
-  metadata     Json?    // Dados adicionais flexíveis
-  createdAt    DateTime @default(now())
+  actorId       String // ID do usuário que fez a mudança
+  reason        String?  @db.VarChar(512) // Motivo da mudança (opcional)
+  metadata      Json? // Dados adicionais flexíveis
+  createdAt     DateTime @default(now())
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
@@ -838,32 +912,32 @@ model PermissionAuditLog {
 
 // Workflow de aprovação para mudanças sensíveis de RBAC
 model PermissionChangeRequest {
-  id            String   @id @default(uuid())
-  orgId         String
+  id    String @id @default(uuid())
+  orgId String
 
   // target
-  entityType    String   // "position" | "sector" | "department" | "user"
-  entityId      String
-  permissionId  String
-  granted       Boolean? // true = grant, false = deny, null = remove (futuro)
+  entityType   String // "position" | "sector" | "department" | "user"
+  entityId     String
+  permissionId String
+  granted      Boolean? // true = grant, false = deny, null = remove (futuro)
 
   // request
-  reason        String?  @db.VarChar(512)
-  status        String   @default("pending") // pending | approved | rejected | cancelled
-  requestedBy   String
+  reason      String? @db.VarChar(512)
+  status      String  @default("pending") // pending | approved | rejected | cancelled
+  requestedBy String
 
   // decision
-  decidedBy     String?
-  decidedAt     DateTime?
-  decisionReason String? @db.VarChar(512)
+  decidedBy      String?
+  decidedAt      DateTime?
+  decisionReason String?   @db.VarChar(512)
 
   // SLA
   slaDueAt      DateTime?
   slaNotifiedAt DateTime?
   slaBreachedAt DateTime?
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
@@ -899,152 +973,682 @@ model UserPermission {
 // Templates de permissões (conjuntos predefinidos)
 // (Moved to end of file)
 
-  // ... existing models ...
+// ... existing models ...
 
-  // --- Organizational Structure Extensions ---
+// --- Organizational Structure Extensions ---
 
-  model Branch {
-    id                String   @id @default(uuid())
-    orgId             String
-    name              String   @db.VarChar(255)
-    type              String   @db.VarChar(50) // FABRICA, LOJA, CD, ESCRITORIO
-    internalCode      String?  @db.VarChar(20)
-    cnpj              String?  @db.VarChar(18)
-    stateRegistration String?  @db.VarChar(20)
-    address           Json?    // logradouro, numero, bairro, cidade, uf, cep
-    phone             String?  @db.VarChar(20)
-    email             String?  @db.VarChar(255)
-    active            Boolean  @default(true)
-    createdAt         DateTime @default(now())
-    updatedAt         DateTime @updatedAt
+model Branch {
+  id                String   @id @default(uuid())
+  orgId             String
+  name              String   @db.VarChar(255)
+  type              String   @db.VarChar(50) // FABRICA, LOJA, CD, ESCRITORIO
+  internalCode      String?  @db.VarChar(20)
+  cnpj              String?  @db.VarChar(18)
+  stateRegistration String?  @db.VarChar(20)
+  address           Json? // logradouro, numero, bairro, cidade, uf, cep
+  phone             String?  @db.VarChar(20)
+  email             String?  @db.VarChar(255)
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    users        User[]
-    departments  Department[]
-    sectors      Sector[]
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  users        User[]
+  departments  Department[]
+  sectors      Sector[]
 
-    @@index([orgId, active])
-  }
+  @@index([orgId, active])
+}
 
-  model Role {
-    id          String   @id @default(uuid())
-    orgId       String
-    name        String   @db.VarChar(100) // ADMIN, GESTOR_COMERCIAL
-    code        String   @db.VarChar(50)
-    description String?  @db.Text
-    scope       String   @db.VarChar(50) // GLOBAL, FILIAL, DEPARTAMENTO, SETOR
-    active      Boolean  @default(true)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+model Role {
+  id          String   @id @default(uuid())
+  orgId       String
+  name        String   @db.VarChar(100) // ADMIN, GESTOR_COMERCIAL
+  code        String   @db.VarChar(50)
+  description String?  @db.Text
+  scope       String   @db.VarChar(50) // GLOBAL, FILIAL, DEPARTAMENTO, SETOR
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    permissions  RolePermission[]
-    users        UserRole[]
+  organization Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  permissions  RolePermission[]
+  users        UserRole[]
 
-    @@unique([orgId, code])
-    @@index([orgId, active])
-  }
+  @@unique([orgId, code])
+  @@index([orgId, active])
+}
 
-  model Permission {
-    id          String   @id @default(uuid())
-    code        String   @unique @db.VarChar(100) // CRM_LEAD_VIEW
-    name        String   @db.VarChar(150)
-    description String?  @db.Text
-    module      String   @db.VarChar(50) // CRM, CLM, PCP
-    level       String   @db.VarChar(50) // READ, WRITE, ADMIN
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique @db.VarChar(100) // CRM_LEAD_VIEW
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  module      String   @db.VarChar(50) // CRM, CLM, PCP
+  level       String   @db.VarChar(50) // READ, WRITE, ADMIN
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    roles       RolePermission[]
-    userPermissions UserPermission[]
-    // Also linked to Position/Sector/Department permissions if needed, but Role is primary for RBAC
-  }
+  roles           RolePermission[]
+  userPermissions UserPermission[]
+  // Also linked to Position/Sector/Department permissions if needed, but Role is primary for RBAC
+}
 
-  model RolePermission {
-    roleId       String
-    permissionId String
-    createdAt    DateTime @default(now())
+model RolePermission {
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
 
-    role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-    permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
-    @@id([roleId, permissionId])
-  }
+  @@id([roleId, permissionId])
+}
 
-  model UserRole {
-    userId    String
-    roleId    String
-    createdAt DateTime @default(now())
+model UserRole {
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-    @@id([userId, roleId])
-  }
+  @@id([userId, roleId])
+}
 
-  model BusinessSegment {
-    id          String   @id @default(uuid())
-    code        String   @unique @db.VarChar(50) // INFANTIL, ADULTO, UNIFORME
-    description String?  @db.Text
-    active      Boolean  @default(true)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
+model BusinessSegment {
+  id          String   @id @default(uuid())
+  code        String   @unique @db.VarChar(50) // INFANTIL, ADULTO, UNIFORME
+  description String?  @db.Text
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-    tenants     TenantSegment[]
-  }
+  tenants TenantSegment[]
+}
 
-  model TenantSegment {
-    orgId     String
-    segmentId String
-    config    Json?    // Regras específicas
-    createdAt DateTime @default(now())
+model TenantSegment {
+  orgId     String
+  segmentId String
+  config    Json? // Regras específicas
+  createdAt DateTime @default(now())
 
-    organization Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
-    segment      BusinessSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  organization Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  segment      BusinessSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
 
-    @@id([orgId, segmentId])
-  }
+  @@id([orgId, segmentId])
+}
 
-  model WorkflowPolicy {
-    id        String   @id @default(uuid())
-    orgId     String
-    module    String   @db.VarChar(50) // CRM, PRE_VENDA
-    flowType  String   @db.VarChar(50) // APROVACAO_PROPOSTA
-    config    Json     // DSL com etapas e aprovadores
-    active    Boolean  @default(true)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model WorkflowPolicy {
+  id        String   @id @default(uuid())
+  orgId     String
+  module    String   @db.VarChar(50) // CRM, PRE_VENDA
+  flowType  String   @db.VarChar(50) // APROVACAO_PROPOSTA
+  config    Json // DSL com etapas e aprovadores
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
-    @@index([orgId, module])
-  }
+  @@index([orgId, module])
+}
 
-  // --- Updates to Existing Models ---
+// --- Updates to Existing Models ---
 
-  // Update Organization to include new relations
-  // (This part is handled by the relation fields in the new models, 
-  // but we need to ensure the reverse relations exist in Organization if we were editing it directly.
-  // Since I am appending/replacing, I will rely on Prisma to infer or I need to edit Organization model too.
-  // I will use a separate edit for Organization and User to be safe and clean.)
+// Update Organization to include new relations
+// (This part is handled by the relation fields in the new models, 
+// but we need to ensure the reverse relations exist in Organization if we were editing it directly.
+// Since I am appending/replacing, I will rely on Prisma to infer or I need to edit Organization model too.
+// I will use a separate edit for Organization and User to be safe and clean.)
 
-  model PermissionTemplate {
-    id          String   @id @default(uuid())
-    orgId       String
-    name        String   @db.VarChar(200)
-    description String?  @db.VarChar(500)
-    entityType  String   // "position" | "sector" | "department" | "all"
-    permissions Json     // Array de { permissionId: string, granted: boolean }
-    isDefault   Boolean  @default(false) // Template padrão para o tipo de entidade
-    isSystem    Boolean  @default(false) // Template do sistema (não pode ser editado/deletado)
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    createdBy   String
-    updatedBy   String
+model PermissionTemplate {
+  id          String   @id @default(uuid())
+  orgId       String
+  name        String   @db.VarChar(200)
+  description String?  @db.VarChar(500)
+  entityType  String // "position" | "sector" | "department" | "all"
+  permissions Json // Array de { permissionId: string, granted: boolean }
+  isDefault   Boolean  @default(false) // Template padrão para o tipo de entidade
+  isSystem    Boolean  @default(false) // Template do sistema (não pode ser editado/deletado)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String
+  updatedBy   String
 
-    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
-    @@index([orgId, entityType])
-    @@index([orgId, isDefault])
-    @@unique([orgId, name, entityType], name: "unique_template_name_per_entity")
-  }
+  @@unique([orgId, name, entityType], name: "unique_template_name_per_entity")
+  @@index([orgId, entityType])
+  @@index([orgId, isDefault])
+}
+
+// ============================================
+// FICHAS DE CUSTO DE AVIMENTOS
+// ============================================
+
+model FichaCusto {
+  id               String           @id @default(uuid())
+  orgId            String
+  numeroSequencial Int              @unique // ID sequencial imutável
+  referenciaPeca   String           @db.VarChar(100)
+  nomePeca         String           @db.VarChar(255)
+  categoria        String?          @db.VarChar(100)
+  departmentId     String? // Departamento: Aviamentos e Insumos
+  sectorId         String? // Setor: Fichas de Custo
+  status           FichaCustoStatus @default(rascunho)
+
+  // Dados da peça
+  fotoPecaUrl        String? @db.VarChar(512) // URL do arquivo de foto
+  fotoPecaStorageKey String? @db.VarChar(512) // Key no Object Storage
+
+  // Valores calculados
+  totalCustos    Decimal @default(0) @db.Decimal(15, 2)
+  custoFinalPeca Decimal @default(0) @db.Decimal(15, 2)
+
+  // Responsáveis (RACI)
+  criadoPor             String // User ID
+  aprovadoPor           String? // User ID
+  reprovadoPor          String? // User ID
+  responsavelFinanceiro String? // User ID
+
+  // Datas importantes
+  dataEnvioConferencia    DateTime?
+  dataAprovacao           DateTime?
+  dataReprovacao          DateTime?
+  justificativaReprovacao String?   @db.Text
+
+  // Versionamento
+  versaoAtual Int @default(1)
+
+  // Auditoria
+  createdBy String
+  updatedBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  deletedBy String?
+
+  // Relacionamentos
+  organization Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  department   Department?           @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  sector       Sector?               @relation(fields: [sectorId], references: [id], onDelete: SetNull)
+  insumos      InsumoFichaCusto[]
+  boletos      BoletoFichaCusto[]
+  versoes      VersaoFichaCusto[]
+  auditorias   AuditoriaFichaCusto[]
+  documentos   DocumentoFichaCusto[]
+
+  @@unique([orgId, numeroSequencial])
+  @@index([orgId, status])
+  @@index([orgId, departmentId])
+  @@index([orgId, sectorId])
+  @@index([orgId, referenciaPeca])
+  @@index([orgId, createdAt])
+  @@index([orgId, deletedAt])
+}
+
+model InsumoFichaCusto {
+  id           String @id @default(uuid())
+  fichaCustoId String
+  ordem        Int    @default(0) // Ordem de exibição
+
+  // Dados do insumo
+  descricao String     @db.VarChar(500)
+  tipo      TipoInsumo @default(aviamento)
+
+  // Fornecedor
+  fornecedorId   String? // Relacionamento com Supplier (opcional)
+  fornecedorNome String? @db.VarChar(255) // Nome do fornecedor (caso não tenha cadastro)
+  fornecedorCnpj String? @db.VarChar(20)
+
+  // Nota fiscal
+  notaFiscalNumero String?   @db.VarChar(50)
+  notaFiscalData   DateTime?
+  notaFiscalValor  Decimal?  @db.Decimal(15, 2)
+
+  // Quantidade e custo
+  quantidade    Decimal @db.Decimal(15, 4)
+  unidadeMedida String  @db.VarChar(20) // UN, KG, M, etc
+  custoUnitario Decimal @db.Decimal(15, 4)
+  custoTotal    Decimal @db.Decimal(15, 2) // Calculado: quantidade * custoUnitario
+
+  // Observações
+  observacoes String? @db.Text
+
+  // Auditoria
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  fichaCusto FichaCusto @relation(fields: [fichaCustoId], references: [id], onDelete: Cascade)
+
+  @@index([fichaCustoId])
+  @@index([fornecedorId])
+}
+
+model BoletoFichaCusto {
+  id           String  @id @default(uuid())
+  fichaCustoId String
+  insumoId     String? // Opcional: vinculado a um insumo específico
+
+  // Dados do boleto
+  arquivoUrl        String? @db.VarChar(512)
+  arquivoStorageKey String? @db.VarChar(512)
+  fornecedorId      String? // Relacionamento com Supplier
+  fornecedorNome    String? @db.VarChar(255)
+
+  // Valores
+  valorBoleto    Decimal  @db.Decimal(15, 2)
+  dataVencimento DateTime
+  codigoBarras   String?  @db.VarChar(100)
+  linhaDigitavel String?  @db.VarChar(100)
+
+  // Status
+  status        StatusBoleto @default(pendente)
+  dataPagamento DateTime?
+
+  // Observações
+  observacoes String? @db.Text
+
+  // Auditoria
+  anexadoPor String // User ID
+  pagoPor    String? // User ID
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relacionamentos
+  fichaCusto FichaCusto @relation(fields: [fichaCustoId], references: [id], onDelete: Cascade)
+
+  @@index([fichaCustoId])
+  @@index([fornecedorId])
+  @@index([status])
+  @@index([dataVencimento])
+}
+
+model VersaoFichaCusto {
+  id           String @id @default(uuid())
+  fichaCustoId String
+  versao       Int // Número da versão (1, 2, 3, ...)
+
+  // Snapshot completo dos dados (JSON)
+  dadosSnapshot Json // Estado completo da ficha naquele momento
+
+  // Metadados
+  criadoPor       String // User ID
+  motivoAlteracao String?  @db.VarChar(500)
+  createdAt       DateTime @default(now())
+
+  // Relacionamentos
+  fichaCusto FichaCusto @relation(fields: [fichaCustoId], references: [id], onDelete: Cascade)
+
+  @@unique([fichaCustoId, versao])
+  @@index([fichaCustoId])
+  @@index([createdAt])
+}
+
+model AuditoriaFichaCusto {
+  id           String @id @default(uuid())
+  fichaCustoId String
+  orgId        String
+
+  // Dados da ação
+  acao  String  @db.VarChar(100) // criar, atualizar, aprovar, reprovar, etc
+  campo String? @db.VarChar(100) // Campo alterado (se aplicável)
+
+  // Estados
+  estadoAnterior Json? // Estado antes da alteração
+  estadoNovo     Json? // Estado após a alteração
+
+  // Contexto
+  actorId   String // User ID
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.VarChar(500)
+
+  // Dados adicionais
+  justificativa String? @db.Text
+  metadata      Json? // Dados extras
+
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  fichaCusto   FichaCusto   @relation(fields: [fichaCustoId], references: [id], onDelete: Cascade)
+  organization Organization @relation("FichaCustoAuditoria", fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([fichaCustoId])
+  @@index([orgId])
+  @@index([actorId])
+  @@index([acao])
+  @@index([createdAt])
+}
+
+model DocumentoFichaCusto {
+  id                String        @id @default(uuid())
+  fichaCustoId      String
+  tipo              TipoDocumento
+  nomeArquivo       String        @db.VarChar(255)
+  arquivoUrl        String        @db.VarChar(512)
+  arquivoStorageKey String        @db.VarChar(512)
+  tamanhoBytes      BigInt
+  mimeType          String        @db.VarChar(100)
+
+  // Metadados
+  descricao  String?  @db.VarChar(500)
+  anexadoPor String // User ID
+  createdAt  DateTime @default(now())
+
+  // Relacionamentos
+  fichaCusto FichaCusto @relation(fields: [fichaCustoId], references: [id], onDelete: Cascade)
+
+  @@index([fichaCustoId])
+  @@index([tipo])
+  @@index([createdAt])
+}
+
+// ============================================
+// PRÉ-FICHA TÉCNICA (MOLDES LIBERADOS)
+// ============================================
+
+model PreFichaTecnica {
+  id               String @id @default(uuid())
+  orgId            String
+  numeroSequencial Int    @unique // ID sequencial imutável
+
+  // Identificação Geral
+  codigoPeca     String                @db.VarChar(100)
+  nomePecaPiloto String                @db.VarChar(255)
+  categoria      String?               @db.VarChar(100)
+  versaoMolde    Int                   @default(1)
+  status         PreFichaTecnicaStatus @default(rascunho)
+
+  // Evidências Visuais
+  fotoPecaUrl        String? @db.VarChar(512)
+  fotoPecaStorageKey String? @db.VarChar(512)
+  fotosAdicionais    Json? // Array de URLs/storage keys
+
+  // Responsáveis Técnicos (imutáveis após liberação)
+  estilistaId     String? // User ID
+  estilistaNome   String? @db.VarChar(255)
+  modelistaId     String? // User ID
+  modelistaNome   String? @db.VarChar(255)
+  piloteiroId     String? // User ID
+  piloteiroNome   String? @db.VarChar(255)
+  liberadoPorId   String? // User ID (perfil autorizado)
+  liberadoPorNome String? @db.VarChar(255)
+
+  // Grade de Tamanhos
+  gradeTamanhos Json? // Array: ["PP", "P", "M", "G", "GG"]
+
+  // Observações
+  observacoesTecnicas String? @db.Text
+  observacoesOficina  String? @db.VarChar(1000)
+
+  // Alteração Técnica
+  houveAlteracao     Boolean @default(false)
+  descricaoAlteracao String? @db.VarChar(500)
+
+  // Checklist Técnico (JSON)
+  checklistTecnico Json? // { moldeVesteCorretamente: boolean, costuraViavel: boolean, ... }
+
+  // Medidas Críticas
+  medidasCriticas String? @db.Text
+
+  // Conclusão da Avaliação
+  resultadoAvaliacao  String? @db.VarChar(50) // "APROVADA" | "REPROVADA"
+  observacaoAvaliacao String? @db.VarChar(1000)
+
+  // Datas importantes
+  dataSubmissao           DateTime?
+  dataInicioRevisao       DateTime?
+  dataAprovacaoTecnica    DateTime?
+  dataAprovacaoDiretoria  DateTime?
+  dataReprovacao          DateTime?
+  justificativaReprovacao String?   @db.Text
+
+  // Versionamento
+  versaoAtual      Int     @default(1)
+  versaoAnteriorId String? // ID da versão anterior (se houver)
+
+  // Auditoria
+  createdBy String
+  updatedBy String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  deletedBy String?
+
+  // Relacionamentos
+  organization    Organization                   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  tecidos         TecidoPreFichaTecnica[]
+  insumosTecnicos InsumoTecnicoPreFichaTecnica[]
+  versoes         VersaoPreFichaTecnica[]
+  auditorias      AuditoriaPreFichaTecnica[]
+  fotos           FotoPreFichaTecnica[]
+
+  @@unique([orgId, numeroSequencial])
+  @@index([orgId, status])
+  @@index([orgId, codigoPeca])
+  @@index([orgId, categoria])
+  @@index([orgId, createdAt])
+  @@index([orgId, deletedAt])
+  @@index([versaoAnteriorId])
+}
+
+model TecidoPreFichaTecnica {
+  id                String @id @default(uuid())
+  preFichaTecnicaId String
+  ordem             Int    @default(0)
+
+  // Dados do tecido
+  tipo                TipoTecido
+  nome                String     @db.VarChar(255)
+  especificacao       String?    @db.VarChar(500)
+  consumo             Decimal    @db.Decimal(15, 4) // Obrigatório
+  largura             Decimal    @db.Decimal(15, 2) // Obrigatório
+  quantidadePartes    Int?       @default(1)
+  observacoesTecnicas String?    @db.Text
+
+  // Auditoria
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  preFichaTecnica PreFichaTecnica @relation(fields: [preFichaTecnicaId], references: [id], onDelete: Cascade)
+
+  @@index([preFichaTecnicaId])
+}
+
+model InsumoTecnicoPreFichaTecnica {
+  id                String @id @default(uuid())
+  preFichaTecnicaId String
+  ordem             Int    @default(0)
+
+  // Dados do insumo
+  descricao           String            @db.VarChar(500)
+  tipo                TipoInsumoTecnico @default(outros)
+  quantidadeBase      Decimal           @db.Decimal(15, 4) // Ex: 1x, 2x
+  consumoPorTamanho   Json? // { "PP": 10, "P": 12, "M": 14, ... }
+  unidadeMedida       UnidadeMedida     @default(unidade)
+  observacoesTecnicas String?           @db.Text
+
+  // Auditoria
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  preFichaTecnica PreFichaTecnica @relation(fields: [preFichaTecnicaId], references: [id], onDelete: Cascade)
+
+  @@index([preFichaTecnicaId])
+}
+
+model FotoPreFichaTecnica {
+  id                String @id @default(uuid())
+  preFichaTecnicaId String
+
+  // Dados do arquivo
+  arquivoUrl        String @db.VarChar(512)
+  arquivoStorageKey String @db.VarChar(512)
+  nomeArquivo       String @db.VarChar(255)
+  tamanhoBytes      BigInt
+  mimeType          String @db.VarChar(100)
+
+  // Metadados
+  descricao   String? @db.VarChar(500)
+  ordem       Int     @default(0)
+  isPrincipal Boolean @default(false)
+
+  // Auditoria
+  anexadoPor String // User ID
+  createdAt  DateTime @default(now())
+
+  // Relacionamentos
+  preFichaTecnica PreFichaTecnica @relation(fields: [preFichaTecnicaId], references: [id], onDelete: Cascade)
+
+  @@index([preFichaTecnicaId])
+  @@index([isPrincipal])
+}
+
+model VersaoPreFichaTecnica {
+  id                String @id @default(uuid())
+  preFichaTecnicaId String
+  versao            Int // Número da versão (1, 2, 3, ...)
+
+  // Snapshot completo dos dados (JSON)
+  dadosSnapshot Json // Estado completo da pré-ficha naquele momento
+
+  // Metadados
+  criadoPor       String // User ID
+  motivoAlteracao String?  @db.VarChar(500)
+  createdAt       DateTime @default(now())
+
+  // Relacionamentos
+  preFichaTecnica PreFichaTecnica @relation(fields: [preFichaTecnicaId], references: [id], onDelete: Cascade)
+
+  @@unique([preFichaTecnicaId, versao])
+  @@index([preFichaTecnicaId])
+  @@index([createdAt])
+}
+
+model AuditoriaPreFichaTecnica {
+  id                String @id @default(uuid())
+  preFichaTecnicaId String
+  orgId             String
+
+  // Dados da ação
+  acao  String  @db.VarChar(100) // criar, atualizar, aprovar, reprovar, etc
+  campo String? @db.VarChar(100) // Campo alterado (se aplicável)
+
+  // Estados
+  estadoAnterior Json? // Estado antes da alteração
+  estadoNovo     Json? // Estado após a alteração
+  statusAnterior PreFichaTecnicaStatus?
+  statusNovo     PreFichaTecnicaStatus?
+
+  // Contexto
+  actorId   String // User ID
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.VarChar(500)
+
+  // Dados adicionais
+  justificativa String? @db.Text
+  metadata      Json? // Dados extras
+
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  preFichaTecnica PreFichaTecnica @relation(fields: [preFichaTecnicaId], references: [id], onDelete: Cascade)
+  organization    Organization    @relation("PreFichaTecnicaAuditoria", fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([preFichaTecnicaId])
+  @@index([orgId])
+  @@index([actorId])
+  @@index([acao])
+  @@index([createdAt])
+}
+
+enum NotificationType {
+  system
+  security
+  approval
+  activity
+  message
+  other
+}
+
+enum NotificationChannel {
+  email
+  push
+  inApp
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  orgId     String
+  userId    String? // null = notificação para toda a organização
+  type      NotificationType
+  category  String   @db.VarChar(100)
+  title     String   @db.VarChar(255)
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  archived  Boolean  @default(false)
+  actionUrl String?  @db.VarChar(500)
+  actionLabel String? @db.VarChar(100)
+  metadata  Json?
+  channels  NotificationChannel[] // Canais pelos quais a notificação foi enviada
+  createdAt DateTime @default(now())
+  readAt    DateTime?
+  archivedAt DateTime?
+
+  // Relacionamentos
+  organization Organization @relation("Notifications", fields: [orgId], references: [id], onDelete: Cascade)
+  user         User?        @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  interactions NotificationInteraction[] @relation("NotificationInteractions")
+
+  @@index([orgId])
+  @@index([userId])
+  @@index([type])
+  @@index([read])
+  @@index([archived])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id        String   @id @default(uuid())
+  orgId     String
+  userId    String
+  category  String   @db.VarChar(100) // system, security, approval, etc
+  enabled   Boolean  @default(true)
+  channels  NotificationChannel[] // email, push, inApp
+  frequency String   @default("immediate") @db.VarChar(20) // immediate, daily, weekly
+  quietHoursStart String? @db.VarChar(5) // HH:mm
+  quietHoursEnd   String? @db.VarChar(5) // HH:mm
+  quietHoursEnabled Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  organization Organization @relation("NotificationPreferences", fields: [orgId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId, category])
+  @@index([orgId])
+  @@index([userId])
+  @@index([category])
+}
+
+model NotificationInteraction {
+  id             String   @id @default(uuid())
+  notificationId String
+  action         String   @db.VarChar(50) // viewed, clicked, archived, deleted, marked_read, action_taken
+  userId         String?
+  details        String?  @db.Text
+  timestamp      DateTime @default(now())
+
+  // Relacionamentos
+  notification Notification @relation("NotificationInteractions", fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@index([notificationId])
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+}

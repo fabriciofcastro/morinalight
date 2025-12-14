@@ -42,7 +42,7 @@ export class Cliente {
   }
 
   static criar(
-    input: Omit<ClienteProps, "criadoEm" | "atualizadoEm" | "status"> & {
+    input: Omit<ClienteProps, "createdAt" | "updatedAt" | "status"> & {
       status?: ClienteStatus;
     },
   ) {

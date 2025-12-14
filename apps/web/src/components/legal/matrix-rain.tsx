@@ -18,9 +18,9 @@ export function MatrixRain() {
                         opacity: [0, 1, 0],
                     }}
                     transition={{
-                        duration: 3 + Math.random() * 2,
+                        duration: 3 + ((i * 0.17) % 2),
                         repeat: Infinity,
-                        delay: Math.random() * 2,
+                        delay: ((i * 0.23) % 2),
                         ease: "linear",
                     }}
                 />

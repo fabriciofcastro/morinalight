@@ -27,7 +27,8 @@ export async function registerCreateRepresentanteRoute(app: FastifyInstance, dep
         actorId: userId,
       });
 
-      const input = { ...request.body, orgId } as unknown;
+      const body = (request.body ?? {}) as Record<string, unknown>;
+      const input = { ...body, orgId } as unknown;
       const representante = await useCase.execute(input);
 
       return reply.status(201).send(representante);

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { apiUrl } from "../../../../../../../lib/env";
-import { buildAuthHeaders } from "../../../../../../_lib/auth-headers";
+import { apiUrl } from "@/lib/env";
+import { buildAuthHeaders } from "../../../../../_lib/auth-headers";
 
 export async function DELETE(
   _request: Request,
@@ -11,7 +11,7 @@ export async function DELETE(
     `${apiUrl}/users/${params.userId}/permissions/custom/${params.permissionId}`,
     {
       method: "DELETE",
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     },
   );
 
@@ -22,3 +22,5 @@ export async function DELETE(
   const data = await response.json().catch(() => ({}));
   return NextResponse.json(data, { status: response.status });
 }
+
+

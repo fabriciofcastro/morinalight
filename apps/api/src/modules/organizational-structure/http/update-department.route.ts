@@ -3,11 +3,11 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AtualizarDepartmentUseCase } from "../application/use-cases/atualizar-department.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
-import type { OrganizationalUnitRepository } from "../domain/repositories/organizational-unit-repository";
+import type { BranchRepository } from "../domain/repositories/branch-repository";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
-  organizationalUnitRepository?: OrganizationalUnitRepository;
+  branchRepository?: BranchRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
   eventBus?: DomainEventBus;
 };
@@ -30,17 +30,18 @@ export async function registerUpdateDepartmentRoute(app: FastifyInstance, deps: 
       try {
         const useCase = new AtualizarDepartmentUseCase({
           departmentRepository: deps.departmentRepository,
-          organizationalUnitRepository: deps.organizationalUnitRepository,
+          branchRepository: deps.branchRepository,
           auditLogRepository: deps.auditLogRepository,
           eventBus: deps.eventBus,
           actorId: userId,
         });
 
+        const body = request.body as Record<string, unknown>;
         const input = {
-          ...request.body,
+          ...body,
           orgId,
           departmentId: request.params.departmentId,
-        } as unknown;
+        };
         const department = await useCase.execute(input);
 
         return reply.status(200).send(department);

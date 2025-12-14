@@ -37,13 +37,19 @@ export default function CommissionsPage() {
         try {
             const data = await clientsApi.listCommissions();
             setCommissions(data);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to load commissions:', error);
             // Set empty array to prevent crashes
             setCommissions([]);
 
             // Show user-friendly message
-            if (error?.response?.status === 400) {
+            if (
+              typeof error === "object" &&
+              error &&
+              "response" in error &&
+              typeof (error as { response?: { status?: number } }).response?.status === "number" &&
+              (error as { response: { status: number } }).response.status === 400
+            ) {
                 console.warn('Endpoint /comissoes não está disponível ou requer parâmetros');
             }
         } finally {

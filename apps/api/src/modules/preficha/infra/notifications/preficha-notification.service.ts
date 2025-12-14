@@ -25,7 +25,7 @@ export class PrefichaNotificationService {
     // Publicar evento de notificação para cada aprovador
     await Promise.all(
       aprovadoresIds.map((aprovadorId) =>
-        this.eventBus.publish({
+        this.eventBus!.publish({
           name: "Preficha.NotificacaoAprovador",
           version: "v1",
           metadata: {
@@ -132,8 +132,10 @@ export class PrefichaNotificationService {
     const destinatarios = destinatarioId ? [destinatarioId] : [];
 
     await Promise.all(
-      destinatarios.map((destinatario) =>
-        this.eventBus.publish({
+      destinatarios
+        .filter((id): id is string => id !== undefined)
+        .map((destinatario) =>
+          this.eventBus!.publish({
           name: "Preficha.NotificacaoComentario",
           version: "v1",
           metadata: {

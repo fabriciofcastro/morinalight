@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
@@ -51,6 +52,7 @@ export class RemoverMembroCargoUseCase {
     // Registrar audit log
     if (this.deps.auditLogRepository) {
       await this.deps.auditLogRepository.registrar({
+        id: randomUUID(),
         orgId: input.orgId,
         entityType: "position",
         entityId: input.positionId,
@@ -60,21 +62,26 @@ export class RemoverMembroCargoUseCase {
           userId: input.userId,
           role: membership.role,
         },
+        createdAt: new Date(),
       });
     }
 
     // Publicar evento de domínio
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "organizational-structure.position.member-removed",
-        payload: {
+        name: "OrganizationalStructure.PositionMemberRemoved",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
           orgId: input.orgId,
+          actorId: this.deps.actorId,
+          timestamp: new Date(),
+        },
+        payload: {
           positionId: input.positionId,
           userId: input.userId,
-          actorId: this.deps.actorId,
         },
       });
     }
   }
 }
-

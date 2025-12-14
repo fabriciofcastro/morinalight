@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireOrganizationAccess } from "../../../core/auth/rbac.guards";
 import type { OrganizationRepository } from "../repositories/organization.repository";
@@ -13,9 +13,12 @@ export async function registerDeleteOrganizationRoute(
   app: FastifyInstance,
   deps: DeleteOrganizationDeps,
 ) {
-  app.delete("/organizations/:orgId", async (request, reply) => {
+  app.delete<{ Params: { orgId: string } }>("/organizations/:orgId", async (request, reply) => {
     // Validar autenticação e acesso (requer owner)
-    await requireOrganizationAccess(deps.organizationRepository, "owner")(request, reply);
+    await requireOrganizationAccess(deps.organizationRepository, "owner")(
+      request as FastifyRequest<{ Params: { orgId?: string } }>,
+      reply,
+    );
     if (reply.sent) return;
 
     if (!request.auth) {

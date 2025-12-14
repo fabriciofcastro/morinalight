@@ -4,6 +4,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { SectorRepository } from "../../organizational-structure/domain/repositories/sector-repository";
 import type { WorkflowPolicyRepository } from "../../organizational-structure/domain/repositories/workflow-policy-repository";
+import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
 import { AtribuirPermissaoSetorUseCase } from "../application/use-cases/atribuir-permissao-setor.use-case";
 import { ListarPermissoesSetorUseCase } from "../application/use-cases/listar-permissoes-setor.use-case";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
@@ -16,6 +17,7 @@ type Dependencies = {
   sectorPermissionRepository: SectorPermissionRepository;
   sectorRepository: SectorRepository;
   permissionRepository: PermissionRepository;
+  organizationRepository: OrganizationRepository;
   permissionChangeRequestRepository?: PermissionChangeRequestRepository;
   workflowPolicyRepository?: WorkflowPolicyRepository;
   auditLogRepository?: PermissionAuditLogRepository;
@@ -110,6 +112,7 @@ export async function registerSectorPermissionsRoute(app: FastifyInstance, deps:
             workflowPolicyRepository: deps.workflowPolicyRepository,
             permissionChangeRequestRepository: deps.permissionChangeRequestRepository,
             permissionRepository: deps.permissionRepository,
+            organizationRepository: deps.organizationRepository,
             orgId,
             actorId: userId,
             entityType: "sector",
