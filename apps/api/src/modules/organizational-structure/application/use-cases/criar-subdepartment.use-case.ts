@@ -6,6 +6,7 @@ import type { SubdepartmentRepository } from "../../domain/repositories/subdepar
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import type { BranchRepository } from "../../domain/repositories/branch-repository";
 import { criarSubdepartmentInputSchema, subdepartmentViewSchema } from "../schemas/subdepartment.schema";
+import { calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -63,6 +64,19 @@ export class CriarSubdepartmentUseCase {
 
       if (!parent) {
         throw new Error("Subdepartamento pai não encontrado");
+      }
+
+      // Verificar profundidade máxima
+      const parentDepth = await calculateHierarchyDepth(
+        input.parentId,
+        async (id: string) => {
+          const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
+          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+        },
+      );
+
+      if (parentDepth >= 9) {
+        throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");
       }
     }
 

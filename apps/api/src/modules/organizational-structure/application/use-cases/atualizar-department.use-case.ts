@@ -4,6 +4,8 @@ import type { OrganizationalStructureAuditLogRepository } from "../../domain/rep
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import type { BranchRepository } from "../../domain/repositories/branch-repository";
 import { atualizarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
+import { hasHierarchyLoop, wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
+import type { Department } from "../../domain/entities/department";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -63,9 +65,45 @@ export class AtualizarDepartmentUseCase {
         throw new Error("Departamento pai não encontrado");
       }
 
-      // Evitar referência circular
+      // Evitar referência circular e loops hierárquicos
       if (input.parentId === department.departmentId) {
         throw new Error("Departamento não pode ser pai de si mesmo");
+      }
+
+      // Verificar loops hierárquicos (se o parentId é descendente do department atual)
+      const hasLoop = await hasHierarchyLoop(
+        department.departmentId,
+        input.parentId,
+        async (id: string) => {
+          const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
+          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
+        },
+      );
+
+      if (hasLoop) {
+        throw new Error("Não é possível criar hierarquia circular. O departamento pai é descendente deste departamento.");
+      }
+
+      // Verificar profundidade máxima
+      const currentDepth = await calculateHierarchyDepth(
+        department.departmentId,
+        async (id: string) => {
+          const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
+          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
+        },
+      );
+
+      const wouldExceed = await wouldExceedMaxDepth(
+        currentDepth,
+        input.parentId,
+        async (id: string) => {
+          const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
+          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
+        },
+      );
+
+      if (wouldExceed) {
+        throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");
       }
     }
 

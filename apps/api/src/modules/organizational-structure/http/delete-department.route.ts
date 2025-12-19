@@ -3,11 +3,13 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { DeletarDepartmentUseCase } from "../application/use-cases/deletar-department.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
+import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 import type { SectorRepository } from "../domain/repositories/sector-repository";
 import type { DepartmentMembershipRepository } from "../infra/prisma/prisma-department-membership.repository";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
+  subdepartmentRepository?: SubdepartmentRepository;
   sectorRepository: SectorRepository;
   departmentMembershipRepository?: DepartmentMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
@@ -32,6 +34,7 @@ export async function registerDeleteDepartmentRoute(app: FastifyInstance, deps: 
       try {
         const useCase = new DeletarDepartmentUseCase({
           departmentRepository: deps.departmentRepository,
+          subdepartmentRepository: deps.subdepartmentRepository,
           sectorRepository: deps.sectorRepository,
           departmentMembershipRepository: deps.departmentMembershipRepository,
           auditLogRepository: deps.auditLogRepository,

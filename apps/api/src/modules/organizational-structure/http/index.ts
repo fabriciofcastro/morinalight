@@ -72,6 +72,7 @@ export async function registerOrganizationalStructureHttpRoutes(
 
   await registerDeleteDepartmentRoute(app, {
     departmentRepository: deps.departmentRepository,
+    subdepartmentRepository: deps.subdepartmentRepository,
     sectorRepository: deps.sectorRepository,
     departmentMembershipRepository: deps.departmentMembershipRepository,
     auditLogRepository: deps.auditLogRepository,

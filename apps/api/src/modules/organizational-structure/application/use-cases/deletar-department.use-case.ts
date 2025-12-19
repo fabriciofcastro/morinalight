@@ -3,6 +3,7 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
 import type { DepartmentMembershipRepository } from "../../infra/prisma/prisma-department-membership.repository";
 
@@ -13,6 +14,7 @@ const deletarDepartmentInputSchema = z.object({
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
+  subdepartmentRepository?: SubdepartmentRepository;
   sectorRepository: SectorRepository;
   departmentMembershipRepository?: DepartmentMembershipRepository;
   auditLogRepository?: OrganizationalStructureAuditLogRepository;
@@ -45,6 +47,20 @@ export class DeletarDepartmentUseCase {
       throw new Error(
         "Não é possível deletar departamento com departamentos filhos. Remova ou mova os departamentos filhos primeiro.",
       );
+    }
+
+    // Verificar se há subdepartamentos associados
+    if (this.deps.subdepartmentRepository) {
+      const subdepartments = await this.deps.subdepartmentRepository.listarPorOrg(input.orgId, {
+        departmentId: input.departmentId,
+        limite: 1,
+      });
+
+      if (subdepartments.itens.length > 0) {
+        throw new Error(
+          "Não é possível deletar departamento com subdepartamentos associados. Remova ou mova os subdepartamentos primeiro.",
+        );
+      }
     }
 
     // Verificar se há setores associados

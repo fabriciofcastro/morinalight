@@ -4,6 +4,8 @@ import type { OrganizationalStructureAuditLogRepository } from "../../domain/rep
 import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import type { BranchRepository } from "../../domain/repositories/branch-repository";
 import { atualizarSubdepartmentInputSchema, subdepartmentViewSchema } from "../schemas/subdepartment.schema";
+import { hasHierarchyLoop, wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
+import type { Subdepartment } from "../../domain/entities/subdepartment";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -63,9 +65,45 @@ export class AtualizarSubdepartmentUseCase {
         throw new Error("Subdepartamento pai não encontrado");
       }
 
-      // Evitar referência circular
+      // Evitar referência circular e loops hierárquicos
       if (input.parentId === subdepartment.subdepartmentId) {
         throw new Error("Subdepartamento não pode ser pai de si mesmo");
+      }
+
+      // Verificar loops hierárquicos
+      const hasLoop = await hasHierarchyLoop(
+        subdepartment.subdepartmentId,
+        input.parentId,
+        async (id: string) => {
+          const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
+          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+        },
+      );
+
+      if (hasLoop) {
+        throw new Error("Não é possível criar hierarquia circular. O subdepartamento pai é descendente deste subdepartamento.");
+      }
+
+      // Verificar profundidade máxima
+      const currentDepth = await calculateHierarchyDepth(
+        subdepartment.subdepartmentId,
+        async (id: string) => {
+          const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
+          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+        },
+      );
+
+      const wouldExceed = await wouldExceedMaxDepth(
+        currentDepth,
+        input.parentId,
+        async (id: string) => {
+          const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
+          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+        },
+      );
+
+      if (wouldExceed) {
+        throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");
       }
     }
 

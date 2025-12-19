@@ -3,6 +3,8 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
 import { atualizarSectorInputSchema, sectorViewSchema } from "../schemas/sector.schema";
+import { hasHierarchyLoop, wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
+import type { Sector } from "../../domain/entities/sector";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -45,9 +47,45 @@ export class AtualizarSectorUseCase {
           throw new Error("Setor pai não encontrado");
         }
 
-        // Evitar referência circular
+        // Evitar referência circular e loops hierárquicos
         if (input.parentId === sector.sectorId) {
           throw new Error("Setor não pode ser pai de si mesmo");
+        }
+
+        // Verificar loops hierárquicos
+        const hasLoop = await hasHierarchyLoop(
+          sector.sectorId,
+          input.parentId,
+          async (id: string) => {
+            const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
+            return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
+          },
+        );
+
+        if (hasLoop) {
+          throw new Error("Não é possível criar hierarquia circular. O setor pai é descendente deste setor.");
+        }
+
+        // Verificar profundidade máxima
+        const currentDepth = await calculateHierarchyDepth(
+          sector.sectorId,
+          async (id: string) => {
+            const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
+            return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
+          },
+        );
+
+        const wouldExceed = await wouldExceedMaxDepth(
+          currentDepth,
+          input.parentId,
+          async (id: string) => {
+            const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
+            return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
+          },
+        );
+
+        if (wouldExceed) {
+          throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");
         }
       }
     }
