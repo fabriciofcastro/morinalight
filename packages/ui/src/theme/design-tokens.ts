@@ -116,6 +116,82 @@ export const designTokens = {
     },
   },
 
+  // Estados de Validação para Formulários
+  validation: {
+    valid: {
+      light: {
+        border: "hsl(158, 72%, 35%)",
+        background: "hsl(158, 40%, 98%)",
+        text: "hsl(158, 72%, 25%)",
+        icon: "hsl(158, 72%, 35%)",
+        focusRing: "hsl(158, 72%, 35%)",
+        focusRingOpacity: 0.22,
+      },
+      dark: {
+        border: "hsl(158, 72%, 55%)",
+        background: "hsl(158, 40%, 12%)",
+        text: "hsl(158, 72%, 55%)",
+        icon: "hsl(158, 72%, 55%)",
+        focusRing: "hsl(158, 72%, 55%)",
+        focusRingOpacity: 0.32,
+      },
+    },
+    invalid: {
+      light: {
+        border: "hsl(0, 82%, 45%)",
+        background: "hsl(0, 50%, 98%)",
+        text: "hsl(0, 82%, 35%)",
+        icon: "hsl(0, 82%, 45%)",
+        focusRing: "hsl(0, 82%, 45%)",
+        focusRingOpacity: 0.22,
+      },
+      dark: {
+        border: "hsl(0, 82%, 60%)",
+        background: "hsl(0, 50%, 12%)",
+        text: "hsl(0, 82%, 60%)",
+        icon: "hsl(0, 82%, 60%)",
+        focusRing: "hsl(0, 82%, 60%)",
+        focusRingOpacity: 0.32,
+      },
+    },
+    pending: {
+      light: {
+        border: "hsl(45, 100%, 45%)",
+        background: "hsl(45, 60%, 98%)",
+        text: "hsl(45, 100%, 35%)",
+        icon: "hsl(45, 100%, 45%)",
+        focusRing: "hsl(45, 100%, 45%)",
+        focusRingOpacity: 0.22,
+      },
+      dark: {
+        border: "hsl(45, 100%, 60%)",
+        background: "hsl(45, 60%, 12%)",
+        text: "hsl(45, 100%, 60%)",
+        icon: "hsl(45, 100%, 60%)",
+        focusRing: "hsl(45, 100%, 60%)",
+        focusRingOpacity: 0.32,
+      },
+    },
+    default: {
+      light: {
+        border: "rgba(0, 0, 0, 0.1)",
+        background: "transparent",
+        text: "inherit",
+        icon: "rgba(0, 0, 0, 0.4)",
+        focusRing: "hsl(210, 90%, 55%)",
+        focusRingOpacity: 0.22,
+      },
+      dark: {
+        border: "rgba(255, 255, 255, 0.1)",
+        background: "transparent",
+        text: "inherit",
+        icon: "rgba(255, 255, 255, 0.4)",
+        focusRing: "hsl(210, 100%, 60%)",
+        focusRingOpacity: 0.32,
+      },
+    },
+  },
+
   // Glass effects - Blur e transparência
   glass: {
     light: {
