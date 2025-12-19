@@ -1,0 +1,499 @@
+# Roadmap de Implementação - Ordem Priorizada
+
+> **Este documento define a ordem de implementação de todos os recursos documentados, permitindo gerenciar o que está sendo feito e o que falta.**
+
+---
+
+## 🎯 Objetivo
+
+Fornecer uma **ordem clara e priorizada** de implementação para:
+- ✅ Gerenciar o que está sendo feito
+- ✅ Identificar o que falta implementar
+- ✅ Evitar dependências quebradas
+- ✅ Seguir a ordem obrigatória de construção
+
+---
+
+## 📊 Status Geral
+
+**Última Atualização:** 2025-01-19  
+**⚠️ REVISÃO CRÍTICA REALIZADA:** Consulte [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md) para detalhes
+
+| Fase | Status | Progresso Real | Progresso Anterior | Prioridade |
+|------|--------|-----------------|-------------------|------------|
+| **FASE 0: Fundamentos** | ⚠️ Parcial | **85%** | 100% ❌ | 🔥 Crítica |
+| **FASE 1: Base Organizacional** | ⚠️ Parcial | **70%** | 100% ❌ | 🔥 Crítica |
+| **FASE 2: Controle de Acesso** | ⚠️ Parcial | **75%** | 100% ❌ | 🔥 Crítica |
+| **FASE 3: Design System** | ⚠️ Parcial | **60%** | 100% ❌ | 🔥 Crítica |
+| **FASE 4: Telas Base** | ⚠️ Parcial | **70%** | 90% | 🔥 Crítica |
+| **FASE 5: Melhorias UX/UI** | ⏳ Em Planejamento | 0% | 0% | ⚡ Alta |
+| **FASE 6: Recursos Avançados** | ⏳ Em Planejamento | 0% | 0% | ⚡ Média |
+| **FASE 7: Integrações** | ⏳ Em Planejamento | 0% | 0% | ✨ Baixa |
+
+**Progresso Real Geral:** 60% (não 65% como documentado anteriormente)
+
+---
+
+## 🔥 FASE 0: Fundamentos (⚠️ 85% - REVISADO)
+
+**Status:** ⚠️ 85% Implementado (não 100%)  
+**Prioridade:** 🔥 Crítica  
+**Dependências:** Nenhuma
+
+### Documentos Relacionados
+- [Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)
+- [Guia de Desenvolvimento](./Guia-Desenvolvimento-Deploy-Produção.md)
+- [Diretiva de Governança](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)
+- [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-0-fundamentos)
+
+### O Que Foi Implementado
+- ✅ Arquitetura base (DDD, Eventos, Multi-tenant)
+- ✅ Infraestrutura básica (PostgreSQL, Redis, WebSocket)
+- ✅ Processos de desenvolvimento documentados
+- ✅ Governança técnica básica
+- ✅ CI/CD básico
+
+### ❌ Gaps Críticos Identificados
+- ❌ Monitoramento e Observabilidade (Prometheus, Grafana, Alertas)
+- ❌ Health Checks incompletos (Redis, Disk, Memory)
+- ❌ Logs estruturados não centralizados
+- ❌ Security scanning não automatizado
+- ❌ Performance baseline não estabelecido
+
+### 🎯 Melhorias Necessárias (15 itens - 20 sprints)
+
+**Prioridade CRÍTICA:**
+1. Monitoramento Completo (2 sprints)
+2. Health Checks Completos (1 sprint)
+3. Logs Estruturados (2 sprints)
+4. Security Scanning (1 sprint)
+5. Performance Baseline (1 sprint)
+
+**Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-0-fundamentos)
+
+---
+
+## 🔥 FASE 1: Base Organizacional (⚠️ 70% - REVISADO)
+
+**Status:** ⚠️ 70% Implementado (não 100%)  
+**Prioridade:** 🔥 Crítica  
+**Dependências:** FASE 0
+
+### Documentos Relacionados
+- [Mapa de Contextos](./Mapa%20de%20Contextos-Núcleo-Domínio-Governança-Dependências.md)
+- [Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability%20Map).md)
+- [Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)
+- [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-1-base-organizacional)
+
+### O Que Foi Implementado
+- ✅ Cadastro de Empresa (com busca por CNPJ parcial)
+- ✅ Configurações da Empresa
+- ✅ Tema da Empresa (logo, cores)
+- ✅ Cadastro de Departamentos
+- ✅ Cadastro de Setores
+- ✅ Cadastro de Cargos
+- ✅ Estrutura organizacional básica
+
+### ❌ Gaps Críticos Identificados
+- ❌ **SUBDEPARTAMENTO AUSENTE (CRÍTICO)** - Modelo não existe no schema
+- ❌ Hierarquia incorreta: falta Subdepartamento entre Departamento e Setor
+- ❌ Busca por CNPJ incompleta (integração com APIs externas)
+- ❌ Busca por CPF ausente
+- ❌ Organograma visual não implementado
+- ❌ Auditoria e versionamento incompletos
+
+### 🎯 Melhorias Necessárias (25 itens - 30 sprints)
+
+**Prioridade CRÍTICA:**
+1. **Implementar Subdepartamento (2 sprints)** - CRÍTICO
+2. Completar Busca por CNPJ (1 sprint)
+3. Implementar Busca por CPF (1 sprint)
+4. Validações de Hierarquia (1 sprint)
+5. Auditoria Completa (1 sprint)
+
+**Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-1-base-organizacional)
+
+---
+
+## 🔥 FASE 2: Controle de Acesso (⚠️ 75% - REVISADO)
+
+**Status:** ⚠️ 75% Implementado (não 100%)  
+**Prioridade:** 🔥 Crítica  
+**Dependências:** FASE 1
+
+### Documentos Relacionados
+- [Controle de Acesso - RBAC, ABAC e PBAC](./Controle-Acesso-RBAC-ABAC-PBAC.md)
+- [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-2-controle-de-acesso)
+
+### O Que Foi Implementado
+- ✅ RBAC básico (Role-Based Access Control)
+  - Roles e Permissions básicos
+  - Verificação de permissões básica
+  
+- ✅ ABAC básico (Attribute-Based Access Control)
+  - Filtragem por organização
+  - Filtragem por departamento/setor
+  - Tenant context middleware
+  
+- ⚠️ PBAC parcial (Policy-Based Access Control)
+  - WorkflowPolicy model existe
+  - Implementação incompleta
+
+### ❌ Gaps Críticos Identificados
+- ❌ **PBAC Incompleto (CRÍTICO)** - PolicyService não completo
+- ❌ Sistema de aprovações incompleto
+- ❌ Dashboard de gestão de permissões ausente
+- ❌ Auditoria de acessos incompleta
+- ❌ Herança de permissões não implementada
+- ❌ Cache de permissões não otimizado
+
+### 🎯 Melhorias Necessárias (30 itens - 40 sprints)
+
+**Prioridade CRÍTICA:**
+1. **Completar PBAC (3 sprints)** - CRÍTICO
+2. Dashboard de Gestão de Permissões (2 sprints)
+3. Auditoria de Acessos (2 sprints)
+4. Cache de Permissões Otimizado (1 sprint)
+5. Herança de Permissões (2 sprints)
+
+**Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-2-controle-de-acesso)
+
+---
+
+## 🔥 FASE 3: Design System (⚠️ 60% - REVISADO)
+
+**Status:** ⚠️ 60% Implementado (não 100%)  
+**Prioridade:** 🔥 Crítica  
+**Dependências:** Nenhuma
+
+### Documentos Relacionados
+- `docs/DESIGN_SYSTEM_*.md`
+- [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-3-design-system)
+
+### O Que Foi Implementado
+- ✅ Design Tokens básicos (cores, tipografia, espaçamento)
+- ✅ Componentes base (Button, Input, Select, FormField)
+- ✅ Componentes avançados (GlassCard, Alert, Badge)
+- ✅ Temas (Dark/Light)
+- ✅ Biblioteca UI (`packages/ui/`)
+
+### ❌ Gaps Críticos Identificados
+- ❌ **Estados de Validação Ausentes (CRÍTICO)** - Cores valid/invalid/pending
+- ❌ **Sistema de Animações Ausente (CRÍTICO)** - Timing, easing, presets
+- ❌ **Acessibilidade Ausente (CRÍTICO)** - WCAG AA não validado
+- ❌ Storybook não configurado
+- ❌ Componentes faltantes (DataTable, Calendar, Autocomplete, etc.)
+- ❌ Tokens incompletos (border width, focus ring, opacity, z-index)
+
+### 🎯 Melhorias Necessárias (40 itens - 50 sprints)
+
+**Prioridade CRÍTICA:**
+1. **Estados de Validação (1 sprint)** - CRÍTICO
+2. **Sistema de Animações (1 sprint)** - CRÍTICO
+3. **Acessibilidade WCAG AA (2 sprints)** - CRÍTICO
+4. **Storybook (2 sprints)**
+5. **Tokens Completos (1 sprint)**
+
+**Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-3-design-system)
+
+---
+
+## 🔥 FASE 4: Telas Base (⚠️ 70% - REVISADO)
+
+**Status:** ⚠️ 70% Implementado (não 90%)  
+**Prioridade:** 🔥 Crítica  
+**Dependências:** FASE 1, FASE 2, FASE 3
+
+### Documentos Relacionados
+- [Guia de Inventário](./Guia-Inventário-Mapeamento-Sistema.md)
+- [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-4-telas-base)
+
+### O Que Foi Implementado
+- ✅ Dashboard principal
+- ✅ Gestão de Usuários (CRUD básico)
+- ✅ Gestão de Organizações (multi-tenant básico)
+- ✅ Fichas de Custo de Aviamentos (padrão de referência)
+- ✅ Login e Autenticação básica
+- ✅ Perfil de Usuário básico
+
+### Padrão de Tela
+**Referência:** Ficha de Custo de Aviamentos
+- Formulário completo com validação
+- Auto-save com indicador visual
+- Workflow de aprovação
+- Versionamento e auditoria
+- Upload de arquivos
+
+### ❌ Gaps Críticos Identificados
+- ❌ **Padronização Incompleta (CRÍTICO)** - Nem todas as telas seguem o padrão
+- ❌ Template reutilizável não criado
+- ❌ Auto-save não implementado em todas as telas
+- ❌ Workflow de aprovação não padronizado
+- ❌ Validações inconsistentes
+- ❌ Error boundaries não implementados
+
+### 🎯 Melhorias Necessárias (20 itens - 25 sprints)
+
+**Prioridade CRÍTICA:**
+1. **Template Reutilizável de Tela (2 sprints)** - CRÍTICO
+2. **Padronizar Todas as Telas (3 sprints)** - CRÍTICO
+3. Auto-Save Padronizado (1 sprint)
+4. Workflow de Aprovação Padronizado (2 sprints)
+5. Versionamento Padronizado (1 sprint)
+
+**Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-4-telas-base)
+
+---
+
+## ⚡ FASE 5: Melhorias UX/UI (⏳ EM PLANEJAMENTO)
+
+**Status:** ⏳ 0% Implementado  
+**Prioridade:** ⚡ Alta  
+**Dependências:** FASE 4
+
+### 5.1 Login e Autenticação Melhorado
+
+**Documentos:**
+- [Análise UX/UI - Login e Autenticação](./Análise-UX-UI-Login-Autenticação.md)
+- [Mockups - Login e Portal de Representantes](./Mockups-Login-Representantes.md)
+
+**O Que Implementar:**
+- [ ] Seleção de tipo de acesso (Funcionário vs Representante)
+- [ ] Login para representantes (email ou CPF)
+- [ ] Formulário de cadastro de representante (multi-step)
+- [ ] Dashboard do representante
+- [ ] Formulário de pedido de venda (todos os campos)
+
+**Ordem de Implementação:**
+1. Seleção de tipo de acesso (1 sprint)
+2. Login para representantes (1 sprint)
+3. Cadastro de representantes (1 sprint)
+4. Dashboard do representante (1 sprint)
+5. Formulário de pedido (2 sprints)
+
+**Estimativa:** 6 sprints
+
+---
+
+### 5.2 Dashboard - Boas-Vindas Personalizada
+
+**Documentos:**
+- [Dashboard - Boas-Vindas Personalizada](./Dashboard-Boas-Vindas-Personalizada.md)
+
+**O Que Implementar:**
+- [ ] Welcome Banner personalizado
+- [ ] Widget de informações do tempo (clima)
+- [ ] Informações contextuais por tipo de usuário
+- [ ] Dashboard condicional para usuários sem acesso completo
+
+**Ordem de Implementação:**
+1. Welcome Banner básico (1 sprint)
+2. Weather Widget (1 sprint)
+3. Informações contextuais (1-2 sprints)
+4. Dashboard condicional (1 sprint)
+
+**Estimativa:** 4-5 sprints
+
+---
+
+### 5.3 Sonorização de Notificações
+
+**Documentos:**
+- `docs/WEBSOCKET_NOTIFICATIONS.md` (seção adicionada)
+
+**O Que Implementar:**
+- [ ] NotificationSoundService
+- [ ] Arquivos de áudio (success, error, warning, info)
+- [ ] Integração no NotificationCenter
+- [ ] Configurações de usuário (volume, ativar/desativar)
+- [ ] Preview de sons
+
+**Ordem de Implementação:**
+1. Serviço de áudio (1 sprint)
+2. Integração e configurações (1 sprint)
+
+**Estimativa:** 2 sprints
+
+---
+
+## ⚡ FASE 6: Recursos Avançados (⏳ EM PLANEJAMENTO)
+
+**Status:** ⏳ 0% Implementado  
+**Prioridade:** ⚡ Média  
+**Dependências:** FASE 4, FASE 5
+
+### 6.1 Assinatura Digital
+
+**Documentos:**
+- [Assinatura Digital - Validade Jurídica](./Assinatura-Digital-Validade-Jurídica.md)
+
+**O Que Implementar:**
+- [ ] Módulo de assinatura digital
+- [ ] HashService (SHA-256)
+- [ ] TimestampService
+- [ ] Integração em pedidos de venda
+- [ ] Geração de PDF assinado
+
+**Ordem de Implementação:**
+1. Fase 1: MVP (Hash + Timestamp próprio) - 2-3 sprints
+2. Fase 2: TSA (Timestamp confiável) - 1 sprint
+3. Fase 3: ICP-Brasil (opcional) - 2-3 sprints
+
+**Estimativa:** 3-7 sprints (dependendo da fase)
+
+---
+
+### 6.2 Sistema de Mensageria Corporativa
+
+**Documentos:**
+- [Sistema de Mensageria Corporativa - BigTech](./Sistema-Mensageria-Corporativa-BigTech.md)
+
+**O Que Implementar:**
+- [ ] Messaging Service (Backend)
+- [ ] Realtime Gateway (WebSocket)
+- [ ] Interface de mensagens (Frontend)
+- [ ] Canais e grupos
+- [ ] Upload de arquivos
+- [ ] Busca de mensagens (Elasticsearch)
+- [ ] Mobile app (React Native)
+
+**Ordem de Implementação:**
+1. Fase 1: MVP (mensagens texto, canais diretos) - 3 sprints
+2. Fase 2: Recursos essenciais (arquivos, edição, reações) - 2 sprints
+3. Fase 3: Recursos avançados (busca, threads, mobile) - 2 sprints
+4. Fase 4: Otimização e escala - 1 sprint
+
+**Estimativa:** 8 sprints
+
+---
+
+## ✨ FASE 7: Integrações e Otimizações (⏳ EM PLANEJAMENTO)
+
+**Status:** ⏳ 0% Implementado  
+**Prioridade:** ✨ Baixa  
+**Dependências:** FASE 4, FASE 5, FASE 6
+
+### 7.1 Integrações Externas
+- [ ] Integração com APIs externas
+- [ ] Webhooks
+- [ ] Bots e automação
+
+### 7.2 Otimizações
+- [ ] Performance (cache, lazy loading)
+- [ ] SEO (se aplicável)
+- [ ] Acessibilidade avançada
+
+---
+
+## 📋 Checklist de Progresso
+
+### FASE 0: Fundamentos
+- [x] Arquitetura base
+- [x] Infraestrutura
+- [x] Processos de desenvolvimento
+- [x] Governança técnica
+
+### FASE 1: Base Organizacional
+- [x] Cadastro de Empresa
+- [x] Estrutura organizacional
+- [x] Departamentos, Setores, Cargos
+
+### FASE 2: Controle de Acesso
+- [x] RBAC implementado
+- [x] ABAC implementado
+- [ ] PBAC completo (parcial)
+
+### FASE 3: Design System
+- [x] Design Tokens
+- [x] Componentes base
+- [x] Temas
+
+### FASE 4: Telas Base
+- [x] Dashboard
+- [x] Gestão de Usuários
+- [x] Gestão de Organizações
+- [x] Fichas de Custo
+- [x] Login
+- [ ] Padronização completa
+
+### FASE 5: Melhorias UX/UI
+- [ ] Login melhorado (representantes)
+- [ ] Dashboard boas-vindas
+- [ ] Sonorização de notificações
+
+### FASE 6: Recursos Avançados
+- [ ] Assinatura digital
+- [ ] Sistema de mensageria
+
+### FASE 7: Integrações
+- [ ] Integrações externas
+- [ ] Otimizações
+
+---
+
+## 🎯 Próximas Ações Recomendadas (REVISADO)
+
+### 🔴 CRÍTICO - Sprint 1-4 (1 mês)
+1. **Implementar Subdepartamento** (FASE 1) - 2 sprints
+2. **Estados de Validação** (FASE 3) - 1 sprint
+3. **Sistema de Animações** (FASE 3) - 1 sprint
+4. **Acessibilidade WCAG AA** (FASE 3) - 2 sprints
+5. **Completar PBAC** (FASE 2) - 3 sprints
+
+### 🟠 ALTA - Sprint 5-8 (2 meses)
+6. **Monitoramento Completo** (FASE 0) - 2 sprints
+7. **Health Checks Completos** (FASE 0) - 1 sprint
+8. **Logs Estruturados** (FASE 0) - 2 sprints
+9. **Dashboard de Gestão de Permissões** (FASE 2) - 2 sprints
+10. **Storybook** (FASE 3) - 2 sprints
+
+### 🟡 ALTA - Sprint 9-12 (3 meses)
+11. **Template Reutilizável de Tela** (FASE 4) - 2 sprints
+12. **Padronizar Todas as Telas** (FASE 4) - 3 sprints
+13. **Busca por CNPJ/CPF Completa** (FASE 1) - 2 sprints
+14. **Organograma Visual** (FASE 1) - 2 sprints
+
+### 📋 Médio Prazo (Próximos 2-3 meses)
+- Login melhorado para representantes (FASE 5.1)
+- Assinatura digital MVP (FASE 6.1)
+- Mensageria MVP (FASE 6.2)
+
+### 📋 Longo Prazo (Próximos 6+ meses)
+- Mensageria completa (FASE 6.2)
+- Assinatura digital com ICP-Brasil (FASE 6.1)
+- Integrações e otimizações (FASE 7)
+
+**📊 Total de Melhorias Identificadas:** 155 itens | **207 sprints estimados** | **51.75 meses**
+
+---
+
+## 📊 Métricas de Progresso
+
+**Progresso Real Geral:** 60% (revisado em 2025-01-19)
+
+- ⚠️ Fundamentos: **85%** (não 100%)
+- ⚠️ Base Organizacional: **70%** (não 100%) - **Subdepartamento ausente**
+- ⚠️ Controle de Acesso: **75%** (não 100%) - **PBAC incompleto**
+- ⚠️ Design System: **60%** (não 100%) - **Validação, Animações, A11y ausentes**
+- ⚠️ Telas Base: **70%** (não 90%) - **Padronização incompleta**
+- ⏳ Melhorias UX/UI: 0%
+- ⏳ Recursos Avançados: 0%
+- ⏳ Integrações: 0%
+
+**📋 Consulte [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md) para detalhes completos de todas as melhorias identificadas (155 itens, 207 sprints estimados).**
+
+---
+
+## 🔄 Atualização
+
+Este documento deve ser atualizado:
+- **Semanalmente:** Progresso de sprints
+- **Mensalmente:** Revisão completa
+- **Trimestralmente:** Ajuste de prioridades
+
+---
+
+**Última atualização:** 2025-01-19  
+**Próxima revisão:** 2025-01-26  
+**Mantido por:** Equipe de Arquitetura MORINA
+
