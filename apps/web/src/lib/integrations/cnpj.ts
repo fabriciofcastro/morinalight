@@ -141,11 +141,56 @@ export async function buscarCnpj(cnpj: string): Promise<CnpjData | null> {
 }
 
 /**
- * Valida formato de CNPJ
+ * Valida CNPJ usando algoritmo de dígitos verificadores (módulo 11)
+ * Aceita formato: "00.000.000/0000-00" ou "00000000000000"
  */
 export function validarCnpj(cnpj: string): boolean {
-  const cnpjLimpo = cnpj.replace(/\D/g, "");
-  return cnpjLimpo.length === 14;
+  // Remover formatação
+  const cleaned = cnpj.replace(/\D/g, "");
+
+  // Verificar comprimento
+  if (cleaned.length !== 14) {
+    return false;
+  }
+
+  // Verificar se todos os dígitos são iguais (CNPJ inválido)
+  if (/^(\d)\1{13}$/.test(cleaned)) {
+    return false;
+  }
+
+  // Calcular primeiro dígito verificador
+  let sum = 0;
+  let multiplier = 5;
+
+  for (let i = 0; i < 12; i++) {
+    sum += parseInt(cleaned[i]) * multiplier;
+    multiplier = multiplier === 2 ? 9 : multiplier - 1;
+  }
+
+  let remainder = sum % 11;
+  const firstDigit = remainder < 2 ? 0 : 11 - remainder;
+
+  if (parseInt(cleaned[12]) !== firstDigit) {
+    return false;
+  }
+
+  // Calcular segundo dígito verificador
+  sum = 0;
+  multiplier = 6;
+
+  for (let i = 0; i < 13; i++) {
+    sum += parseInt(cleaned[i]) * multiplier;
+    multiplier = multiplier === 2 ? 9 : multiplier - 1;
+  }
+
+  remainder = sum % 11;
+  const secondDigit = remainder < 2 ? 0 : 11 - remainder;
+
+  if (parseInt(cleaned[13]) !== secondDigit) {
+    return false;
+  }
+
+  return true;
 }
 
 /**

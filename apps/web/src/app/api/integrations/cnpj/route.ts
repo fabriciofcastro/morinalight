@@ -16,10 +16,40 @@ export async function GET(request: Request) {
     return NextResponse.json({ message: "CNPJ é obrigatório" }, { status: 400 });
   }
 
-  // Validar formato
+  // Validar formato e dígitos verificadores
   const cnpjLimpo = cnpj.replace(/\D/g, "");
   if (cnpjLimpo.length !== 14) {
     return NextResponse.json({ message: "CNPJ inválido. Deve ter 14 dígitos." }, { status: 400 });
+  }
+
+  // Verificar se todos os dígitos são iguais
+  if (/^(\d)\1{13}$/.test(cnpjLimpo)) {
+    return NextResponse.json({ message: "CNPJ inválido." }, { status: 400 });
+  }
+
+  // Validar dígitos verificadores
+  let sum = 0;
+  let multiplier = 5;
+  for (let i = 0; i < 12; i++) {
+    sum += parseInt(cnpjLimpo[i]) * multiplier;
+    multiplier = multiplier === 2 ? 9 : multiplier - 1;
+  }
+  let remainder = sum % 11;
+  const firstDigit = remainder < 2 ? 0 : 11 - remainder;
+  if (parseInt(cnpjLimpo[12]) !== firstDigit) {
+    return NextResponse.json({ message: "CNPJ inválido. Dígito verificador incorreto." }, { status: 400 });
+  }
+
+  sum = 0;
+  multiplier = 6;
+  for (let i = 0; i < 13; i++) {
+    sum += parseInt(cnpjLimpo[i]) * multiplier;
+    multiplier = multiplier === 2 ? 9 : multiplier - 1;
+  }
+  remainder = sum % 11;
+  const secondDigit = remainder < 2 ? 0 : 11 - remainder;
+  if (parseInt(cnpjLimpo[13]) !== secondDigit) {
+    return NextResponse.json({ message: "CNPJ inválido. Dígito verificador incorreto." }, { status: 400 });
   }
 
   // Verificar cache
@@ -65,9 +95,36 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error("Erro ao buscar CNPJ:", error);
+
+    // Tratamento de erros mais específico
+    if (error instanceof Error) {
+      // Timeout ou erro de rede
+      if (error.message.includes("fetch") || error.message.includes("network")) {
+        return NextResponse.json(
+          {
+            message: "Erro de conexão. Tente novamente em alguns instantes.",
+            code: "NETWORK_ERROR",
+          },
+          { status: 503 },
+        );
+      }
+
+      // Erro da API
+      if (error.message.includes("API")) {
+        return NextResponse.json(
+          {
+            message: "Serviço temporariamente indisponível. Tente novamente mais tarde.",
+            code: "SERVICE_UNAVAILABLE",
+          },
+          { status: 503 },
+        );
+      }
+    }
+
     return NextResponse.json(
       {
         message: error instanceof Error ? error.message : "Erro ao buscar CNPJ",
+        code: "UNKNOWN_ERROR",
       },
       { status: 500 },
     );
