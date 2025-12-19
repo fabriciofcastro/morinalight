@@ -7,7 +7,7 @@ import { cn } from "../lib/cn";
 
 const buttonEnhancedVariants = cva(
   // Base: Estilo quadrado, sem border-radius
-  "inline-flex items-center justify-center gap-2 border-0 font-semibold uppercase tracking-wider transition-all duration-250 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 border-0 font-semibold uppercase tracking-wider transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {

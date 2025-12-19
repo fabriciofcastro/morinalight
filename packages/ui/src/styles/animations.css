@@ -1,0 +1,144 @@
+/**
+ * Keyframes de animação para o Design System
+ * Importar este arquivo no CSS global ou no componente raiz
+ */
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFade {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Classes utilitárias de animação */
+.animate-fade {
+  animation: fade 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide {
+  animation: slide 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scale {
+  animation: scale 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-fade {
+  animation: slideFade 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-bounce-in {
+  animation: bounce 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Animações de entrada */
+.animate-enter-fade {
+  animation: fade 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-enter-slide {
+  animation: slide 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-enter-scale {
+  animation: scale 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animações de saída */
+.animate-exit-fade {
+  animation: fade 250ms cubic-bezier(0.4, 0, 0.2, 1) reverse;
+}
+
+.animate-exit-slide {
+  animation: slide 300ms cubic-bezier(0.4, 0, 0.2, 1) reverse;
+}
+
+.animate-exit-scale {
+  animation: scale 200ms cubic-bezier(0.4, 0, 0.2, 1) reverse;
+}
+
+/* Animações infinitas */
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+

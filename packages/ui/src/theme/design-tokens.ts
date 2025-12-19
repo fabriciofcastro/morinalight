@@ -236,12 +236,41 @@ export const designTokens = {
     "4xl": "64px",
   },
 
-  // Transições suaves
+  // Transições e Animações
   transitions: {
     fast: "150ms cubic-bezier(0.4, 0, 0.2, 1)",
     base: "250ms cubic-bezier(0.4, 0, 0.2, 1)",
     slow: "400ms cubic-bezier(0.4, 0, 0.2, 1)",
     bounce: "600ms cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+  },
+
+  // Timing Functions (Easing)
+  easing: {
+    // Material Design easing
+    standard: "cubic-bezier(0.4, 0, 0.2, 1)",
+    decelerate: "cubic-bezier(0, 0, 0.2, 1)",
+    accelerate: "cubic-bezier(0.4, 0, 1, 1)",
+    // Entradas e saídas
+    easeIn: "cubic-bezier(0.4, 0, 1, 1)",
+    easeOut: "cubic-bezier(0, 0, 0.2, 1)",
+    easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+    // Efeitos especiais
+    bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+    spring: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    elastic: "cubic-bezier(0.68, -0.6, 0.32, 1.6)",
+    // Linear
+    linear: "linear",
+  },
+
+  // Durações padronizadas
+  duration: {
+    instant: "0ms",
+    fast: "150ms",
+    base: "250ms",
+    moderate: "300ms",
+    slow: "400ms",
+    slower: "600ms",
+    slowest: "800ms",
   },
 } as const;
 
