@@ -221,7 +221,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Prioridade CRÍTICA:**
 1. ~~**Estados de Validação (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19)
 2. ~~**Sistema de Animações (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19)
-3. **Acessibilidade WCAG AA (2 sprints)** - CRÍTICO
+3. ~~**Acessibilidade WCAG AA (2 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19)
 4. **Storybook (2 sprints)**
 5. **Tokens Completos (1 sprint)**
 
