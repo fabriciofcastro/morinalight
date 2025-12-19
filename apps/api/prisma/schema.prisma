@@ -69,6 +69,12 @@ enum DepartmentStatus {
   arquivado
 }
 
+enum SubdepartmentStatus {
+  ativo
+  inativo
+  arquivado
+}
+
 enum SectorStatus {
   ativo
   inativo
@@ -173,8 +179,10 @@ model Organization {
   vendas                   Venda[]
   comissoes                Comissao[]
   departments              Department[]
+  subdepartments           Subdepartment[]
   structureAuditLogs       OrganizationalStructureAuditLog[]
   departmentMemberships    DepartmentMembership[]            @relation("OrganizationDepartmentMemberships")
+  subdepartmentMemberships SubdepartmentMembership[]         @relation("OrganizationSubdepartmentMemberships")
   sectorMemberships        SectorMembership[]                @relation("OrganizationSectorMemberships")
   positionMemberships      PositionMembership[]              @relation("OrganizationPositionMemberships")
   Sector                   Sector[]
@@ -183,6 +191,7 @@ model Organization {
   Position                 Position[]
   positionPermissions      PositionPermission[]
   sectorPermissions        SectorPermission[]
+  subdepartmentPermissions SubdepartmentPermission[]
   departmentPermissions    DepartmentPermission[]
   permissionAuditLogs      PermissionAuditLog[]
   permissionTemplates      PermissionTemplate[]
@@ -235,14 +244,15 @@ model User {
   branch   Branch?   @relation(fields: [branchId], references: [id], onDelete: SetNull)
   position Position? @relation(fields: [positionId], references: [id], onDelete: SetNull)
 
-  memberships           OrganizationMembership[]
-  invitesAuthored       UserInvite[]             @relation("InviteAuthor")
-  acceptedInvites       UserInvite[]             @relation("AcceptedUser")
-  departmentMemberships DepartmentMembership[]   @relation("UserDepartmentMemberships")
-  sectorMemberships     SectorMembership[]       @relation("UserSectorMemberships")
-  positionMemberships   PositionMembership[]     @relation("UserPositionMemberships")
-  roles                 UserRole[]
-  userPermissions       UserPermission[]
+  memberships              OrganizationMembership[]
+  invitesAuthored          UserInvite[]              @relation("InviteAuthor")
+  acceptedInvites          UserInvite[]              @relation("AcceptedUser")
+  departmentMemberships    DepartmentMembership[]    @relation("UserDepartmentMemberships")
+  subdepartmentMemberships SubdepartmentMembership[] @relation("UserSubdepartmentMemberships")
+  sectorMemberships        SectorMembership[]        @relation("UserSectorMemberships")
+  positionMemberships      PositionMembership[]      @relation("UserPositionMemberships")
+  roles                    UserRole[]
+  userPermissions          UserPermission[]
 
   // Notificações
   notifications           Notification[]           @relation("UserNotifications")
@@ -774,32 +784,32 @@ model NotaSupplier {
 }
 
 model Cliente {
-  id                String        @id @default(uuid())
-  orgId             String
-  nome              String
-  razaoSocial       String?       @db.VarChar(255)
-  nomeFantasia      String?       @db.VarChar(255) // Nome Fantasia separado (especialmente para PJ)
-  tipo              String        @default("fisica") // fisica, juridica
-  documento         String        @db.VarChar(20) // CPF ou CNPJ
-  inscricaoEstadual String?       @db.VarChar(50) // IE para PJ
-  inscricaoMunicipal String?      @db.VarChar(50) // IM para PJ
-  email             String?       @db.VarChar(255)
-  telefone          String?       @db.VarChar(20)
-  celular           String?       @db.VarChar(20)
-  website           String?       @db.VarChar(512) // Website do cliente
-  endereco          String?       @db.VarChar(512) // Logradouro
-  numero            String?       @db.VarChar(20) // Número do endereço
-  complemento       String?       @db.VarChar(255) // Complemento do endereço
-  bairro            String?       @db.VarChar(100) // Bairro
-  cidade            String?       @db.VarChar(100)
-  estado            String?       @db.VarChar(2)
-  cep               String?       @db.VarChar(10)
-  status            ClienteStatus @default(ativo)
-  observacoes       String?       @db.VarChar(2048)
-  createdBy         String
-  updatedBy         String
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  id                 String        @id @default(uuid())
+  orgId              String
+  nome               String
+  razaoSocial        String?       @db.VarChar(255)
+  nomeFantasia       String?       @db.VarChar(255) // Nome Fantasia separado (especialmente para PJ)
+  tipo               String        @default("fisica") // fisica, juridica
+  documento          String        @db.VarChar(20) // CPF ou CNPJ
+  inscricaoEstadual  String?       @db.VarChar(50) // IE para PJ
+  inscricaoMunicipal String?       @db.VarChar(50) // IM para PJ
+  email              String?       @db.VarChar(255)
+  telefone           String?       @db.VarChar(20)
+  celular            String?       @db.VarChar(20)
+  website            String?       @db.VarChar(512) // Website do cliente
+  endereco           String?       @db.VarChar(512) // Logradouro
+  numero             String?       @db.VarChar(20) // Número do endereço
+  complemento        String?       @db.VarChar(255) // Complemento do endereço
+  bairro             String?       @db.VarChar(100) // Bairro
+  cidade             String?       @db.VarChar(100)
+  estado             String?       @db.VarChar(2)
+  cep                String?       @db.VarChar(10)
+  status             ClienteStatus @default(ativo)
+  observacoes        String?       @db.VarChar(2048)
+  createdBy          String
+  updatedBy          String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   organization  Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
   representante Representante?
@@ -939,7 +949,7 @@ model Comissao {
 }
 
 // Estrutura Organizacional Correta (conforme docs/estrutura-organizacional.md)
-// Hierarquia: Empresa → Departamento → Setor → Cargo
+// Hierarquia: Empresa → Departamento → Subdepartamento → Setor → Cargo
 
 model Department {
   id          String           @id @default(uuid())
@@ -959,14 +969,15 @@ model Department {
   deletedAt   DateTime?
   deletedBy   String?
 
-  organization Organization           @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  branch       Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  parent       Department?            @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children     Department[]           @relation("DepartmentHierarchy")
-  sectors      Sector[] // Setores pertencem a departamentos
-  memberships  DepartmentMembership[]
-  permissions  DepartmentPermission[]
-  fichasCusto  FichaCusto[] // Fichas de custo vinculadas ao departamento
+  organization   Organization           @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  branch         Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  parent         Department?            @relation("DepartmentHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children       Department[]           @relation("DepartmentHierarchy")
+  subdepartments Subdepartment[] // Subdepartamentos pertencem a departamentos
+  sectors        Sector[] // Setores podem pertencer diretamente a departamentos (retrocompatibilidade)
+  memberships    DepartmentMembership[]
+  permissions    DepartmentPermission[]
+  fichasCusto    FichaCusto[] // Fichas de custo vinculadas ao departamento
 
   @@unique([orgId, code], name: "unique_department_code_per_org")
   @@index([orgId, parentId])
@@ -975,41 +986,82 @@ model Department {
   @@index([parentId])
 }
 
-model Sector {
-  id           String       @id @default(uuid())
+model Subdepartment {
+  id           String              @id @default(uuid())
   orgId        String
-  branchId     String? // Optional: sector can be specific to a branch
-  departmentId String // Setor pertence a um departamento
+  branchId     String? // Optional: subdepartment can be specific to a branch
+  departmentId String // Subdepartamento pertence a um departamento
   name         String
-  code         String       @db.VarChar(50) // Código único (ex: "SEC-001")
-  description  String?      @db.VarChar(1024)
-  parentId     String? // Hierarquia: setores podem ter setores pai
-  status       SectorStatus @default(ativo)
-  ordem        Int          @default(0)
+  code         String              @db.VarChar(50) // Código único (ex: "SDPT-001")
+  description  String?             @db.VarChar(1024)
+  parentId     String? // Hierarquia: subdepartamentos podem ter subdepartamentos pai
+  status       SubdepartmentStatus @default(ativo)
+  ordem        Int                 @default(0)
   metadata     Json? // Dados adicionais flexíveis
   createdBy    String
   updatedBy    String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
   deletedAt    DateTime?
   deletedBy    String?
 
-  organization Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  branch       Branch?            @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  department   Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  parent       Sector?            @relation("SectorHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
-  children     Sector[]           @relation("SectorHierarchy")
-  positions    Position[]
-  memberships  SectorMembership[]
-  permissions  SectorPermission[]
-  fichasCusto  FichaCusto[]
+  organization Organization              @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  branch       Branch?                   @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department   Department                @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  parent       Subdepartment?            @relation("SubdepartmentHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children     Subdepartment[]           @relation("SubdepartmentHierarchy")
+  sectors      Sector[] // Setores pertencem a subdepartamentos
+  memberships  SubdepartmentMembership[]
+  permissions  SubdepartmentPermission[]
 
-  @@unique([orgId, code], name: "unique_sector_code_per_org")
+  @@unique([orgId, code], name: "unique_subdepartment_code_per_org")
   @@index([orgId, departmentId])
   @@index([orgId, parentId])
   @@index([orgId, status])
   @@index([orgId, deletedAt])
   @@index([departmentId])
+  @@index([parentId])
+}
+
+model Sector {
+  id              String       @id @default(uuid())
+  orgId           String
+  branchId        String? // Optional: sector can be specific to a branch
+  departmentId    String // Setor pertence a um departamento (retrocompatibilidade)
+  subdepartmentId String? // Setor pertence a um subdepartamento (preferencial)
+  name            String
+  code            String       @db.VarChar(50) // Código único (ex: "SEC-001")
+  description     String?      @db.VarChar(1024)
+  parentId        String? // Hierarquia: setores podem ter setores pai
+  status          SectorStatus @default(ativo)
+  ordem           Int          @default(0)
+  metadata        Json? // Dados adicionais flexíveis
+  createdBy       String
+  updatedBy       String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+  deletedBy       String?
+
+  organization  Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  branch        Branch?            @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  department    Department         @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  subdepartment Subdepartment?     @relation(fields: [subdepartmentId], references: [id], onDelete: Cascade)
+  parent        Sector?            @relation("SectorHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children      Sector[]           @relation("SectorHierarchy")
+  positions     Position[]
+  memberships   SectorMembership[]
+  permissions   SectorPermission[]
+  fichasCusto   FichaCusto[]
+
+  @@unique([orgId, code], name: "unique_sector_code_per_org")
+  @@index([orgId, departmentId])
+  @@index([orgId, subdepartmentId])
+  @@index([orgId, parentId])
+  @@index([orgId, status])
+  @@index([orgId, deletedAt])
+  @@index([departmentId])
+  @@index([subdepartmentId])
   @@index([parentId])
 }
 
@@ -1067,6 +1119,24 @@ model DepartmentMembership {
   @@index([userId])
 }
 
+model SubdepartmentMembership {
+  id              String           @id @default(uuid())
+  orgId           String
+  subdepartmentId String
+  userId          String
+  role            OrganizationRole @default(member) // Papel no subdepartamento
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization  Organization  @relation("OrganizationSubdepartmentMemberships", fields: [orgId], references: [id], onDelete: Cascade)
+  subdepartment Subdepartment @relation(fields: [subdepartmentId], references: [id], onDelete: Cascade)
+  user          User          @relation("UserSubdepartmentMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([subdepartmentId, userId], name: "unique_subdepartment_membership")
+  @@index([orgId, subdepartmentId])
+  @@index([userId])
+}
+
 model SectorMembership {
   id        String           @id @default(uuid())
   orgId     String
@@ -1112,7 +1182,7 @@ model PositionMembership {
 model OrganizationalStructureAuditLog {
   id         String   @id @default(uuid())
   orgId      String
-  entityType String // "department" | "sector" | "position"
+  entityType String // "department" | "subdepartment" | "sector" | "position"
   entityId   String
   action     String // "created" | "updated" | "deleted" | "member_added" | "member_removed"
   actorId    String
@@ -1168,6 +1238,27 @@ model SectorPermission {
   @@index([permissionId])
 }
 
+// Permissões por subdepartamento (Matriz de Permissões RBAC)
+model SubdepartmentPermission {
+  id              String   @id @default(uuid())
+  orgId           String
+  subdepartmentId String
+  permissionId    String // Referência à permissão
+  granted         Boolean  @default(true) // true = permitido, false = negado explícito
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String
+  updatedBy       String
+
+  organization  Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  subdepartment Subdepartment @relation(fields: [subdepartmentId], references: [id], onDelete: Cascade)
+
+  @@unique([subdepartmentId, permissionId], name: "unique_subdepartment_permission")
+  @@index([orgId, subdepartmentId])
+  @@index([subdepartmentId])
+  @@index([permissionId])
+}
+
 // Permissões por departamento (Matriz de Permissões RBAC)
 model DepartmentPermission {
   id           String   @id @default(uuid())
@@ -1193,8 +1284,8 @@ model DepartmentPermission {
 model PermissionAuditLog {
   id            String   @id @default(uuid())
   orgId         String
-  entityType    String // "position" | "sector" | "department" | "user"
-  entityId      String // ID do cargo, setor, departamento ou usuário
+  entityType    String // "position" | "sector" | "subdepartment" | "department" | "user"
+  entityId      String // ID do cargo, setor, subdepartamento, departamento ou usuário
   permissionId  String // ID ou chave da permissão (ex: "products:view")
   action        String // "granted" | "denied" | "removed"
   granted       Boolean? // true = concedido, false = negado, null = removido
@@ -1220,7 +1311,7 @@ model PermissionChangeRequest {
   orgId String
 
   // target
-  entityType   String // "position" | "sector" | "department" | "user"
+  entityType   String // "position" | "sector" | "subdepartment" | "department" | "user"
   entityId     String
   permissionId String
   granted      Boolean? // true = grant, false = deny, null = remove (futuro)
@@ -1296,10 +1387,11 @@ model Branch {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  users        User[]
-  departments  Department[]
-  sectors      Sector[]
+  organization   Organization    @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  users          User[]
+  departments    Department[]
+  subdepartments Subdepartment[]
+  sectors        Sector[]
 
   @@index([orgId, active])
 }

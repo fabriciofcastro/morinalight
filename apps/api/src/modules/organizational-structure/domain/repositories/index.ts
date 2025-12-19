@@ -1,5 +1,6 @@
 export type { BranchRepository } from "./branch-repository";
 export type { DepartmentRepository } from "./department-repository";
+export type { SubdepartmentRepository } from "./subdepartment-repository";
 export type {
   OrganizationalStructureAuditLog,
   OrganizationalStructureAuditLogFilter,
