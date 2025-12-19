@@ -5,6 +5,7 @@ export type { SectorProps, SectorStatus } from "../entities/sector";
 export type SectorListaFiltro = {
   status?: "ativo" | "inativo" | "arquivado";
   departmentId?: string;
+  subdepartmentId?: string;
   parentId?: string | null;
   busca?: string;
   cursor?: string;

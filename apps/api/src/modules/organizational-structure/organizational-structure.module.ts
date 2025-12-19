@@ -12,6 +12,7 @@ import type {
   OrganizationalStructureAuditLogRepository,
   PositionRepository,
   SectorRepository,
+  SubdepartmentRepository,
 } from "./domain/repositories";
 import { registerOrganizationalStructureHttpRoutes } from "./http";
 import { registerCreateBranchRoute } from "./http/create-branch.route";
@@ -36,10 +37,12 @@ import { PrismaPositionMembershipRepository } from "./infra/prisma/prisma-positi
 import { PrismaSectorRepository } from "./infra/prisma/prisma-sector.repository";
 import type { SectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
 import { PrismaSectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
+import { PrismaSubdepartmentRepository } from "./infra/prisma/prisma-subdepartment.repository";
 import { PrismaWorkflowPolicyRepository } from "./infra/prisma/prisma-workflow-policy.repository";
 
 export type OrganizationalStructureModuleOptions = {
   departmentRepository?: DepartmentRepository;
+  subdepartmentRepository?: SubdepartmentRepository;
   branchRepository?: BranchRepository;
   sectorRepository?: SectorRepository;
   positionRepository?: PositionRepository;
@@ -59,6 +62,10 @@ export async function registerOrganizationalStructureModule(
   const departmentRepository =
     options.departmentRepository ??
     (process.env.DATABASE_URL ? new PrismaDepartmentRepository() : undefined);
+
+  const subdepartmentRepository =
+    options.subdepartmentRepository ??
+    (process.env.DATABASE_URL ? new PrismaSubdepartmentRepository() : undefined);
 
   const branchRepository = new PrismaBranchRepository();
   const workflowPolicyRepository = new PrismaWorkflowPolicyRepository();
@@ -141,6 +148,7 @@ export async function registerOrganizationalStructureModule(
       extractOrgId: extractOrgIdFromParamsOrHeaders,
       routes: [
         "/departments",
+        "/subdepartments",
         "/sectors",
         "/positions",
         "/departments/:departmentId/members",
@@ -152,11 +160,13 @@ export async function registerOrganizationalStructureModule(
   }
 
   // Registrar rotas HTTP
-  if (departmentRepository && sectorRepository && positionRepository) {
+  if (departmentRepository && subdepartmentRepository && sectorRepository && positionRepository) {
     await registerOrganizationalStructureHttpRoutes(app, {
       departmentRepository,
+      subdepartmentRepository,
       sectorRepository,
       positionRepository,
+      branchRepository,
       departmentMembershipRepository,
       sectorMembershipRepository,
       positionMembershipRepository,
@@ -195,6 +205,7 @@ export async function registerOrganizationalStructureModule(
 
   return {
     departmentRepository,
+    subdepartmentRepository,
     branchRepository,
     sectorRepository,
     positionRepository,

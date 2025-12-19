@@ -120,6 +120,9 @@ export class PrismaSectorRepository implements SectorRepository {
     if (filtro.departmentId) {
       andFilters.push({ departmentId: filtro.departmentId });
     }
+    if (filtro.subdepartmentId) {
+      andFilters.push({ subdepartmentId: filtro.subdepartmentId });
+    }
     if (filtro.parentId !== undefined) {
       andFilters.push({ parentId: filtro.parentId });
     }
