@@ -22,7 +22,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 | Fase | Status | Progresso Real | Progresso Anterior | Prioridade |
 |------|--------|-----------------|-------------------|------------|
 | **FASE 0: Fundamentos** | ⚠️ Parcial | **85%** | 100% ❌ | 🔥 Crítica |
-| **FASE 1: Base Organizacional** | ⚠️ Parcial | **70%** | 100% ❌ | 🔥 Crítica |
+| **FASE 1: Base Organizacional** | ✅ Melhorado | **85%** ⬆️ | 70% | 🔥 Crítica |
 | **FASE 2: Controle de Acesso** | ⚠️ Parcial | **75%** | 100% ❌ | 🔥 Crítica |
 | **FASE 3: Design System** | ⚠️ Parcial | **60%** | 100% ❌ | 🔥 Crítica |
 | **FASE 4: Telas Base** | ⚠️ Parcial | **70%** | 90% | 🔥 Crítica |
@@ -30,7 +30,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 | **FASE 6: Recursos Avançados** | ⏳ Em Planejamento | 0% | 0% | ⚡ Média |
 | **FASE 7: Integrações** | ⏳ Em Planejamento | 0% | 0% | ✨ Baixa |
 
-**Progresso Real Geral:** 60% (não 65% como documentado anteriormente)
+**Progresso Real Geral:** 63% (melhorado de 60% - atualizado em 2025-01-19)
 
 ---
 
@@ -73,11 +73,12 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 
 ---
 
-## 🔥 FASE 1: Base Organizacional (⚠️ 70% - REVISADO)
+## 🔥 FASE 1: Base Organizacional (✅ 85% - ATUALIZADO)
 
-**Status:** ⚠️ 70% Implementado (não 100%)  
+**Status:** ✅ 85% Implementado (melhorado de 70%)  
 **Prioridade:** 🔥 Crítica  
-**Dependências:** FASE 0
+**Dependências:** FASE 0  
+**Última Atualização:** 2025-01-19
 
 ### Documentos Relacionados
 - [Mapa de Contextos](./Mapa%20de%20Contextos-Núcleo-Domínio-Governança-Dependências.md)
@@ -86,30 +87,42 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-1-base-organizacional)
 
 ### O Que Foi Implementado
-- ✅ Cadastro de Empresa (com busca por CNPJ parcial)
+- ✅ Cadastro de Empresa (com busca por CNPJ completa)
 - ✅ Configurações da Empresa
 - ✅ Tema da Empresa (logo, cores)
 - ✅ Cadastro de Departamentos
-- ✅ Cadastro de Setores
+- ✅ **Cadastro de Subdepartamentos** (✅ CONCLUÍDO - 2025-01-19)
+- ✅ Cadastro de Setores (atualizado para suportar Subdepartamento)
 - ✅ Cadastro de Cargos
-- ✅ Estrutura organizacional básica
+- ✅ Estrutura organizacional completa: Empresa → Departamento → Subdepartamento → Setor → Cargo
+- ✅ **Busca por CNPJ completa** (✅ CONCLUÍDO - 2025-01-19)
+  - Validação robusta com algoritmo de dígitos verificadores
+  - Integração com BrasilAPI
+  - Cache implementado
+  - Tratamento de erros robusto
+- ✅ **Busca por CPF** (✅ CONCLUÍDO - 2025-01-19)
+  - Validação robusta com algoritmo de dígitos verificadores
+  - API route implementada
+  - Hook useCpf para frontend
+  - Cache de validações
+- ✅ **Validações de Hierarquia** (✅ CONCLUÍDO - 2025-01-19)
+  - Prevenção de loops hierárquicos
+  - Validação de profundidade máxima (10 níveis)
+  - Validação de códigos únicos por organização
+  - Validação de exclusão (não permitir excluir se tiver filhos)
 
-### ❌ Gaps Críticos Identificados
-- ❌ **SUBDEPARTAMENTO AUSENTE (CRÍTICO)** - Modelo não existe no schema
-- ❌ Hierarquia incorreta: falta Subdepartamento entre Departamento e Setor
-- ❌ Busca por CNPJ incompleta (integração com APIs externas)
-- ❌ Busca por CPF ausente
+### ❌ Gaps Restantes (15%)
 - ❌ Organograma visual não implementado
-- ❌ Auditoria e versionamento incompletos
+- ❌ Auditoria e versionamento completos (parcial)
+- ❌ Importação/Exportação em massa
+- ❌ Drag-and-drop para reorganização
 
-### 🎯 Melhorias Necessárias (25 itens - 30 sprints)
+### 🎯 Melhorias Necessárias (15 itens restantes - 15 sprints)
 
-**Prioridade CRÍTICA:**
-1. **Implementar Subdepartamento (2 sprints)** - CRÍTICO
-2. Completar Busca por CNPJ (1 sprint)
-3. Implementar Busca por CPF (1 sprint)
-4. Validações de Hierarquia (1 sprint)
-5. Auditoria Completa (1 sprint)
+**Prioridade ALTA:**
+1. Organograma Visual (2 sprints)
+2. Auditoria Completa (1 sprint)
+3. Importação/Exportação (2 sprints)
 
 **Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-1-base-organizacional)
 
@@ -395,8 +408,14 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 
 ### FASE 1: Base Organizacional
 - [x] Cadastro de Empresa
-- [x] Estrutura organizacional
-- [x] Departamentos, Setores, Cargos
+- [x] Estrutura organizacional completa
+- [x] Departamentos
+- [x] **Subdepartamentos** ✅ (2025-01-19)
+- [x] Setores (atualizado para suportar Subdepartamento)
+- [x] Cargos
+- [x] **Busca por CNPJ completa** ✅ (2025-01-19)
+- [x] **Busca por CPF** ✅ (2025-01-19)
+- [x] **Validações de Hierarquia** ✅ (2025-01-19)
 
 ### FASE 2: Controle de Acesso
 - [x] RBAC implementado
@@ -434,11 +453,14 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ## 🎯 Próximas Ações Recomendadas (REVISADO)
 
 ### 🔴 CRÍTICO - Sprint 1-4 (1 mês)
-1. **Implementar Subdepartamento** (FASE 1) - 2 sprints
-2. **Estados de Validação** (FASE 3) - 1 sprint
-3. **Sistema de Animações** (FASE 3) - 1 sprint
-4. **Acessibilidade WCAG AA** (FASE 3) - 2 sprints
-5. **Completar PBAC** (FASE 2) - 3 sprints
+1. ~~**Implementar Subdepartamento** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
+2. ~~**Completar Busca por CNPJ** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
+3. ~~**Implementar Busca por CPF** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
+4. ~~**Validações de Hierarquia** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
+5. **Estados de Validação** (FASE 3) - 1 sprint
+6. **Sistema de Animações** (FASE 3) - 1 sprint
+7. **Acessibilidade WCAG AA** (FASE 3) - 2 sprints
+8. **Completar PBAC** (FASE 2) - 3 sprints
 
 ### 🟠 ALTA - Sprint 5-8 (2 meses)
 6. **Monitoramento Completo** (FASE 0) - 2 sprints
@@ -450,8 +472,8 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 🟡 ALTA - Sprint 9-12 (3 meses)
 11. **Template Reutilizável de Tela** (FASE 4) - 2 sprints
 12. **Padronizar Todas as Telas** (FASE 4) - 3 sprints
-13. **Busca por CNPJ/CPF Completa** (FASE 1) - 2 sprints
-14. **Organograma Visual** (FASE 1) - 2 sprints
+13. **Organograma Visual** (FASE 1) - 2 sprints
+14. **Auditoria Completa** (FASE 1) - 1 sprint
 
 ### 📋 Médio Prazo (Próximos 2-3 meses)
 - Login melhorado para representantes (FASE 5.1)
@@ -469,10 +491,10 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 
 ## 📊 Métricas de Progresso
 
-**Progresso Real Geral:** 60% (revisado em 2025-01-19)
+**Progresso Real Geral:** 63% (atualizado em 2025-01-19)
 
 - ⚠️ Fundamentos: **85%** (não 100%)
-- ⚠️ Base Organizacional: **70%** (não 100%) - **Subdepartamento ausente**
+- ✅ Base Organizacional: **85%** ⬆️ (melhorado de 70%) - **Subdepartamento implementado, CNPJ/CPF completos, Validações de hierarquia**
 - ⚠️ Controle de Acesso: **75%** (não 100%) - **PBAC incompleto**
 - ⚠️ Design System: **60%** (não 100%) - **Validação, Animações, A11y ausentes**
 - ⚠️ Telas Base: **70%** (não 90%) - **Padronização incompleta**
@@ -493,7 +515,43 @@ Este documento deve ser atualizado:
 
 ---
 
-**Última atualização:** 2025-01-19  
+**Última atualização:** 2025-01-19 (com implementações concluídas)  
 **Próxima revisão:** 2025-01-26  
 **Mantido por:** Equipe de Arquitetura MORINA
+
+---
+
+## 📝 Notas de Atualização (2025-01-19)
+
+### ✅ Implementações Concluídas Nesta Sessão
+
+1. **Subdepartamento Completo** (Commits: 7dd36c9, b8cce37)
+   - Modelo Prisma com todos os relacionamentos
+   - Domain layer completo (Entity, Repository, Value Objects)
+   - Use cases CRUD completos
+   - Rotas HTTP completas
+   - Integração no módulo organizacional
+
+2. **Busca por CNPJ Melhorada** (Commit: d675d38)
+   - Validação robusta com algoritmo completo de dígitos verificadores
+   - Tratamento de erros melhorado na API route
+   - Cache já implementado
+
+3. **Busca por CPF Implementada** (Commit: d675d38)
+   - Validação com algoritmo de dígitos verificadores
+   - API route `/api/integrations/cpf`
+   - Hook `useCpf` para frontend
+   - Cache de validações
+
+4. **Validações de Hierarquia** (Commit: 6c4e7a2)
+   - Utilitário `hierarchy-validator` com validações completas
+   - Prevenção de loops hierárquicos
+   - Validação de profundidade máxima (10 níveis)
+   - Integrado em todos os use cases (Department, Subdepartment, Sector)
+   - Validação de exclusão melhorada (verifica subdepartamentos)
+
+### 📊 Impacto no Progresso
+
+- **FASE 1:** 70% → **85%** (+15%)
+- **Progresso Geral:** 60% → **63%** (+3%)
 
