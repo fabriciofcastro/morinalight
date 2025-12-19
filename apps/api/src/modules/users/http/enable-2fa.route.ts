@@ -1,7 +1,32 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { randomBytes } from "node:crypto";
 import { z } from "zod";
+import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 import type { UserRepository } from "../repositories/user.repository";
+
+const prisma = getPrisma();
+
+// Função simples para gerar secret TOTP (base32)
+function generateTOTPSecret(): string {
+  const bytes = randomBytes(20);
+  const base32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let secret = "";
+  for (let i = 0; i < bytes.length; i++) {
+    secret += base32Chars[bytes[i] % base32Chars.length];
+  }
+  return secret;
+}
+
+// Função para gerar códigos de backup
+function generateBackupCodes(): string[] {
+  const codes: string[] = [];
+  for (let i = 0; i < 10; i++) {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    codes.push(code);
+  }
+  return codes;
+}
 
 type Dependencies = {
   userRepository: UserRepository;
@@ -32,14 +57,42 @@ export async function registerEnable2FARoute(
       });
     }
 
-    // TODO: Implementar ativação de 2FA
-    // Por enquanto, retornar estrutura básica
+    // Gerar secret e códigos de backup
+    const secret = generateTOTPSecret();
+    const backupCodes = generateBackupCodes();
+
+    // Atualizar usuário no banco
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        twoFactorEnabled: true,
+        twoFactorSecret: secret,
+        twoFactorBackupCodes: JSON.stringify(backupCodes),
+        twoFactorEnabledAt: new Date(),
+      },
+    });
+
+    // Gerar URL para QR code (formato otpauth://)
+    const otpAuthUrl = `otpauth://totp/MORINA:${encodeURIComponent(user.email)}?secret=${secret}&issuer=MORINA`;
+
     return reply.send({
-      message: "2FA será ativado em breve",
+      message: "2FA ativado com sucesso",
       userId,
-      qrCodeUrl: null, // URL para QR code
-      secret: null, // Secret para configuração manual
+      secret, // Para configuração manual
+      otpAuthUrl, // URL para gerar QR code no frontend
+      backupCodes, // Códigos de backup (mostrar apenas uma vez)
     });
   });
 }
+
+
+
+
+
+
+
+
+
+
+
 

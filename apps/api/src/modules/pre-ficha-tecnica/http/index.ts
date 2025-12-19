@@ -37,3 +37,14 @@ export async function registerPreFichaTecnicaRoutes(
   await registerCompararVersoesPreFichaTecnicaRoute(app, deps);
 }
 
+
+
+
+
+
+
+
+
+
+
+

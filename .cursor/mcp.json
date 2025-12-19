@@ -1,37 +1,31 @@
 {
+  "_comment": "Configuração MCP para o projeto MORINA - Model Context Protocol",
+  "_version": "2.4",
+  "_last_updated": "2025-12-18",
   "mcpServers": {
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/home/fabricio/projects/morina2"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/fabricio/projects/morinalight"
+      ]
     },
-    "git": {
+    "postgres-local": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-git"]
-    },
-    "http": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-http"]
-    },
-    "openapi": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-openapi"],
-      "env": {
-        "OPENAPI_SPEC_URL": "file:///home/fabricio/projects/morina2/docs/openapi/morina-openapi.yaml"
-      }
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://morina:morina@localhost:5432/morina"
+      ]
     },
     "postgres": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql://morina:morina@localhost:5432/morina"
-      }
-    },
-    "redis": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-redis"],
-      "env": {
-        "REDIS_URL": "redis://localhost:6379"
-      }
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgres://8f2e8c48101c8bac6da1c4b39ebd56f06e65fd28f81c181786cef68106638321:sk_GDLHa9_zxcdz2yccP9fcz@db.prisma.io:5432/postgres?sslmode=require"
+      ]
     }
   }
 }

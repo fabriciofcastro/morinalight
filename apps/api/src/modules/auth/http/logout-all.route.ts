@@ -62,3 +62,14 @@ export async function registerLogoutAllRoute(app: FastifyInstance, deps: LogoutA
   });
 }
 
+
+
+
+
+
+
+
+
+
+
+

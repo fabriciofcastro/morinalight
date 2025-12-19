@@ -1,0 +1,36 @@
+═══════════════════════════════════════════════════════════
+  COMANDOS PARA EXECUTAR NO TERMINAL
+═══════════════════════════════════════════════════════════
+
+Execute estes comandos na ordem:
+
+1️⃣  Iniciar PostgreSQL e Redis:
+   sudo docker compose up -d postgres redis
+
+2️⃣  Aguardar 10 segundos (os containers precisam iniciar)
+
+3️⃣  Verificar se estão rodando:
+   sudo docker ps | grep -E "(postgres|redis)"
+
+4️⃣  Aplicar migrations do banco:
+   cd apps/api
+   export PNPM_HOME="$HOME/.local/share/pnpm"
+   export PATH="$PNPM_HOME:$PATH"
+   pnpm prisma migrate deploy
+
+5️⃣  Verificar conexões:
+   pg_isready -h localhost -p 5432
+   redis-cli -h localhost -p 6379 ping
+
+═══════════════════════════════════════════════════════════
+  OU EXECUTE TUDO DE UMA VEZ:
+═══════════════════════════════════════════════════════════
+
+sudo docker compose up -d postgres redis && \
+sleep 10 && \
+cd apps/api && \
+export PNPM_HOME="$HOME/.local/share/pnpm" && \
+export PATH="$PNPM_HOME:$PATH" && \
+pnpm prisma migrate deploy
+
+═══════════════════════════════════════════════════════════

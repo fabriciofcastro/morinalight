@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": ".",
-    "module": "CommonJS",
+    "module": "ES2020",
     "moduleResolution": "Node",
     "noEmit": false,
     "declaration": true,

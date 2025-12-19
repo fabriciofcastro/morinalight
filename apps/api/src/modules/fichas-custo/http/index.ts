@@ -11,3 +11,10 @@ export { registerPagarBoletoFichaCustoRoute } from "./pagar-boleto-ficha-custo.r
 export { registerRemoverBoletoFichaCustoRoute } from "./remover-boleto-ficha-custo.route";
 export { registerListarVersoesFichaCustoRoute } from "./listar-versoes-ficha-custo.route";
 export { registerListarAuditoriaFichaCustoRoute } from "./listar-auditoria-ficha-custo.route";
+export { registerUploadFichaCustoRoute } from "./upload-ficha-custo.route";
+export {
+  registerListStatusCustomizadoRoute,
+  registerCreateStatusCustomizadoRoute,
+  registerUpdateStatusCustomizadoRoute,
+  registerDeleteStatusCustomizadoRoute,
+} from "./status-customizado.routes";

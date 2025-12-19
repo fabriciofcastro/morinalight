@@ -1,7 +1,7 @@
 import { PreFichaTecnicaId } from "../value-objects/pre-ficha-tecnica-id";
-import { StatusPreFichaTecnicaVO, StatusPreFichaTecnica } from "../value-objects/status-pre-ficha-tecnica";
-import { Tecido, TecidoProps } from "./tecido";
-import { InsumoTecnico, InsumoTecnicoProps } from "./insumo-tecnico";
+import { type StatusPreFichaTecnica, StatusPreFichaTecnicaVO } from "../value-objects/status-pre-ficha-tecnica";
+import { InsumoTecnico, type InsumoTecnicoProps } from "./insumo-tecnico";
+import { Tecido, type TecidoProps } from "./tecido";
 
 export type PreFichaTecnicaProps = {
   orgId: string;
@@ -545,12 +545,24 @@ export class PreFichaTecnica {
   /**
    * Criar nova versão (após alteração)
    */
-  criarNovaVersao(): void {
+  criarNovaVersao(motivoAlteracao?: string | null): void {
     this.props.versaoAtual += 1;
     this.props.versaoMolde += 1;
-  }
-
-    return novaVersao;
+    if (motivoAlteracao) {
+      this.props.houveAlteracao = true;
+      this.props.descricaoAlteracao = motivoAlteracao;
+    }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 

@@ -16,6 +16,8 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { EmptyState, ErrorState, LoadingState } from "@/components/ui";
+import { useDebounce } from "@/hooks/use-debounce";
 import { UserDetailsPanel } from "./user-details-panel";
 import { CreateUserDrawer } from "./create-user-drawer";
 
@@ -69,8 +71,10 @@ type SortState = {
 
 export function UsersClient() {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<UserData[]>([]);
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [createDrawerOpen, setCreateDrawerOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
@@ -125,24 +129,29 @@ export function UsersClient() {
       if (response.ok) {
         const data = (await response.json()) as ListResponse<UserData>;
         setUsers(data.itens ?? []);
+        setError(null);
       } else {
+        const errorData = await response.json().catch(() => ({ message: "Erro ao carregar usuários" }));
+        setError(errorData.message || "Não foi possível carregar a lista de usuários.");
         notificationCenter.add({
           type: "error",
           title: "Erro ao carregar usuários",
-          message: "Não foi possível carregar a lista de usuários.",
+          message: errorData.message || "Não foi possível carregar a lista de usuários.",
         });
       }
     } catch (e) {
       console.error(e);
+      const errorMessage = "Erro inesperado ao carregar usuários.";
+      setError(errorMessage);
       notificationCenter.add({
         type: "error",
         title: "Erro",
-        message: "Erro inesperado ao carregar usuários.",
+        message: errorMessage,
       });
     } finally {
       setLoading(false);
     }
-  }, [search, filters, sort, page]);
+  }, [debouncedSearch, filters, sort, page]);
 
   useEffect(() => {
     void loadUsers();
@@ -206,7 +215,7 @@ export function UsersClient() {
     let result = [...users];
 
     // Aplicar busca local (se necessário, já vem filtrado do backend)
-    const searchQuery = search.trim().toLowerCase();
+    const searchQuery = debouncedSearch.trim().toLowerCase();
     if (searchQuery) {
       result = result.filter(
         (u) =>
@@ -253,7 +262,7 @@ export function UsersClient() {
     });
 
     return result;
-  }, [users, search, sort]);
+  }, [users, debouncedSearch, sort]);
 
   const selectedUser = useMemo(() => {
     if (!selectedUserId) return null;
@@ -334,7 +343,7 @@ export function UsersClient() {
                     type="button"
                     onClick={() => {
                       try {
-                        if (filteredUsers.length === 0) {
+                        if (filteredAndSortedUsers.length === 0) {
                           notificationCenter.add({
                             type: "warning",
                             title: "Nenhum dado para exportar",
@@ -407,7 +416,7 @@ export function UsersClient() {
                     type="button"
                     onClick={() => {
                       try {
-                        if (filteredUsers.length === 0) {
+                        if (filteredAndSortedUsers.length === 0) {
                           notificationCenter.add({
                             type: "warning",
                             title: "Nenhum dado para exportar",

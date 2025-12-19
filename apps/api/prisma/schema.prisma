@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 datasource db {
@@ -178,6 +178,8 @@ model Organization {
   sectorMemberships        SectorMembership[]                @relation("OrganizationSectorMemberships")
   positionMemberships      PositionMembership[]              @relation("OrganizationPositionMemberships")
   Sector                   Sector[]
+  notifications            Notification[]                    @relation("Notifications")
+  notificationPreferences  NotificationPreference[]          @relation("NotificationPreferences")
   Position                 Position[]
   positionPermissions      PositionPermission[]
   sectorPermissions        SectorPermission[]
@@ -188,18 +190,25 @@ model Organization {
   permissionChangeRequests PermissionChangeRequest[]
 
   // New Relations
-  branches         Branch[]
-  roles            Role[]
-  segments         TenantSegment[]
-  workflowPolicies WorkflowPolicy[]
+  branches                     Branch[]
+  roles                        Role[]
+  segments                     TenantSegment[]
+  fichasCusto                  FichaCusto[]
+  statusCustomizadosFichaCusto StatusCustomizadoFichaCusto[] @relation("StatusCustomizadoFichaCusto")
+  workflowPolicies             WorkflowPolicy[]
 
   // Fichas de Custo
-  fichasCusto           FichaCusto[]
   fichasCustoAuditorias AuditoriaFichaCusto[] @relation("FichaCustoAuditoria")
+  suppliersAuditorias   AuditoriaSupplier[]   @relation("SupplierAuditoria")
+  notasSupplier         NotaSupplier[]
 
   // Pré-Fichas Técnicas
   preFichasTecnicas           PreFichaTecnica[]
   preFichasTecnicasAuditorias AuditoriaPreFichaTecnica[] @relation("PreFichaTecnicaAuditoria")
+
+  // Fornecedores - Extensões
+  supplierTags    SupplierTag[]
+  supplierAlertas AlertaSupplier[]
 }
 
 model User {
@@ -212,6 +221,12 @@ model User {
   lastLoginAt  DateTime?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  // 2FA Fields
+  twoFactorEnabled     Boolean   @default(false)
+  twoFactorSecret      String?   @db.VarChar(255)
+  twoFactorBackupCodes String?   @db.Text // JSON array de códigos de backup
+  twoFactorEnabledAt   DateTime?
 
   // Organizational Fields
   branchId   String?
@@ -232,6 +247,15 @@ model User {
   // Notificações
   notifications           Notification[]           @relation("UserNotifications")
   notificationPreferences NotificationPreference[] @relation("UserNotificationPreferences")
+
+  // Dispositivos Confiáveis
+  trustedDevices TrustedDevice[] @relation("UserTrustedDevices")
+
+  // Tokens de API (definido após User)
+  apiTokens ApiToken[] @relation("UserApiTokens")
+
+  // Refresh Tokens
+  refreshTokens RefreshToken[] @relation("UserRefreshTokens")
 
   @@index([branchId])
   @@index([positionId])
@@ -453,49 +477,329 @@ model Category {
 }
 
 model Supplier {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   orgId     String
   name      String
   email     String?
   phone     String?
-  document  String?  @db.VarChar(20)
-  address   String?  @db.VarChar(512)
-  city      String?  @db.VarChar(100)
-  state     String?  @db.VarChar(2)
-  zipCode   String?  @db.VarChar(10)
-  status    String   @default("ativo")
-  notes     String?  @db.VarChar(1024)
+  document  String?   @db.VarChar(20)
+  address   String?   @db.VarChar(512)
+  city      String?   @db.VarChar(100)
+  state     String?   @db.VarChar(2)
+  zipCode   String?   @db.VarChar(10)
+  status    String    @default("ativo")
+  notes     String?   @db.VarChar(1024)
   createdBy String
   updatedBy String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+  deletedBy String? // User ID que deletou
+
+  // Campos adicionais
+  website           String?   @db.VarChar(255)
+  contatoPrincipal  String?   @db.VarChar(255)
+  cargoContato      String?   @db.VarChar(100)
+  ramoAtividade     String?   @db.VarChar(255)
+  tipoFornecedor    String?   @db.VarChar(100)
+  prazoPagamento    Int? // Dias
+  condicaoPagamento String?   @db.VarChar(255)
+  limiteCredito     Decimal?  @db.Decimal(15, 2)
+  avaliacao         Decimal?  @db.Decimal(3, 2) // 0.00 a 5.00
+  dataUltimaCompra  DateTime?
+  totalCompras      Decimal?  @db.Decimal(15, 2)
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
+  // Relacionamentos
+  auditorias      AuditoriaSupplier[]
+  versoes         VersaoSupplier[]
+  documentos      DocumentoSupplier[]
+  tagRelations    SupplierTagRelation[]
+  avaliacoes      AvaliacaoSupplier[]
+  historicoPrecos HistoricoPrecoSupplier[]
+  alertas         AlertaSupplier[]
+  contatos        SupplierContact[]
+  notas           NotaSupplier[]
+
   @@unique([orgId, name])
   @@index([orgId, status])
+  @@index([orgId, deletedAt])
+  @@index([deletedAt])
+  @@index([orgId, tipoFornecedor])
+  @@index([orgId, ramoAtividade])
+  @@index([dataUltimaCompra])
+}
+
+model VersaoSupplier {
+  id         String @id @default(uuid())
+  supplierId String
+  versao     Int // Número da versão (1, 2, 3, ...)
+
+  // Snapshot completo dos dados (JSON)
+  dadosSnapshot Json // Estado completo do fornecedor naquele momento
+
+  // Metadados
+  criadoPor       String // User ID
+  motivoAlteracao String?  @db.VarChar(500)
+  createdAt       DateTime @default(now())
+
+  // Relacionamentos
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierId, versao])
+  @@index([supplierId])
+  @@index([createdAt])
+}
+
+model AuditoriaSupplier {
+  id         String @id @default(uuid())
+  supplierId String
+  orgId      String
+
+  // Dados da ação
+  acao  String  @db.VarChar(100) // criar, atualizar, deletar, restaurar, etc
+  campo String? @db.VarChar(100) // Campo alterado (se aplicável)
+
+  // Estados
+  estadoAnterior Json? // Estado antes da alteração
+  estadoNovo     Json? // Estado após a alteração
+
+  // Contexto
+  actorId   String // User ID
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.VarChar(500)
+
+  // Dados adicionais
+  justificativa String? @db.Text
+  metadata      Json? // Dados extras
+
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  supplier     Supplier     @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  organization Organization @relation("SupplierAuditoria", fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([orgId])
+  @@index([actorId])
+  @@index([acao])
+  @@index([createdAt])
+}
+
+model DocumentoSupplier {
+  id                String        @id @default(uuid())
+  supplierId        String
+  tipo              TipoDocumento
+  nomeArquivo       String        @db.VarChar(255)
+  arquivoUrl        String        @db.VarChar(512)
+  arquivoStorageKey String        @db.VarChar(512)
+  tamanhoBytes      BigInt
+  mimeType          String        @db.VarChar(100)
+
+  // Metadados
+  descricao  String?  @db.VarChar(500)
+  anexadoPor String // User ID
+  createdAt  DateTime @default(now())
+
+  // Relacionamentos
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([tipo])
+  @@index([createdAt])
+}
+
+// Contatos do Fornecedor
+model SupplierContact {
+  id          String   @id @default(uuid())
+  supplierId  String
+  name        String   @db.VarChar(255)
+  email       String?  @db.VarChar(255)
+  phone       String?  @db.VarChar(20)
+  cargo       String?  @db.VarChar(100)
+  isPrincipal Boolean  @default(false)
+  notes       String?  @db.VarChar(500)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([supplierId, isPrincipal])
+  @@index([isPrincipal])
+}
+
+// Tags/Categorias para Fornecedores
+model SupplierTag {
+  id        String   @id @default(uuid())
+  orgId     String
+  name      String   @db.VarChar(100)
+  color     String?  @db.VarChar(7) // Hex color
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  suppliers    SupplierTagRelation[]
+
+  @@unique([orgId, name])
+  @@index([orgId])
+}
+
+model SupplierTagRelation {
+  id         String   @id @default(uuid())
+  supplierId String
+  tagId      String
+  createdAt  DateTime @default(now())
+
+  supplier Supplier    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  tag      SupplierTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierId, tagId])
+  @@index([supplierId])
+  @@index([tagId])
+}
+
+// Avaliações de Fornecedores
+model AvaliacaoSupplier {
+  id         String   @id @default(uuid())
+  supplierId String
+  userId     String // User que avaliou
+  nota       Int // 1 a 5
+  comentario String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierId, userId]) // Um usuário só pode avaliar uma vez
+  @@index([supplierId])
+  @@index([userId])
+  @@index([nota])
+}
+
+// Histórico de Preços
+model HistoricoPrecoSupplier {
+  id           String   @id @default(uuid())
+  supplierId   String
+  insumoId     String? // ID do insumo (se aplicável)
+  insumoNome   String   @db.VarChar(255) // Nome do insumo
+  preco        Decimal  @db.Decimal(10, 2)
+  quantidade   Decimal? @db.Decimal(10, 2)
+  unidade      String?  @db.VarChar(20)
+  fichaCustoId String? // ID da ficha de custo relacionada
+  dataCompra   DateTime
+  createdAt    DateTime @default(now())
+
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([insumoId])
+  @@index([dataCompra])
+  @@index([fichaCustoId])
+}
+
+// Alertas e Notificações
+model AlertaSupplier {
+  id             String             @id @default(uuid())
+  supplierId     String?
+  orgId          String
+  tipo           TipoAlertaSupplier
+  titulo         String             @db.VarChar(255)
+  mensagem       String             @db.Text
+  prioridade     PrioridadeAlerta   @default(media)
+  status         StatusAlerta       @default(pendente)
+  dataVencimento DateTime? // Para alertas de vencimento
+  lido           Boolean            @default(false)
+  lidoEm         DateTime?
+  lidoPor        String? // User ID
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  supplier     Supplier?    @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([orgId])
+  @@index([tipo])
+  @@index([status])
+  @@index([dataVencimento])
+  @@index([lido])
+}
+
+enum TipoAlertaSupplier {
+  documento_vencendo
+  documento_vencido
+  fornecedor_inativo
+  variacao_preco
+  novo_fornecedor
+  sem_compras_recentes
+  avaliacao_baixa
+  customizado
+}
+
+enum PrioridadeAlerta {
+  baixa
+  media
+  alta
+  critica
+}
+
+enum StatusAlerta {
+  pendente
+  resolvido
+  ignorado
+}
+
+// Notas Internas do Fornecedor
+model NotaSupplier {
+  id         String   @id @default(uuid())
+  supplierId String
+  orgId      String
+  titulo     String?  @db.VarChar(255)
+  conteudo   String   @db.Text
+  tipo       String   @default("nota") @db.VarChar(50) // nota, lembrete, observacao
+  criadoPor  String // User ID
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  supplier     Supplier     @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([supplierId])
+  @@index([orgId])
+  @@index([supplierId, tipo])
+  @@index([criadoPor])
+  @@index([createdAt])
 }
 
 model Cliente {
-  id          String        @id @default(uuid())
-  orgId       String
-  nome        String
-  razaoSocial String?       @db.VarChar(255)
-  tipo        String        @default("fisica") // fisica, juridica
-  documento   String        @db.VarChar(20) // CPF ou CNPJ
-  email       String?       @db.VarChar(255)
-  telefone    String?       @db.VarChar(20)
-  celular     String?       @db.VarChar(20)
-  endereco    String?       @db.VarChar(512)
-  cidade      String?       @db.VarChar(100)
-  estado      String?       @db.VarChar(2)
-  cep         String?       @db.VarChar(10)
-  status      ClienteStatus @default(ativo)
-  observacoes String?       @db.VarChar(2048)
-  createdBy   String
-  updatedBy   String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                String        @id @default(uuid())
+  orgId             String
+  nome              String
+  razaoSocial       String?       @db.VarChar(255)
+  nomeFantasia      String?       @db.VarChar(255) // Nome Fantasia separado (especialmente para PJ)
+  tipo              String        @default("fisica") // fisica, juridica
+  documento         String        @db.VarChar(20) // CPF ou CNPJ
+  inscricaoEstadual String?       @db.VarChar(50) // IE para PJ
+  inscricaoMunicipal String?      @db.VarChar(50) // IM para PJ
+  email             String?       @db.VarChar(255)
+  telefone          String?       @db.VarChar(20)
+  celular           String?       @db.VarChar(20)
+  website           String?       @db.VarChar(512) // Website do cliente
+  endereco          String?       @db.VarChar(512) // Logradouro
+  numero            String?       @db.VarChar(20) // Número do endereço
+  complemento       String?       @db.VarChar(255) // Complemento do endereço
+  bairro            String?       @db.VarChar(100) // Bairro
+  cidade            String?       @db.VarChar(100)
+  estado            String?       @db.VarChar(2)
+  cep               String?       @db.VarChar(10)
+  status            ClienteStatus @default(ativo)
+  observacoes       String?       @db.VarChar(2048)
+  createdBy         String
+  updatedBy         String
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
   organization  Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
   representante Representante?
@@ -1346,6 +1650,38 @@ model DocumentoFichaCusto {
 }
 
 // ============================================
+// STATUS CUSTOMIZADOS DE FICHAS DE CUSTO
+// ============================================
+
+model StatusCustomizadoFichaCusto {
+  id        String  @id @default(uuid())
+  orgId     String
+  nome      String  @db.VarChar(100)
+  cor       String  @db.VarChar(7) // Código hexadecimal (#RRGGBB)
+  descricao String? @db.VarChar(500)
+  ordem     Int     @default(0) // Ordem de exibição
+  ativo     Boolean @default(true)
+
+  // Metadados
+  criadoPor     String // User ID
+  atualizadoPor String? // User ID
+
+  // Auditoria
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  deletedBy String?
+
+  // Relacionamentos
+  organization Organization @relation("StatusCustomizadoFichaCusto", fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, nome], name: "unique_status_nome_per_org")
+  @@index([orgId, ativo])
+  @@index([orgId, ordem])
+  @@index([orgId, deletedAt])
+}
+
+// ============================================
 // PRÉ-FICHA TÉCNICA (MOLDES LIBERADOS)
 // ============================================
 
@@ -1582,26 +1918,26 @@ enum NotificationChannel {
 }
 
 model Notification {
-  id        String   @id @default(uuid())
-  orgId     String
-  userId    String? // null = notificação para toda a organização
-  type      NotificationType
-  category  String   @db.VarChar(100)
-  title     String   @db.VarChar(255)
-  message   String   @db.Text
-  read      Boolean  @default(false)
-  archived  Boolean  @default(false)
-  actionUrl String?  @db.VarChar(500)
-  actionLabel String? @db.VarChar(100)
-  metadata  Json?
-  channels  NotificationChannel[] // Canais pelos quais a notificação foi enviada
-  createdAt DateTime @default(now())
-  readAt    DateTime?
-  archivedAt DateTime?
+  id          String                @id @default(uuid())
+  orgId       String
+  userId      String? // null = notificação para toda a organização
+  type        NotificationType
+  category    String                @db.VarChar(100)
+  title       String                @db.VarChar(255)
+  message     String                @db.Text
+  read        Boolean               @default(false)
+  archived    Boolean               @default(false)
+  actionUrl   String?               @db.VarChar(500)
+  actionLabel String?               @db.VarChar(100)
+  metadata    Json?
+  channels    NotificationChannel[] // Canais pelos quais a notificação foi enviada
+  createdAt   DateTime              @default(now())
+  readAt      DateTime?
+  archivedAt  DateTime?
 
   // Relacionamentos
-  organization Organization @relation("Notifications", fields: [orgId], references: [id], onDelete: Cascade)
-  user         User?        @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization              @relation("Notifications", fields: [orgId], references: [id], onDelete: Cascade)
+  user         User?                     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
   interactions NotificationInteraction[] @relation("NotificationInteractions")
 
   @@index([orgId])
@@ -1613,18 +1949,18 @@ model Notification {
 }
 
 model NotificationPreference {
-  id        String   @id @default(uuid())
-  orgId     String
-  userId    String
-  category  String   @db.VarChar(100) // system, security, approval, etc
-  enabled   Boolean  @default(true)
-  channels  NotificationChannel[] // email, push, inApp
-  frequency String   @default("immediate") @db.VarChar(20) // immediate, daily, weekly
-  quietHoursStart String? @db.VarChar(5) // HH:mm
-  quietHoursEnd   String? @db.VarChar(5) // HH:mm
-  quietHoursEnabled Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String                @id @default(uuid())
+  orgId             String
+  userId            String
+  category          String                @db.VarChar(100) // system, security, approval, etc
+  enabled           Boolean               @default(true)
+  channels          NotificationChannel[] // email, push, inApp
+  frequency         String                @default("immediate") @db.VarChar(20) // immediate, daily, weekly
+  quietHoursStart   String?               @db.VarChar(5) // HH:mm
+  quietHoursEnd     String?               @db.VarChar(5) // HH:mm
+  quietHoursEnabled Boolean               @default(false)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
 
   // Relacionamentos
   organization Organization @relation("NotificationPreferences", fields: [orgId], references: [id], onDelete: Cascade)
@@ -1634,6 +1970,90 @@ model NotificationPreference {
   @@index([orgId])
   @@index([userId])
   @@index([category])
+}
+
+model TrustedDevice {
+  id        String   @id @default(uuid())
+  userId    String
+  deviceId  String   @unique // Identificador único do dispositivo (fingerprint)
+  name      String   @db.VarChar(255) // Nome do dispositivo (ex: "Chrome on Windows")
+  browser   String?  @db.VarChar(100) // Navegador
+  os        String?  @db.VarChar(100) // Sistema operacional
+  ip        String?  @db.VarChar(45) // IP do dispositivo
+  location  String?  @db.VarChar(255) // Localização aproximada
+  lastUsed  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation("UserTrustedDevices", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId])
+  @@index([userId])
+  @@index([deviceId])
+  @@index([lastUsed])
+}
+
+// Tokens de API para autenticação programática
+model ApiToken {
+  id          String    @id @default(uuid())
+  userId      String
+  name        String    @db.VarChar(255) // Nome descritivo do token
+  token       String    @unique // Hash SHA-256 do token (nunca armazenar token completo)
+  tokenPrefix String    @db.VarChar(20) // Prefixo para exibição (ex: "mrn_abc123...")
+  lastUsed    DateTime? // Última vez que o token foi usado
+  expiresAt   DateTime? // Data de expiração (opcional)
+  revokedAt   DateTime? // Data de revogação (soft delete)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relacionamentos
+  user  User            @relation("UserApiTokens", fields: [userId], references: [id], onDelete: Cascade)
+  usage ApiTokenUsage[] // Histórico de uso
+
+  @@index([userId])
+  @@index([token])
+  @@index([revokedAt])
+  @@index([expiresAt])
+}
+
+// Histórico de uso de tokens de API
+model ApiTokenUsage {
+  id           String   @id @default(uuid())
+  tokenId      String
+  endpoint     String   @db.VarChar(500) // Endpoint acessado
+  method       String   @db.VarChar(10) // Método HTTP
+  ip           String?  @db.VarChar(45) // IP de origem
+  userAgent    String?  @db.VarChar(500) // User agent
+  statusCode   Int? // Status code da resposta
+  responseTime Int? // Tempo de resposta em ms
+  timestamp    DateTime @default(now())
+
+  // Relacionamentos
+  token ApiToken @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+
+  @@index([tokenId])
+  @@index([timestamp])
+  @@index([endpoint])
+  @@index([ip])
+}
+
+// Refresh Tokens para rotação de tokens JWT
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique // Hash SHA-256 do token (nunca armazenar token completo)
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  user User @relation("UserRefreshTokens", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@index([revoked])
 }
 
 model NotificationInteraction {

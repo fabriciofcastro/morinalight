@@ -25,3 +25,4 @@ export async function GET(_request: Request, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
+

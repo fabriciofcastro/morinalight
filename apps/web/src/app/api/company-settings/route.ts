@@ -7,6 +7,7 @@ import {
 import { apiUrl, defaultOrgId } from "@/lib/env";
 import { getPrismaClient } from "@/lib/prisma";
 import { companySettingsSchema } from "@/schemas/company-settings";
+import { buildAuthHeaders } from "../_lib/auth-headers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -88,10 +89,11 @@ async function loadFromPrisma(orgId: string): Promise<NormalizedCompanySettings 
 
 async function loadFromApi(orgId: string): Promise<NormalizedCompanySettings | null> {
   try {
+    const headers = await buildAuthHeaders({
+      "x-organization-id": orgId,
+    });
     const response = await fetch(`${apiUrl}/company-settings`, {
-      headers: {
-        "x-organization-id": orgId,
-      },
+      headers,
       cache: "no-store",
     });
 
@@ -151,12 +153,13 @@ async function persistWithApi(
   payload: NormalizedCompanySettings,
 ): Promise<NormalizedCompanySettings | null> {
   try {
+    const headers = await buildAuthHeaders({
+      "Content-Type": "application/json",
+      "x-organization-id": orgId,
+    });
     const response = await fetch(`${apiUrl}/company-settings`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "x-organization-id": orgId,
-      },
+      headers,
       body: JSON.stringify(sanitizeForPersistence(payload)),
       cache: "no-store",
     });

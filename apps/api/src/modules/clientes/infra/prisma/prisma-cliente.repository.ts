@@ -15,12 +15,19 @@ function toDomain(record: {
   orgId: string;
   nome: string;
   razaoSocial: string | null;
+  nomeFantasia?: string | null;
   tipo: string;
   documento: string;
+  inscricaoEstadual?: string | null;
+  inscricaoMunicipal?: string | null;
   email: string | null;
   telefone: string | null;
   celular: string | null;
+  website?: string | null;
   endereco: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
   cidade: string | null;
   estado: string | null;
   cep: string | null;
@@ -35,12 +42,19 @@ function toDomain(record: {
     orgId: record.orgId,
     nome: record.nome,
     razaoSocial: record.razaoSocial,
+    nomeFantasia: record.nomeFantasia ?? null,
     tipo: record.tipo as "fisica" | "juridica",
     documento: record.documento,
+    inscricaoEstadual: record.inscricaoEstadual ?? null,
+    inscricaoMunicipal: record.inscricaoMunicipal ?? null,
     email: record.email,
     telefone: record.telefone,
     celular: record.celular,
+    website: record.website ?? null,
     endereco: record.endereco,
+    numero: record.numero ?? null,
+    complemento: record.complemento ?? null,
+    bairro: record.bairro ?? null,
     cidade: record.cidade,
     estado: record.estado,
     cep: record.cep,
@@ -66,12 +80,19 @@ export class PrismaClienteRepository implements ClienteRepository {
         orgId: dados.orgId,
         nome: dados.nome,
         razaoSocial: dados.razaoSocial,
+        nomeFantasia: dados.nomeFantasia,
         tipo: dados.tipo,
         documento: dados.documento,
+        inscricaoEstadual: dados.inscricaoEstadual,
+        inscricaoMunicipal: dados.inscricaoMunicipal,
         email: dados.email,
         telefone: dados.telefone,
         celular: dados.celular,
+        website: dados.website,
         endereco: dados.endereco,
+        numero: dados.numero,
+        complemento: dados.complemento,
+        bairro: dados.bairro,
         cidade: dados.cidade,
         estado: dados.estado,
         cep: dados.cep,
@@ -85,11 +106,18 @@ export class PrismaClienteRepository implements ClienteRepository {
       update: {
         nome: dados.nome,
         razaoSocial: dados.razaoSocial,
+        nomeFantasia: dados.nomeFantasia,
         tipo: dados.tipo,
+        inscricaoEstadual: dados.inscricaoEstadual,
+        inscricaoMunicipal: dados.inscricaoMunicipal,
         email: dados.email,
         telefone: dados.telefone,
         celular: dados.celular,
+        website: dados.website,
         endereco: dados.endereco,
+        numero: dados.numero,
+        complemento: dados.complemento,
+        bairro: dados.bairro,
         cidade: dados.cidade,
         estado: dados.estado,
         cep: dados.cep,

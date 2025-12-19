@@ -40,3 +40,60 @@ export async function POST(request: Request, { params }: { params: { departmentI
   const data = await response.json();
   return NextResponse.json(data, { status: 201 });
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { departmentId: string } },
+) {
+  const { membershipId, ...body } = await request.json();
+
+  const response = await fetch(
+    `${apiUrl}/departments/${params.departmentId}/members/${membershipId}`,
+    {
+      method: "PATCH",
+      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify(body),
+    },
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    return NextResponse.json(
+      { message: error.message || "Erro ao atualizar membro do departamento" },
+      { status: response.status },
+    );
+  }
+
+  const data = await response.json();
+  return NextResponse.json(data);
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { departmentId: string } },
+) {
+  const url = new URL(request.url);
+  const membershipId = url.searchParams.get("membershipId");
+
+  if (!membershipId) {
+    return NextResponse.json({ message: "membershipId é obrigatório" }, { status: 400 });
+  }
+
+  const response = await fetch(
+    `${apiUrl}/departments/${params.departmentId}/members/${membershipId}`,
+    {
+      method: "DELETE",
+      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    },
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    return NextResponse.json(
+      { message: error.message || "Erro ao remover membro do departamento" },
+      { status: response.status },
+    );
+  }
+
+  return NextResponse.json({ success: true });
+}

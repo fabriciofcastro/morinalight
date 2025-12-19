@@ -72,3 +72,14 @@ else
   exit 0  # Não falhar, apenas avisar
 fi
 
+
+
+
+
+
+
+
+
+
+
+

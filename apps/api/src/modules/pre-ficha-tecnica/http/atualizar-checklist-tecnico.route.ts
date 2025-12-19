@@ -80,3 +80,14 @@ export async function registerAtualizarChecklistTecnicoRoute(
   );
 }
 
+
+
+
+
+
+
+
+
+
+
+

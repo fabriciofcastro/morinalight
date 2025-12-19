@@ -95,3 +95,14 @@ echo "   3. Se precisa configurar .env: ./setup-local-env.sh"
 echo ""
 
 
+
+
+
+
+
+
+
+
+
+
+

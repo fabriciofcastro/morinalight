@@ -121,10 +121,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Se login bem-sucedido, salvar token em cookie
+    // Se login bem-sucedido, salvar token e organização em cookies
     if (response.ok && typeof payload === "object" && "token" in payload) {
       const token = String(payload.token);
       const cookieStore = await cookies();
+      
+      // Salvar token de autenticação
       cookieStore.set("auth_token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -132,6 +134,26 @@ export async function POST(request: Request) {
         maxAge: 7 * 24 * 60 * 60, // 7 dias
         path: "/",
       });
+
+      // Salvar organização selecionada se houver
+      if ("organizations" in payload && Array.isArray(payload.organizations) && payload.organizations.length > 0) {
+        const firstOrg = payload.organizations[0];
+        const orgId = typeof firstOrg === "object" && firstOrg !== null
+          ? ("organizationId" in firstOrg ? String(firstOrg.organizationId) : "id" in firstOrg ? String(firstOrg.id) : null)
+          : typeof firstOrg === "string"
+            ? firstOrg
+            : null;
+        
+        if (orgId) {
+          cookieStore.set("selected_org_id", orgId, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60, // 7 dias
+            path: "/",
+          });
+        }
+      }
     }
 
     return NextResponse.json(payload, {

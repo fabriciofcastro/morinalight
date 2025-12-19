@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { PreFichaTecnicaId } from "../../domain/value-objects/pre-ficha-tecnica-id";
@@ -45,9 +46,16 @@ export class AtualizarChecklistTecnicoUseCase {
     // Publicar evento
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "pre-ficha-tecnica.checklist-atualizado",
+        name: "PreFichaTecnica.ChecklistAtualizado",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: this.deps.orgId,
+          actorId: this.deps.userId,
+          timestamp: new Date(),
+        },
         payload: {
-          id: preFicha.preFichaTecnicaId.toString(),
+          preFichaTecnicaId: preFicha.preFichaTecnicaId.toString(),
           orgId: this.deps.orgId,
           checklist: input.checklist,
         },
@@ -60,4 +68,15 @@ export class AtualizarChecklistTecnicoUseCase {
     };
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 

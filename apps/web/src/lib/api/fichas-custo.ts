@@ -8,6 +8,38 @@ export type TipoInsumo = "aviamento" | "servico" | "terceirizacao" | "outros";
 export type StatusFichaCusto = "rascunho" | "enviada_para_conferencia" | "aprovada" | "reprovada";
 export type StatusBoleto = "pendente" | "pago" | "cancelado" | "vencido";
 
+export interface StatusCustomizado {
+  id: string;
+  orgId: string;
+  nome: string;
+  cor: string;
+  descricao?: string | null;
+  ordem: number;
+  ativo: boolean;
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
+}
+
+export interface CreateStatusCustomizadoInput {
+  nome: string;
+  cor: string;
+  descricao?: string;
+  ordem?: number;
+  ativo?: boolean;
+}
+
+export interface UpdateStatusCustomizadoInput {
+  nome?: string;
+  cor?: string;
+  descricao?: string;
+  ordem?: number;
+  ativo?: boolean;
+}
+
 export interface Insumo {
   id?: string;
   descricao: string;
@@ -260,6 +292,42 @@ export class FichasCustoApi {
    */
   async removerBoleto(orgId: string, fichaCustoId: string, boletoId: string): Promise<{ sucesso: boolean; boletoRemovido: string }> {
     return api.delete(`/organizations/${orgId}/fichas-custo/${fichaCustoId}/boletos/${boletoId}`);
+  }
+
+  // ============================================
+  // Status Customizados
+  // ============================================
+
+  /**
+   * Listar status customizados
+   */
+  async listarStatusCustomizados(orgId: string): Promise<StatusCustomizado[]> {
+    return api.get<StatusCustomizado[]>(`/organizations/${orgId}/fichas-custo/status-customizados`);
+  }
+
+  /**
+   * Criar status customizado
+   */
+  async criarStatusCustomizado(orgId: string, input: CreateStatusCustomizadoInput): Promise<StatusCustomizado> {
+    return api.post<StatusCustomizado>(`/organizations/${orgId}/fichas-custo/status-customizados`, input);
+  }
+
+  /**
+   * Atualizar status customizado
+   */
+  async atualizarStatusCustomizado(
+    orgId: string,
+    statusId: string,
+    input: UpdateStatusCustomizadoInput,
+  ): Promise<StatusCustomizado> {
+    return api.put<StatusCustomizado>(`/organizations/${orgId}/fichas-custo/status-customizados/${statusId}`, input);
+  }
+
+  /**
+   * Excluir status customizado
+   */
+  async excluirStatusCustomizado(orgId: string, statusId: string): Promise<{ message: string }> {
+    return api.delete(`/organizations/${orgId}/fichas-custo/status-customizados/${statusId}`);
   }
 }
 

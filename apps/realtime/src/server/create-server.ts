@@ -29,7 +29,20 @@ export async function createServer() {
     pendingAlertThreshold: env.REALTIME_PENDING_ALERT_THRESHOLD,
     pendingAlertIntervalMs: env.REALTIME_PENDING_ALERT_INTERVAL_MS,
   });
-  await hub.start();
+  
+  try {
+    await hub.start();
+    app.log.info("✅ RealtimeHub iniciado com sucesso");
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.includes("NOAUTH") || message.includes("Authentication required")) {
+      app.log.warn(
+        "⚠️  Redis requer autenticação. Configure REDIS_PASSWORD no .env ou use redis://:senha@localhost:6379. Realtime funcionará sem broadcast.",
+      );
+    } else {
+      app.log.error({ err: error }, "⚠️  Falha ao iniciar RealtimeHub. Realtime funcionará sem broadcast.");
+    }
+  }
 
   await app.register(websocket, {
     options: {

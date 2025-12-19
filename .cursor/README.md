@@ -4,29 +4,42 @@ Este diretório contém a configuração do Model Context Protocol para o projet
 
 ## Arquivos
 
-- `mcp.json`: Configuração dos servidores MCP
+- `mcp.json`: Configuração dos servidores MCP (ativa)
+- `mcp.optional.json`: Configurações de servidores opcionais (S3, Qdrant)
+- `mcp.json.backup`: Backup da configuração anterior
 - `README.md`: Esta documentação
+- `PRISMA_MCP.md`: Guia completo sobre configuração e uso do Prisma MCP Server
+- `CHANGELOG_MCP.md`: Histórico de mudanças na configuração MCP
 
 ## Servidores Configurados
 
 ### Essenciais
 
 - **filesystem**: Acesso controlado ao sistema de arquivos do projeto
-- **git**: Operações Git para controle de versão
-- **http**: Requisições HTTP para APIs internas/externas
-- **openapi**: Validação e consumo de APIs via OpenAPI Spec
 
 ### Dados
 
-- **postgres**: Acesso ao banco de dados PostgreSQL (localhost:5432)
-- **redis**: Acesso ao cache/eventos Redis (localhost:6379)
+- **postgres**: Acesso ao banco de dados PostgreSQL gerenciado pelo Prisma (db.prisma.io:5432)
+- **postgres-local**: Acesso ao banco de dados PostgreSQL local (localhost:5432)
+- **redis**: ⚠️ Opcional - Acesso ao cache/eventos Redis (localhost:6379) - Requer Redis rodando via Docker
+
+### Prisma
+
+O Cursor possui suporte nativo ao **Prisma MCP Server**, que permite gerenciar databases, conectar-se a workspaces do Prisma, executar queries SQL, e muito mais. Os tools do Prisma estão disponíveis automaticamente no Cursor.
+
+**Workspace configurado**: 
+- URL: https://console.prisma.io/cly0v45a508o0vfv2ztv0sr5f/cmj5rep4c0428uqfm5vgrj4u1/cmj5rep4c0426uqfm6x1as1l3/dashboard
+- Database: Prisma Postgres (db.prisma.io:5432)
 
 ### Opcionais (Configuração Disponível)
 
+- **redis**: Cache/eventos Redis (requer Redis rodando via `docker compose up -d redis`)
 - **s3**: Storage de arquivos (requer MinIO ou S3 compatível)
 - **qdrant**: Indexação semântica de documentos (requer Qdrant rodando)
 
-**Nota**: Consulte a seção "Servidores Opcionais" abaixo para instruções de configuração.
+**Nota:** Servidores MCP como `git`, `http`, `openapi`, `shell` mencionados anteriormente não existem como pacotes oficiais no npm e foram removidos da configuração.
+
+**Nota**: Consulte o arquivo `.cursor/mcp.optional.json` para configurações prontas dos servidores opcionais. Veja também a seção "Servidores Opcionais" abaixo para instruções de configuração.
 
 ## Como Usar
 
@@ -58,9 +71,39 @@ Edite `.cursor/mcp.json` para adicionar ou remover servidores conforme necessida
 
 Os servidores MCP usam as seguintes variáveis (definidas em `mcp.json`):
 
-- `POSTGRES_CONNECTION_STRING`: Conexão com PostgreSQL
+- `POSTGRES_CONNECTION_STRING`: Conexão com PostgreSQL (Prisma ou local)
 - `REDIS_URL`: URL do Redis
 - `OPENAPI_SPEC_URL`: Caminho para a spec OpenAPI
+
+## Prisma MCP Server
+
+O Cursor possui suporte integrado ao **Prisma MCP Server**, permitindo interagir diretamente com seu workspace do Prisma através de tools especializados.
+
+### Funcionalidades Disponíveis
+
+- ✅ Listar databases do Prisma Postgres
+- ✅ Introspectar schemas de database
+- ✅ Executar queries SQL
+- ✅ Gerenciar connection strings
+- ✅ Criar backups e restaurar databases
+- ✅ Executar atualizações de schema
+
+### Como Usar
+
+Os tools do Prisma estão disponíveis automaticamente. Você pode:
+
+1. **Listar databases**: Use os tools `mcp_Prisma_list_prisma_postgres_databases` para ver seus databases
+2. **Introspectar schema**: Use `mcp_Prisma_introspect_database_schema` para ver a estrutura do banco
+3. **Executar queries**: Use `mcp_Prisma_execute_sql_query` para executar queries SQL
+
+### Connection String Configurada
+
+A connection string do Prisma está configurada no servidor MCP `postgres`:
+```
+postgres://8f2e8c48101c8bac6da1c4b39ebd56f06e65fd28f81c181786cef68106638321:***@db.prisma.io:5432/postgres?sslmode=require
+```
+
+**Nota**: Esta connection string permite acesso direto ao banco, mas para usar os tools completos do Prisma MCP (como gerenciar databases, backups, etc.), o Cursor precisa estar autenticado no seu workspace do Prisma. Isso é feito automaticamente quando você faz login no Prisma através do Cursor.
 
 ## Documentos Canônicos
 
@@ -170,7 +213,10 @@ Para habilitar o servidor Qdrant:
    pnpm docs:index
    ```
 
-**Referência**: Veja `.cursor/mcp.optional.json.example` para um exemplo completo de configuração.
+**Referência**: 
+- Veja `.cursor/mcp.optional.json` para configurações prontas dos servidores opcionais
+- Veja `.cursor/mcp.optional.json.example` para o exemplo original
+- Consulte `.cursor/CHANGELOG_MCP.md` para histórico de mudanças
 
 ## Automação de Indexação
 
@@ -198,6 +244,7 @@ Este comando monitora arquivos canônicos e reindexa automaticamente quando dete
 - [Model Context Protocol](https://modelcontextprotocol.io/)
 - [MCP Servers](https://github.com/modelcontextprotocol/servers)
 - [Cursor MCP Documentation](https://docs.cursor.com/mcp)
+- [Prisma MCP Configuration](PRISMA_MCP.md) - Guia detalhado sobre o Prisma MCP
 - [MinIO Documentation](https://min.io/docs/)
 - [Qdrant Documentation](https://qdrant.tech/documentation/)
 

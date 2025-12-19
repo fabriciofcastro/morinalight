@@ -1,5 +1,7 @@
 import * as Prisma from "@prisma/client";
 import { env } from "../../core/config/env";
+import { registerTenantFilterMiddleware } from "../../core/database/tenant-filter.middleware";
+import { registerEncryptionMiddleware } from "../../core/database/encryption.middleware";
 
 type PrismaClient = Prisma.PrismaClient;
 
@@ -42,6 +44,15 @@ export function getPrisma() {
     };
 
     prisma = new Prisma.PrismaClient(prismaOptions);
+
+    // Registrar middlewares do Prisma
+    if (env.NODE_ENV !== "test") {
+      // Middleware de filtro por tenant
+      registerTenantFilterMiddleware(prisma);
+
+      // Middleware de criptografia de campos sensíveis
+      registerEncryptionMiddleware(prisma);
+    }
   }
 
   return prisma;

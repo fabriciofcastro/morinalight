@@ -30,6 +30,10 @@ export class RealtimeHub {
   private readonly pendingAlertIntervalMs: number;
   private pendingTimer?: NodeJS.Timeout;
 
+  private redisErrorLogged = false;
+  private lastPollErrorLog = 0;
+  private readonly POLL_ERROR_LOG_INTERVAL = 30000; // 30 segundos
+
   constructor(
     redisUrl: string,
     stream: string,
@@ -38,7 +42,18 @@ export class RealtimeHub {
   ) {
     this.redis = new Redis(redisUrl, { lazyConnect: true });
     this.redis.on("error", (err) => {
-      this.logger.error({ err }, "Erro de conexão com Redis (realtime)");
+      const message = err instanceof Error ? err.message : String(err);
+      // Log apenas uma vez para evitar spam
+      if (!this.redisErrorLogged) {
+        if (message.includes("NOAUTH") || message.includes("Authentication required")) {
+          this.logger.warn(
+            "Redis requer autenticação. Configure REDIS_PASSWORD no .env. Erros subsequentes serão silenciados.",
+          );
+        } else {
+          this.logger.error({ err }, "Erro de conexão com Redis (realtime). Erros subsequentes serão silenciados.");
+        }
+        this.redisErrorLogged = true;
+      }
     });
     this.stream = stream;
     this.pendingAlertThreshold = options.pendingAlertThreshold ?? 100;
@@ -59,11 +74,21 @@ export class RealtimeHub {
       clearInterval(this.pendingTimer);
       this.pendingTimer = undefined;
     }
-    await this.redis.quit();
+    try {
+      if (this.redis.status === "ready" || this.redis.status === "connect") {
+        await this.redis.quit();
+      }
+    } catch (error: unknown) {
+      this.logger.warn({ err: error }, "Erro ao fechar conexão Redis");
+    }
     this.connections.clear();
-    connectionsGauge.set(0);
-    connectionsPerOrgGauge.reset();
-    pendingMessagesGauge.set({ stream: this.stream, consumer_group: this.group }, 0);
+    try {
+      connectionsGauge.set(0);
+      connectionsPerOrgGauge.reset();
+      pendingMessagesGauge.set({ stream: this.stream, consumer_group: this.group }, 0);
+    } catch {
+      // Ignorar erros de métricas
+    }
   }
 
   addConnection(orgId: string, actorId: string, socket: WebSocket) {
@@ -92,7 +117,20 @@ export class RealtimeHub {
 
   private async ensureConnection() {
     if (!this.redis.status || this.redis.status === "wait") {
-      await this.redis.connect();
+      try {
+        await this.redis.connect();
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.includes("NOAUTH") || message.includes("Authentication required")) {
+          this.logger.warn(
+            { err: error },
+            "Redis requer autenticação. Configure REDIS_PASSWORD no .env ou use redis://:senha@localhost:6379",
+          );
+        } else {
+          this.logger.error({ err: error }, "Falha ao conectar ao Redis");
+        }
+        throw error;
+      }
     }
   }
 
@@ -110,6 +148,11 @@ export class RealtimeHub {
   private async poll() {
     while (this.polling) {
       try {
+        // Verificar se Redis está conectado antes de tentar ler
+        if (this.redis.status !== "ready") {
+          await this.ensureConnection();
+        }
+        
         const entries = (await this.redis.xreadgroup(
           "GROUP",
           this.group,
@@ -149,9 +192,38 @@ export class RealtimeHub {
             }
           }
         }
-      } catch (error) {
-        this.logger.error({ err: error }, "Erro ao consumir stream realtime");
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : String(error);
+        const now = Date.now();
+        const shouldLog = now - this.lastPollErrorLog > this.POLL_ERROR_LOG_INTERVAL;
+        
+        if (message.includes("NOAUTH") || message.includes("Authentication required")) {
+          if (shouldLog) {
+            this.logger.warn(
+              "Redis requer autenticação. Configure REDIS_PASSWORD no .env. Polling continuará tentando.",
+            );
+            this.lastPollErrorLog = now;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+        } else if (message.includes("Connection is closed") || message.includes("ECONNREFUSED")) {
+          if (shouldLog) {
+            this.logger.warn("Redis não está disponível. Tentando reconectar...");
+            this.lastPollErrorLog = now;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          // Tentar reconectar
+          try {
+            await this.ensureConnection();
+          } catch {
+            // Ignorar erro de reconexão, tentará novamente no próximo loop
+          }
+        } else {
+          if (shouldLog) {
+            this.logger.error({ err: error }, "Erro ao consumir stream realtime");
+            this.lastPollErrorLog = now;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
       }
     }
   }

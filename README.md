@@ -35,6 +35,7 @@ pnpm turbo dev
   - Email: `admin@morina.com`
   - Senha: `Admin@123`
 - **API Health:** http://localhost:3333/health
+- **API Docs (Swagger):** http://localhost:3333/docs
 - **Realtime:** ws://localhost:3334
 
 ### Serviços Disponíveis

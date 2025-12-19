@@ -163,7 +163,7 @@ export function TreeView<T = Record<string, unknown>>({
             </div>
 
             {/* Filhos */}
-            {hasChildren && isExpanded && (
+            {hasChildren && isExpanded && node.children && (
               <div className="relative">
                 {showConnectors && (
                   <div
@@ -176,7 +176,7 @@ export function TreeView<T = Record<string, unknown>>({
                   />
                 )}
                 <TreeView
-                  nodes={node.children!}
+                  nodes={node.children}
                   expanded={expanded}
                   onToggleExpand={onToggleExpand}
                   onSelect={onSelect}

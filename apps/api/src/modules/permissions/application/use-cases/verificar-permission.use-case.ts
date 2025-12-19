@@ -229,6 +229,7 @@ export class VerificarPermissionUseCase {
         "commissions:view",
         "commissions:pay",
         "suppliers:view",
+        "suppliers:create",
         "sales:view",
         "reports:view",
         "settings:view",
@@ -251,6 +252,7 @@ export class VerificarPermissionUseCase {
         "commissions:view",
         "commissions:pay",
         "suppliers:view",
+        "suppliers:create",
         "sales:view",
         "reports:view",
         "settings:view",
@@ -269,6 +271,8 @@ export class VerificarPermissionUseCase {
         "representatives:view",
         "representatives:create",
         "commissions:view",
+        "suppliers:view",
+        "suppliers:create",
         "sales:view",
         "reports:view",
       ],
@@ -279,6 +283,7 @@ export class VerificarPermissionUseCase {
         "clients:view",
         "representatives:view",
         "commissions:view",
+        "suppliers:view",
         "sales:view",
       ],
       viewer: [
@@ -288,6 +293,7 @@ export class VerificarPermissionUseCase {
         "clients:view",
         "representatives:view",
         "commissions:view",
+        "suppliers:view",
       ],
     };
 

@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, GlassCard, Input, Label, cn } from "@morina/ui";
+import { Button, GlassCard, Input, Label, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";
 import {
   AlertTriangle,
   CheckCircle2,
   Clock,
+  History,
   Key,
   Lock,
   LogOut,
@@ -20,6 +21,22 @@ import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 export function SecurityTab() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorLoading, setTwoFactorLoading] = useState(false);
+  const [twoFactorSecret, setTwoFactorSecret] = useState<string | null>(null);
+  const [twoFactorBackupCodes, setTwoFactorBackupCodes] = useState<string[]>([]);
+  const [twoFactorQRCodeUrl, setTwoFactorQRCodeUrl] = useState<string | null>(null);
+  const [trustedDevices, setTrustedDevices] = useState<Array<{
+    id: string;
+    deviceId: string;
+    name: string;
+    browser?: string | null;
+    os?: string | null;
+    ip?: string | null;
+    location?: string | null;
+    lastUsed: string;
+    createdAt: string;
+  }>>([]);
+  const [loadingTrustedDevices, setLoadingTrustedDevices] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -48,14 +65,30 @@ export function SecurityTab() {
     },
   ]);
 
-  const [apiTokens] = useState([
-    {
-      id: "1",
-      name: "API Token Principal",
-      lastUsed: new Date(Date.now() - 86400000),
-      createdAt: new Date(Date.now() - 2592000000),
-    },
-  ]);
+  const [apiTokens, setApiTokens] = useState<Array<{
+    id: string;
+    name: string;
+    tokenPrefix: string;
+    lastUsed: Date | null;
+    expiresAt: Date | null;
+    createdAt: Date;
+  }>>([]);
+  const [loadingApiTokens, setLoadingApiTokens] = useState(false);
+  const [creatingToken, setCreatingToken] = useState(false);
+  const [newTokenName, setNewTokenName] = useState("");
+  const [newTokenValue, setNewTokenValue] = useState<string | null>(null);
+  const [selectedTokenForHistory, setSelectedTokenForHistory] = useState<string | null>(null);
+  const [tokenHistory, setTokenHistory] = useState<Array<{
+    id: string;
+    endpoint: string | null;
+    method: string | null;
+    ip: string | null;
+    userAgent: string | null;
+    statusCode: number | null;
+    responseTime: number | null;
+    timestamp: string;
+  }>>([]);
+  const [loadingTokenHistory, setLoadingTokenHistory] = useState(false);
 
   const [securityActivity] = useState([
     {
@@ -146,16 +179,213 @@ export function SecurityTab() {
     setChangingPassword(false);
   };
 
-  const handleToggle2FA = () => {
-    // TODO: Implementar toggle 2FA
-    setTwoFactorEnabled(!twoFactorEnabled);
-    notificationCenter.add({
-      type: "info",
-      title: "2FA",
-      message: twoFactorEnabled
-        ? "2FA será desativado em breve."
-        : "Configuração de 2FA será implementada em breve.",
-    });
+  const load2FAStatus = useCallback(async () => {
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      // Buscar status do usuário atual (assumindo que temos userId disponível)
+      // Por enquanto, vamos buscar do perfil
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        if (profileData.user?.twoFactorEnabled) {
+          setTwoFactorEnabled(true);
+          // Buscar QR code se necessário
+          if (!twoFactorSecret) {
+            const qrResponse = await fetch(`/api/users/${profileData.user.id}/2fa/qr-code`, { headers });
+            if (qrResponse.ok) {
+              const qrData = await qrResponse.json();
+              setTwoFactorSecret(qrData.secret);
+              setTwoFactorBackupCodes(qrData.backupCodes || []);
+              setTwoFactorQRCodeUrl(qrData.otpAuthUrl);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [twoFactorSecret]);
+
+  const loadTrustedDevices = useCallback(async () => {
+    setLoadingTrustedDevices(true);
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      // Buscar userId do perfil
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userId = profileData.user?.id;
+        if (userId) {
+          const response = await fetch(`/api/users/${userId}/trusted-devices`, { headers });
+          if (response.ok) {
+            const data = await response.json();
+            setTrustedDevices(data.devices || []);
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingTrustedDevices(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load2FAStatus();
+    void loadTrustedDevices();
+  }, [load2FAStatus, loadTrustedDevices]);
+
+  const handleToggle2FA = async () => {
+    if (twoFactorEnabled) {
+      // Desativar 2FA
+      if (!confirm("Tem certeza que deseja desativar o 2FA? Isso reduzirá a segurança da sua conta.")) {
+        return;
+      }
+
+      setTwoFactorLoading(true);
+      try {
+        const headers = {
+          ...getAuthHeadersWithTenant(),
+          "Content-Type": "application/json",
+        };
+        const profileResponse = await fetch("/api/profile", { headers });
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          const userId = profileData.user?.id;
+          if (userId) {
+            const response = await fetch(`/api/users/${userId}/2fa/disable`, {
+              method: "POST",
+              headers,
+            });
+            if (response.ok) {
+              setTwoFactorEnabled(false);
+              setTwoFactorSecret(null);
+              setTwoFactorBackupCodes([]);
+              setTwoFactorQRCodeUrl(null);
+              notificationCenter.add({
+                type: "success",
+                title: "2FA Desativado",
+                message: "Autenticação de dois fatores foi desativada com sucesso.",
+              });
+            } else {
+              const error = await response.json().catch(() => ({ message: "Erro ao desativar 2FA" }));
+              notificationCenter.add({
+                type: "error",
+                title: "Erro",
+                message: error.message || "Não foi possível desativar o 2FA.",
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        notificationCenter.add({
+          type: "error",
+          title: "Erro",
+          message: "Erro inesperado ao desativar 2FA.",
+        });
+      } finally {
+        setTwoFactorLoading(false);
+      }
+    } else {
+      // Ativar 2FA
+      setTwoFactorLoading(true);
+      try {
+        const headers = {
+          ...getAuthHeadersWithTenant(),
+          "Content-Type": "application/json",
+        };
+        const profileResponse = await fetch("/api/profile", { headers });
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          const userId = profileData.user?.id;
+          if (userId) {
+            const response = await fetch(`/api/users/${userId}/2fa/enable`, {
+              method: "POST",
+              headers,
+            });
+            if (response.ok) {
+              const data = await response.json();
+              setTwoFactorEnabled(true);
+              setTwoFactorSecret(data.secret);
+              setTwoFactorBackupCodes(data.backupCodes || []);
+              setTwoFactorQRCodeUrl(data.otpAuthUrl);
+              notificationCenter.add({
+                type: "success",
+                title: "2FA Ativado",
+                message: "Autenticação de dois fatores foi ativada. Configure seu aplicativo autenticador.",
+              });
+            } else {
+              const error = await response.json().catch(() => ({ message: "Erro ao ativar 2FA" }));
+              notificationCenter.add({
+                type: "error",
+                title: "Erro",
+                message: error.message || "Não foi possível ativar o 2FA.",
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        notificationCenter.add({
+          type: "error",
+          title: "Erro",
+          message: "Erro inesperado ao ativar 2FA.",
+        });
+      } finally {
+        setTwoFactorLoading(false);
+      }
+    }
+  };
+
+  const handleRemoveTrustedDevice = async (deviceId: string) => {
+    if (!confirm("Deseja remover este dispositivo confiável?")) return;
+
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userId = profileData.user?.id;
+        if (userId) {
+          const response = await fetch(`/api/users/${userId}/trusted-devices/${deviceId}`, {
+            method: "DELETE",
+            headers,
+          });
+          if (response.ok) {
+            notificationCenter.add({
+              type: "success",
+              title: "Dispositivo Removido",
+              message: "Dispositivo confiável removido com sucesso.",
+            });
+            void loadTrustedDevices();
+          } else {
+            const error = await response.json().catch(() => ({ message: "Erro ao remover dispositivo" }));
+            notificationCenter.add({
+              type: "error",
+              title: "Erro",
+              message: error.message || "Não foi possível remover o dispositivo.",
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      notificationCenter.add({
+        type: "error",
+        title: "Erro",
+        message: "Erro inesperado ao remover dispositivo.",
+      });
+    }
   };
 
   const handleEndSession = (sessionId: string) => {
@@ -176,23 +406,164 @@ export function SecurityTab() {
     });
   };
 
-  const handleCreateApiToken = () => {
-    // TODO: Implementar criar token
-    notificationCenter.add({
-      type: "info",
-      title: "Criar Token",
-      message: "Funcionalidade será implementada em breve.",
-    });
+  const loadApiTokens = useCallback(async () => {
+    setLoadingApiTokens(true);
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userId = profileData.user?.id;
+        if (userId) {
+          const response = await fetch(`/api/users/${userId}/api-tokens`, { headers });
+          if (response.ok) {
+            const data = await response.json();
+            setApiTokens(
+              (data.tokens || []).map((token: any) => ({
+                ...token,
+                lastUsed: token.lastUsed ? new Date(token.lastUsed) : null,
+                expiresAt: token.expiresAt ? new Date(token.expiresAt) : null,
+                createdAt: new Date(token.createdAt),
+              })),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingApiTokens(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadApiTokens();
+  }, [loadApiTokens]);
+
+  const handleCreateApiToken = async () => {
+    const name = prompt("Digite um nome para o token:");
+    if (!name || !name.trim()) return;
+
+    setCreatingToken(true);
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userId = profileData.user?.id;
+        if (userId) {
+          const response = await fetch(`/api/users/${userId}/api-tokens`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ name: name.trim() }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setNewTokenValue(data.tokenValue);
+            notificationCenter.add({
+              type: "success",
+              title: "Token Criado",
+              message: "Token criado com sucesso. Guarde-o em local seguro, ele não será exibido novamente.",
+            });
+            void loadApiTokens();
+          } else {
+            const error = await response.json().catch(() => ({ message: "Erro ao criar token" }));
+            notificationCenter.add({
+              type: "error",
+              title: "Erro",
+              message: error.message || "Não foi possível criar o token.",
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      notificationCenter.add({
+        type: "error",
+        title: "Erro",
+        message: "Erro inesperado ao criar token.",
+      });
+    } finally {
+      setCreatingToken(false);
+    }
   };
 
-  const handleRevokeToken = (tokenId: string) => {
-    // TODO: Implementar revogar token
-    notificationCenter.add({
-      type: "info",
-      title: "Revogar Token",
-      message: "Funcionalidade será implementada em breve.",
-    });
+  const handleRevokeToken = async (tokenId: string) => {
+    if (!confirm("Deseja revogar este token? Ele não poderá ser usado novamente.")) return;
+
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userId = profileData.user?.id;
+        if (userId) {
+          const response = await fetch(`/api/users/${userId}/api-tokens/${tokenId}`, {
+            method: "DELETE",
+            headers,
+          });
+          if (response.ok) {
+            notificationCenter.add({
+              type: "success",
+              title: "Token Revogado",
+              message: "Token revogado com sucesso.",
+            });
+            void loadApiTokens();
+          } else {
+            const error = await response.json().catch(() => ({ message: "Erro ao revogar token" }));
+            notificationCenter.add({
+              type: "error",
+              title: "Erro",
+              message: error.message || "Não foi possível revogar o token.",
+            });
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      notificationCenter.add({
+        type: "error",
+        title: "Erro",
+        message: "Erro inesperado ao revogar token.",
+      });
+    }
   };
+
+  const loadTokenHistory = useCallback(async (tokenId: string) => {
+    setLoadingTokenHistory(true);
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+        "Content-Type": "application/json",
+      };
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        const userId = profileData.user?.id;
+        if (userId) {
+          const response = await fetch(`/api/users/${userId}/api-tokens/${tokenId}/history`, { headers });
+          if (response.ok) {
+            const data = await response.json();
+            setTokenHistory(data.itens || []);
+            setSelectedTokenForHistory(tokenId);
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingTokenHistory(false);
+    }
+  }, []);
 
   const getPasswordStrength = (password: string) => {
     if (password.length === 0) return { strength: 0, label: "", color: "" };
@@ -313,8 +684,9 @@ export function SecurityTab() {
             <button
               type="button"
               onClick={handleToggle2FA}
+              disabled={twoFactorLoading}
               className={cn(
-                "relative h-6 w-11 rounded-full transition-colors",
+                "relative h-6 w-11 rounded-full transition-colors disabled:opacity-50",
                 twoFactorEnabled ? "bg-[hsl(var(--primary))]" : "bg-white/20",
               )}
             >
@@ -330,34 +702,65 @@ export function SecurityTab() {
 
         {twoFactorEnabled && (
           <div className="space-y-4">
-            <div className="rounded border border-white/10 bg-white/5 p-4">
-              <div className="mb-4 flex items-center justify-center">
-                <div className="flex h-48 w-48 items-center justify-center border border-white/10 bg-white/5">
-                  <QrCode className="h-32 w-32 text-white/20" />
+            {twoFactorQRCodeUrl && (
+              <div className="rounded border border-white/10 bg-white/5 p-4">
+                <div className="mb-4 flex items-center justify-center">
+                  <div className="flex h-48 w-48 items-center justify-center border border-white/10 bg-white/5">
+                    {twoFactorQRCodeUrl ? (
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(twoFactorQRCodeUrl)}`}
+                        alt="QR Code para 2FA"
+                        className="h-full w-full"
+                      />
+                    ) : (
+                      <QrCode className="h-32 w-32 text-white/20" />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <p className="text-center text-sm text-white/70">
-                Escaneie este QR Code com seu aplicativo autenticador
-              </p>
-            </div>
-
-            <div>
-              <Label>Códigos de Backup</Label>
-              <div className="mt-2 rounded border border-white/10 bg-white/5 p-4">
-                <p className="mb-2 text-xs text-white/50">
-                  Guarde estes códigos em local seguro. Eles podem ser usados para acessar sua conta
-                  caso você perca acesso ao seu dispositivo.
+                <p className="text-center text-sm text-white/70">
+                  Escaneie este QR Code com seu aplicativo autenticador (Google Authenticator, Authy, etc.)
                 </p>
-                <div className="grid grid-cols-2 gap-2 font-mono text-xs text-white/70">
-                  <div>ABC123</div>
-                  <div>DEF456</div>
-                  <div>GHI789</div>
-                  <div>JKL012</div>
+                {twoFactorSecret && (
+                  <div className="mt-4 rounded border border-white/10 bg-white/5 p-3">
+                    <p className="mb-2 text-xs text-white/50">Ou configure manualmente com este código:</p>
+                    <p className="font-mono text-sm text-white">{twoFactorSecret}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {twoFactorBackupCodes.length > 0 && (
+              <div>
+                <Label>Códigos de Backup</Label>
+                <div className="mt-2 rounded border border-white/10 bg-white/5 p-4">
+                  <p className="mb-2 text-xs text-white/50">
+                    Guarde estes códigos em local seguro. Eles podem ser usados para acessar sua conta
+                    caso você perca acesso ao seu dispositivo.
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 font-mono text-xs text-white/70">
+                    {twoFactorBackupCodes.map((code, idx) => (
+                      <div key={idx}>{code}</div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleToggle2FA}
+          disabled={twoFactorLoading}
+          className="mt-4"
+        >
+          {twoFactorLoading
+            ? "Processando..."
+            : twoFactorEnabled
+              ? "Desativar 2FA"
+              : "Ativar 2FA"}
+        </Button>
       </GlassCard>
 
       {/* Sessões Ativas */}
@@ -419,10 +822,49 @@ export function SecurityTab() {
             <Key className="h-5 w-5 text-[hsl(var(--primary))]" />
             <h2 className="text-xl font-semibold text-white">Tokens de API</h2>
           </div>
-          <Button type="button" variant="outline" size="sm" onClick={handleCreateApiToken}>
-            Criar Novo Token
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={loadApiTokens}
+              disabled={loadingApiTokens}
+            >
+              {loadingApiTokens ? "Carregando..." : "Atualizar"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCreateApiToken}
+              disabled={creatingToken}
+            >
+              {creatingToken ? "Criando..." : "Criar Novo Token"}
+            </Button>
+          </div>
         </div>
+
+        {/* Exibir novo token criado (apenas uma vez) */}
+        {newTokenValue && (
+          <div className="mb-4 rounded border border-green-500/30 bg-green-500/10 p-4">
+            <p className="mb-2 text-sm font-semibold text-green-400">Token criado com sucesso!</p>
+            <p className="mb-3 text-xs text-white/70">
+              Guarde este token em local seguro. Ele não será exibido novamente.
+            </p>
+            <div className="rounded border border-white/10 bg-white/5 p-3">
+              <p className="font-mono text-sm text-white break-all">{newTokenValue}</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-3"
+              onClick={() => setNewTokenValue(null)}
+            >
+              Fechar
+            </Button>
+          </div>
+        )}
 
         <div className="space-y-3">
           {apiTokens.length === 0 ? (
@@ -433,24 +875,110 @@ export function SecurityTab() {
                 key={token.id}
                 className="flex items-center justify-between rounded border border-white/10 bg-white/5 p-4"
               >
-                <div>
+                <div className="flex-1">
                   <p className="font-semibold text-white">{token.name}</p>
+                  <p className="text-xs text-white/50 font-mono">{token.tokenPrefix}</p>
                   <p className="text-xs text-white/50">
                     Criado em {token.createdAt.toLocaleDateString("pt-BR")}
                   </p>
-                  <p className="text-xs text-white/50">
-                    Último uso: {token.lastUsed.toLocaleDateString("pt-BR")}
-                  </p>
+                  {token.lastUsed ? (
+                    <p className="text-xs text-white/50">
+                      Último uso: {token.lastUsed.toLocaleDateString("pt-BR")}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-white/50">Nunca usado</p>
+                  )}
+                  {token.expiresAt && (
+                    <p className="text-xs text-white/50">
+                      Expira em: {token.expiresAt.toLocaleDateString("pt-BR")}
+                    </p>
+                  )}
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleRevokeToken(token.id)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Revogar
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => void loadTokenHistory(token.id)}
+                        disabled={loadingTokenHistory}
+                      >
+                        <History className="mr-2 h-4 w-4" />
+                        Histórico
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-96 p-4" align="end">
+                      <div className="space-y-2">
+                        <div className="mb-3 flex items-center justify-between">
+                          <h4 className="text-sm font-semibold text-white">Histórico de Uso</h4>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedTokenForHistory(null)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        {loadingTokenHistory ? (
+                          <p className="text-center text-xs text-white/50">Carregando...</p>
+                        ) : tokenHistory.length === 0 ? (
+                          <p className="text-center text-xs text-white/50">Nenhum uso registrado</p>
+                        ) : (
+                          <div className="max-h-96 space-y-2 overflow-y-auto">
+                            {tokenHistory.map((usage) => (
+                              <div
+                                key={usage.id}
+                                className="rounded border border-white/10 bg-white/5 p-3"
+                              >
+                                <div className="mb-1 flex items-center justify-between">
+                                  <p className="text-xs font-medium text-white">
+                                    {usage.method} {usage.endpoint || "N/A"}
+                                  </p>
+                                  {usage.statusCode && (
+                                    <span
+                                      className={cn(
+                                        "rounded px-1.5 py-0.5 text-[10px] font-mono",
+                                        usage.statusCode >= 200 && usage.statusCode < 300
+                                          ? "bg-green-500/20 text-green-400"
+                                          : usage.statusCode >= 400
+                                            ? "bg-red-500/20 text-red-400"
+                                            : "bg-yellow-500/20 text-yellow-400",
+                                      )}
+                                    >
+                                      {usage.statusCode}
+                                    </span>
+                                  )}
+                                </div>
+                                {usage.ip && (
+                                  <p className="text-xs text-white/50">IP: {usage.ip}</p>
+                                )}
+                                {usage.responseTime && (
+                                  <p className="text-xs text-white/50">
+                                    Tempo de resposta: {usage.responseTime}ms
+                                  </p>
+                                )}
+                                <p className="text-xs text-white/40">
+                                  {new Date(usage.timestamp).toLocaleString("pt-BR")}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRevokeToken(token.id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Revogar
+                  </Button>
+                </div>
               </div>
             ))
           )}
@@ -501,6 +1029,65 @@ export function SecurityTab() {
         </div>
       </GlassCard>
 
+      {/* Dispositivos Confiáveis */}
+      <GlassCard className="p-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Smartphone className="h-5 w-5 text-[hsl(var(--primary))]" />
+            <h2 className="text-xl font-semibold text-white">Dispositivos Confiáveis</h2>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={loadTrustedDevices}
+            disabled={loadingTrustedDevices}
+          >
+            {loadingTrustedDevices ? "Carregando..." : "Atualizar"}
+          </Button>
+        </div>
+
+        <div className="space-y-3">
+          {trustedDevices.length === 0 ? (
+            <p className="text-center text-sm text-white/50">
+              Nenhum dispositivo confiável registrado. Dispositivos confiáveis não precisam de 2FA a cada login.
+            </p>
+          ) : (
+            trustedDevices.map((device) => (
+              <div
+                key={device.id}
+                className="flex items-center justify-between rounded border border-white/10 bg-white/5 p-4"
+              >
+                <div className="flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <span className="font-semibold text-white">{device.name}</span>
+                  </div>
+                  {device.browser && <p className="text-sm text-white/60">{device.browser}</p>}
+                  {device.os && <p className="text-xs text-white/50">OS: {device.os}</p>}
+                  {device.ip && (
+                    <p className="text-xs text-white/50">
+                      {device.ip} {device.location ? `• ${device.location}` : ""}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-white/40">
+                    Último uso: {new Date(device.lastUsed).toLocaleString("pt-BR")}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleRemoveTrustedDevice(device.deviceId)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Remover
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+      </GlassCard>
+
       {/* Atividade de Segurança */}
       <GlassCard className="p-6">
         <div className="mb-6 flex items-center gap-2">
@@ -545,5 +1132,7 @@ export function SecurityTab() {
     </div>
   );
 }
+
+
 
 

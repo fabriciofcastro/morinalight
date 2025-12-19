@@ -1,4 +1,14 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
+import { parseAxiosError, type AppError } from "@/lib/errors";
+
+// Helper para gerar UUID no browser
+function randomUUID(): string {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback para browsers antigos
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${Math.random().toString(36).substr(2, 9)}`;
+}
 
 const API_BASE_URL = "/api";
 
@@ -13,7 +23,7 @@ export class ApiClient {
       },
     });
 
-    // Request interceptor - add organization header (token é cookie httpOnly)
+    // Request interceptor - add organization header and correlation IDs
     this.client.interceptors.request.use(
       (config) => {
         // Add organization header if available
@@ -24,24 +34,44 @@ export class ApiClient {
           config.headers["x-organization-id"] = orgId;
         }
 
+        // Add correlation IDs for distributed tracing
+        const correlationId = randomUUID();
+        const traceId = randomUUID();
+        const spanId = randomUUID();
+
+        config.headers["x-correlation-id"] = correlationId;
+        config.headers["x-trace-id"] = traceId;
+        config.headers["x-span-id"] = spanId;
+
+        // Preserve parent span ID if available
+        if (config.headers["x-parent-span-id"]) {
+          config.headers["x-parent-span-id"] = config.headers["x-parent-span-id"];
+        }
+
         return config;
       },
       (error) => Promise.reject(error),
     );
 
-    // Response interceptor - handle errors
+    // Response interceptor - handle errors with new error system
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
+        // Parse error using new error system
+        const appError = parseAxiosError(error);
+
         // Don't redirect to login if we're already on login/register endpoints
         const isAuthEndpoint =
           error.config?.url?.includes("/auth/login") ||
           error.config?.url?.includes("/auth/register");
 
-        if (error.response?.status === 401 && !isAuthEndpoint && typeof window !== "undefined") {
+        // Handle authentication errors
+        if (appError.statusCode === 401 && !isAuthEndpoint && typeof window !== "undefined") {
           window.location.href = "/login";
         }
-        return Promise.reject(error);
+
+        // Reject with parsed error
+        return Promise.reject(appError);
       },
     );
   }

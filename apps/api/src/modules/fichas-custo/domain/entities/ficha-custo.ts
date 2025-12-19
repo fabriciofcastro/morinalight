@@ -434,6 +434,82 @@ export class FichaCusto {
   }
 
   /**
+   * Getter para lista de boletos
+   */
+  get boletosList(): Boleto[] {
+    return [...this.boletos];
+  }
+
+  /**
+   * Anexar boleto à ficha
+   */
+  anexarBoleto(boleto: Boleto, actorId: string): void {
+    if (!this.podeAnexarBoleto()) {
+      throw new Error("Boleto só pode ser anexado a ficha aprovada");
+    }
+
+    // Validar que o boleto pertence a esta ficha
+    if (boleto.dados.fichaCustoId !== this.fichaCustoId) {
+      throw new Error("Boleto não pertence a esta ficha de custo");
+    }
+
+    // Validar valor do boleto
+    if (!this.validarValorBoleto(boleto.valorBoleto)) {
+      throw new Error("Valor do boleto excede o custo final aprovado");
+    }
+
+    this.boletos.push(boleto);
+    this.marcarComoAtualizado(actorId);
+  }
+
+  /**
+   * Buscar boleto por ID
+   */
+  buscarBoletoPorId(boletoId: string): Boleto | undefined {
+    return this.boletos.find((boleto) => boleto.boletoId === boletoId);
+  }
+
+  /**
+   * Pagar boleto
+   */
+  pagarBoleto(boletoId: string, actorId: string, dataPagamento?: Date): void {
+    const boleto = this.buscarBoletoPorId(boletoId);
+    if (!boleto) {
+      throw new Error("Boleto não encontrado na ficha");
+    }
+
+    if (!boleto.status.podePagar()) {
+      throw new Error(`Boleto não pode ser pago no status atual: ${boleto.status.valor}`);
+    }
+
+    boleto.marcarComoPago(actorId, dataPagamento);
+    this.marcarComoAtualizado(actorId);
+  }
+
+  /**
+   * Remover boleto da ficha
+   */
+  removerBoleto(boletoId: string, actorId: string): void {
+    const boleto = this.buscarBoletoPorId(boletoId);
+    if (!boleto) {
+      throw new Error("Boleto não encontrado na ficha");
+    }
+
+    // Validar que boleto pode ser removido (apenas se pendente)
+    if (!boleto.status.isPendente()) {
+      throw new Error("Apenas boletos pendentes podem ser removidos");
+    }
+
+    const index = this.boletos.findIndex((b) => b.boletoId === boletoId);
+    if (index === -1) {
+      throw new Error("Boleto não encontrado na ficha");
+    }
+
+    this.boletos.splice(index, 1);
+    this.marcarComoAtualizado(actorId);
+  }
+
+  /**
    * Exportar dados para serialização
    */
   toJSON() {

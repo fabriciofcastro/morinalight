@@ -13,3 +13,14 @@ cd apps/api || exit 1
 pnpm prisma studio --schema prisma/schema.prisma
 
 
+
+
+
+
+
+
+
+
+
+
+

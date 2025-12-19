@@ -130,3 +130,14 @@ export class CompararVersoesPreFichaTecnicaUseCase {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+

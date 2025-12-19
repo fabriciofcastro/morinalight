@@ -28,9 +28,21 @@ async function fetchUserPermissions(
 
     const data = await response.json();
     const effective = Array.isArray(data?.effective)
-      ? data.effective.map((p: { permissionKey: string }) => p.permissionKey)
+      ? data.effective.map((p: { permissionKey: string } | string) => 
+          typeof p === "string" ? p : p.permissionKey
+        )
       : [];
     const denied = Array.isArray(data?.denied) ? data.denied : [];
+    
+    // Debug: verificar se suppliers:view está nas permissões retornadas
+    if (effective.length > 0) {
+      console.log("📋 Permissões recebidas da API:", {
+        total: effective.length,
+        hasSuppliersView: effective.includes("suppliers:view"),
+        hasSuppliersCreate: effective.includes("suppliers:create"),
+        sample: effective.slice(0, 5),
+      });
+    }
 
     // Atualizar cache
     permissionsCache.set(userId, {
@@ -49,9 +61,11 @@ async function fetchUserPermissions(
 export function invalidatePermissionsCache(userId?: string) {
   if (userId) {
     permissionsCache.delete(userId);
+    console.log("🗑️ Cache de permissões invalidado para userId:", userId);
     return;
   }
   permissionsCache.clear();
+  console.log("🗑️ Cache de permissões completamente limpo");
 }
 
 export async function refreshPermissionsCache(userId: string) {
@@ -83,6 +97,7 @@ function getDefaultPermissions(): string[] {
     "representatives:create",
     "commissions:view",
     "suppliers:view",
+    "suppliers:create",
     "sales:view",
     "reports:view",
     "settings:view",
@@ -103,6 +118,10 @@ export function useHasPermission(permission: string): boolean {
 
   useEffect(() => {
     if (!ready || !user || !permission) {
+      // Se não tem permissão definida, retorna true (para itens sem permissão)
+      if (!permission) {
+        setHasPermission(true);
+      }
       return;
     }
 
@@ -111,12 +130,40 @@ export function useHasPermission(permission: string): boolean {
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
       const next = cached.effective.includes(permission) && !cached.denied.includes(permission);
       queueMicrotask(() => setHasPermission(next));
+      
+      // Debug para suppliers:view
+      if (permission === "suppliers:view") {
+        console.log("🔍 suppliers:view (cache):", {
+          cached: cached.effective.includes(permission),
+          denied: cached.denied.includes(permission),
+          hasPermission: next,
+          effectiveCount: cached.effective.length,
+        });
+      }
       return;
     }
 
     // Buscar permissões da API
     fetchUserPermissions(user.userId).then(({ effective, denied }) => {
-      setHasPermission(effective.includes(permission) && !denied.includes(permission));
+      const hasPerm = effective.includes(permission) && !denied.includes(permission);
+      // Debug para suppliers:view
+      if (permission === "suppliers:view") {
+        console.log("🔍 suppliers:view (API):", {
+          effective,
+          denied,
+          hasPermission: hasPerm,
+          includes: effective.includes(permission),
+          denied: denied.includes(permission),
+          effectiveCount: effective.length,
+        });
+      }
+      setHasPermission(hasPerm);
+    }).catch((error) => {
+      console.error("Erro ao buscar permissões:", error);
+      // Em caso de erro, usar permissões padrão
+      const defaultPerms = getDefaultPermissions();
+      const hasPerm = defaultPerms.includes(permission);
+      setHasPermission(hasPerm);
     });
   }, [user, permission, ready]);
 

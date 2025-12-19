@@ -1,0 +1,95 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'morina'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - '/etc/prometheus/rules/*.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Node Exporter
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Morina API
+  - job_name: 'morina-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:3333']
+        labels:
+          service: 'api'
+          environment: 'production'
+
+  # Morina Web (Next.js)
+  - job_name: 'morina-web'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:3000']
+        labels:
+          service: 'web'
+          environment: 'production'
+
+  # Morina Realtime
+  - job_name: 'morina-realtime'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:3334']
+        labels:
+          service: 'realtime'
+          environment: 'production'
+
+  # PostgreSQL Exporter (if deployed)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          environment: 'production'
+
+  # Redis Exporter (if deployed)
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+          environment: 'production'
+
+  # Docker containers
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['host.docker.internal:9323']
+
+  # cAdvisor - Container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+
+
+
+
+
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@ import type { AuthModuleOptions as CoreAuthModuleOptions } from "../../core/auth
 import { registerAuthModule as registerCoreAuthModule } from "../../core/auth/auth.module";
 import type { AuthModuleOptions } from "../../modules/auth/auth.module";
 import { registerAuthModule } from "../../modules/auth/auth.module";
+import { registerComplianceModule } from "../../modules/compliance/compliance.module";
 import type { CatalogoModuleOptions } from "../../modules/catalogo/catalogo.module";
 import { registerCatalogoModule } from "../../modules/catalogo/catalogo.module";
 import type { ClientesModuleOptions } from "../../modules/clientes/clientes.module";
@@ -10,6 +11,7 @@ import { registerClientesModule } from "../../modules/clientes/clientes.module";
 import { registerCompanySettingsModule } from "../../modules/company-settings/company-settings.module";
 import type { FichasCustoModuleOptions } from "../../modules/fichas-custo/fichas-custo.module";
 import { registerFichasCustoModule } from "../../modules/fichas-custo/fichas-custo.module";
+import { registerStatusCustomizadoModule } from "../../modules/status-customizado-ficha-custo/status-customizado.module";
 import type { NotificationsModuleOptions } from "../../modules/notifications/notifications.module";
 import { registerNotificationsModule } from "../../modules/notifications/notifications.module";
 import type { OrganizationalStructureModuleOptions } from "../../modules/organizational-structure/organizational-structure.module";
@@ -20,6 +22,7 @@ import type { PermissionsModuleOptions } from "../../modules/permissions/permiss
 import { registerPermissionsModule } from "../../modules/permissions/permissions.module";
 import type { PrefichaModuleOptions } from "../../modules/preficha/preficha.module";
 import { registerPrefichaModule } from "../../modules/preficha/preficha.module";
+import type { PreFichaTecnicaModuleOptions } from "../../modules/pre-ficha-tecnica/pre-ficha-tecnica.module";
 import { registerPreFichaTecnicaModule } from "../../modules/pre-ficha-tecnica/pre-ficha-tecnica.module";
 import type { ProfileModuleOptions } from "../../modules/profile/profile.module";
 import { registerProfileModule } from "../../modules/profile/profile.module";
@@ -32,13 +35,14 @@ import { registerUsersModule } from "../../modules/users/users.module";
 type HttpModulesOptions = {
   catalogo?: CatalogoModuleOptions;
   preficha?: PrefichaModuleOptions;
+  preFichaTecnica?: PreFichaTecnicaModuleOptions;
   suppliers?: SuppliersModuleOptions;
   users?: UsersModuleOptions;
   clientes?: ClientesModuleOptions;
   fichasCusto?: FichasCustoModuleOptions;
   permissions?: PermissionsModuleOptions;
   organizationalStructure?: OrganizationalStructureModuleOptions;
-  realtime?: { enabled?: boolean };
+  realtime?: { enabled?: boolean; eventBus?: unknown };
   company?: Parameters<typeof registerCompanySettingsModule>[1];
   notifications?: NotificationsModuleOptions;
   organizations?: OrganizationsModuleOptions;
@@ -48,11 +52,9 @@ type HttpModulesOptions = {
 };
 
 export async function registerHttp(app: FastifyInstance, options: HttpModulesOptions = {}) {
-  app.get("/health", async () => ({
-    status: "ok",
-    service: "api",
-    timestamp: new Date().toISOString(),
-  }));
+  // Registrar health check routes (antes de tudo, para sempre estar disponível)
+  const { registerHealthRoute } = await import("./health.route");
+  await registerHealthRoute(app, { eventBus: options.realtime?.eventBus });
 
   // Registrar módulo de autenticação (login/register) primeiro
   await registerAuthModule(app, options.auth);
@@ -109,6 +111,9 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
     organizationRepository,
   });
 
+  // Registrar módulo de Status Customizados para Fichas de Custo
+  await registerStatusCustomizadoModule(app);
+
   // Registrar módulo de estrutura organizacional primeiro para ter acesso aos repositórios
   const organizationalStructureResult = await registerOrganizationalStructureModule(app, {
     ...options.organizationalStructure,
@@ -136,4 +141,7 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
     prefichaAuditoriaRepository: prefichaResult?.auditoriaRepository,
   });
   await registerCompanySettingsModule(app, options.company);
+
+  // Registrar módulo de compliance (LGPD, etc.)
+  await registerComplianceModule(app);
 }

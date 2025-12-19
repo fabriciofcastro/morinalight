@@ -1,7 +1,10 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
+import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 import type { UserRepository } from "../repositories/user.repository";
+
+const prisma = getPrisma();
 
 type Dependencies = {
   userRepository: UserRepository;
@@ -32,11 +35,32 @@ export async function registerDisable2FARoute(
       });
     }
 
-    // TODO: Implementar desativação de 2FA
+    // Desativar 2FA
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        twoFactorEnabled: false,
+        twoFactorSecret: null,
+        twoFactorBackupCodes: null,
+        twoFactorEnabledAt: null,
+      },
+    });
+
     return reply.send({
       message: "2FA desativado com sucesso",
       userId,
     });
   });
 }
+
+
+
+
+
+
+
+
+
+
+
 

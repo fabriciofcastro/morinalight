@@ -1,8 +1,11 @@
+import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { PreFichaTecnicaId } from "../../domain/value-objects/pre-ficha-tecnica-id";
 import { criarPreFichaTecnicaSchema } from "../schemas/pre-ficha-tecnica.schema";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import { InsumoTecnico } from "../../domain/entities/insumo-tecnico";
+import { Tecido } from "../../domain/entities/tecido";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -51,32 +54,43 @@ export class AtualizarPreFichaTecnicaUseCase {
           versao: preFichaExistente.dados.versaoAtual,
           criadoPor: this.deps.userId,
           motivoAlteracao: input.motivoAlteracao,
-          dadosSnapshot: preFichaExistente.toJSON(),
+          dadosSnapshot: preFichaExistente.dados,
         },
       );
     }
 
     // Atualizar dados básicos
-    if (input.codigoPeca) {
+    if (input.codigoPeca || input.nomePecaPiloto || input.categoria !== undefined || 
+        input.fotoPecaUrl !== undefined || input.fotoPecaStorageKey !== undefined ||
+        input.gradeTamanhos !== undefined || input.observacoesTecnicas !== undefined ||
+        input.observacoesOficina !== undefined) {
       preFichaExistente.atualizarDadosBasicos({
         codigoPeca: input.codigoPeca,
-        nomePecaPiloto: input.nomePecaPiloto || preFichaExistente.dados.nomePecaPiloto,
-        categoria: input.categoria ?? preFichaExistente.dados.categoria,
-        fotoPecaUrl: input.fotoPecaUrl ?? preFichaExistente.dados.fotoPecaUrl,
-        fotoPecaStorageKey: input.fotoPecaStorageKey ?? preFichaExistente.dados.fotoPecaStorageKey,
-        gradeTamanhos: input.gradeTamanhos ?? preFichaExistente.dados.gradeTamanhos,
-        observacoesTecnicas: input.observacoesTecnicas ?? preFichaExistente.dados.observacoesTecnicas,
-        observacoesOficina: input.observacoesOficina ?? preFichaExistente.dados.observacoesOficina,
-        estilistaId: input.estilistaId ?? preFichaExistente.dados.estilistaId,
-        estilistaNome: input.estilistaNome ?? preFichaExistente.dados.estilistaNome,
-        modelistaId: input.modelistaId ?? preFichaExistente.dados.modelistaId,
-        modelistaNome: input.modelistaNome ?? preFichaExistente.dados.modelistaNome,
-        piloteiroId: input.piloteiroId ?? preFichaExistente.dados.piloteiroId,
-        piloteiroNome: input.piloteiroNome ?? preFichaExistente.dados.piloteiroNome,
-        houveAlteracao: houveAlteracao,
-        descricaoAlteracao: input.motivoAlteracao ?? null,
-      });
+        nomePecaPiloto: input.nomePecaPiloto,
+        categoria: input.categoria,
+        fotoPecaUrl: input.fotoPecaUrl,
+        fotoPecaStorageKey: input.fotoPecaStorageKey,
+        gradeTamanhos: input.gradeTamanhos,
+        observacoesTecnicas: input.observacoesTecnicas,
+        observacoesOficina: input.observacoesOficina,
+      }, this.deps.userId);
     }
+
+    // Atualizar responsáveis
+    if (input.estilistaId !== undefined || input.estilistaNome !== undefined ||
+        input.modelistaId !== undefined || input.modelistaNome !== undefined ||
+        input.piloteiroId !== undefined || input.piloteiroNome !== undefined) {
+      preFichaExistente.atualizarResponsaveis({
+        estilistaId: input.estilistaId,
+        estilistaNome: input.estilistaNome,
+        modelistaId: input.modelistaId,
+        modelistaNome: input.modelistaNome,
+        piloteiroId: input.piloteiroId,
+        piloteiroNome: input.piloteiroNome,
+      }, this.deps.userId);
+    }
+
+    // Flags de alteração serão atualizadas quando criarNovaVersao() for chamado
 
     // Atualizar tecidos
     if (input.tecidos) {
@@ -102,12 +116,9 @@ export class AtualizarPreFichaTecnicaUseCase {
       preFichaExistente.atualizarChecklistTecnico(input.checklistTecnico, this.deps.userId);
     }
 
-    // Marcar como atualizado
-    preFichaExistente.marcarComoAtualizado(this.deps.userId);
-
     // Incrementar versão se houver alteração
     if (houveAlteracao) {
-      preFichaExistente.criarNovaVersao();
+      preFichaExistente.criarNovaVersao(input.motivoAlteracao ?? null);
     }
 
     // Salvar
@@ -116,9 +127,16 @@ export class AtualizarPreFichaTecnicaUseCase {
     // Publicar evento
     if (this.deps.eventBus) {
       await this.deps.eventBus.publish({
-        type: "pre-ficha-tecnica.atualizada",
+        name: "PreFichaTecnica.Atualizada",
+        version: "v1",
+        metadata: {
+          eventId: randomUUID(),
+          orgId: this.deps.orgId,
+          actorId: this.deps.userId,
+          timestamp: new Date(),
+        },
         payload: {
-          id: preFichaExistente.preFichaTecnicaId.toString(),
+          preFichaTecnicaId: preFichaExistente.preFichaTecnicaId.toString(),
           orgId: this.deps.orgId,
           versao: preFichaExistente.dados.versaoAtual,
           houveAlteracao,
@@ -133,4 +151,15 @@ export class AtualizarPreFichaTecnicaUseCase {
     };
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 

@@ -73,3 +73,14 @@ export async function registerCompararVersoesPreFichaTecnicaRoute(
   );
 }
 
+
+
+
+
+
+
+
+
+
+
+

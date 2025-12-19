@@ -4,3 +4,14 @@ export default function PreFichasTecnicasPage() {
   return <PreFichasTecnicasClient />;
 }
 
+
+
+
+
+
+
+
+
+
+
+

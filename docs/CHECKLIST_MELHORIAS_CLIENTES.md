@@ -1,0 +1,1018 @@
+# 📋 CHECKLIST COMPLETO - SISTEMA DE CLIENTES INSANO
+
+## 🎯 Objetivo
+
+Criar o sistema de clientes mais completo, avançado e sofisticado possível, com recursos de nível enterprise, analytics avançados, tempo real, IA/ML, e experiência de usuário excepcional.
+
+---
+
+## ✅ FASE 1: ESTRUTURA BASE E FUNCIONALIDADES ESSENCIAIS
+
+### 1.1 Funcionalidades Base Implementadas
+
+#### Visual e Interface
+- [x] Background animado avançado
+- [x] Visualização em cards e tabela
+- [x] Modal de detalhes
+- [x] Paginação
+- [x] Estatísticas em tempo real
+
+#### Validações e Máscaras
+- [x] Validação CPF/CNPJ
+- [x] Máscaras de input
+- [x] Validação em tempo real com feedback visual
+
+#### Exportação e Relatórios
+- [x] Exportação CSV avançada
+- [x] Exportação PDF formatada
+
+#### Busca e Filtros
+- [x] Filtros e busca básica
+- [x] Busca por múltiplos campos simultaneamente
+- [x] Integração BrasilAPI para CNPJ (preenchimento automático)
+- [x] Integração ViaCEP para endereço (busca automática)
+
+#### Gestão de Clientes
+- [x] Histórico completo de interações (Timeline de auditoria)
+- [x] Vincular representantes (formulário completo no modal)
+
+#### Ações em Massa
+- [x] Seleção múltipla
+- [x] Ações em massa (ativar, desativar, deletar múltiplos)
+- [x] Alterar status em massa
+
+#### Recursos Inovadores de UX
+- [x] Confetti Celebration - Animação ao salvar
+- [x] Indicador de Progresso - Barra animada do formulário
+- [x] Seções Colapsáveis - Organização inteligente (Dados Básicos, Contato, Endereço, Observações)
+- [x] Atalhos de Teclado - Ctrl+S para salvar, Esc para cancelar
+- [x] Estados de erro contextuais - Mensagens por campo
+- [x] Animações suaves - Transições profissionais
+
+---
+
+## 📝 FASE 1B: FORMULÁRIO DE CADASTRO DE CLIENTES - RECURSOS AVANÇADOS
+
+### 1B.1 Estrutura e Organização do Formulário
+
+#### Layout e Navegação
+- [x] Seções colapsáveis organizadas (Dados Básicos, Contato, Endereço, Observações)
+- [x] Indicador de progresso visual animado
+- [x] Atalhos de teclado (Ctrl+S para salvar, Esc para cancelar)
+- [ ] Wizard/stepper multi-etapas - Dividir em etapas guiadas
+- [ ] Salvar rascunho automático - Auto-save a cada X segundos
+- [ ] Histórico de rascunhos - Recuperar versões anteriores
+- [ ] Preview antes de salvar - Visualizar dados antes de confirmar
+- [ ] Modo de edição em linha - Editar campos inline sem abrir formulário completo
+- [ ] Comparação antes/depois - Visualizar mudanças antes de salvar
+- [ ] Validação condicional - Campos que aparecem baseados em outros campos
+- [ ] Formulário adaptativo - Campos mudam baseado em tipo de cliente
+
+#### Experiência do Usuário
+- [x] Validação em tempo real com feedback visual
+- [x] Estados de erro contextuais por campo
+- [x] Animações suaves de transição
+- [x] Confetti celebration ao criar cliente
+- [x] Auto-focus inteligente - Foco automático no campo Nome (apenas na criação)
+- [x] Dicas contextuais - Textos de ajuda abaixo dos campos
+- [x] Exemplos de preenchimento - Placeholders com exemplos reais
+- [ ] Sugestões inteligentes - Sugerir valores baseados em histórico
+- [ ] Preenchimento por voz - Preencher campos via reconhecimento de voz
+- [ ] Modo offline - Funcionar sem internet e sincronizar depois
+- [ ] Feedback de progresso - Mostrar o que falta preencher
+- [ ] Salvamento incremental - Salvar seções conforme são preenchidas
+
+### 1B.2 Dados Básicos e Identificação
+
+#### Identificação Principal
+- [x] Nome completo / Razão Social
+- [x] Tipo (Pessoa Física / Jurídica)
+- [x] CPF/CNPJ com validação completa
+- [x] Integração BrasilAPI para buscar dados por CNPJ
+- [x] Inscrição Estadual (IE) - Campo implementado (validação por estado pendente)
+- [x] Inscrição Municipal (IM) - Campo implementado
+- [x] Nome Fantasia separado - Campo específico e destacado
+- [ ] Nome Social / Apelido
+- [ ] Data de Nascimento (PF) / Data de Fundação (PJ)
+- [ ] Sexo/Gênero (PF)
+- [ ] Estado Civil (PF)
+- [ ] Nacionalidade
+- [ ] Naturalidade (Cidade/Estado)
+- [ ] RG e Órgão Emissor
+- [ ] Título de Eleitor
+- [ ] Certidão de Casamento / Nascimento
+- [ ] Nome da Mãe (PF) - Para validações
+- [ ] Nome do Pai (PF)
+- [ ] Situação Cadastral na Receita Federal
+- [ ] Data de validade do documento
+- [ ] Foto/Logo do cliente - Upload de imagem
+- [ ] Biometria facial (opcional) - Para identificação avançada
+
+#### Validações Avançadas
+- [x] Validação de CPF com algoritmo completo
+- [x] Validação de CNPJ com algoritmo completo
+- [ ] Verificação de CPF/CNPJ na Receita Federal (API)
+- [ ] Validação de inscrição estadual por estado
+- [ ] Validação de inscrição municipal
+- [ ] Verificação de duplicatas em tempo real
+- [ ] Alertas de documentos vencidos/expirados
+- [ ] Verificação de documentos bloqueados (SERASA, SPC)
+
+### 1B.3 Informações de Contato
+
+#### Contatos Múltiplos
+- [x] Email principal
+- [x] Telefone fixo
+- [x] Celular
+- [ ] Email secundário
+- [ ] Email corporativo
+- [ ] Telefone comercial
+- [ ] WhatsApp Business
+- [ ] Telegram
+
+- [ ] LinkedIn
+- [ ] Facebook
+- [ ] Instagram
+- [ ] Twitter/X
+- [ ] YouTube
+- [x] Website - Campo implementado com validação de URL
+- [ ] Blog
+- [ ] Outros canais de comunicação
+
+#### Gestão de Contatos
+- [ ] Lista de contatos múltiplos - Adicionar vários contatos
+- [ ] Contato principal - Marcar contato principal
+- [ ] Horário preferencial de contato
+- [ ] Idioma preferido
+- [ ] Forma preferida de comunicação
+- [ ] Restrições de contato (LGPD)
+- [ ] Opt-in/Opt-out de marketing
+- [ ] Histórico de contatos - Log de todas as comunicações
+
+### 1B.4 Endereço e Localização
+
+#### Endereço Completo
+- [x] CEP com busca automática ViaCEP
+- [x] Endereço (Logradouro)
+- [x] Cidade
+- [x] Estado (UF)
+- [x] Número - Campo implementado
+- [x] Complemento - Campo implementado (preenchido via CEP)
+- [x] Bairro - Campo implementado (preenchido via CEP)
+- [ ] Ponto de referência
+- [ ] Coordenadas GPS (Latitude/Longitude)
+- [ ] Código IBGE da cidade
+- [ ] Código do município
+- [ ] Região (Norte, Sul, etc)
+- [ ] Zona (Urbana/Rural)
+
+#### Endereços Múltiplos
+- [ ] Endereço de correspondência - Diferente do principal
+- [ ] Endereço comercial
+- [ ] Endereço de entrega
+- [ ] Endereço de cobrança
+- [ ] Endereços adicionais - Lista de endereços
+- [ ] Endereço preferencial para entrega
+- [ ] Endereço preferencial para cobrança
+- [ ] Mapa interativo - Visualizar localização no mapa
+- [ ] Geolocalização automática - Obter coordenadas automaticamente
+- [ ] Validação de CEP por região
+- [ ] Sugestão de endereço completo via API
+- [ ] Verificação de endereço válido
+
+#### Integrações de Endereço
+- [x] Integração ViaCEP para busca automática - Atualizado para preencher bairro e complemento
+- [ ] Integração Google Maps API
+- [ ] Integração OpenStreetMap
+- [ ] Integração BrasilAPI para validação
+- [ ] Busca reversa de coordenadas (reverse geocoding)
+
+### 1B.5 Informações Fiscais e Financeiras
+
+#### Dados Fiscais
+- [ ] Regime Tributário (Simples, Presumido, Real)
+- [ ] CNAE Principal - Código e descrição
+- [ ] CNAEs Secundários - Lista de atividades
+- [ ] Indicador de Inscrição Estadual (Contribuinte, Isento, etc)
+- [ ] Inscrição SUFRAMA
+- [ ] Certificado Digital - Upload e validade
+- [ ] Data de validade do certificado
+- [ ] CNPJ da matriz (se filial)
+- [ ] Grupo de empresas - Vincular empresas relacionadas
+- [ ] Histórico de mudanças fiscais
+
+#### Informações Financeiras
+- [ ] Limite de crédito
+- [ ] Limite de compra a prazo
+- [ ] Limite disponível
+- [ ] Condições de pagamento preferenciais
+- [ ] Prazo padrão de pagamento (dias)
+- [ ] Forma de pagamento preferida
+- [ ] Banco e agência (se necessário)
+- [ ] Conta corrente
+- [ ] Tipo de conta (Corrente, Poupança, etc)
+- [ ] Chave PIX
+- [ ] Histórico de pagamentos
+- [ ] Score de crédito
+- [ ] Rating de risco
+- [ ] Classificação de inadimplência
+
+### 1B.6 Informações Comerciais
+
+#### Dados Comerciais
+- [ ] Segmento de mercado
+- [ ] Ramo de atividade
+- [ ] Porte da empresa (Micro, Pequena, Média, Grande)
+- [ ] Faturamento anual estimado
+- [ ] Quantidade de funcionários
+- [ ] Data do primeiro contato
+- [ ] Origem do cliente (Indicação, Site, Facebook, etc)
+- [ ] Canal de venda preferido
+- [ ] Vendedor/Representante principal
+- [ ] Taxa de desconto padrão
+- [ ] Política de preços aplicável
+- [ ] Categoria do cliente (A, B, C, D)
+- [ ] Potencial de compra
+- [ ] Ticket médio
+- [ ] Frequência de compra
+
+#### Histórico Comercial
+- [ ] Primeira compra
+- [ ] Última compra
+- [ ] Total de compras
+- [ ] Valor total em compras
+- [ ] Produtos mais comprados
+- [ ] Sazonalidade de compras
+- [ ] Tendência de crescimento/queda
+
+### 1B.7 Relacionamentos e Representantes
+
+#### Representantes e Vendedores
+- [x] Vincular representantes no modal de detalhes
+- [ ] Lista de representantes no formulário
+- [ ] Representante principal
+- [ ] Percentual de comissão por representante
+- [ ] Histórico de comissões
+- [ ] Vendedor responsável
+- [ ] Equipe de vendas
+- [ ] Gerente de conta
+
+#### Relacionamentos
+- [ ] Clientes relacionados - Vincular outros clientes
+- [ ] Tipo de relacionamento (Matriz/Filial, Grupo, etc)
+- [ ] Fornecedores relacionados
+- [ ] Parceiros comerciais
+- [ ] Contatos de emergência
+- [ ] Referências comerciais
+
+### 1B.8 Documentos e Anexos
+
+#### Gestão de Documentos
+- [ ] Upload de documentos - Múltiplos arquivos
+- [ ] Categorização de documentos
+- [ ] Tipos de documento (RG, CPF, CNH, Contrato, etc)
+- [ ] Data de emissão
+- [ ] Data de validade
+- [ ] Status do documento (Válido, Vencido, Pendente)
+- [ ] Preview de documentos
+- [ ] Download de documentos
+- [ ] OCR de documentos - Extrair dados automaticamente
+- [ ] Validação de documentos
+- [ ] Histórico de versões de documentos
+- [ ] Assinatura digital de documentos
+- [ ] Notificações de documentos próximos ao vencimento
+
+#### Tipos de Documentos Suportados
+- [ ] RG, CPF, CNH
+- [ ] Contratos
+- [ ] Certidões
+- [ ] Comprovantes
+- [ ] Fotos
+- [ ] Vídeos
+- [ ] Outros arquivos
+
+### 1B.9 Observações e Notas
+
+#### Sistema de Notas
+- [x] Campo de observações básico
+- [ ] Notas múltiplas - Lista de notas
+- [ ] Notas por categoria
+- [ ] Notas com data e autor
+- [ ] Notas privadas/públicas
+- [ ] Notas com tags
+- [ ] Busca em notas
+- [ ] Anexos em notas
+- [ ] Rich text editor para notas
+- [ ] Notas com @mentions
+- [ ] Notas com lembretes
+
+#### Campos de Texto Avançados
+- [ ] Rich text editor
+- [ ] Markdown support
+- [ ] Anexos inline
+- [ ] Emojis e ícones
+- [ ] Formatação de texto
+- [ ] Listas e tabelas
+- [ ] Links e referências
+
+### 1B.10 Tags e Categorização
+
+#### Sistema de Tags
+- [ ] Tags personalizadas - Criar tags customizadas
+- [ ] Tags predefinidas - Tags padrão do sistema
+- [ ] Múltiplas tags - Adicionar várias tags
+- [ ] Cores para tags
+- [ ] Hierarquia de tags
+- [ ] Busca por tags
+- [ ] Filtros por tags
+- [ ] Tagging em massa
+
+#### Categorização
+- [ ] Categorias principais
+- [ ] Subcategorias
+- [ ] Segmentação automática
+- [ ] Classificação por IA
+- [ ] Grupos de clientes
+- [ ] Listas de clientes
+
+### 1B.11 Campos Customizáveis
+
+#### Customização de Formulário
+- [ ] Campos customizados - Adicionar campos próprios
+- [ ] Tipos de campo customizados (Texto, Número, Data, Select, etc)
+- [ ] Validações customizadas
+- [ ] Campos obrigatórios customizados
+- [ ] Reordenar campos
+- [ ] Mostrar/ocultar campos
+- [ ] Templates de formulário
+- [ ] Versões de formulário por tipo de cliente
+
+### 1B.12 Validações Avançadas
+
+#### Validações em Tempo Real
+- [x] Validação de CPF/CNPJ
+- [x] Validação de email
+- [x] Validação de CEP
+- [x] Validação de estado (UF)
+- [ ] Validação de telefone por região
+- [ ] Validação de data de nascimento
+- [ ] Validação de idade mínima/máxima
+- [ ] Validação de formato de documento
+- [ ] Validação de campos relacionados
+- [ ] Validação condicional complexa
+- [ ] Validação de duplicatas em tempo real
+- [ ] Validação de integridade de dados
+- [ ] Validação de consistência
+- [ ] Validação de regras de negócio
+
+#### Validações Externas
+- [ ] Verificação de email válido (API)
+- [ ] Verificação de telefone válido (API)
+- [ ] Verificação de endereço válido (API)
+- [ ] Verificação de documentos (API)
+- [ ] Verificação de score de crédito
+- [ ] Verificação de blacklist
+
+### 1B.13 Integrações e Automações
+
+#### Integrações de Dados
+- [x] BrasilAPI para CNPJ
+- [x] ViaCEP para CEP
+- [ ] Integração com ReceitaWS
+- [ ] Integração com SERASA
+- [ ] Integração com SPC
+- [ ] Integração com Google Maps
+- [ ] Integração com CRM externo
+- [ ] Integração com ERP
+- [ ] Sincronização com sistemas externos
+- [ ] Importação em massa de dados
+
+#### Automações
+- [ ] Preenchimento automático inteligente
+- [ ] Sugestões baseadas em IA
+- [ ] Validação automática de dados
+- [ ] Enriquecimento de dados automático
+- [ ] Classificação automática
+- [ ] Segmentação automática
+- [ ] Workflows automáticos baseados em campos
+- [ ] Notificações automáticas
+- [ ] Ações automáticas baseadas em validação
+
+### 1B.14 Acessibilidade e Internacionalização
+
+#### Acessibilidade
+- [ ] Suporte a leitores de tela
+- [ ] Navegação por teclado completa
+- [ ] Alto contraste
+- [ ] Tamanho de fonte ajustável
+- [ ] Labels acessíveis
+- [ ] ARIA labels
+- [ ] Feedback sonoro (opcional)
+- [ ] Modo de alto contraste
+
+#### Internacionalização
+- [ ] Multi-idioma
+- [ ] Formatação por região
+- [ ] Formatos de data por país
+- [ ] Formatos de moeda
+- [ ] Formatos de documento por país
+- [ ] Validações por país
+- [ ] Tradução dinâmica
+
+### 1B.15 Recursos Avançados de UX
+
+#### Feedback Visual
+- [x] Animações suaves
+- [x] Estados de loading
+- [x] Mensagens de erro contextuais
+- [x] Confetti celebration
+- [ ] Skeleton loading
+- [ ] Progressive disclosure
+- [ ] Contextual help
+- [ ] Guided tour
+- [ ] Onboarding interativo
+- [ ] Dicas inteligentes
+- [ ] Sugestões contextuais
+
+#### Performance
+- [ ] Lazy loading de campos
+- [ ] Debounce otimizado
+- [ ] Cache de validações
+- [ ] Otimização de re-renders
+- [ ] Virtualização de listas
+- [ ] Code splitting
+- [ ] Bundle optimization
+
+### 1B.16 Segurança e Privacidade
+
+#### Segurança
+- [ ] Criptografia de dados sensíveis
+- [ ] Mascaramento de dados sensíveis
+- [ ] Logs de auditoria de alterações
+- [ ] Permissões granulares por campo
+- [ ] Proteção contra XSS
+- [ ] Proteção contra SQL Injection
+- [ ] Rate limiting
+- [ ] Validação server-side
+- [ ] Sanitização de inputs
+
+#### Privacidade (LGPD)
+- [ ] Consentimento de dados
+- [ ] Anonimização de dados
+- [ ] Exclusão de dados
+- [ ] Portabilidade de dados
+- [ ] Histórico de consentimentos
+- [ ] Campos de dados sensíveis marcados
+- [ ] Política de retenção de dados
+- [ ] Logs de acesso a dados
+
+---
+
+### 1.2 Melhorias de Design e UX
+
+#### 1.2.1 Background e Animações
+- [ ] Background interativo - Partículas que reagem ao mouse
+- [ ] Efeito parallax - Camadas de profundidade no background
+- [ ] Gradientes animados - Transições de cores suaves
+- [ ] Efeito glassmorphism avançado - Blur dinâmico baseado no scroll
+- [ ] Micro-interações - Animações em hover, click, focus
+- [ ] Loading skeletons - Placeholders animados durante carregamento
+- [ ] Transições de página - Animações ao mudar de visualização
+- [ ] Efeito shimmer - Loading shimmer nos cards
+
+#### 1.2.2 Visual e Layout
+- [ ] Dark/Light mode toggle - Alternância de tema
+- [ ] Temas personalizados - Múltiplos esquemas de cores
+- [ ] Layout responsivo avançado - Breakpoints otimizados
+- [ ] Grid adaptativo - Colunas dinâmicas baseadas no viewport
+- [ ] Sticky header - Barra de ferramentas fixa no scroll
+- [ ] Breadcrumbs - Navegação hierárquica
+- [ ] Tooltips informativos - Dicas contextuais
+- [ ] Badges de status animados - Pulsação sutil em status ativo
+
+---
+
+## 🔍 FASE 2: BUSCA E FILTROS AVANÇADOS
+
+### 2.1 Busca Avançada
+
+#### Funcionalidades de Busca
+- [x] Busca por múltiplos campos (Nome, documento, email, endereço simultaneamente)
+- [x] Integração BrasilAPI - Busca automática de dados por CNPJ
+- [x] Integração ViaCEP - Busca automática de endereço por CEP
+- [ ] Busca fuzzy - Tolerância a erros de digitação
+- [ ] Busca por voz - Reconhecimento de voz (Web Speech API)
+- [ ] Histórico de buscas - Salvar buscas recentes
+- [ ] Busca salva - Favoritar buscas frequentes
+- [ ] Autocomplete inteligente - Sugestões enquanto digita
+- [ ] Busca por tags - Sistema de tags para clientes
+- [ ] Busca por geolocalização - Filtrar por proximidade
+
+### 2.2 Filtros Avançados
+
+#### Tipos de Filtros
+- [ ] Filtros múltiplos - Combinar vários filtros
+- [ ] Filtros por data - Criado em, atualizado em, última interação
+- [ ] Filtros por região - Estado, cidade, CEP
+- [ ] Filtros por valor - Clientes com maior ticket médio
+- [ ] Filtros salvos - Presets de filtros personalizados
+- [ ] Filtros rápidos - Botões de filtro pré-configurados
+- [ ] Filtro por representante - Clientes de um representante
+- [ ] Filtro por comissão - Clientes com comissões pendentes
+
+### 2.3 Ordenação
+
+#### Funcionalidades de Ordenação
+- [ ] Ordenação múltipla - Ordenar por vários campos
+- [ ] Ordenação customizada - Salvar ordenações favoritas
+- [ ] Ordenação por relevância - Algoritmo de relevância personalizado
+
+---
+
+## 📊 FASE 3: VISUALIZAÇÕES E GRÁFICOS
+
+### 3.1 Dashboards e Métricas
+
+#### KPIs e Métricas
+- [ ] Dashboard de métricas - KPIs principais em cards
+- [ ] Gráfico de crescimento - Evolução de clientes ao longo do tempo
+- [ ] Gráfico de distribuição - Distribuição por tipo, status, região
+- [ ] Heatmap de atividade - Mapa de calor de interações
+- [ ] Gráfico de funil - Conversão de leads para clientes
+- [ ] Análise de churn - Clientes inativos vs ativos
+- [ ] Previsão de crescimento - Machine learning para previsões
+- [ ] Comparativo temporal - Comparar períodos
+
+### 3.2 Visualizações Alternativas
+
+#### Tipos de Visualização
+- [ ] Visualização em mapa - Mapa interativo com localização
+- [ ] Visualização em timeline - Linha do tempo de interações
+- [ ] Visualização em kanban - Board com colunas por status
+- [ ] Visualização em calendário - Eventos e aniversários
+- [ ] Visualização em árvore - Hierarquia de relacionamentos
+
+---
+
+## 📝 FASE 4: GESTÃO AVANÇADA DE CLIENTES
+
+### 4.1 Informações Adicionais
+
+#### Recursos de Informação
+- [x] Histórico completo - Timeline de todas as interações
+- [ ] Notas e anotações - Sistema de notas por cliente
+- [ ] Anexos e documentos - Upload de documentos
+- [ ] Tags personalizadas - Sistema de tags flexível
+- [ ] Campos customizados - Campos adicionais configuráveis
+- [ ] Relacionamentos - Vincular clientes relacionados
+- [ ] Segmentação - Grupos e segmentos de clientes
+- [ ] Score de cliente - Pontuação baseada em critérios
+
+### 4.2 Representantes e Comissões
+
+#### Funcionalidades de Comissões
+- [x] Vincular representantes - Formulário completo para vincular representantes
+- [ ] Histórico de comissões - Todas as comissões do cliente
+- [ ] Cálculo automático - Cálculo de comissões em tempo real
+- [ ] Relatório de comissões - Exportar relatório detalhado
+- [ ] Comissões pendentes - Alertas de comissões não pagas
+
+### 4.3 Comunicação
+
+#### Canais de Comunicação
+- [ ] Envio de emails - Enviar emails diretamente da plataforma
+- [ ] Histórico de emails - Log de todos os emails enviados
+- [ ] Templates de email - Templates personalizáveis
+- [ ] SMS integration - Envio de SMS
+- [ ] WhatsApp integration - Integração com WhatsApp Business
+- [ ] Notificações push - Notificações em tempo real
+
+---
+
+## 🎯 FASE 5: AÇÕES EM MASSA AVANÇADAS
+
+### 5.1 Operações em Lote
+
+#### Funcionalidades de Massa
+- [x] Seleção múltipla - Selecionar vários clientes
+- [x] Ações em massa - Aplicar ações a múltiplos clientes
+- [x] Alterar status em massa - Ativar/desativar múltiplos
+- [x] Deletar em massa - Deletar múltiplos (com confirmação)
+- [ ] Exportar selecionados - Exportar apenas selecionados
+- [ ] Atribuir representante em massa - Vincular representante
+- [ ] Aplicar tags em massa - Adicionar tags a vários
+- [ ] Enviar email em massa - Campanhas de email
+
+### 5.2 Seleção Inteligente
+
+#### Recursos de Seleção
+- [ ] Selecionar todos - Selecionar todos os resultados
+- [ ] Selecionar por filtro - Selecionar baseado em filtros
+- [ ] Selecionar por busca - Selecionar resultados da busca
+- [ ] Desselecionar todos - Limpar seleção
+
+---
+
+## 📤 FASE 6: EXPORTAÇÃO E RELATÓRIOS AVANÇADOS
+
+### 6.1 Formatos de Exportação
+
+#### Tipos de Exportação
+- [x] Exportar para PDF - Relatórios em PDF formatados
+- [x] Exportar para CSV avançado - CSV com formatação
+- [ ] Exportar para Excel - Planilhas Excel avançadas
+- [ ] Exportar para JSON - Dados estruturados
+- [ ] Exportar para XML - Formato XML
+- [ ] Exportar selecionados - Exportar apenas itens selecionados
+- [ ] Agendar exportação - Exportações automáticas periódicas
+
+### 6.2 Relatórios
+
+#### Tipos de Relatórios
+- [ ] Relatório de clientes - Relatório completo
+- [ ] Relatório de vendas - Vendas por cliente
+- [ ] Relatório de comissões - Comissões detalhadas
+- [ ] Relatório de atividade - Atividade dos clientes
+- [ ] Relatórios customizados - Criar relatórios personalizados
+- [ ] Relatórios agendados - Enviar relatórios por email
+- [ ] Dashboard executivo - Visão geral para gestão
+
+---
+
+## 🔄 FASE 7: AUTOMAÇÕES E INTEGRAÇÕES
+
+### 7.1 Automações
+
+#### Workflows Automáticos
+- [ ] Workflows automáticos - Ações automáticas baseadas em eventos
+- [ ] Regras de negócio - Regras configuráveis
+- [ ] Alertas inteligentes - Notificações baseadas em comportamento
+- [ ] Sincronização automática - Sincronizar com sistemas externos
+- [ ] Backup automático - Backup periódico dos dados
+
+### 7.2 Integrações
+
+#### APIs e Conexões
+- [ ] API pública - API REST para integrações
+- [ ] Webhooks - Notificações para sistemas externos
+- [ ] Integração CRM - Conectar com CRMs populares
+- [ ] Integração ERP - Sincronizar com ERPs
+- [ ] Integração contábil - Exportar para sistemas contábeis
+- [ ] Integração e-commerce - Sincronizar com lojas online
+- [ ] Zapier/Make - Integrações sem código
+
+---
+
+## 🔐 FASE 8: SEGURANÇA E PERMISSÕES
+
+### 8.1 Permissões Granulares
+
+#### Controle de Acesso
+- [ ] RBAC avançado - Controle de acesso por função
+- [ ] Permissões por campo - Controlar acesso a campos específicos
+- [ ] Permissões por ação - Criar, editar, deletar, visualizar
+- [ ] Auditoria completa - Log de todas as ações
+- [ ] Histórico de alterações - Versionamento de dados
+- [ ] Aprovação de alterações - Workflow de aprovação
+- [ ] Backup e restore - Sistema de backup
+
+### 8.2 LGPD e Compliance
+
+#### Conformidade Legal
+- [ ] Anonimização de dados - Anonimizar dados sensíveis
+- [ ] Exportação LGPD - Exportar dados conforme LGPD
+- [ ] Exclusão de dados - Excluir dados permanentemente
+- [ ] Consentimento - Gerenciar consentimentos
+- [ ] Política de retenção - Regras de retenção de dados
+
+---
+
+## 🚀 FASE 9: PERFORMANCE E OTIMIZAÇÃO
+
+### 9.1 Performance
+
+#### Otimizações de Performance
+- [ ] Virtual scrolling - Scroll virtual para grandes listas
+- [ ] Lazy loading - Carregamento sob demanda
+- [ ] Cache inteligente - Cache de dados e queries
+- [ ] Otimização de imagens - Compressão e lazy load
+- [ ] Code splitting - Dividir código em chunks
+- [ ] Service Worker - Cache offline
+- [ ] IndexedDB - Armazenamento local avançado
+- [ ] Web Workers - Processamento em background
+
+### 9.2 Otimizações Técnicas
+
+#### Melhorias de Código
+- [ ] Debounce otimizado - Debounce mais eficiente
+- [ ] Throttle de scroll - Otimizar eventos de scroll
+- [ ] Memoização - Memoizar cálculos pesados
+- [ ] React.memo - Otimizar re-renders
+- [ ] Bundle size - Reduzir tamanho do bundle
+- [ ] Tree shaking - Remover código não usado
+
+---
+
+## 📱 FASE 10: MOBILE E RESPONSIVIDADE
+
+### 10.1 Mobile First
+
+#### Funcionalidades Mobile
+- [ ] PWA completo - Progressive Web App
+- [ ] Offline mode - Funcionar offline
+- [ ] Gestos touch - Swipe, pinch, etc
+- [ ] Mobile menu - Menu otimizado para mobile
+- [ ] Bottom sheet - Sheets para mobile
+- [ ] Pull to refresh - Atualizar puxando para baixo
+- [ ] Infinite scroll - Scroll infinito no mobile
+- [ ] Camera integration - Tirar foto de documentos
+
+### 10.2 Responsividade
+
+#### Adaptação de Layout
+- [ ] Breakpoints otimizados - Breakpoints customizados
+- [ ] Layout adaptativo - Layout que se adapta
+- [ ] Touch targets - Áreas de toque adequadas
+- [ ] Orientation lock - Bloquear orientação quando necessário
+
+---
+
+## 🤖 FASE 11: INTELIGÊNCIA ARTIFICIAL
+
+### 11.1 IA e Machine Learning
+
+#### Recursos de IA
+- [ ] Sugestões inteligentes - IA sugere ações
+- [ ] Detecção de anomalias - Detectar comportamentos anômalos
+- [ ] Previsão de churn - Prever clientes que vão sair
+- [ ] Segmentação automática - IA segmenta clientes
+- [ ] Recomendações - Recomendar ações baseadas em dados
+- [ ] Chatbot - Assistente virtual para clientes
+- [ ] Análise de sentimento - Analisar sentimentos em notas
+- [ ] OCR de documentos - Extrair dados de documentos
+
+### 11.2 Processamento de Linguagem Natural
+
+#### Recursos de NLP
+- [ ] Busca por linguagem natural - Buscar em português natural
+- [ ] Geração de relatórios - IA gera relatórios
+- [ ] Resumo automático - Resumir informações do cliente
+- [ ] Tradução automática - Traduzir conteúdo
+
+---
+
+## 🎨 FASE 12: PERSONALIZAÇÃO
+
+### 12.1 Customização
+
+#### Funcionalidades Personalizáveis
+- [ ] Temas personalizados - Criar temas próprios
+- [ ] Layout customizável - Arrastar e soltar colunas
+- [ ] Campos customizados - Adicionar campos próprios
+- [ ] Views salvas - Salvar visualizações personalizadas
+- [ ] Dashboard personalizado - Criar dashboards próprios
+- [ ] Atalhos de teclado - Atalhos customizáveis
+- [ ] Preferências do usuário - Salvar preferências
+
+### 12.2 Branding
+
+#### Identidade Visual
+- [ ] Logo personalizado - Upload de logo
+- [ ] Cores da marca - Aplicar cores da empresa
+- [ ] Email templates - Templates com branding
+- [ ] PDFs personalizados - PDFs com identidade visual
+
+---
+
+## 🔔 FASE 13: NOTIFICAÇÕES E ALERTAS
+
+### 13.1 Notificações
+
+#### Canais de Notificação
+- [ ] Notificações em tempo real - WebSockets
+- [ ] Notificações push - Push notifications
+- [ ] Notificações por email - Emails de notificação
+- [ ] Notificações por SMS - SMS de alertas
+- [ ] Central de notificações - Hub de notificações
+- [ ] Preferências de notificação - Configurar notificações
+
+### 13.2 Alertas
+
+#### Tipos de Alertas
+- [ ] Alertas de vencimento - Alertas de prazos
+- [ ] Alertas de inatividade - Clientes inativos
+- [ ] Alertas de anomalias - Comportamentos anômalos
+- [ ] Alertas de limite - Limites de crédito, etc
+- [ ] Alertas customizados - Criar alertas próprios
+
+---
+
+## 📊 FASE 14: ANALYTICS E INSIGHTS
+
+### 14.1 Analytics
+
+#### Ferramentas de Análise
+- [ ] Google Analytics - Integração com GA
+- [ ] Heatmaps - Mapas de calor de uso
+- [ ] Session recording - Gravar sessões
+- [ ] A/B testing - Testes A/B
+- [ ] Funnel analysis - Análise de funil
+- [ ] Cohort analysis - Análise de coortes
+
+### 14.2 Insights
+
+#### Recursos de Insights
+- [ ] Insights automáticos - IA gera insights
+- [ ] Recomendações - Recomendar ações
+- [ ] Tendências - Identificar tendências
+- [ ] Comparativos - Comparar períodos
+- [ ] Benchmarks - Comparar com benchmarks
+
+---
+
+## 🧪 FASE 15: TESTES E QUALIDADE
+
+### 15.1 Testes
+
+#### Tipos de Testes
+- [ ] Testes unitários - Cobertura de testes
+- [ ] Testes de integração - Testes E2E
+- [ ] Testes de performance - Testes de carga
+- [ ] Testes de acessibilidade - WCAG compliance
+- [ ] Testes de usabilidade - Testes com usuários
+
+### 15.2 Qualidade
+
+#### Padrões de Qualidade
+- [ ] Code review - Revisão de código
+- [ ] Linting - ESLint, Prettier
+- [ ] Type safety - TypeScript strict
+- [ ] Error boundaries - Tratamento de erros
+- [ ] Logging - Sistema de logs
+- [ ] Monitoring - Monitoramento de erros
+
+---
+
+## 📚 FASE 16: DOCUMENTAÇÃO
+
+### 16.1 Documentação
+
+#### Recursos de Documentação
+- [ ] Documentação de API - Swagger/OpenAPI
+- [ ] Guia do usuário - Manual do usuário
+- [ ] Tutoriais - Tutoriais interativos
+- [ ] FAQ - Perguntas frequentes
+- [ ] Changelog - Histórico de mudanças
+- [ ] Roadmap - Roadmap público
+
+---
+
+## 🎯 PRIORIDADES SUGERIDAS
+
+### Alta Prioridade (MVP+)
+1. ✅ Background animado avançado
+2. ✅ Visualização cards/tabela
+3. ✅ Filtros e busca
+4. ✅ Paginação
+5. ✅ Modal de detalhes
+6. ✅ Validação CPF/CNPJ
+7. ✅ Exportação CSV
+8. ✅ Histórico de interações - Implementado com API de auditoria
+9. ✅ Vincular representantes - Formulário completo no modal
+10. ✅ Exportação PDF - Implementada
+11. ✅ Ações em massa - Ativar, desativar, deletar múltiplos
+12. ✅ Busca avançada - Busca por múltiplos campos simultaneamente
+
+### Média Prioridade
+1. [ ] Dashboard de métricas
+2. [ ] Gráficos e visualizações
+3. [ ] Notas e anotações
+4. [ ] Tags personalizadas
+5. [ ] Integração com email
+6. [ ] Workflows automáticos
+7. [ ] Permissões granulares
+
+### Baixa Prioridade (Futuro)
+1. [ ] IA e Machine Learning
+2. [ ] Integrações avançadas
+3. [ ] PWA completo
+4. [ ] Analytics avançado
+5. [ ] Customização total
+
+---
+
+## 📝 NOTAS DE IMPLEMENTAÇÃO
+
+### Implementações Recentes - Nível INSANO (Sessão Atual)
+
+#### Confetti Celebration ao Salvar
+- ✅ Efeito de confetti animado ao criar novo cliente
+- ✅ 150 partículas coloridas com física realista
+- ✅ Cores dinâmicas baseadas no tema
+- ✅ Animação suave de 5 segundos
+- ✅ Canvas nativo (sem dependências externas)
+
+#### Indicador de Progresso do Formulário
+- ✅ Barra de progresso visual animada
+- ✅ Cálculo automático baseado em campos preenchidos
+- ✅ Atualização em tempo real
+- ✅ Exibição de percentual (0-100%)
+- ✅ Animação suave com Framer Motion
+
+#### Seções Colapsáveis Organizadas
+- ✅ 4 seções principais: Dados Básicos, Contato, Endereço, Observações
+- ✅ Animações de expandir/colapsar
+- ✅ Estado persistente por seção
+- ✅ Ícones visuais (📋 📞 📍 📝)
+- ✅ Chevron animado indicando estado
+
+#### Atalhos de Teclado Profissionais
+- ✅ `Ctrl+S` / `Cmd+S` para salvar
+- ✅ `Esc` para cancelar
+- ✅ Dica visual no cabeçalho do formulário
+- ✅ Suporte multiplataforma (Windows/Mac/Linux)
+
+#### Validação em Tempo Real Aprimorada
+- ✅ Feedback visual imediato (borda vermelha)
+- ✅ Mensagens de erro contextuais
+- ✅ Limpeza automática de erros ao corrigir
+- ✅ Estados visuais por campo
+- ✅ Validação completa antes de submeter
+
+#### Integrações Inteligentes
+- ✅ BrasilAPI para CNPJ (preenchimento automático)
+- ✅ ViaCEP para endereço (busca ao sair do campo)
+- ✅ Loading states durante buscas
+- ✅ Notificações de sucesso/erro
+
+### Implementações Recentes - Recursos Inovadores (Sessão Anterior)
+
+#### Integração BrasilAPI - Busca por CNPJ
+- ✅ Botão "Buscar" ao lado do campo CNPJ
+- ✅ Preenchimento automático de: Razão Social, Nome Fantasia, Endereço, Cidade, Estado, CEP, Telefone
+- ✅ Validação antes de buscar
+- ✅ Feedback visual com loading spinner
+- ✅ Notificações de sucesso/erro
+
+#### Integração ViaCEP - Busca por CEP
+- ✅ Busca automática ao sair do campo CEP (onBlur)
+- ✅ Preenchimento automático de: Endereço, Cidade, Estado
+- ✅ Validação de formato (8 dígitos)
+- ✅ Feedback visual durante busca
+- ✅ Notificações de sucesso/erro
+
+#### Validação em Tempo Real Aprimorada
+- ✅ Validação completa de todos os campos
+- ✅ Mensagens de erro contextuais por campo
+- ✅ Estados visuais (borda vermelha em campos com erro)
+- ✅ Limpeza automática de erros ao corrigir
+- ✅ Validação de CPF/CNPJ com algoritmo completo
+- ✅ Validação de email com regex
+- ✅ Validação de CEP e Estado
+
+#### UX Melhorada
+- ✅ Feedback visual imediato
+- ✅ Loading states durante buscas
+- ✅ Mensagens de erro específicas
+- ✅ Preenchimento inteligente de dados
+- ✅ Redução de erros de digitação
+
+### Implementações Recentes (Sessão Anterior)
+
+#### Histórico de Interações Completo
+- ✅ Criada API `/api/clientes/[id]/audit` para buscar histórico de auditoria
+- ✅ Modal de detalhes mostra timeline completa de todas as ações
+- ✅ Exibe campos alterados, valores anteriores e novos
+- ✅ Mostra email do usuário que realizou a ação quando disponível
+
+#### Vincular Representantes
+- ✅ Formulário completo no modal de detalhes
+- ✅ Validação de percentual de comissão (0-100%)
+- ✅ Máscaras de input para CPF, telefone e CEP
+- ✅ Integração com API de representantes
+- ✅ Lista de representantes vinculados com informações completas
+
+#### Busca Avançada
+- ✅ Painel de busca avançada com múltiplos campos
+- ✅ Busca simultânea por: Nome, Documento, Email, Cidade, Estado, Endereço
+- ✅ Alternância entre busca simples e avançada
+- ✅ Botão para limpar filtros rapidamente
+
+#### Melhorias Gerais
+- ✅ Exportação PDF funcional
+- ✅ Ações em massa (ativar, desativar, deletar) implementadas
+- ✅ Seleção múltipla com checkbox em cards e tabela
+
+---
+
+## 📝 NOTAS
+
+- Este checklist é um guia completo de melhorias
+- Priorize baseado nas necessidades do negócio
+- Implemente incrementalmente
+- Sempre teste antes de deploy
+- Documente as mudanças
+
+---
+
+**Última atualização:** 2024-12-19

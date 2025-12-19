@@ -1,9 +1,13 @@
 import bcrypt from "bcryptjs";
 import type { FastifyInstance } from "fastify";
-import jwt from "jsonwebtoken";
+import { randomBytes } from "node:crypto";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
-import { env } from "../../../core/config/env";
+import { signToken } from "../../../core/auth/jwt-rs256.service";
+import { getPrisma } from "../../../infra/database/prisma.service";
+
+const prisma = getPrisma();
 import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
 import type { OrganizationAuditLogRepository } from "../../organizations/repositories/organization-audit-log.repository";
 import type { UserRepository } from "../../users/repositories/user.repository";
@@ -172,20 +176,38 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
         app.log.error({ error: auditError }, "Erro ao registrar auditoria de sucesso (ignorado)");
       }
 
-      const token = jwt.sign(
+      // Usar RS256 (com fallback HS256 se chaves não estiverem configuradas)
+      const accessToken = signToken(
         {
           sub: user.userId,
           email: user.email,
           defaultOrgId,
         },
-        env.JWT_SECRET,
-        { expiresIn: "7d" },
+        "15m", // Access token expira em 15 minutos
       );
 
-      app.log.info({ userId: user.userId }, "Login bem-sucedido, retornando token");
+      // Gerar refresh token
+      const refreshToken = `mrn_refresh_${randomBytes(32).toString("base64url")}`;
+      const refreshTokenHash = createHash("sha256").update(refreshToken).digest("hex");
+
+      // Calcular expiração do refresh token (30 dias)
+      const refreshTokenExpiresAt = new Date();
+      refreshTokenExpiresAt.setDate(refreshTokenExpiresAt.getDate() + 30);
+
+      // Salvar refresh token no banco
+      await prisma.refreshToken.create({
+        data: {
+          userId: user.userId,
+          token: refreshTokenHash,
+          expiresAt: refreshTokenExpiresAt,
+        },
+      });
+
+      app.log.info({ userId: user.userId }, "Login bem-sucedido, retornando tokens");
 
       return reply.send({
-        token,
+        token: accessToken,
+        refreshToken, // Retornar apenas uma vez - cliente deve armazenar
         user: {
           userId: user.userId,
           email: user.email,

@@ -14,7 +14,7 @@ type ConnectionStatusIndicatorProps = {
 export function ConnectionStatusIndicator({
   position = "fixed",
   className,
-}: ConnectionStatusIndicatorProps = {}) {
+}: ConnectionStatusIndicatorProps) {
   const [mounted, setMounted] = useState(false);
 
   // Sempre chamar o hook (regra dos hooks do React)
@@ -112,3 +112,6 @@ export function ConnectionStatusIndicator({
     </AnimatePresence>
   );
 }
+
+// Exportação explícita para garantir compatibilidade com Next.js/Turbopack
+export { ConnectionStatusIndicator };

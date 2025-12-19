@@ -19,6 +19,12 @@ import {
   User,
   Users,
   X,
+  Truck,
+  ShoppingCart,
+  FileText,
+  ClipboardList,
+  FileCheck,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -184,6 +190,12 @@ const DEPARTMENTS: Department[] = [
         description: "Divisões e setores funcionais.",
       },
       { id: "cargos", name: "Cargos", path: "/admin/positions", description: "Cargos e funções." },
+      {
+        id: "fornecedores",
+        name: "Fornecedores",
+        path: "/fornecedores/list",
+        description: "Gestão de fornecedores e parceiros comerciais.",
+      },
       {
         id: "perfis",
         name: "Perfis de Acesso",

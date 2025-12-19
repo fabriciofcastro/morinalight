@@ -4,6 +4,7 @@ import { cn } from "@morina/ui";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AuthGlassCard } from "@/components/auth/AuthGlassCard";
 import { authEnterLeft, authEnterScale } from "@/components/auth/auth-motion";
 import { LoginForm } from "@/components/auth/LoginForm";
@@ -14,6 +15,7 @@ import { FloatingOrbs } from "@/components/login/floating-orbs";
 import { GlowingGrid } from "@/components/login/glowing-grid";
 import { HexagonGrid } from "@/components/login/hexagon-grid";
 import { LightBeams } from "@/components/login/light-beams";
+import { CheckCircle2 } from "lucide-react";
 
 const NOTICE_TIMEOUT_MS = 12_000;
 
@@ -26,14 +28,29 @@ type LoginNotice = {
   code?: string;
 };
 
-export default function LoginPage() {
+function LoginPageContent() {
+  const searchParams = useSearchParams();
   const [notice, setNotice] = useState<LoginNotice | null>(null);
   const [noticeVisible, setNoticeVisible] = useState(false);
   const [noticeExpanded, setNoticeExpanded] = useState(false);
   const [noticePaused, _setNoticePaused] = useState(false);
   const [noticeRemainingMs, setNoticeRemainingMs] = useState(NOTICE_TIMEOUT_MS);
+  const [logoutSuccess, setLogoutSuccess] = useState(false);
   const intervalRef = useRef<number | null>(null);
   const noticePausedRef = useRef(false);
+
+  // Verificar se há logout=success na URL
+  useEffect(() => {
+    const logout = searchParams.get("logout");
+    if (logout === "success") {
+      setLogoutSuccess(true);
+      // Remover parâmetro da URL após 5 segundos
+      setTimeout(() => {
+        setLogoutSuccess(false);
+        window.history.replaceState({}, "", "/login");
+      }, 5000);
+    }
+  }, [searchParams]);
 
   const setNoticePaused = (next: boolean) => {
     noticePausedRef.current = next;
@@ -452,6 +469,38 @@ export default function LoginPage() {
         ) : null}
       </AnimatePresence>
 
+      {/* Mensagem de sucesso de logout */}
+      <AnimatePresence>
+        {logoutSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-full mx-4"
+          >
+            <div className="bg-emerald-500/10 border border-emerald-500/30 backdrop-blur-xl rounded-lg p-4 shadow-lg">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-white">Logout realizado com sucesso</p>
+                  <p className="text-xs text-white/70 mt-0.5">Sua sessão foi encerrada com segurança</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLogoutSuccess(false)}
+                  className="text-white/60 hover:text-white transition-colors"
+                  aria-label="Fechar mensagem"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Main Content Container */}
       <div className="relative z-10 w-full max-w-[1100px] grid lg:grid-cols-2 gap-8 lg:gap-12 p-4 sm:p-6 items-center lg:items-start pb-16 lg:pb-10">
         {/* Left Side: Tactical Command Interface */}
@@ -623,5 +672,13 @@ export default function LoginPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

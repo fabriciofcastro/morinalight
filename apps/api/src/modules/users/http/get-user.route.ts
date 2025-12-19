@@ -42,3 +42,5 @@ export async function registerGetUserRoute(app: FastifyInstance, deps: Dependenc
   });
 }
 
+
+

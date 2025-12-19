@@ -17,10 +17,15 @@ import {
   Users,
   ClipboardList,
   FileCheck,
+  List,
+  Plus,
+  Network,
+  Briefcase,
+  GitBranch,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useHasPermission } from "@/hooks/use-permissions";
 
 type NavItem = {
@@ -83,9 +88,23 @@ const navItems: NavItem[] = [
   },
   {
     label: "Fornecedores",
-    href: "/suppliers",
+    href: "/fornecedores/list",
     icon: Building2,
     permission: "suppliers:view",
+    children: [
+      {
+        label: "Lista de Fornecedores",
+        href: "/fornecedores/list",
+        icon: List,
+        permission: "suppliers:view",
+      },
+      {
+        label: "Novo Fornecedor",
+        href: "/fornecedores/new",
+        icon: Plus,
+        permission: "suppliers:create",
+      },
+    ],
   },
   {
     label: "Vendas",
@@ -126,8 +145,34 @@ const navItems: NavItem[] = [
       {
         label: "Estrutura Organizacional",
         href: "/settings/organizational-structure",
-        icon: Building2,
+        icon: Network,
         permission: "settings:organizational-structure:view",
+        children: [
+          {
+            label: "Departamentos",
+            href: "/admin/departments",
+            icon: Building2,
+            permission: "settings:organizational-structure:view",
+          },
+          {
+            label: "Setores",
+            href: "/admin/sectors",
+            icon: Briefcase,
+            permission: "settings:organizational-structure:view",
+          },
+          {
+            label: "Cargos",
+            href: "/admin/positions",
+            icon: UserCog,
+            permission: "settings:organizational-structure:view",
+          },
+          {
+            label: "Filiais",
+            href: "/admin/branches",
+            icon: GitBranch,
+            permission: "settings:organizational-structure:view",
+          },
+        ],
       },
       {
         label: "Dados da Empresa",
@@ -143,6 +188,41 @@ export function AppSidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
+  // Expandir automaticamente itens do menu quando o usuário está em uma página filha
+  useEffect(() => {
+    const newExpanded = new Set<string>();
+    
+    const checkItem = (item: NavItem) => {
+      if (item.children && item.children.length > 0) {
+        // Verificar se algum filho está ativo (incluindo filhos aninhados)
+        const hasActiveChild = item.children.some((child) => {
+          const isChildActive = pathname === child.href || pathname.startsWith(`${child.href}/`);
+          // Verificar também filhos aninhados
+          if (child.children && child.children.length > 0) {
+            const hasNestedActive = child.children.some(
+              (nested) => pathname === nested.href || pathname.startsWith(`${nested.href}/`)
+            );
+            if (hasNestedActive) {
+              newExpanded.add(child.href);
+              return true;
+            }
+          }
+          return isChildActive;
+        });
+        
+        // Verificar se o próprio item está ativo
+        const isItemActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+        
+        if (hasActiveChild || isItemActive) {
+          newExpanded.add(item.href);
+        }
+      }
+    };
+    
+    navItems.forEach(checkItem);
+    setExpandedItems(newExpanded);
+  }, [pathname]);
+
   const toggleExpand = (href: string) => {
     const newExpanded = new Set(expandedItems);
     if (newExpanded.has(href)) {
@@ -152,6 +232,7 @@ export function AppSidebar() {
     }
     setExpandedItems(newExpanded);
   };
+
 
   return (
     <aside
@@ -260,7 +341,13 @@ function NavItemComponent({
                 className="ml-8 mt-1 space-y-1 overflow-hidden border-l border-[color-mix(in_oklab,var(--border)_90%,transparent)] pl-3"
               >
                 {item.children?.map((child) => (
-                  <ChildNavItem key={child.href} item={child} pathname={pathname} />
+                  <ChildNavItem 
+                    key={child.href} 
+                    item={child} 
+                    pathname={pathname}
+                    expandedItems={expandedItems}
+                    onToggleExpand={onToggleExpand}
+                  />
                 ))}
               </motion.ul>
             )}
@@ -271,9 +358,21 @@ function NavItemComponent({
   );
 }
 
-function ChildNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
+function ChildNavItem({ 
+  item, 
+  pathname, 
+  expandedItems, 
+  onToggleExpand 
+}: { 
+  item: NavItem; 
+  pathname: string;
+  expandedItems?: Set<string>;
+  onToggleExpand?: (href: string) => void;
+}) {
   const hasPermission = useHasPermission(item.permission || "");
   const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+  const hasChildren = item.children && item.children.length > 0;
+  const isExpanded = expandedItems?.has(item.href) ?? false;
 
   if (!hasPermission) {
     return null;
@@ -281,18 +380,53 @@ function ChildNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
 
   return (
     <li>
-      <Link
-        href={item.href}
-        className={cn(
-          "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-all",
-          isActive
-            ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
-            : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+      <div>
+        <Link
+          href={item.href}
+          onClick={(e) => {
+            if (hasChildren && onToggleExpand) {
+              e.preventDefault();
+              onToggleExpand(item.href);
+            }
+          }}
+          className={cn(
+            "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-all",
+            isActive
+              ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
+              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+          )}
+        >
+          <item.icon className="h-4 w-4 shrink-0" />
+          <span className="flex-1 truncate">{item.label}</span>
+          {hasChildren && onToggleExpand && (
+            <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
+              <ChevronRight className="h-3 w-3" />
+            </motion.div>
+          )}
+        </Link>
+
+        {hasChildren && onToggleExpand && (
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.ul
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-6 mt-1 space-y-1 overflow-hidden border-l border-[color-mix(in_oklab,var(--border)_90%,transparent)] pl-3"
+              >
+                {item.children?.map((nested) => (
+                  <ChildNavItem 
+                    key={nested.href} 
+                    item={nested} 
+                    pathname={pathname}
+                  />
+                ))}
+              </motion.ul>
+            )}
+          </AnimatePresence>
         )}
-      >
-        <item.icon className="h-4 w-4 shrink-0" />
-        <span className="truncate">{item.label}</span>
-      </Link>
+      </div>
     </li>
   );
 }

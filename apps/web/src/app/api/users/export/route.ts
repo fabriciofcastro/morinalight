@@ -22,7 +22,21 @@ export async function POST(request: Request) {
     return NextResponse.json(error, { status: response.status });
   }
 
+  // Se for CSV ou JSON, retornar o conteúdo diretamente
+  const contentType = response.headers.get("content-type");
+  if (contentType?.includes("text/csv") || contentType?.includes("application/json")) {
+    const content = await response.text();
+    const contentDisposition = response.headers.get("content-disposition");
+    return new NextResponse(content, {
+      headers: {
+        "Content-Type": contentType,
+        "Content-Disposition": contentDisposition || 'attachment; filename="usuarios.csv"',
+      },
+    });
+  }
+
   const data = await response.json();
   return NextResponse.json(data);
 }
+
 

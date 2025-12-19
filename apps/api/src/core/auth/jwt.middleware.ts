@@ -1,14 +1,8 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import jwt from "jsonwebtoken";
-import { env } from "../config/env";
+import { verifyToken } from "./jwt-rs256.service";
+import type { JwtPayload } from "./jwt-rs256.service";
 
-export type JwtPayload = {
-  sub: string; // userId
-  email: string;
-  defaultOrgId: string | null;
-  iat?: number;
-  exp?: number;
-};
+export type { JwtPayload };
 
 export type AuthContext = {
   userId: string;
@@ -44,15 +38,10 @@ function extractToken(request: FastifyRequest): string | null {
 }
 
 /**
- * Valida e decodifica o token JWT
+ * Valida e decodifica o token JWT (usando RS256 com fallback HS256)
  */
 function validateToken(token: string): JwtPayload | null {
-  try {
-    const payload = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
-    return payload;
-  } catch {
-    return null;
-  }
+  return verifyToken(token);
 }
 
 /**
@@ -86,6 +75,16 @@ export function createJwtMiddleware(options: JwtMiddlewareOptions) {
       const payload = validateToken(token);
 
       if (payload) {
+        // Verificar se token está na blacklist (se tiver jti)
+        if (payload.jti) {
+          const { isTokenBlacklisted } = await import("./token-blacklist.service");
+          const isBlacklisted = await isTokenBlacklisted(payload.jti);
+          if (isBlacklisted) {
+            // Token revogado, não adicionar contexto
+            return;
+          }
+        }
+
         // Adicionar contexto de autenticação à requisição
         request.auth = {
           userId: payload.sub,

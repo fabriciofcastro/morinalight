@@ -40,3 +40,14 @@ export async function registerGetProfileStatsRoute(app: FastifyInstance, deps: G
   });
 }
 
+
+
+
+
+
+
+
+
+
+
+

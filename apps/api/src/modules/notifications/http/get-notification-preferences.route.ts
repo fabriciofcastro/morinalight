@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { getPrisma } from "../../../../infra/database/prisma.service";
+import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 
 const querySchema = z.object({
@@ -9,9 +9,7 @@ const querySchema = z.object({
 
 const prisma = getPrisma();
 
-export async function registerGetNotificationPreferencesRoute(
-  app: FastifyInstance,
-) {
+export async function registerGetNotificationPreferencesRoute(app: FastifyInstance) {
   app.get("/notifications/preferences", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -44,4 +42,14 @@ export async function registerGetNotificationPreferencesRoute(
     return reply.send({ preferences });
   });
 }
+
+
+
+
+
+
+
+
+
+
 

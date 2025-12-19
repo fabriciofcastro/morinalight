@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { getPrisma } from "../../../../infra/database/prisma.service";
+import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 
 const updatePreferencesSchema = z.object({
@@ -85,3 +85,14 @@ export async function registerUpdateNotificationPreferencesRoute(app: FastifyIns
     return reply.send({ preferences: results });
   });
 }
+
+
+
+
+
+
+
+
+
+
+

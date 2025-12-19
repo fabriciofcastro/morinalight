@@ -840,10 +840,34 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                       <p className="text-sm text-white">RG Frente</p>
                       <p className="text-xs text-white/50">Nenhum arquivo enviado</p>
                     </div>
-                    <Button type="button" variant="outline" size="sm">
-                      <Upload className="mr-2 h-4 w-4" />
-                      Enviar
-                    </Button>
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            void handleDocumentUpload("RG Frente", file);
+                            e.target.value = "";
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingDocuments["RG Frente"]}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const input = e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement;
+                          input?.click();
+                        }}
+                      >
+                        <Upload className="mr-2 h-4 w-4" />
+                        {uploadingDocuments["RG Frente"] ? "Enviando..." : "Enviar"}
+                      </Button>
+                    </label>
                   </div>
                   <div className="flex items-center gap-2 border border-white/10 bg-white/5 p-3">
                     <FileText className="h-5 w-5 text-white/40" />
@@ -851,10 +875,34 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                       <p className="text-sm text-white">RG Verso</p>
                       <p className="text-xs text-white/50">Nenhum arquivo enviado</p>
                     </div>
-                    <Button type="button" variant="outline" size="sm">
-                      <Upload className="mr-2 h-4 w-4" />
-                      Enviar
-                    </Button>
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            void handleDocumentUpload("RG Verso", file);
+                            e.target.value = "";
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={uploadingDocuments["RG Verso"]}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          const input = e.currentTarget.parentElement?.querySelector('input[type="file"]') as HTMLInputElement;
+                          input?.click();
+                        }}
+                      >
+                        <Upload className="mr-2 h-4 w-4" />
+                        {uploadingDocuments["RG Verso"] ? "Enviando..." : "Enviar"}
+                      </Button>
+                    </label>
                   </div>
                 </div>
               </div>

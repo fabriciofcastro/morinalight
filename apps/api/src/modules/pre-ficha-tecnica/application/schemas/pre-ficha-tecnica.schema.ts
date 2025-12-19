@@ -169,3 +169,14 @@ export const paginacaoSchema = z.object({
   tamanhoPagina: z.number().int().positive().max(100).default(20),
 });
 
+
+
+
+
+
+
+
+
+
+
+

@@ -4,12 +4,22 @@ export const clienteBaseSchema = z.object({
   orgId: z.string().min(1, "orgId obrigatório"),
   nome: z.string().min(2).max(255),
   razaoSocial: z.string().max(255).optional().nullable(),
+  nomeFantasia: z.string().max(255).optional().nullable(), // Nome Fantasia separado (especialmente para PJ)
   tipo: z.enum(["fisica", "juridica"]).default("fisica"),
   documento: z.string().min(11).max(18), // CPF ou CNPJ
+  inscricaoEstadual: z.string().max(50).optional().nullable(), // IE para PJ
+  inscricaoMunicipal: z.string().max(50).optional().nullable(), // IM para PJ
   email: z.string().email().optional().nullable(),
   telefone: z.string().max(20).optional().nullable(),
   celular: z.string().max(20).optional().nullable(),
+  website: z.string().max(512).refine(
+    (val) => !val || val.trim() === "" || val.startsWith("http://") || val.startsWith("https://"),
+    { message: "Website deve começar com http:// ou https://" }
+  ).optional().nullable(), // Website do cliente
   endereco: z.string().max(512).optional().nullable(),
+  numero: z.string().max(20).optional().nullable(), // Número do endereço
+  complemento: z.string().max(255).optional().nullable(), // Complemento do endereço
+  bairro: z.string().max(100).optional().nullable(), // Bairro
   cidade: z.string().max(100).optional().nullable(),
   estado: z.string().length(2).optional().nullable(),
   cep: z.string().max(10).optional().nullable(),
@@ -20,12 +30,19 @@ export const criarClienteInputSchema = clienteBaseSchema.pick({
   orgId: true,
   nome: true,
   razaoSocial: true,
+  nomeFantasia: true,
   tipo: true,
   documento: true,
+  inscricaoEstadual: true,
+  inscricaoMunicipal: true,
   email: true,
   telefone: true,
   celular: true,
+  website: true,
   endereco: true,
+  numero: true,
+  complemento: true,
+  bairro: true,
   cidade: true,
   estado: true,
   cep: true,
@@ -50,10 +67,20 @@ export const atualizarClienteInputSchema = z.object({
   clienteId: z.string().uuid(),
   nome: z.string().min(2).max(255).optional(),
   razaoSocial: z.string().max(255).optional().nullable(),
+  nomeFantasia: z.string().max(255).optional().nullable(),
+  inscricaoEstadual: z.string().max(50).optional().nullable(),
+  inscricaoMunicipal: z.string().max(50).optional().nullable(),
   email: z.string().email().optional().nullable(),
   telefone: z.string().max(20).optional().nullable(),
   celular: z.string().max(20).optional().nullable(),
+  website: z.string().max(512).refine(
+    (val) => !val || val.trim() === "" || val.startsWith("http://") || val.startsWith("https://"),
+    { message: "Website deve começar com http:// ou https://" }
+  ).optional().nullable(),
   endereco: z.string().max(512).optional().nullable(),
+  numero: z.string().max(20).optional().nullable(),
+  complemento: z.string().max(255).optional().nullable(),
+  bairro: z.string().max(100).optional().nullable(),
   cidade: z.string().max(100).optional().nullable(),
   estado: z.string().length(2).optional().nullable(),
   cep: z.string().max(10).optional().nullable(),

@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-import { buildAuthHeaders } from "../_lib/auth-headers";
+import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

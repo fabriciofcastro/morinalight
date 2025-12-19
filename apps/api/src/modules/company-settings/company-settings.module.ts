@@ -5,6 +5,7 @@ import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromHeaders } from "../../core/tenant/tenant.utils";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import { registerCompanySettingsRoutes } from "./company-settings.routes";
+import { registerUploadCompanyFileRoute } from "./http/upload-company-file.route";
 import { PrismaCompanySettingsRepository } from "./infra/prisma/prisma-company-settings.repository";
 import { CachedCompanySettingsRepository } from "./repositories/cached-company-settings.repository";
 import type { CompanySettingsRepository } from "./repositories/company-settings.repository";
@@ -32,6 +33,7 @@ export async function registerCompanySettingsModule(
   }
 
   await registerCompanySettingsRoutes(app, repository);
+  await registerUploadCompanyFileRoute(app);
 }
 
 function createDefaultRepository(): CompanySettingsRepository {

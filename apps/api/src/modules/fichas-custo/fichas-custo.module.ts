@@ -20,6 +20,11 @@ import {
   registerListarVersoesFichaCustoRoute,
   registerPagarBoletoFichaCustoRoute,
   registerRemoverBoletoFichaCustoRoute,
+  registerUploadFichaCustoRoute,
+  registerListStatusCustomizadoRoute,
+  registerCreateStatusCustomizadoRoute,
+  registerUpdateStatusCustomizadoRoute,
+  registerDeleteStatusCustomizadoRoute,
 } from "./http";
 import { PrismaFichaCustoRepository } from "./infra/prisma/prisma-ficha-custo.repository";
 import type { DomainEventBus } from "@morina/shared-kernel";
@@ -115,6 +120,15 @@ export async function registerFichasCustoModule(
     await registerListarAuditoriaFichaCustoRoute(app, {
       fichaCustoRepository,
     });
+
+    // Rota de upload
+    await registerUploadFichaCustoRoute(app);
+
+    // Rotas de status customizados
+    await registerListStatusCustomizadoRoute(app);
+    await registerCreateStatusCustomizadoRoute(app);
+    await registerUpdateStatusCustomizadoRoute(app);
+    await registerDeleteStatusCustomizadoRoute(app);
   }
 
   app.log.info("✅ Módulo Fichas de Custo de Aviamentos registrado");

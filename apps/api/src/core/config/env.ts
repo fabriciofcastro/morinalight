@@ -1,21 +1,18 @@
 import { config as loadEnv } from "dotenv";
 import { z } from "zod";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 // Carregar .env da raiz do projeto
 // Tentar múltiplos caminhos para garantir que encontre o .env
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Possíveis caminhos para o .env
 const possiblePaths = [
-  // Caminho relativo do arquivo atual
-  resolve(__dirname, "../../../../../.env"),
   // Caminho do process.cwd() (raiz quando executado)
   resolve(process.cwd(), ".env"),
   // Caminho alternativo
   resolve(process.cwd(), "../.env"),
+  // Caminho relativo (para quando executado de diferentes locais)
+  resolve(process.cwd(), "../../.env"),
 ];
 
 const _envFile = process.env.NODE_ENV === "test" ? ".env.test" : possiblePaths[0];

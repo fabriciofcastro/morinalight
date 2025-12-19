@@ -6,12 +6,19 @@ export type ClienteProps = {
   orgId: string;
   nome: string;
   razaoSocial?: string | null;
+  nomeFantasia?: string | null; // Nome Fantasia separado (especialmente para PJ)
   tipo: "fisica" | "juridica";
   documento: string; // CPF ou CNPJ
+  inscricaoEstadual?: string | null; // IE para PJ
+  inscricaoMunicipal?: string | null; // IM para PJ
   email?: string | null;
   telefone?: string | null;
   celular?: string | null;
+  website?: string | null; // Website do cliente
   endereco?: string | null;
+  numero?: string | null; // Número do endereço
+  complemento?: string | null; // Complemento do endereço
+  bairro?: string | null; // Bairro
   cidade?: string | null;
   estado?: string | null;
   cep?: string | null;
@@ -85,6 +92,18 @@ export class Cliente {
       this.props.razaoSocial = dados.razaoSocial;
     }
 
+    if (dados.nomeFantasia !== undefined) {
+      this.props.nomeFantasia = dados.nomeFantasia;
+    }
+
+    if (dados.inscricaoEstadual !== undefined) {
+      this.props.inscricaoEstadual = dados.inscricaoEstadual;
+    }
+
+    if (dados.inscricaoMunicipal !== undefined) {
+      this.props.inscricaoMunicipal = dados.inscricaoMunicipal;
+    }
+
     if (dados.email !== undefined) {
       this.props.email = dados.email;
     }
@@ -97,8 +116,24 @@ export class Cliente {
       this.props.celular = dados.celular;
     }
 
+    if (dados.website !== undefined) {
+      this.props.website = dados.website;
+    }
+
     if (dados.endereco !== undefined) {
       this.props.endereco = dados.endereco;
+    }
+
+    if (dados.numero !== undefined) {
+      this.props.numero = dados.numero;
+    }
+
+    if (dados.complemento !== undefined) {
+      this.props.complemento = dados.complemento;
+    }
+
+    if (dados.bairro !== undefined) {
+      this.props.bairro = dados.bairro;
     }
 
     if (dados.cidade !== undefined) {
@@ -138,6 +173,21 @@ export class Cliente {
     this.props.updatedAt = new Date();
   }
 
+  atualizarNomeFantasia(nomeFantasia: string | null) {
+    this.props.nomeFantasia = nomeFantasia;
+    this.props.updatedAt = new Date();
+  }
+
+  atualizarInscricaoEstadual(inscricaoEstadual: string | null) {
+    this.props.inscricaoEstadual = inscricaoEstadual;
+    this.props.updatedAt = new Date();
+  }
+
+  atualizarInscricaoMunicipal(inscricaoMunicipal: string | null) {
+    this.props.inscricaoMunicipal = inscricaoMunicipal;
+    this.props.updatedAt = new Date();
+  }
+
   atualizarEmail(email: string | null) {
     this.props.email = email;
     this.props.updatedAt = new Date();
@@ -153,8 +203,28 @@ export class Cliente {
     this.props.updatedAt = new Date();
   }
 
+  atualizarWebsite(website: string | null) {
+    this.props.website = website;
+    this.props.updatedAt = new Date();
+  }
+
   atualizarEndereco(endereco: string | null) {
     this.props.endereco = endereco;
+    this.props.updatedAt = new Date();
+  }
+
+  atualizarNumero(numero: string | null) {
+    this.props.numero = numero;
+    this.props.updatedAt = new Date();
+  }
+
+  atualizarComplemento(complemento: string | null) {
+    this.props.complemento = complemento;
+    this.props.updatedAt = new Date();
+  }
+
+  atualizarBairro(bairro: string | null) {
+    this.props.bairro = bairro;
     this.props.updatedAt = new Date();
   }
 

@@ -25,6 +25,15 @@ export class AtualizarClienteUseCase {
     if (input.razaoSocial !== undefined) {
       cliente.atualizarRazaoSocial(input.razaoSocial);
     }
+    if (input.nomeFantasia !== undefined) {
+      cliente.atualizarNomeFantasia(input.nomeFantasia);
+    }
+    if (input.inscricaoEstadual !== undefined) {
+      cliente.atualizarInscricaoEstadual(input.inscricaoEstadual);
+    }
+    if (input.inscricaoMunicipal !== undefined) {
+      cliente.atualizarInscricaoMunicipal(input.inscricaoMunicipal);
+    }
     if (input.email !== undefined) {
       cliente.atualizarEmail(input.email);
     }
@@ -34,8 +43,20 @@ export class AtualizarClienteUseCase {
     if (input.celular !== undefined) {
       cliente.atualizarCelular(input.celular);
     }
+    if (input.website !== undefined) {
+      cliente.atualizarWebsite(input.website);
+    }
     if (input.endereco !== undefined) {
       cliente.atualizarEndereco(input.endereco);
+    }
+    if (input.numero !== undefined) {
+      cliente.atualizarNumero(input.numero);
+    }
+    if (input.complemento !== undefined) {
+      cliente.atualizarComplemento(input.complemento);
+    }
+    if (input.bairro !== undefined) {
+      cliente.atualizarBairro(input.bairro);
     }
     if (input.cidade !== undefined) {
       cliente.atualizarCidade(input.cidade);
@@ -63,12 +84,19 @@ export class AtualizarClienteUseCase {
       orgId: cliente.dados.orgId,
       nome: cliente.dados.nome,
       razaoSocial: cliente.dados.razaoSocial ?? null,
+      nomeFantasia: cliente.dados.nomeFantasia ?? null,
       tipo: cliente.dados.tipo,
       documento: cliente.dados.documento,
+      inscricaoEstadual: cliente.dados.inscricaoEstadual ?? null,
+      inscricaoMunicipal: cliente.dados.inscricaoMunicipal ?? null,
       email: cliente.dados.email ?? null,
       telefone: cliente.dados.telefone ?? null,
       celular: cliente.dados.celular ?? null,
+      website: cliente.dados.website ?? null,
       endereco: cliente.dados.endereco ?? null,
+      numero: cliente.dados.numero ?? null,
+      complemento: cliente.dados.complemento ?? null,
+      bairro: cliente.dados.bairro ?? null,
       cidade: cliente.dados.cidade ?? null,
       estado: cliente.dados.estado ?? null,
       cep: cliente.dados.cep ?? null,

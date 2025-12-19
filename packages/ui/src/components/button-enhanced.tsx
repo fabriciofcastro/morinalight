@@ -58,7 +58,7 @@ const buttonEnhancedVariants = cva(
 
 export interface ButtonEnhancedProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-  VariantProps<typeof buttonEnhancedVariants> {
+    VariantProps<typeof buttonEnhancedVariants> {
   isLoading?: boolean;
 }
 
@@ -77,6 +77,8 @@ export const ButtonEnhanced = forwardRef<HTMLButtonElement, ButtonEnhancedProps>
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
+            role="img"
+            aria-label="Carregando"
           >
             <circle
               className="opacity-25"

@@ -66,3 +66,14 @@ export async function registerExportarPdfPreFichaTecnicaRoute(
   );
 }
 
+
+
+
+
+
+
+
+
+
+
+

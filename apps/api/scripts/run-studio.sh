@@ -29,3 +29,14 @@ echo ""
 pnpm prisma studio --schema prisma/schema.prisma
 
 
+
+
+
+
+
+
+
+
+
+
+

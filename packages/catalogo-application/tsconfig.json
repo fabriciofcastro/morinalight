@@ -2,13 +2,12 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": ".",
     "module": "CommonJS",
     "moduleResolution": "Node",
     "noEmit": false,
     "declaration": true,
-    "composite": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "types": ["node"]
   },
   "include": ["src", "tests"],

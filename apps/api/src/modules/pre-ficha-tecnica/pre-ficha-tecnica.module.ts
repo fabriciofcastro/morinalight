@@ -1,14 +1,13 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
-
-import { env } from "../../../core/config/env";
-import { RedisEventBus } from "../../../infra/events/redis-event-bus";
-import { registerTenantHook } from "../../../core/tenant/tenant.middleware";
-import { extractOrgIdFromParams } from "../../../core/tenant/tenant.utils";
+import { env } from "../../core/config/env";
+import { registerTenantHook } from "../../core/tenant/tenant.middleware";
+import { extractOrgIdFromParams } from "../../core/tenant/tenant.utils";
+import { RedisEventBus } from "../../infra/events/redis-event-bus";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import type { PreFichaTecnicaRepository } from "./domain/repositories/pre-ficha-tecnica.repository";
 import { registerPreFichaTecnicaRoutes } from "./http";
 import { PrismaPreFichaTecnicaRepository } from "./infra/prisma/prisma-pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 export type PreFichaTecnicaModuleOptions = {
   preFichaTecnicaRepository?: PreFichaTecnicaRepository;
@@ -54,4 +53,14 @@ export async function registerPreFichaTecnicaModule(
     eventBus,
   };
 }
+
+
+
+
+
+
+
+
+
+
 

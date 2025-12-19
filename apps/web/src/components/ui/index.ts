@@ -1,4 +1,8 @@
-export { Tooltip } from "./tooltip";
-export { FormField } from "./form-field";
-export { KPICard } from "./kpi-card";
-export { StatusBadge } from "./status-badge";
+/**
+ * Exportações centralizadas de componentes UI
+ */
+
+export { EmptyState } from "./EmptyState";
+export { LoadingState } from "./LoadingState";
+export { ErrorState } from "./ErrorState";
+export { HelpText, HelpTextWithTooltip } from "./HelpText";
