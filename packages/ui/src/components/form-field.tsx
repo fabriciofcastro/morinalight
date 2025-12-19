@@ -59,7 +59,12 @@ export function FormField({
       )}
       {children}
       {error && (
-        <p className="text-xs text-[hsl(0,82%,45%)] uppercase tracking-wider" role="alert">
+        <p
+          id={error ? `${id}-error` : undefined}
+          className="text-xs text-[hsl(0,82%,45%)] uppercase tracking-wider"
+          role="alert"
+          aria-live="polite"
+        >
           {error}
         </p>
       )}
@@ -104,16 +109,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
           {...props}
         />
-        {error && (
-          <p id={`${inputId}-error`} className="sr-only">
-            {error}
-          </p>
-        )}
-        {hint && !error && (
-          <p id={`${inputId}-hint`} className="sr-only">
-            {hint}
-          </p>
-        )}
+        {/* Mensagens de erro/hint já são exibidas no FormField com role="alert" e aria-live */}
       </FormField>
     );
   },
@@ -155,16 +151,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           aria-describedby={error ? `${textareaId}-error` : hint ? `${textareaId}-hint` : undefined}
           {...props}
         />
-        {error && (
-          <p id={`${textareaId}-error`} className="sr-only">
-            {error}
-          </p>
-        )}
-        {hint && !error && (
-          <p id={`${textareaId}-hint`} className="sr-only">
-            {hint}
-          </p>
-        )}
+        {/* Mensagens de erro/hint já são exibidas no FormField com role="alert" e aria-live */}
       </FormField>
     );
   },

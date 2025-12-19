@@ -1,0 +1,129 @@
+/**
+ * Estilos de Acessibilidade - WCAG 2.1 AA Compliance
+ */
+
+/* Screen reader only - oculta visualmente mas mantém acessível para screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Torna visível quando focado (para skip links) */
+.sr-only:focus,
+.focus\:not-sr-only:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Focus visible - indicador de foco visível apenas para navegação por teclado */
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Remove outline apenas para mouse clicks, não para teclado */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Melhora visibilidade de links focados */
+a:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Melhora visibilidade de botões focados */
+button:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Melhora visibilidade de inputs focados */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Reduz animações para usuários que preferem movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Alto contraste - ajustes para modo de alto contraste */
+@media (prefers-contrast: high) {
+  /* Borda mais visível em elementos interativos */
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    border: 2px solid;
+  }
+
+  /* Contraste melhorado em cards */
+  .glass-card,
+  .card {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Dark mode acessível - garante contraste adequado */
+@media (prefers-color-scheme: dark) {
+  /* Ajustes podem ser necessários dependendo das cores do tema */
+}
+
+/* Aria live regions - ocultas visualmente */
+[aria-live],
+[role="status"],
+[role="alert"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip link - visível apenas quando focado */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: hsl(var(--primary));
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 4px;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
