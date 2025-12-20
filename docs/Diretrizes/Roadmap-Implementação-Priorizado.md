@@ -168,7 +168,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 1. ~~**Completar PBAC (3 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19) - PolicyService e Approval model implementados
 2. ~~**Dashboard de Gestão de Permissões (2 sprints)**~~ ✅ **PARCIALMENTE CONCLUÍDO** (2025-01-19) - Bulk operations implementadas, interface visual melhorada
 3. ~~**Auditoria de Acessos (2 sprints)**~~ ✅ **PARCIALMENTE CONCLUÍDO** (2025-01-19) - AccessAuditLog model, repository e rotas implementadas, dashboard pendente
-4. Cache de Permissões Otimizado (1 sprint)
+4. ~~**Cache de Permissões Otimizado (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19) - Cache inteligente com TTL, LRU e invalidação automática implementado
 5. Herança de Permissões (2 sprints)
 
 **Ver lista completa em:** [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-2-controle-de-acesso)
