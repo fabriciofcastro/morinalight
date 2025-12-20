@@ -6,6 +6,7 @@ import type { DepartmentPermissionRepository } from "../../domain/repositories/d
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
+import type { AccessAuditLogRepository } from "../../domain/repositories/access-audit-log.repository";
 import { verificarPermissionInputSchema } from "../schemas/user-permission.schema";
 
 type Dependencies = {
@@ -17,6 +18,11 @@ type Dependencies = {
   positionMembershipRepository?: PositionMembershipRepository;
   departmentMembershipRepository?: DepartmentMembershipRepository;
   positionRepository?: PositionRepository;
+  accessAuditLogRepository?: AccessAuditLogRepository;
+  ipAddress?: string;
+  userAgent?: string;
+  resource?: string;
+  endpoint?: string;
 };
 
 export class VerificarPermissionUseCase {
@@ -206,9 +212,32 @@ export class VerificarPermissionUseCase {
 
     // TODO: Verificar permissões customizadas do usuário
 
-    return {
+    const result = {
       hasPermission: hasRolePermission,
     };
+
+    // Registrar auditoria de acesso
+    if (this.deps.accessAuditLogRepository) {
+      try {
+        await this.deps.accessAuditLogRepository.registrar({
+          orgId: input.orgId,
+          userId: input.userId,
+          permission: input.permission,
+          granted: result.hasPermission,
+          reason: result.hasPermission ? null : "Permissão não concedida",
+          ipAddress: this.deps.ipAddress ?? null,
+          userAgent: this.deps.userAgent ?? null,
+          resource: this.deps.resource ?? null,
+          endpoint: this.deps.endpoint ?? null,
+          metadata: null,
+        });
+      } catch (error) {
+        // Não falhar a verificação se o log falhar
+        console.error("Erro ao registrar auditoria de acesso:", error);
+      }
+    }
+
+    return result;
   }
 
   private getPermissionsForRole(role: string): string[] {

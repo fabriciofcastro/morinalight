@@ -206,6 +206,7 @@ model Organization {
   statusCustomizadosFichaCusto StatusCustomizadoFichaCusto[] @relation("StatusCustomizadoFichaCusto")
   workflowPolicies             WorkflowPolicy[]
   approvals                    Approval[]
+  accessAuditLogs              AccessAuditLog[]
 
   // Fichas de Custo
   fichasCustoAuditorias AuditoriaFichaCusto[] @relation("FichaCustoAuditoria")
