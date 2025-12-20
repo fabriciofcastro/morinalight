@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Button, FormField, FormSelect, FormTextarea, Input, Stepper, Wizard, type Step } from "@morina/ui";
+import { Button, FormField, FormSelect, FormTextarea, Input, Wizard, type Step } from "@morina/ui";
 import {
   User,
   Building2,
@@ -166,6 +166,104 @@ export function ClienteFormWizard({
   const [buscandoCNPJ, setBuscandoCNPJ] = useState(false);
   const [buscandoCEP, setBuscandoCEP] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
+
+  // Auto-save de rascunho
+  useEffect(() => {
+    if (isEditing) return; // Não salvar rascunho ao editar
+
+    const autoSaveInterval = setInterval(() => {
+      // Verificar se há dados para salvar
+      const hasData = formData.nome || formData.documento || formData.email;
+      if (!hasData) return;
+
+      setIsSavingDraft(true);
+      try {
+        const draftKey = `cliente-draft-${isEditing ? 'edit' : 'new'}`;
+        localStorage.setItem(draftKey, JSON.stringify({
+          ...formData,
+          savedAt: new Date().toISOString(),
+        }));
+        setLastSaved(new Date());
+        notificationCenter.add({
+          type: "info",
+          title: "Rascunho salvo",
+          message: "Seus dados foram salvos automaticamente",
+          duration: 2000,
+        });
+      } catch (error) {
+        console.error("Erro ao salvar rascunho:", error);
+      } finally {
+        setIsSavingDraft(false);
+      }
+    }, 30000); // Salvar a cada 30 segundos
+
+    return () => clearInterval(autoSaveInterval);
+  }, [formData, isEditing]);
+
+  // Carregar rascunho ao montar
+  useEffect(() => {
+    if (isEditing) return; // Não carregar rascunho ao editar
+
+    try {
+      const draftKey = `cliente-draft-new`;
+      const savedDraft = localStorage.getItem(draftKey);
+      if (savedDraft && !initialData) {
+        const draft = JSON.parse(savedDraft);
+        // Verificar se o rascunho é recente (menos de 24 horas)
+        const savedAt = new Date(draft.savedAt);
+        const now = new Date();
+        const hoursDiff = (now.getTime() - savedAt.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursDiff < 24) {
+          const shouldRestore = confirm(
+            `Encontramos um rascunho salvo em ${savedAt.toLocaleString("pt-BR")}. Deseja restaurar?`
+          );
+          if (shouldRestore) {
+            setFormData({
+              nome: draft.nome || "",
+              razaoSocial: draft.razaoSocial || "",
+              nomeFantasia: draft.nomeFantasia || "",
+              tipo: draft.tipo || "fisica",
+              documento: draft.documento || "",
+              inscricaoEstadual: draft.inscricaoEstadual || "",
+              inscricaoMunicipal: draft.inscricaoMunicipal || "",
+              email: draft.email || "",
+              telefone: draft.telefone || "",
+              celular: draft.celular || "",
+              website: draft.website || "",
+              endereco: draft.endereco || "",
+              numero: draft.numero || "",
+              complemento: draft.complemento || "",
+              bairro: draft.bairro || "",
+              cidade: draft.cidade || "",
+              estado: draft.estado || "",
+              cep: draft.cep || "",
+              observacoes: draft.observacoes || "",
+            });
+            notificationCenter.add({
+              type: "success",
+              title: "Rascunho restaurado",
+              message: "Seus dados foram restaurados com sucesso",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar rascunho:", error);
+    }
+  }, []);
+
+  // Limpar rascunho após salvar com sucesso
+  const clearDraft = useCallback(() => {
+    try {
+      const draftKey = `cliente-draft-${isEditing ? 'edit' : 'new'}`;
+      localStorage.removeItem(draftKey);
+    } catch (error) {
+      console.error("Erro ao limpar rascunho:", error);
+    }
+  }, [isEditing]);
 
   const steps: Step[] = [
     {
@@ -362,8 +460,10 @@ export function ClienteFormWizard({
       return;
     }
 
+    // Limpar rascunho após salvar com sucesso
+    clearDraft();
     await onSubmit(formData);
-  }, [formData, validateStep, onSubmit]);
+  }, [formData, validateStep, onSubmit, clearDraft]);
 
   // Renderizar conteúdo de cada etapa
   const renderStepContent = (stepIndex: number) => {

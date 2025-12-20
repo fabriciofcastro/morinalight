@@ -61,7 +61,7 @@ export function PermissionManagementDashboard() {
         organizationalStructureApi.getDepartments(),
         organizationalStructureApi.getSectors(),
         organizationalStructureApi.getPositions(),
-        usersApi.getUsers(),
+        usersApi.list(),
       ]);
 
       setPermissions(permsData);

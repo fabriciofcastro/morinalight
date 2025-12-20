@@ -54,7 +54,7 @@ export function AccessAuditDashboard() {
 
   const loadUsers = useCallback(async () => {
     try {
-      const data = await usersApi.getUsers();
+      const data = await usersApi.list();
       setUsers(data);
     } catch (error) {
       console.error("Erro ao carregar usuários:", error);

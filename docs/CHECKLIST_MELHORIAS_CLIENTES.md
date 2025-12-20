@@ -59,13 +59,13 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Seções colapsáveis organizadas (Dados Básicos, Contato, Endereço, Observações)
 - [x] Indicador de progresso visual animado
 - [x] Atalhos de teclado (Ctrl+S para salvar, Esc para cancelar)
-- [ ] Wizard/stepper multi-etapas - Dividir em etapas guiadas
+- [x] Wizard/stepper multi-etapas - Dividir em etapas guiadas ✅ IMPLEMENTADO
 - [ ] Salvar rascunho automático - Auto-save a cada X segundos
 - [ ] Histórico de rascunhos - Recuperar versões anteriores
-- [ ] Preview antes de salvar - Visualizar dados antes de confirmar
+- [x] Preview antes de salvar - Visualizar dados antes de confirmar ✅ IMPLEMENTADO
 - [ ] Modo de edição em linha - Editar campos inline sem abrir formulário completo
 - [ ] Comparação antes/depois - Visualizar mudanças antes de salvar
-- [ ] Validação condicional - Campos que aparecem baseados em outros campos
+- [x] Validação condicional - Campos que aparecem baseados em outros campos ✅ IMPLEMENTADO
 - [ ] Formulário adaptativo - Campos mudam baseado em tipo de cliente
 
 #### Experiência do Usuário
@@ -79,7 +79,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Sugestões inteligentes - Sugerir valores baseados em histórico
 - [ ] Preenchimento por voz - Preencher campos via reconhecimento de voz
 - [ ] Modo offline - Funcionar sem internet e sincronizar depois
-- [ ] Feedback de progresso - Mostrar o que falta preencher
+- [x] Feedback de progresso - Mostrar o que falta preencher ✅ IMPLEMENTADO (com validação por etapa)
 - [ ] Salvamento incremental - Salvar seções conforme são preenchidas
 
 ### 1B.2 Dados Básicos e Identificação
