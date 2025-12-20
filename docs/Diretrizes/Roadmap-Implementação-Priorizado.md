@@ -536,7 +536,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 
 - ⚠️ Fundamentos: **85%** (não 100%)
 - ✅ Base Organizacional: **85%** ⬆️ (melhorado de 70%) - **Subdepartamento implementado, CNPJ/CPF completos, Validações de hierarquia**
-- ⚠️ Controle de Acesso: **75%** (não 100%) - **PBAC incompleto**
+- ✅ Controle de Acesso: **80%** ⬆️ (melhorado de 75%) - **PolicyService implementado, Approval model genérico pendente**
 - ✅ Design System: **92%** ⬆️ (melhorado de 60%) - **Estados de Validação, Sistema de Animações, Acessibilidade WCAG AA, Tokens Completos e Storybook configurado**
 - ⚠️ Telas Base: **70%** (não 90%) - **Padronização incompleta**
 - ⏳ Melhorias UX/UI: 0%
