@@ -1487,7 +1487,41 @@ model WorkflowPolicy {
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
+  approvals Approval[]
+
   @@index([orgId, module])
+}
+
+// Approval genérico para workflows PBAC
+model Approval {
+  id            String        @id @default(uuid())
+  orgId         String
+  workflowId    String        // ID do item do workflow (ex: ficha de custo, proposta)
+  workflowType  String        @db.VarChar(100) // Tipo do workflow (ex: FICHA_CUSTO_APPROVE)
+  policyId      String        // ID da WorkflowPolicy aplicada
+  approverId    String        // User ID do aprovador
+  status        ApprovalStatus @default(PENDING)
+  comments      String?       @db.VarChar(1000) // Comentários do aprovador
+  
+  approvedAt    DateTime?
+  rejectedAt    DateTime?
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  organization  Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  workflowPolicy WorkflowPolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, workflowId, workflowType])
+  @@index([orgId, policyId])
+  @@index([approverId])
+  @@index([status, createdAt])
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 // --- Updates to Existing Models ---

@@ -6,6 +6,7 @@
  */
 
 import type { WorkflowPolicy } from "../entities/workflow-policy";
+import type { ApprovalRepository } from "../repositories/approval-repository";
 import type { WorkflowPolicyRepository } from "../repositories/workflow-policy-repository";
 
 /**
@@ -52,7 +53,10 @@ export interface PolicyConfig {
  * Service para avaliar políticas PBAC
  */
 export class PolicyService {
-  constructor(private readonly workflowPolicyRepository: WorkflowPolicyRepository) {}
+  constructor(
+    private readonly workflowPolicyRepository: WorkflowPolicyRepository,
+    private readonly approvalRepository?: ApprovalRepository,
+  ) {}
 
   /**
    * Verifica se uma ação pode ser executada baseada nas políticas configuradas
@@ -109,19 +113,32 @@ export class PolicyService {
         }
       }
 
-      // Se há requisito de aprovações, verificar (será implementado quando Approval model existir)
-      // Por enquanto, retornamos allowed se condições foram atendidas
+      // Se há requisito de aprovações, verificar
       if (config.approvalsRequired && config.approvalsRequired > 0) {
-        // TODO: Implementar verificação de aprovações quando Approval model estiver disponível
-        // const approvals = await this.approvalRepository.findByWorkflowId(context.workflowId);
-        // const approvalsCount = approvals.filter(a => a.status === 'APPROVED').length;
-        // if (approvalsCount < config.approvalsRequired) {
-        //   return {
-        //     allowed: false,
-        //     reason: `Requer ${config.approvalsRequired} aprovações (${approvalsCount} recebidas)`,
-        //     approvalsNeeded: config.approvalsRequired - approvalsCount,
-        //   };
-        // }
+        if (!this.approvalRepository || !context.workflowId) {
+          // Sem approval repository ou workflowId, não podemos verificar aprovações
+          // Mas não bloqueamos a ação se as condições foram atendidas
+          continue;
+        }
+
+        const approvalsCount = await this.approvalRepository.countByWorkflowId(
+          context.workflowId,
+          `${module}:${flowType}`,
+          "APPROVED",
+        );
+
+        if (approvalsCount < config.approvalsRequired) {
+          return {
+            allowed: false,
+            reason: `Requer ${config.approvalsRequired} aprovações (${approvalsCount} recebidas)`,
+            approvalsNeeded: config.approvalsRequired - approvalsCount,
+            applicablePolicies: applicablePolicies.map((p) => ({
+              id: p.workflowPolicyId,
+              module: p.dados.module,
+              flowType: p.dados.flowType,
+            })),
+          };
+        }
       }
     }
 
