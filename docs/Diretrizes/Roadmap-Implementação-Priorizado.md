@@ -617,10 +617,25 @@ Este documento deve ser atualizado:
    - Estilos de acessibilidade (focus visible, reduced motion, high contrast)
    - Melhorias em componentes (aria-labels, roles, aria-live)
 
+8. **Cache de Permissões Otimizado** (Commit: 2ed10f0, 127afa2, 0967e94)
+   - PermissionCacheService interface com métodos completos
+   - InMemoryPermissionCacheService com TTL, LRU e limpeza automática
+   - Integração no VerificarPermissionUseCase e ResolverPermissoesEfetivasUseCase
+   - Invalidação automática quando permissões são alteradas
+   - Rastreamento inteligente de chaves por usuário, org, permissão e entidade
+
+9. **Herança de Permissões** (Commit: 6302db5, 22784a6)
+   - PermissionInheritanceService interface
+   - PermissionInheritanceServiceImpl com resolução hierárquica completa
+   - Herança entre departamentos, setores e cargos
+   - Override automático de permissões (diretas têm precedência)
+   - Integração no ResolverPermissoesEfetivasUseCase
+   - Validação de hierarquia (usa validação existente)
+
 ### 📊 Impacto no Progresso
 
 - **FASE 1:** 70% → **85%** (+15%)
-- **FASE 2:** 75% → **85%** (+10%)
+- **FASE 2:** 75% → **90%** (+15%) - Melhorado com cache e herança
 - **FASE 3:** 60% → **92%** (+32%)
-- **Progresso Geral:** 60% → **71%** (+11%)
+- **Progresso Geral:** 60% → **73%** (+13%)
 
