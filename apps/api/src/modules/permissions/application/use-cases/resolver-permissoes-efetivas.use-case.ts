@@ -254,7 +254,7 @@ export class ResolverPermissoesEfetivasUseCase {
 
     const denied = Array.from(deny).sort();
 
-    return resolverPermissoesEfetivasResultadoSchema.parse({
+    const result = resolverPermissoesEfetivasResultadoSchema.parse({
       userId: membership.userId,
       orgId: membership.organizationId,
       role: membership.role,
@@ -288,6 +288,23 @@ export class ResolverPermissoesEfetivasUseCase {
         })),
       },
     });
+
+    // Armazenar no cache
+    if (this.deps.permissionCacheService) {
+      try {
+        await this.deps.permissionCacheService.setEffectivePermissions(
+          input.orgId,
+          input.userId,
+          result.effective,
+          result.denied,
+        );
+      } catch (error) {
+        // Não falhar a resolução se o cache falhar
+        console.error("Erro ao armazenar permissões efetivas no cache:", error);
+      }
+    }
+
+    return result;
   }
 
   private getPermissionsForRole(role: string): string[] {

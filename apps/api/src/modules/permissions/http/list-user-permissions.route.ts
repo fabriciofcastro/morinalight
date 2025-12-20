@@ -80,6 +80,12 @@ export async function registerListUserPermissionsRoute(app: FastifyInstance, dep
           positionMembershipRepository: deps.positionMembershipRepository,
           departmentMembershipRepository: deps.departmentMembershipRepository,
           positionRepository: deps.positionRepository,
+          permissionCacheService: deps.permissionCacheService,
+          accessAuditLogRepository: deps.accessAuditLogRepository,
+          ipAddress: request.ip,
+          userAgent: request.headers["user-agent"],
+          resource: request.url,
+          endpoint: request.url,
         });
 
         const input = { orgId, userId, permission };
