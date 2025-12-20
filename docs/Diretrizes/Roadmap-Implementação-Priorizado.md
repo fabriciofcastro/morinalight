@@ -500,8 +500,8 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 4. ~~**Validações de Hierarquia** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
 5. ~~**Estados de Validação** (FASE 3)~~ ✅ **CONCLUÍDO** (2025-01-19)
 6. ~~**Sistema de Animações** (FASE 3)~~ ✅ **CONCLUÍDO** (2025-01-19)
-7. **Acessibilidade WCAG AA** (FASE 3) - 2 sprints
-8. **Completar PBAC** (FASE 2) - 3 sprints
+7. ~~**Acessibilidade WCAG AA (FASE 3)**~~ ✅ **CONCLUÍDO** (2025-01-19)
+8. ~~**Completar PBAC (FASE 2)**~~ ⚠️ **PARCIALMENTE CONCLUÍDO** (2025-01-19) - PolicyService implementado, Approval model genérico pendente
 
 ### 🟠 ALTA - Sprint 5-8 (2 meses)
 6. **Monitoramento Completo** (FASE 0) - 2 sprints
