@@ -36,17 +36,14 @@ As stories estão localizadas junto com os componentes em `src/components/*.stor
 - ✅ ButtonEnhanced - Botões com múltiplas variantes
 - ✅ Input - Campos de entrada com estados de validação
 - ✅ FormField - Wrapper para campos de formulário
-
-### Próximos Componentes
-
-- [ ] Textarea
-- [ ] Select
-- [ ] Checkbox
-- [ ] Alert
-- [ ] GlassCard
-- [ ] Tooltip
-- [ ] Popover
-- [ ] DropdownMenu
+- ✅ Textarea - Campos de texto multilinha com validação
+- ✅ FormSelect - Seleção com label, hint e validação
+- ✅ Checkbox - Caixas de seleção acessíveis
+- ✅ Alert - Alertas informativos (success, warning, error, info)
+- ✅ GlassCard - Cards com efeito glassmorphism
+- ✅ Tooltip - Dicas de contexto acessíveis
+- ✅ Popover - Caixas flutuantes interativas
+- ✅ DropdownMenu - Menus dropdown acessíveis
 
 ## 🔧 Addons Configurados
 
