@@ -109,6 +109,26 @@ export async function registerPermissionsModule(
   const permissionCacheService =
     options.permissionCacheService ?? new InMemoryPermissionCacheService();
 
+  const permissionInheritanceService =
+    options.permissionInheritanceService ??
+    (options.departmentRepository &&
+    options.sectorRepository &&
+    options.positionRepository &&
+    departmentPermissionRepository &&
+    sectorPermissionRepository &&
+    positionPermissionRepository &&
+    permissionRepository
+      ? new PermissionInheritanceServiceImpl({
+          departmentRepository: options.departmentRepository,
+          sectorRepository: options.sectorRepository,
+          positionRepository: options.positionRepository,
+          departmentPermissionRepository,
+          sectorPermissionRepository,
+          positionPermissionRepository,
+          permissionRepository,
+        })
+      : undefined);
+
   const templateRepository =
     options.templateRepository ??
     (process.env.DATABASE_URL ? new PrismaPermissionTemplateRepository() : undefined);
