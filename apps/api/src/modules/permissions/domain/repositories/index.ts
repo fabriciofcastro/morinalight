@@ -1,3 +1,4 @@
+export * from "./access-audit-log.repository";
 export * from "./department-permission-repository";
 export * from "./permission-audit-log-repository";
 export * from "./permission-change-request-repository";
