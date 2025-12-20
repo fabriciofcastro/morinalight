@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Hook para gerenciar aria-live regions (notificações para screen readers)
  */
