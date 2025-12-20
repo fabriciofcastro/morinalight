@@ -23,6 +23,7 @@ import { registerCreateWorkflowPolicyRoute } from "./http/create-workflow-policy
 import { registerUpdateWorkflowPolicyRoute } from "./http/update-workflow-policy.route";
 import { registerListWorkflowPoliciesRoute } from "./http/list-workflow-policies.route";
 import { registerDeleteWorkflowPolicyRoute } from "./http/delete-workflow-policy.route";
+import { registerVerifyPolicyRoute } from "./http/verify-policy.route";
 import { registerDepartmentMembersRoutes } from "./http/department-members.routes";
 import { registerSectorMembersRoutes } from "./http/sector-members.routes";
 import { registerPositionMembersRoutes } from "./http/position-members.routes";
@@ -199,6 +200,7 @@ export async function registerOrganizationalStructureModule(
     await registerUpdateWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
     await registerListWorkflowPoliciesRoute(app, { workflowPolicyRepository });
     await registerDeleteWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
+    await registerVerifyPolicyRoute(app, { workflowPolicyRepository });
   }
 
   app.log.info("Módulo Estrutura Organizacional registrado");
