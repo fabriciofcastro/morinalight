@@ -17,7 +17,9 @@ import {
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { buscarCnpj } from "@/lib/integrations/cnpj";
 import { buscarEnderecoPorCep } from "@/lib/integrations/viacep";
-import { Loader2 } from "lucide-react";
+import { Loader2, History } from "lucide-react";
+import { useDraftHistory } from "@/hooks/use-draft-history";
+import { DraftHistoryModal } from "./draft-history-modal";
 
 type ClienteFormData = {
   nome: string;
@@ -166,104 +168,63 @@ export function ClienteFormWizard({
   const [buscandoCNPJ, setBuscandoCNPJ] = useState(false);
   const [buscandoCEP, setBuscandoCEP] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isSavingDraft, setIsSavingDraft] = useState(false);
+  const [showDraftHistory, setShowDraftHistory] = useState(false);
 
-  // Auto-save de rascunho
+  // Histórico de rascunhos
+  const {
+    currentData: draftData,
+    setCurrentData: setDraftData,
+    versions,
+    currentVersionId,
+    isSaving,
+    saveVersion,
+    restoreVersion,
+    deleteVersion,
+    clearHistory,
+  } = useDraftHistory<ClienteFormData>(formData, {
+    storageKey: `cliente-draft-${isEditing ? "edit" : "new"}`,
+    maxVersions: 10,
+    autoSaveInterval: 30000,
+    onVersionChange: (version) => {
+      setFormData(version.data);
+    },
+  });
+
+  // Sincronizar formData com draftData
   useEffect(() => {
-    if (isEditing) return; // Não salvar rascunho ao editar
+    setDraftData(formData);
+  }, [formData, setDraftData]);
 
-    const autoSaveInterval = setInterval(() => {
-      // Verificar se há dados para salvar
-      const hasData = formData.nome || formData.documento || formData.email;
-      if (!hasData) return;
-
-      setIsSavingDraft(true);
-      try {
-        const draftKey = `cliente-draft-${isEditing ? 'edit' : 'new'}`;
-        localStorage.setItem(draftKey, JSON.stringify({
-          ...formData,
-          savedAt: new Date().toISOString(),
-        }));
-        setLastSaved(new Date());
-        notificationCenter.add({
-          type: "info",
-          title: "Rascunho salvo",
-          message: "Seus dados foram salvos automaticamente",
-          duration: 2000,
-        });
-      } catch (error) {
-        console.error("Erro ao salvar rascunho:", error);
-      } finally {
-        setIsSavingDraft(false);
-      }
-    }, 30000); // Salvar a cada 30 segundos
-
-    return () => clearInterval(autoSaveInterval);
-  }, [formData, isEditing]);
-
-  // Carregar rascunho ao montar
+  // Carregar último rascunho ao montar (se não estiver editando)
   useEffect(() => {
-    if (isEditing) return; // Não carregar rascunho ao editar
+    if (isEditing || initialData) return;
 
-    try {
-      const draftKey = `cliente-draft-new`;
-      const savedDraft = localStorage.getItem(draftKey);
-      if (savedDraft && !initialData) {
-        const draft = JSON.parse(savedDraft);
-        // Verificar se o rascunho é recente (menos de 24 horas)
-        const savedAt = new Date(draft.savedAt);
-        const now = new Date();
-        const hoursDiff = (now.getTime() - savedAt.getTime()) / (1000 * 60 * 60);
-        
-        if (hoursDiff < 24) {
-          const shouldRestore = confirm(
-            `Encontramos um rascunho salvo em ${savedAt.toLocaleString("pt-BR")}. Deseja restaurar?`
-          );
-          if (shouldRestore) {
-            setFormData({
-              nome: draft.nome || "",
-              razaoSocial: draft.razaoSocial || "",
-              nomeFantasia: draft.nomeFantasia || "",
-              tipo: draft.tipo || "fisica",
-              documento: draft.documento || "",
-              inscricaoEstadual: draft.inscricaoEstadual || "",
-              inscricaoMunicipal: draft.inscricaoMunicipal || "",
-              email: draft.email || "",
-              telefone: draft.telefone || "",
-              celular: draft.celular || "",
-              website: draft.website || "",
-              endereco: draft.endereco || "",
-              numero: draft.numero || "",
-              complemento: draft.complemento || "",
-              bairro: draft.bairro || "",
-              cidade: draft.cidade || "",
-              estado: draft.estado || "",
-              cep: draft.cep || "",
-              observacoes: draft.observacoes || "",
-            });
-            notificationCenter.add({
-              type: "success",
-              title: "Rascunho restaurado",
-              message: "Seus dados foram restaurados com sucesso",
-            });
-          }
+    if (versions.length > 0) {
+      const latestVersion = versions[0];
+      const savedAt = latestVersion.savedAt;
+      const now = new Date();
+      const hoursDiff = (now.getTime() - savedAt.getTime()) / (1000 * 60 * 60);
+
+      if (hoursDiff < 24) {
+        const shouldRestore = confirm(
+          `Encontramos um rascunho salvo em ${savedAt.toLocaleString("pt-BR")}. Deseja restaurar?`
+        );
+        if (shouldRestore) {
+          restoreVersion(latestVersion.id);
+          notificationCenter.add({
+            type: "success",
+            title: "Rascunho restaurado",
+            message: "Seus dados foram restaurados com sucesso",
+          });
         }
       }
-    } catch (error) {
-      console.error("Erro ao carregar rascunho:", error);
     }
-  }, []);
+  }, []); // Apenas ao montar
 
   // Limpar rascunho após salvar com sucesso
   const clearDraft = useCallback(() => {
-    try {
-      const draftKey = `cliente-draft-${isEditing ? 'edit' : 'new'}`;
-      localStorage.removeItem(draftKey);
-    } catch (error) {
-      console.error("Erro ao limpar rascunho:", error);
-    }
-  }, [isEditing]);
+    clearHistory();
+  }, [clearHistory]);
 
   const steps: Step[] = [
     {
@@ -924,16 +885,52 @@ export function ClienteFormWizard({
   };
 
   return (
-    <Wizard
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onFinish={handleFinish}
-      validateStep={validateStep}
-      className="w-full"
-    >
-      {renderStepContent}
-    </Wizard>
+    <div className="w-full">
+      {/* Indicador de auto-save */}
+      {!isEditing && (isSavingDraft || lastSaved) && (
+        <div className="mb-4 flex items-center justify-end gap-2 text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
+          {isSavingDraft ? (
+            <>
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Salvando rascunho...</span>
+            </>
+          ) : lastSaved ? (
+            <>
+              <CheckCircle2 className="h-3 w-3 text-green-500" />
+              <span>Rascunho salvo em {lastSaved.toLocaleTimeString("pt-BR")}</span>
+            </>
+          ) : null}
+        </div>
+      )}
+      <Wizard
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onFinish={handleFinish}
+        validateStep={validateStep}
+        className="w-full"
+      >
+        {renderStepContent}
+      </Wizard>
+
+      {/* Modal de histórico de rascunhos */}
+      <DraftHistoryModal
+        isOpen={showDraftHistory}
+        onClose={() => setShowDraftHistory(false)}
+        versions={versions}
+        currentVersionId={currentVersionId}
+        onRestore={restoreVersion}
+        onDelete={deleteVersion}
+        onClear={clearHistory}
+        formatLabel={(version) => {
+          const hasName = version.data.nome;
+          const hasDoc = version.data.documento;
+          if (hasName) return `Rascunho: ${version.data.nome}`;
+          if (hasDoc) return `Rascunho: ${version.data.documento}`;
+          return `Rascunho de ${version.savedAt.toLocaleString("pt-BR")}`;
+        }}
+      />
+    </div>
   );
 }
 

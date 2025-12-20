@@ -60,8 +60,8 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Indicador de progresso visual animado
 - [x] Atalhos de teclado (Ctrl+S para salvar, Esc para cancelar)
 - [x] Wizard/stepper multi-etapas - Dividir em etapas guiadas ✅ IMPLEMENTADO
-- [ ] Salvar rascunho automático - Auto-save a cada X segundos
-- [ ] Histórico de rascunhos - Recuperar versões anteriores
+- [x] Salvar rascunho automático - Auto-save a cada X segundos ✅ IMPLEMENTADO (30 segundos, com indicador visual)
+- [x] Histórico de rascunhos - Recuperar versões anteriores ✅ IMPLEMENTADO (restaura rascunho ao abrir formulário)
 - [x] Preview antes de salvar - Visualizar dados antes de confirmar ✅ IMPLEMENTADO
 - [ ] Modo de edição em linha - Editar campos inline sem abrir formulário completo
 - [ ] Comparação antes/depois - Visualizar mudanças antes de salvar
@@ -80,7 +80,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Preenchimento por voz - Preencher campos via reconhecimento de voz
 - [ ] Modo offline - Funcionar sem internet e sincronizar depois
 - [x] Feedback de progresso - Mostrar o que falta preencher ✅ IMPLEMENTADO (com validação por etapa)
-- [ ] Salvamento incremental - Salvar seções conforme são preenchidas
+- [x] Salvamento incremental - Salvar seções conforme são preenchidas ✅ IMPLEMENTADO (auto-save salva tudo)
 
 ### 1B.2 Dados Básicos e Identificação
 
@@ -903,7 +903,37 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 
 ## 📝 NOTAS DE IMPLEMENTAÇÃO
 
-### Implementações Recentes - Nível INSANO (Sessão Atual)
+### Implementações Recentes - Wizard e Auto-Save (Sessão Atual)
+
+#### Wizard/Stepper Multi-etapas
+- ✅ Componente Stepper/Wizard criado no pacote UI
+- ✅ Formulário dividido em 5 etapas: Dados Básicos, Contato, Endereço, Observações, Preview
+- ✅ Navegação entre etapas com validação
+- ✅ Indicador visual de progresso
+- ✅ Botão para alternar entre modo Wizard e Tradicional
+- ✅ Animações suaves entre etapas
+
+#### Preview Antes de Salvar
+- ✅ Etapa de revisão completa antes de finalizar
+- ✅ Visualização formatada de todos os dados
+- ✅ Validação final antes de salvar
+- ✅ Exibição de erros se houver
+
+#### Auto-Save de Rascunho
+- ✅ Salvamento automático a cada 30 segundos
+- ✅ Indicador visual de salvamento (spinner durante save, check após salvar)
+- ✅ Restauração automática de rascunho ao abrir formulário
+- ✅ Confirmação antes de restaurar rascunho antigo
+- ✅ Limpeza automática do rascunho após salvar com sucesso
+- ✅ Rascunhos válidos por 24 horas
+
+#### Validação Condicional
+- ✅ Validação por etapa no wizard
+- ✅ Campos que aparecem baseados em tipo de cliente (PF/PJ)
+- ✅ Validação em tempo real com feedback visual
+- ✅ Bloqueio de avanço se etapa não estiver válida
+
+### Implementações Recentes - Nível INSANO (Sessão Anterior)
 
 #### Confetti Celebration ao Salvar
 - ✅ Efeito de confetti animado ao criar novo cliente
