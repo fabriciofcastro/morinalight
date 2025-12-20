@@ -18,6 +18,7 @@ import type { UserPermissionRepository } from "../domain/repositories/user-permi
 import { registerDepartmentPermissionsRoute } from "./department-permissions.route";
 import { registerListUserPermissionsRoute } from "./list-user-permissions.route";
 import { registerPermissionAuditLogRoute } from "./permission-audit-log.route";
+import { registerAccessAuditLogRoute } from "./access-audit-log.route";
 import { registerPermissionChangeRequestsRoute } from "./permission-change-requests.route";
 import { registerPermissionTemplatesRoute } from "./permission-templates.route";
 import { registerPositionPermissionsRoute } from "./position-permissions.route";
