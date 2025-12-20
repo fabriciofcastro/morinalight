@@ -7,6 +7,7 @@ import type { PermissionRepository } from "../../domain/repositories/permission-
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../../domain/repositories/user-permission-repository";
+import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
 import {
   resolverPermissoesEfetivasInputSchema,
   resolverPermissoesEfetivasResultadoSchema,
@@ -22,6 +23,7 @@ type Dependencies = {
   positionMembershipRepository?: PositionMembershipRepository;
   departmentMembershipRepository?: DepartmentMembershipRepository;
   positionRepository?: PositionRepository;
+  permissionCacheService?: PermissionCacheService;
 };
 
 export class ResolverPermissoesEfetivasUseCase {

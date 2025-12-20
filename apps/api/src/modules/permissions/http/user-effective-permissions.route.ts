@@ -37,17 +37,18 @@ export async function registerUserEffectivePermissionsRoute(
       }
 
       try {
-        const useCase = new ResolverPermissoesEfetivasUseCase({
-          permissionRepository: deps.permissionRepository,
-          organizationRepository: deps.organizationRepository,
-          positionPermissionRepository: deps.positionPermissionRepository,
-          sectorPermissionRepository: deps.sectorPermissionRepository,
-          departmentPermissionRepository: deps.departmentPermissionRepository,
-          userPermissionRepository: deps.userPermissionRepository,
-          positionMembershipRepository: deps.positionMembershipRepository,
-          departmentMembershipRepository: deps.departmentMembershipRepository,
-          positionRepository: deps.positionRepository,
-        });
+      const useCase = new ResolverPermissoesEfetivasUseCase({
+        permissionRepository: deps.permissionRepository,
+        organizationRepository: deps.organizationRepository,
+        positionPermissionRepository: deps.positionPermissionRepository,
+        sectorPermissionRepository: deps.sectorPermissionRepository,
+        departmentPermissionRepository: deps.departmentPermissionRepository,
+        userPermissionRepository: deps.userPermissionRepository,
+        positionMembershipRepository: deps.positionMembershipRepository,
+        departmentMembershipRepository: deps.departmentMembershipRepository,
+        positionRepository: deps.positionRepository,
+        permissionCacheService: deps.permissionCacheService,
+      });
 
         const resultado = await useCase.execute({ orgId, userId });
         return reply.status(200).send(resultado);

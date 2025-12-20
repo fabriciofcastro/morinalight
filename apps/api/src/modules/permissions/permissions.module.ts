@@ -59,6 +59,7 @@ export type PermissionsModuleOptions = {
   departmentPermissionRepository?: DepartmentPermissionRepository;
   auditLogRepository?: PermissionAuditLogRepository;
   accessAuditLogRepository?: AccessAuditLogRepository;
+  permissionCacheService?: PermissionCacheService;
   templateRepository?: PermissionTemplateRepository;
   roleRepository?: RoleRepository;
   eventBus?: DomainEventBus;
@@ -103,6 +104,9 @@ export async function registerPermissionsModule(
   const accessAuditLogRepository =
     options.accessAuditLogRepository ??
     (process.env.DATABASE_URL ? new PrismaAccessAuditLogRepository() : undefined);
+
+  const permissionCacheService =
+    options.permissionCacheService ?? new InMemoryPermissionCacheService();
 
   const templateRepository =
     options.templateRepository ??
