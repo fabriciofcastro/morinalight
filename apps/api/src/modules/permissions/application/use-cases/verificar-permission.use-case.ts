@@ -7,6 +7,7 @@ import type { PermissionRepository } from "../../domain/repositories/permission-
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 import type { AccessAuditLogRepository } from "../../domain/repositories/access-audit-log.repository";
+import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
 import { verificarPermissionInputSchema } from "../schemas/user-permission.schema";
 
 type Dependencies = {
@@ -19,6 +20,7 @@ type Dependencies = {
   departmentMembershipRepository?: DepartmentMembershipRepository;
   positionRepository?: PositionRepository;
   accessAuditLogRepository?: AccessAuditLogRepository;
+  permissionCacheService?: PermissionCacheService;
   ipAddress?: string;
   userAgent?: string;
   resource?: string;
@@ -30,6 +32,21 @@ export class VerificarPermissionUseCase {
 
   async execute(rawInput: unknown): Promise<{ hasPermission: boolean; reason?: string }> {
     const input = verificarPermissionInputSchema.parse(rawInput);
+
+    // Tentar obter do cache
+    if (this.deps.permissionCacheService) {
+      const cached = await this.deps.permissionCacheService.getPermissionCheck(
+        input.orgId,
+        input.userId,
+        input.permission,
+      );
+      if (cached) {
+        return {
+          hasPermission: cached.hasPermission,
+          reason: cached.reason,
+        };
+      }
+    }
 
     // Buscar membership do usuário
     const membership = await this.deps.organizationRepository.encontrarMembership?.(
@@ -215,6 +232,21 @@ export class VerificarPermissionUseCase {
     const result = {
       hasPermission: hasRolePermission,
     };
+
+    // Armazenar no cache
+    if (this.deps.permissionCacheService) {
+      try {
+        await this.deps.permissionCacheService.setPermissionCheck(
+          input.orgId,
+          input.userId,
+          input.permission,
+          result,
+        );
+      } catch (error) {
+        // Não falhar a verificação se o cache falhar
+        console.error("Erro ao armazenar no cache:", error);
+      }
+    }
 
     // Registrar auditoria de acesso
     if (this.deps.accessAuditLogRepository) {

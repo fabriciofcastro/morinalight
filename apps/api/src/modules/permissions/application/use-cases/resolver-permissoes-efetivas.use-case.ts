@@ -30,6 +30,30 @@ export class ResolverPermissoesEfetivasUseCase {
   async execute(rawInput: unknown) {
     const input = resolverPermissoesEfetivasInputSchema.parse(rawInput);
 
+    // Tentar obter do cache
+    if (this.deps.permissionCacheService) {
+      const cached = await this.deps.permissionCacheService.getEffectivePermissions(
+        input.orgId,
+        input.userId,
+      );
+      if (cached) {
+        return resolverPermissoesEfetivasResultadoSchema.parse({
+          userId: cached.userId,
+          orgId: cached.orgId,
+          role: null, // Não cacheamos role por enquanto
+          effective: cached.permissions,
+          denied: cached.denied,
+          breakdown: {
+            role: [],
+            departments: [],
+            sectors: [],
+            positions: [],
+            custom: [],
+          },
+        });
+      }
+    }
+
     const membership = await this.deps.organizationRepository.encontrarMembership?.(
       input.orgId,
       input.userId,
