@@ -21,6 +21,7 @@ import type {
   RoleRepository,
   SectorPermissionRepository,
   UserPermissionRepository,
+  AccessAuditLogRepository,
 } from "./domain/repositories";
 import { registerPermissionsHttpRoutes } from "./http";
 import { registerCreatePermissionRoute } from "./http/create-permission.route";
@@ -57,6 +58,7 @@ export type PermissionsModuleOptions = {
   sectorPermissionRepository?: SectorPermissionRepository;
   departmentPermissionRepository?: DepartmentPermissionRepository;
   auditLogRepository?: PermissionAuditLogRepository;
+  accessAuditLogRepository?: AccessAuditLogRepository;
   templateRepository?: PermissionTemplateRepository;
   roleRepository?: RoleRepository;
   eventBus?: DomainEventBus;
