@@ -60,6 +60,7 @@ export type PermissionsModuleOptions = {
   auditLogRepository?: PermissionAuditLogRepository;
   accessAuditLogRepository?: AccessAuditLogRepository;
   permissionCacheService?: PermissionCacheService;
+  permissionInheritanceService?: PermissionInheritanceService;
   templateRepository?: PermissionTemplateRepository;
   roleRepository?: RoleRepository;
   eventBus?: DomainEventBus;

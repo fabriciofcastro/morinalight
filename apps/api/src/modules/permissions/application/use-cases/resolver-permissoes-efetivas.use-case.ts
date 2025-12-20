@@ -8,6 +8,7 @@ import type { PositionPermissionRepository } from "../../domain/repositories/pos
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../../domain/repositories/user-permission-repository";
 import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
+import type { PermissionInheritanceService } from "../../domain/services/permission-inheritance.service";
 import {
   resolverPermissoesEfetivasInputSchema,
   resolverPermissoesEfetivasResultadoSchema,
@@ -24,6 +25,7 @@ type Dependencies = {
   departmentMembershipRepository?: DepartmentMembershipRepository;
   positionRepository?: PositionRepository;
   permissionCacheService?: PermissionCacheService;
+  permissionInheritanceService?: PermissionInheritanceService;
 };
 
 export class ResolverPermissoesEfetivasUseCase {
@@ -159,6 +161,29 @@ export class ResolverPermissoesEfetivasUseCase {
             sourceEntityId: dp.departmentId,
           });
         }
+
+        // Buscar permissões herdadas dos departamentos pais
+        if (this.deps.permissionInheritanceService) {
+          for (const membership of memberships) {
+            const inherited = await this.deps.permissionInheritanceService.resolveDepartmentInheritedPermissions(
+              input.orgId,
+              membership.departmentId,
+            );
+            for (const perm of inherited) {
+              // Só adicionar se não houver override direto
+              const existingIndex = departmentGrants.findIndex(
+                (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.departmentId,
+              );
+              if (existingIndex === -1) {
+                departmentGrants.push({
+                  permissionKey: perm.permissionKey,
+                  granted: perm.granted,
+                  sourceEntityId: perm.inheritedFrom.entityId,
+                });
+              }
+            }
+          }
+        }
       }
     }
 
@@ -195,6 +220,29 @@ export class ResolverPermissoesEfetivasUseCase {
               sourceEntityId: sp.sectorId,
             });
           }
+
+          // Buscar permissões herdadas dos setores pais e departamentos
+          if (this.deps.permissionInheritanceService) {
+            for (const sectorId of sectorIds) {
+              const inherited = await this.deps.permissionInheritanceService.resolveSectorInheritedPermissions(
+                input.orgId,
+                sectorId,
+              );
+              for (const perm of inherited) {
+                // Só adicionar se não houver override direto
+                const existingIndex = sectorGrants.findIndex(
+                  (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === sectorId,
+                );
+                if (existingIndex === -1) {
+                  sectorGrants.push({
+                    permissionKey: perm.permissionKey,
+                    granted: perm.granted,
+                    sourceEntityId: perm.inheritedFrom.entityId,
+                  });
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -217,6 +265,29 @@ export class ResolverPermissoesEfetivasUseCase {
             granted: pp.granted,
             sourceEntityId: pp.positionId,
           });
+        }
+
+        // Buscar permissões herdadas dos setores pais (via cargo)
+        if (this.deps.permissionInheritanceService) {
+          for (const membership of memberships) {
+            const inherited = await this.deps.permissionInheritanceService.resolvePositionInheritedPermissions(
+              input.orgId,
+              membership.positionId,
+            );
+            for (const perm of inherited) {
+              // Só adicionar se não houver override direto
+              const existingIndex = positionGrants.findIndex(
+                (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.positionId,
+              );
+              if (existingIndex === -1) {
+                positionGrants.push({
+                  permissionKey: perm.permissionKey,
+                  granted: perm.granted,
+                  sourceEntityId: perm.inheritedFrom.entityId,
+                });
+              }
+            }
+          }
         }
       }
     }

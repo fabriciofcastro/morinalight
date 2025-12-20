@@ -9,6 +9,7 @@ import type { PermissionRepository } from "../domain/repositories/permission-rep
 import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../domain/repositories/user-permission-repository";
+import type { PermissionInheritanceService } from "../domain/services/permission-inheritance.service";
 
 type Dependencies = {
   permissionRepository: PermissionRepository;
@@ -20,6 +21,7 @@ type Dependencies = {
   positionMembershipRepository?: PositionMembershipRepository;
   departmentMembershipRepository?: DepartmentMembershipRepository;
   positionRepository?: PositionRepository;
+  permissionInheritanceService?: PermissionInheritanceService;
 };
 
 export async function registerUserEffectivePermissionsRoute(

@@ -72,6 +72,7 @@ export async function registerPermissionsHttpRoutes(
     departmentMembershipRepository: deps.departmentMembershipRepository,
     positionRepository: deps.positionRepository,
     permissionCacheService: deps.permissionCacheService,
+    permissionInheritanceService: deps.permissionInheritanceService,
   });
 
   if (deps.userPermissionRepository) {
