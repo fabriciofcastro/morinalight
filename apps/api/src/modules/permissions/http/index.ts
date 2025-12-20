@@ -153,6 +153,13 @@ export async function registerPermissionsHttpRoutes(
     });
   }
 
+  // Registrar rota de auditoria de acessos
+  if (deps.accessAuditLogRepository) {
+    await registerAccessAuditLogRoute(app, {
+      accessAuditLogRepository: deps.accessAuditLogRepository,
+    });
+  }
+
   // Registrar rotas de templates de permissões
   if (deps.templateRepository) {
     await registerPermissionTemplatesRoute(app, {

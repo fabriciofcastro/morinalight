@@ -98,6 +98,10 @@ export async function registerPermissionsModule(
     options.auditLogRepository ??
     (process.env.DATABASE_URL ? new PrismaPermissionAuditLogRepository() : undefined);
 
+  const accessAuditLogRepository =
+    options.accessAuditLogRepository ??
+    (process.env.DATABASE_URL ? new PrismaAccessAuditLogRepository() : undefined);
+
   const templateRepository =
     options.templateRepository ??
     (process.env.DATABASE_URL ? new PrismaPermissionTemplateRepository() : undefined);
