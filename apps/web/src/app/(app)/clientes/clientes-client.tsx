@@ -43,6 +43,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { ClienteDetailModal } from "./cliente-detail-modal";
+import { ClienteFormWizard } from "@/components/clientes/cliente-form-wizard";
 import { buscarCnpj } from "@/lib/integrations/cnpj";
 import { buscarEnderecoPorCep } from "@/lib/integrations/viacep";
 import { triggerConfetti } from "@/lib/utils/confetti";
@@ -185,6 +186,7 @@ export function ClientesClient() {
   const [buscandoCNPJ, setBuscandoCNPJ] = useState(false);
   const [buscandoCEP, setBuscandoCEP] = useState(false);
   const [formProgress, setFormProgress] = useState(0);
+  const [useWizard, setUseWizard] = useState(false); // Novo: opção para usar wizard
   const [expandedSections, setExpandedSections] = useState({
     dadosBasicos: true,
     contato: true,
@@ -1301,26 +1303,121 @@ export function ClientesClient() {
                 {editingCliente ? "Editar Cliente" : "Novo Cliente"}
               </h2>
               <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-                Preencha os campos abaixo. Use <kbd className="px-1.5 py-0.5 rounded bg-[color-mix(in oklab,var(--muted-soft) 20%,transparent)] text-xs">Ctrl+S</kbd> para salvar ou <kbd className="px-1.5 py-0.5 rounded bg-[color-mix(in oklab,var(--muted-soft) 20%,transparent)] text-xs">Esc</kbd> para cancelar
+                {useWizard
+                  ? "Preencha os dados passo a passo usando o wizard guiado"
+                  : `Preencha os campos abaixo. Use <kbd className="px-1.5 py-0.5 rounded bg-[color-mix(in oklab,var(--muted-soft) 20%,transparent)] text-xs">Ctrl+S</kbd> para salvar ou <kbd className="px-1.5 py-0.5 rounded bg-[color-mix(in oklab,var(--muted-soft) 20%,transparent)] text-xs">Esc</kbd> para cancelar`}
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex flex-col items-end">
-                <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                  Progresso
-                </span>
-                <div className="mt-1 h-2 w-32 overflow-hidden rounded-full bg-[color-mix(in oklab,var(--muted-soft) 20%,transparent)]">
-                  <motion.div
-                    className="h-full bg-[var(--primary)]"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${formProgress}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setUseWizard(!useWizard)}
+                className="gap-2"
+              >
+                {useWizard ? "Modo Tradicional" : "Modo Wizard"}
+              </Button>
+              {!useWizard && (
+                <div className="flex flex-col items-end">
+                  <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                    Progresso
+                  </span>
+                  <div className="mt-1 h-2 w-32 overflow-hidden rounded-full bg-[color-mix(in oklab,var(--muted-soft) 20%,transparent)]">
+                    <motion.div
+                      className="h-full bg-[var(--primary)]"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${formProgress}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                  <span className="text-xs font-medium mt-0.5">{formProgress}%</span>
                 </div>
-                <span className="text-xs font-medium mt-0.5">{formProgress}%</span>
-              </div>
+              )}
             </div>
           </div>
+          {useWizard ? (
+            <ClienteFormWizard
+              initialData={editingCliente ? {
+                nome: editingCliente.nome,
+                razaoSocial: editingCliente.razaoSocial || "",
+                nomeFantasia: (editingCliente as any).nomeFantasia || "",
+                tipo: editingCliente.tipo,
+                documento: editingCliente.documento,
+                inscricaoEstadual: (editingCliente as any).inscricaoEstadual || "",
+                inscricaoMunicipal: (editingCliente as any).inscricaoMunicipal || "",
+                email: editingCliente.email || "",
+                telefone: editingCliente.telefone || "",
+                celular: editingCliente.celular || "",
+                website: (editingCliente as any).website || "",
+                endereco: editingCliente.endereco || "",
+                numero: (editingCliente as any).numero || "",
+                complemento: (editingCliente as any).complemento || "",
+                bairro: (editingCliente as any).bairro || "",
+                cidade: editingCliente.cidade || "",
+                estado: editingCliente.estado || "",
+                cep: editingCliente.cep || "",
+                observacoes: editingCliente.observacoes || "",
+              } : undefined}
+              onSubmit={async (data) => {
+                const documentoLimpo = data.documento.replace(/\D/g, "");
+                const dadosParaEnviar = {
+                  ...data,
+                  documento: documentoLimpo,
+                  razaoSocial: data.razaoSocial || null,
+                  nomeFantasia: data.nomeFantasia || null,
+                  inscricaoEstadual: data.inscricaoEstadual || null,
+                  inscricaoMunicipal: data.inscricaoMunicipal || null,
+                  email: data.email || null,
+                  telefone: data.telefone || null,
+                  celular: data.celular || null,
+                  website: data.website || null,
+                  endereco: data.endereco || null,
+                  numero: data.numero || null,
+                  complemento: data.complemento || null,
+                  bairro: data.bairro || null,
+                  cidade: data.cidade || null,
+                  estado: data.estado || null,
+                  cep: data.cep || null,
+                  observacoes: data.observacoes || null,
+                };
+
+                const url = editingCliente ? `/api/clientes/${editingCliente.clienteId}` : "/api/clientes";
+                const method = editingCliente ? "PUT" : "POST";
+
+                const response = await fetch(url, {
+                  method,
+                  headers: {
+                    ...getAuthHeadersWithTenant(),
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(dadosParaEnviar),
+                });
+
+                if (response.ok) {
+                  if (!editingCliente) {
+                    triggerConfetti();
+                  }
+                  notificationCenter.add({
+                    type: "success",
+                    title: editingCliente ? "Cliente atualizado" : "Cliente criado",
+                    message: `${data.nome} foi ${editingCliente ? "atualizado" : "criado"} com sucesso`,
+                  });
+                  setShowForm(false);
+                  setEditingCliente(null);
+                  await loadClientes();
+                } else {
+                  const error = await response.json();
+                  notificationCenter.add({
+                    type: "error",
+                    title: "Erro ao salvar cliente",
+                    message: error.message || "Erro ao salvar cliente",
+                  });
+                }
+              }}
+              onCancel={handleCancel}
+              isEditing={!!editingCliente}
+            />
+          ) : (
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* Seção: Dados Básicos */}
             <div className="space-y-4">
@@ -1788,6 +1885,7 @@ export function ClientesClient() {
               </Button>
             </div>
           </form>
+          )}
         </GlassCard>
       )}
 

@@ -18,6 +18,7 @@ export * from "./components/select";
 export * from "./components/textarea";
 export * from "./components/tooltip";
 export * from "./components/tree-view";
+export * from "./components/stepper";
 export * from "./lib/cn";
 export * from "./theme/design-tokens";
 export * from "./theme/theme-provider";

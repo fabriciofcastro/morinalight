@@ -141,6 +141,20 @@ const navItems: NavItem[] = [
         href: "/settings/permissions",
         icon: UserCog,
         permission: "settings:permissions:view",
+        children: [
+          {
+            label: "Gestão de Permissões",
+            href: "/admin/permissions/dashboard",
+            icon: Shield,
+            permission: "settings:permissions:view",
+          },
+          {
+            label: "Auditoria de Acessos",
+            href: "/admin/permissions/access-audit",
+            icon: Activity,
+            permission: "settings:permissions:view",
+          },
+        ],
       },
       {
         label: "Estrutura Organizacional",
