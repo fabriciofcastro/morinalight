@@ -46,94 +46,104 @@ const meta: Meta<typeof FormSelect> = {
 export default meta;
 type Story = StoryObj<typeof FormSelect>;
 
-const options = [
-  { value: "", label: "Selecione uma opção" },
-  { value: "option1", label: "Opção 1" },
-  { value: "option2", label: "Opção 2" },
-  { value: "option3", label: "Opção 3" },
-];
-
 export const Default: Story = {
-  args: {
-    label: "Opção",
-    options,
-  },
+  render: () => (
+    <FormSelect label="Opção">
+      <option value="">Selecione uma opção</option>
+      <option value="option1">Opção 1</option>
+      <option value="option2">Opção 2</option>
+      <option value="option3">Opção 3</option>
+    </FormSelect>
+  ),
 };
 
 export const WithHint: Story = {
-  args: {
-    label: "Categoria",
-    hint: "Selecione a categoria do produto",
-    options,
-  },
+  render: () => (
+    <FormSelect label="Categoria" hint="Selecione a categoria do produto">
+      <option value="">Selecione uma categoria</option>
+      <option value="cat1">Categoria 1</option>
+      <option value="cat2">Categoria 2</option>
+      <option value="cat3">Categoria 3</option>
+    </FormSelect>
+  ),
 };
 
 export const Required: Story = {
-  args: {
-    label: "Categoria",
-    required: true,
-    hint: "Campo obrigatório",
-    options,
-  },
+  render: () => (
+    <FormSelect label="Categoria" required hint="Campo obrigatório">
+      <option value="">Selecione uma categoria</option>
+      <option value="cat1">Categoria 1</option>
+      <option value="cat2">Categoria 2</option>
+      <option value="cat3">Categoria 3</option>
+    </FormSelect>
+  ),
 };
 
 export const Valid: Story = {
-  args: {
-    label: "Status",
-    validationState: "valid",
-    hint: "Status válido",
-    options,
-    defaultValue: "option1",
-  },
+  render: () => (
+    <FormSelect label="Status" validationState="valid" hint="Status válido" defaultValue="opt1">
+      <option value="">Selecione um status</option>
+      <option value="opt1">Ativo</option>
+      <option value="opt2">Inativo</option>
+      <option value="opt3">Pendente</option>
+    </FormSelect>
+  ),
 };
 
 export const Invalid: Story = {
-  args: {
-    label: "Status",
-    validationState: "invalid",
-    error: "Por favor, selecione uma opção válida",
-    options,
-  },
+  render: () => (
+    <FormSelect
+      label="Status"
+      validationState="invalid"
+      error="Por favor, selecione uma opção válida"
+    >
+      <option value="">Selecione um status</option>
+      <option value="opt1">Ativo</option>
+      <option value="opt2">Inativo</option>
+      <option value="opt3">Pendente</option>
+    </FormSelect>
+  ),
 };
 
 export const Pending: Story = {
-  args: {
-    label: "Status",
-    validationState: "pending",
-    hint: "Validando opção...",
-    options,
-    defaultValue: "option1",
-  },
+  render: () => (
+    <FormSelect label="Status" validationState="pending" hint="Validando opção..." defaultValue="opt1">
+      <option value="">Selecione um status</option>
+      <option value="opt1">Ativo</option>
+      <option value="opt2">Inativo</option>
+      <option value="opt3">Pendente</option>
+    </FormSelect>
+  ),
 };
 
 export const Disabled: Story = {
-  args: {
-    label: "Status",
-    disabled: true,
-    hint: "Campo desabilitado",
-    options,
-    defaultValue: "option1",
-  },
+  render: () => (
+    <FormSelect label="Status" disabled hint="Campo desabilitado" defaultValue="opt1">
+      <option value="">Selecione um status</option>
+      <option value="opt1">Ativo</option>
+      <option value="opt2">Inativo</option>
+      <option value="opt3">Pendente</option>
+    </FormSelect>
+  ),
 };
 
 export const ManyOptions: Story = {
-  args: {
-    label: "País",
-    hint: "Selecione seu país",
-    options: [
-      { value: "", label: "Selecione um país" },
-      { value: "br", label: "Brasil" },
-      { value: "us", label: "Estados Unidos" },
-      { value: "uk", label: "Reino Unido" },
-      { value: "ca", label: "Canadá" },
-      { value: "de", label: "Alemanha" },
-      { value: "fr", label: "França" },
-      { value: "es", label: "Espanha" },
-      { value: "it", label: "Itália" },
-      { value: "jp", label: "Japão" },
-      { value: "cn", label: "China" },
-      { value: "au", label: "Austrália" },
-    ],
-  },
+  render: () => (
+    <FormSelect label="País" hint="Selecione seu país">
+      <option value="">Selecione um país</option>
+      <option value="br">Brasil</option>
+      <option value="us">Estados Unidos</option>
+      <option value="uk">Reino Unido</option>
+      <option value="ca">Canadá</option>
+      <option value="de">Alemanha</option>
+      <option value="fr">França</option>
+      <option value="es">Espanha</option>
+      <option value="it">Itália</option>
+      <option value="jp">Japão</option>
+      <option value="cn">China</option>
+      <option value="au">Austrália</option>
+    </FormSelect>
+  ),
 };
+
 

@@ -320,3 +320,4 @@ export async function extractDominantColor(file: File): Promise<string> {
   });
 }
 
+

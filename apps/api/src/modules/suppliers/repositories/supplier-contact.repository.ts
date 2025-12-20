@@ -35,3 +35,4 @@ export interface SupplierContactRepository {
   getPrincipal(supplierId: string): Promise<SupplierContactRecord | null>;
 }
 
+

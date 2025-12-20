@@ -11,6 +11,7 @@ import {
   X,
   CheckCircle2,
   AlertCircle,
+  GitCompare,
 } from "lucide-react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import type { DraftVersion } from "@/hooks/use-draft-history";
@@ -20,10 +21,13 @@ interface DraftHistoryModalProps<T> {
   onClose: () => void;
   versions: DraftVersion<T>[];
   currentVersionId: string | null;
+  currentData: T;
   onRestore: (versionId: string) => void;
   onDelete: (versionId: string) => void;
   onClear: () => void;
   formatLabel?: (version: DraftVersion<T>) => string;
+  getFieldLabel?: (key: string) => string;
+  formatValue?: (key: string, value: unknown) => string;
 }
 
 export function DraftHistoryModal<T extends Record<string, unknown>>({
@@ -31,12 +35,21 @@ export function DraftHistoryModal<T extends Record<string, unknown>>({
   onClose,
   versions,
   currentVersionId,
+  currentData,
   onRestore,
   onDelete,
   onClear,
   formatLabel,
+  getFieldLabel,
+  formatValue,
 }: DraftHistoryModalProps<T>) {
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
+  const [compareVersionId, setCompareVersionId] = useState<string | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
+  const [comparisonVersions, setComparisonVersions] = useState<{
+    before: DraftVersion<T> | null;
+    after: DraftVersion<T> | null;
+  }>({ before: null, after: null });
 
   if (!isOpen) return null;
 
@@ -167,7 +180,7 @@ export function DraftHistoryModal<T extends Record<string, unknown>>({
                               </p>
                               {isSelected && (
                                 <div className="mt-3 pt-3 border-t border-[color-mix(in oklab,var(--muted-soft)_20%,transparent)]">
-                                  <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div className="grid grid-cols-2 gap-2 text-xs mb-3">
                                     <div>
                                       <span className="text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
                                         Campos preenchidos:
@@ -179,23 +192,59 @@ export function DraftHistoryModal<T extends Record<string, unknown>>({
                                       </span>
                                     </div>
                                   </div>
+                                  {currentVersionId && currentVersionId !== version.id && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const currentVersion = versions.find(
+                                          (v) => v.id === currentVersionId
+                                        );
+                                        if (currentVersion) {
+                                          setComparisonVersions({
+                                            before: version,
+                                            after: currentVersion,
+                                          });
+                                          setShowComparison(true);
+                                        }
+                                      }}
+                                      className="w-full gap-2"
+                                    >
+                                      Comparar com versão atual
+                                    </Button>
+                                  )}
                                 </div>
                               )}
                             </div>
                             <div className="flex items-center gap-2 ml-4">
                               {!isCurrent && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRestore(version.id);
-                                  }}
-                                  className="gap-1.5"
-                                >
-                                  <RotateCcw className="h-3.5 w-3.5" />
-                                  Restaurar
-                                </Button>
+                                <>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCompareVersionId(version.id);
+                                    }}
+                                    className="gap-1.5"
+                                  >
+                                    <GitCompare className="h-3.5 w-3.5" />
+                                    Comparar
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRestore(version.id);
+                                    }}
+                                    className="gap-1.5"
+                                  >
+                                    <RotateCcw className="h-3.5 w-3.5" />
+                                    Restaurar
+                                  </Button>
+                                </>
                               )}
                               <Button
                                 variant="ghost"
@@ -235,6 +284,60 @@ export function DraftHistoryModal<T extends Record<string, unknown>>({
               )}
             </GlassCard>
           </motion.div>
+
+          {/* Modal de comparação */}
+          {showComparison && comparisonVersions.before && comparisonVersions.after && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60]"
+              onClick={() => setShowComparison(false)}
+            />
+          )}
+          {showComparison && comparisonVersions.before && comparisonVersions.after && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GlassCard className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between p-6 border-b border-[color-mix(in oklab,var(--muted-soft)_20%,transparent)]">
+                  <h3 className="text-lg font-semibold">Comparação de Versões</h3>
+                  <Button variant="ghost" size="sm" onClick={() => setShowComparison(false)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="p-6">
+                  <ComparisonView
+                    before={comparisonVersions.before.data}
+                    after={comparisonVersions.after.data}
+                    fieldLabels={{
+                      nome: "Nome",
+                      razaoSocial: "Razão Social",
+                      nomeFantasia: "Nome Fantasia",
+                      tipo: "Tipo",
+                      documento: "Documento",
+                      email: "Email",
+                      telefone: "Telefone",
+                      celular: "Celular",
+                      website: "Website",
+                      endereco: "Endereço",
+                      numero: "Número",
+                      complemento: "Complemento",
+                      bairro: "Bairro",
+                      cidade: "Cidade",
+                      estado: "Estado",
+                      cep: "CEP",
+                      observacoes: "Observações",
+                    }}
+                  />
+                </div>
+              </GlassCard>
+            </motion.div>
+          )}
         </>
       )}
     </AnimatePresence>

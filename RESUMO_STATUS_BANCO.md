@@ -61,3 +61,4 @@ Após executar, verifique:
 - ✅ Redis: `redis-cli -h localhost -p 6379 ping`
 - ✅ Migrations: `pnpm prisma migrate status`
 
+

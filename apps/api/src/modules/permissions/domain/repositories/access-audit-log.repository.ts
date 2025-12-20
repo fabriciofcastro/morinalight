@@ -44,3 +44,4 @@ export interface AccessAuditLogRepository {
   listarIpsSuspeitos(orgId: string, threshold: number, startDate: Date): Promise<Array<{ ipAddress: string; count: number }>>;
 }
 
+

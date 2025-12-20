@@ -315,3 +315,4 @@ O sistema agora possui funcionalidades de **nível enterprise**:
 
 **O sistema está verdadeiramente "insano"!** 🔥🚀
 
+

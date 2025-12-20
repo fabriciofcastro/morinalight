@@ -71,3 +71,4 @@ Após iniciar os serviços:
 2. ✅ Verifique os logs do `pnpm dev` para confirmar
 3. ✅ Acesse http://localhost:3000 para testar
 
+

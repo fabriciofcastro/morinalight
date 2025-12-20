@@ -21,3 +21,4 @@ echo "   pnpm prisma migrate deploy"
 echo ""
 echo "✅ Pronto! Os serviços devem reconectar automaticamente."
 
+

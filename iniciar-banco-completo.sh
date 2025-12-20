@@ -154,3 +154,4 @@ echo ""
 echo -e "${YELLOW}💡 Os serviços devem reconectar automaticamente!${NC}"
 echo "   Verifique os logs do pnpm dev para confirmar."
 
+

@@ -242,3 +242,4 @@ export function getErrorTitle(error: AppError | Error | unknown): string {
   return friendly.title;
 }
 
+

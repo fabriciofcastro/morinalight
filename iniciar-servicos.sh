@@ -92,3 +92,4 @@ echo "      $DOCKER_CMD logs morina-redis"
 echo "   3. Se precisar aplicar migrations:"
 echo "      cd apps/api && pnpm prisma migrate deploy"
 
+

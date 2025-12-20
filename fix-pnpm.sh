@@ -54,3 +54,4 @@ else
     echo "❌ Ainda não funciona. Tente executar: source ~/.zshrc"
 fi
 
+

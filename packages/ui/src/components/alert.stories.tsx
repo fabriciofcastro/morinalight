@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Alert } from "./alert";
+import { Alert, AlertDescription, AlertTitle } from "./alert";
 import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 
 const meta: Meta<typeof Alert> = {
@@ -42,54 +42,70 @@ export const Default: Story = {
 };
 
 export const Success: Story = {
-  args: {
-    variant: "success",
-    title: "Sucesso",
-    children: "Operação realizada com sucesso!",
-    icon: CheckCircle2,
-  },
+  render: () => (
+    <Alert variant="success">
+      <CheckCircle2 />
+      <AlertTitle>Sucesso</AlertTitle>
+      <AlertDescription>Operação realizada com sucesso!</AlertDescription>
+    </Alert>
+  ),
 };
 
 export const Warning: Story = {
-  args: {
-    variant: "warning",
-    title: "Atenção",
-    children: "Este é um aviso importante que requer sua atenção.",
-    icon: AlertTriangle,
-  },
+  render: () => (
+    <Alert variant="warning">
+      <AlertTriangle />
+      <AlertTitle>Atenção</AlertTitle>
+      <AlertDescription>
+        Este é um aviso importante que requer sua atenção.
+      </AlertDescription>
+    </Alert>
+  ),
 };
 
 export const Error: Story = {
-  args: {
-    variant: "error",
-    title: "Erro",
-    children: "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.",
-    icon: XCircle,
-  },
+  render: () => (
+    <Alert variant="error">
+      <XCircle />
+      <AlertTitle>Erro</AlertTitle>
+      <AlertDescription>
+        Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.
+      </AlertDescription>
+    </Alert>
+  ),
 };
 
 export const Info: Story = {
-  args: {
-    variant: "info",
-    title: "Informação",
-    children: "Esta é uma mensagem informativa sobre o sistema.",
-    icon: Info,
-  },
+  render: () => (
+    <Alert variant="default">
+      <Info />
+      <AlertTitle>Informação</AlertTitle>
+      <AlertDescription>Esta é uma mensagem informativa sobre o sistema.</AlertDescription>
+    </Alert>
+  ),
 };
 
 export const WithoutTitle: Story = {
-  args: {
-    variant: "info",
-    children: "Esta é uma mensagem sem título.",
-  },
+  render: () => (
+    <Alert variant="default">
+      <Info />
+      <AlertDescription>Esta é uma mensagem sem título.</AlertDescription>
+    </Alert>
+  ),
 };
 
 export const LongMessage: Story = {
-  args: {
-    variant: "warning",
-    title: "Mensagem Longa",
-    children:
-      "Esta é uma mensagem de alerta muito longa que contém muitas informações importantes sobre o que está acontecendo no sistema. Ela pode ser usada para explicar situações complexas ou fornecer detalhes adicionais sobre um aviso ou erro.",
-  },
+  render: () => (
+    <Alert variant="warning">
+      <AlertTriangle />
+      <AlertTitle>Mensagem Longa</AlertTitle>
+      <AlertDescription>
+        Esta é uma mensagem de alerta muito longa que contém muitas informações importantes sobre
+        o que está acontecendo no sistema. Ela pode ser usada para explicar situações complexas ou
+        fornecer detalhes adicionais sobre um aviso ou erro.
+      </AlertDescription>
+    </Alert>
+  ),
 };
+
 

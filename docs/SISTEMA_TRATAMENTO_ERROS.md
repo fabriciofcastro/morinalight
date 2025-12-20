@@ -289,3 +289,4 @@ Esses IDs são incluídos nos headers HTTP:
 - [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)
 - [Prometheus Metrics](https://prometheus.io/docs/concepts/metric_types/)
 
+

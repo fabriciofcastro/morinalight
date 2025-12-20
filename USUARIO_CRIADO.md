@@ -47,3 +47,4 @@ pnpm studio
 - O usuário pode fazer login imediatamente
 - Para associar a uma organização, use o comando acima ou o Prisma Studio
 
+

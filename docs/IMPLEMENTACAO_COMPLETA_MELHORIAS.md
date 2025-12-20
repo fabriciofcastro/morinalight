@@ -283,3 +283,4 @@ A tela de empresa agora possui:
 **Data:** 2024-12-19  
 **Nível:** ENTERPRISE PLUS
 
+

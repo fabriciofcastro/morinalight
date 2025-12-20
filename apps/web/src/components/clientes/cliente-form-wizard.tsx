@@ -886,20 +886,36 @@ export function ClienteFormWizard({
 
   return (
     <div className="w-full">
-      {/* Indicador de auto-save */}
-      {!isEditing && (isSavingDraft || lastSaved) && (
-        <div className="mb-4 flex items-center justify-end gap-2 text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
-          {isSavingDraft ? (
-            <>
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span>Salvando rascunho...</span>
-            </>
-          ) : lastSaved ? (
-            <>
-              <CheckCircle2 className="h-3 w-3 text-green-500" />
-              <span>Rascunho salvo em {lastSaved.toLocaleTimeString("pt-BR")}</span>
-            </>
-          ) : null}
+      {/* Indicador de auto-save e histórico */}
+      {!isEditing && (
+        <div className="mb-4 flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowDraftHistory(true)}
+            className="gap-2"
+            disabled={versions.length === 0}
+          >
+            <History className="h-4 w-4" />
+            Histórico ({versions.length})
+          </Button>
+          {(isSaving || (versions.length > 0 && !isEditing)) && (
+            <div className="flex items-center gap-2 text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Salvando rascunho...</span>
+                </>
+              ) : versions.length > 0 ? (
+                <>
+                  <CheckCircle2 className="h-3 w-3 text-green-500" />
+                  <span>
+                    Último rascunho: {versions[0]?.savedAt.toLocaleTimeString("pt-BR")}
+                  </span>
+                </>
+              ) : null}
+            </div>
+          )}
         </div>
       )}
       <Wizard
@@ -919,6 +935,7 @@ export function ClienteFormWizard({
         onClose={() => setShowDraftHistory(false)}
         versions={versions}
         currentVersionId={currentVersionId}
+        currentData={formData}
         onRestore={restoreVersion}
         onDelete={deleteVersion}
         onClear={clearHistory}
@@ -928,6 +945,35 @@ export function ClienteFormWizard({
           if (hasName) return `Rascunho: ${version.data.nome}`;
           if (hasDoc) return `Rascunho: ${version.data.documento}`;
           return `Rascunho de ${version.savedAt.toLocaleString("pt-BR")}`;
+        }}
+        getFieldLabel={(key) => {
+          const labels: Record<string, string> = {
+            nome: "Nome",
+            razaoSocial: "Razão Social",
+            nomeFantasia: "Nome Fantasia",
+            tipo: "Tipo",
+            documento: "Documento",
+            inscricaoEstadual: "Inscrição Estadual",
+            inscricaoMunicipal: "Inscrição Municipal",
+            email: "Email",
+            telefone: "Telefone",
+            celular: "Celular",
+            website: "Website",
+            endereco: "Endereço",
+            numero: "Número",
+            complemento: "Complemento",
+            bairro: "Bairro",
+            cidade: "Cidade",
+            estado: "Estado",
+            cep: "CEP",
+            observacoes: "Observações",
+          };
+          return labels[key] || key;
+        }}
+        formatValue={(key, value) => {
+          if (!value || value === "") return "-";
+          if (key === "tipo") return value === "fisica" ? "Pessoa Física" : "Pessoa Jurídica";
+          return String(value);
         }}
       />
     </div>
