@@ -272,6 +272,78 @@ export const designTokens = {
     slower: "600ms",
     slowest: "800ms",
   },
+
+  // Border Width Scale
+  borderWidth: {
+    none: "0px",
+    hairline: "0.5px",
+    thin: "1px",
+    base: "2px",
+    medium: "3px",
+    thick: "4px",
+    "extra-thick": "6px",
+  },
+
+  // Opacity Scale
+  opacity: {
+    transparent: 0,
+    "5": 0.05,
+    "10": 0.1,
+    "20": 0.2,
+    "30": 0.3,
+    "40": 0.4,
+    "50": 0.5,
+    "60": 0.6,
+    "70": 0.7,
+    "80": 0.8,
+    "90": 0.9,
+    opaque: 1,
+  },
+
+  // Z-Index Scale
+  zIndex: {
+    base: 0,
+    content: 1,
+    contentElevated: 10,
+    interactive: 100,
+    interactiveElevated: 110,
+    dropdown: 200,
+    overlay: 300,
+    navigation: 400,
+    navigationSticky: 410,
+    navigationFixed: 420,
+    modalBackdrop: 490,
+    modal: 500,
+    modalContent: 510,
+    notification: 600,
+    tooltip: 700,
+    popover: 710,
+    loading: 800,
+    system: 900,
+    critical: 1000,
+    max: 9999,
+  },
+
+  // Focus Ring Specifications
+  focusRing: {
+    width: {
+      thin: "1px",
+      base: "2px",
+      thick: "3px",
+    },
+    offset: {
+      none: "0px",
+      sm: "1px",
+      base: "2px",
+      md: "3px",
+      lg: "4px",
+    },
+    opacity: {
+      light: 0.22,
+      dark: 0.32,
+      high: 0.5,
+    },
+  },
 } as const;
 
 export type DesignTokens = typeof designTokens;
