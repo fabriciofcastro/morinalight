@@ -26,10 +26,6 @@ import { registerUserCustomPermissionsRoute } from "./user-custom-permissions.ro
 import { registerUserEffectivePermissionsRoute } from "./user-effective-permissions.route";
 import { registerBulkAssignPermissionsRoute } from "./bulk-assign-permissions.route";
 
-import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
-import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
-import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
-
 type PermissionsHttpDeps = {
   permissionRepository: PermissionRepository;
   organizationRepository: OrganizationRepository;
