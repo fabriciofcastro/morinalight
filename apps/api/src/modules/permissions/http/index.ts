@@ -24,6 +24,7 @@ import { registerPositionPermissionsRoute } from "./position-permissions.route";
 import { registerSectorPermissionsRoute } from "./sector-permissions.route";
 import { registerUserCustomPermissionsRoute } from "./user-custom-permissions.route";
 import { registerUserEffectivePermissionsRoute } from "./user-effective-permissions.route";
+import { registerBulkAssignPermissionsRoute } from "./bulk-assign-permissions.route";
 
 import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
 import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
@@ -169,4 +170,18 @@ export async function registerPermissionsHttpRoutes(
       eventBus: deps.eventBus,
     });
   }
+
+  // Registrar rota de bulk assign permissions
+  await registerBulkAssignPermissionsRoute(app, {
+    permissionRepository: deps.permissionRepository,
+    departmentRepository: deps.departmentRepository,
+    sectorRepository: deps.sectorRepository,
+    positionRepository: deps.positionRepository,
+    departmentPermissionRepository: deps.departmentPermissionRepository,
+    sectorPermissionRepository: deps.sectorPermissionRepository,
+    positionPermissionRepository: deps.positionPermissionRepository,
+    userPermissionRepository: deps.userPermissionRepository,
+    auditLogRepository: deps.auditLogRepository,
+    eventBus: deps.eventBus,
+  });
 }
