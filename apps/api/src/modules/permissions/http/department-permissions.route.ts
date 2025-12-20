@@ -99,6 +99,7 @@ export async function registerDepartmentPermissionsRoute(app: FastifyInstance, d
           departmentRepository: deps.departmentRepository,
           permissionRepository: deps.permissionRepository,
           auditLogRepository: deps.auditLogRepository,
+          permissionCacheService: deps.permissionCacheService,
           actorId: userId,
           eventBus: deps.eventBus,
         });

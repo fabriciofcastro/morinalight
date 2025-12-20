@@ -5,6 +5,7 @@ import type { DepartmentRepository } from "../../../organizational-structure/dom
 import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
 import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
+import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
 
 const atribuirPermissaoDepartamentoInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -19,6 +20,7 @@ type Dependencies = {
   departmentRepository: DepartmentRepository;
   permissionRepository: PermissionRepository;
   auditLogRepository?: PermissionAuditLogRepository;
+  permissionCacheService?: PermissionCacheService;
   actorId: string;
   eventBus?: DomainEventBus;
 };
