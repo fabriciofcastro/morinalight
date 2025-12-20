@@ -24,6 +24,10 @@ import { registerUpdateWorkflowPolicyRoute } from "./http/update-workflow-policy
 import { registerListWorkflowPoliciesRoute } from "./http/list-workflow-policies.route";
 import { registerDeleteWorkflowPolicyRoute } from "./http/delete-workflow-policy.route";
 import { registerVerifyPolicyRoute } from "./http/verify-policy.route";
+import { registerCreateApprovalRoute } from "./http/create-approval.route";
+import { registerListApprovalsRoute } from "./http/list-approvals.route";
+import { registerApproveApprovalRoute } from "./http/approve-approval.route";
+import { registerRejectApprovalRoute } from "./http/reject-approval.route";
 import { registerDepartmentMembersRoutes } from "./http/department-members.routes";
 import { registerSectorMembersRoutes } from "./http/sector-members.routes";
 import { registerPositionMembersRoutes } from "./http/position-members.routes";
@@ -40,6 +44,7 @@ import type { SectorMembershipRepository } from "./infra/prisma/prisma-sector-me
 import { PrismaSectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
 import { PrismaSubdepartmentRepository } from "./infra/prisma/prisma-subdepartment.repository";
 import { PrismaWorkflowPolicyRepository } from "./infra/prisma/prisma-workflow-policy.repository";
+import { PrismaApprovalRepository } from "./infra/prisma/prisma-approval.repository";
 
 export type OrganizationalStructureModuleOptions = {
   departmentRepository?: DepartmentRepository;
@@ -70,6 +75,7 @@ export async function registerOrganizationalStructureModule(
 
   const branchRepository = new PrismaBranchRepository();
   const workflowPolicyRepository = new PrismaWorkflowPolicyRepository();
+  const approvalRepository = new PrismaApprovalRepository();
 
   const sectorRepository =
     options.sectorRepository ??
@@ -200,8 +206,14 @@ export async function registerOrganizationalStructureModule(
     await registerUpdateWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
     await registerListWorkflowPoliciesRoute(app, { workflowPolicyRepository });
     await registerDeleteWorkflowPolicyRoute(app, { workflowPolicyRepository, eventBus });
-    await registerVerifyPolicyRoute(app, { workflowPolicyRepository });
+    await registerVerifyPolicyRoute(app, { workflowPolicyRepository, approvalRepository });
   }
+
+  // Approval routes
+  await registerCreateApprovalRoute(app, { approvalRepository, eventBus });
+  await registerListApprovalsRoute(app, { approvalRepository });
+  await registerApproveApprovalRoute(app, { approvalRepository, eventBus });
+  await registerRejectApprovalRoute(app, { approvalRepository, eventBus });
 
   app.log.info("Módulo Estrutura Organizacional registrado");
 
