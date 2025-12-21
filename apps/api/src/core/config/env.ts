@@ -63,7 +63,7 @@ const env: Env = {
   ...parsed,
   REALTIME_SECRET:
     parsed.REALTIME_SECRET ??
-    (parsed.NODE_ENV !== "production" ? "dev_realtime_secret" : undefined),
+    (parsed.NODE_ENV !== "production" ? "dev_realtime_secret_change_me_in_production" : undefined),
 };
 
 export { env, EnvSchema };

@@ -1,0 +1,39 @@
+{
+  "lastUpdate": "2025-01-19",
+  "progress": 83,
+  "completed": [
+    "padronizacao-telas-8-principais",
+    "organization-tree-subdepartments",
+    "security-scanning-github-actions",
+    "performance-baseline-lighthouse",
+    "rate-limiting-redis",
+    "datatable-component",
+    "workflow-aprovacao",
+    "versionamento-padronizado"
+  ],
+  "inProgress": [],
+  "next": [
+    "padronizar-users-form",
+    "padronizar-company-form",
+    "calendar-datepicker",
+    "autocomplete-component",
+    "multi-select-component"
+  ],
+  "completed": [
+    "padronizacao-telas-8-principais",
+    "organization-tree-subdepartments",
+    "security-scanning-github-actions",
+    "performance-baseline-lighthouse",
+    "rate-limiting-redis",
+    "datatable-component",
+    "workflow-aprovacao",
+    "versionamento-padronizado",
+    "formulario-subdepartments",
+    "template-estrutura-pastas",
+    "template-nomenclatura",
+    "template-api-client",
+    "template-hook-customizado",
+    "variaveis-ambiente-consolidadas"
+  ]
+}
+

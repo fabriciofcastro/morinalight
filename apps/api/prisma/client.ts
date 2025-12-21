@@ -10,3 +10,5 @@ import { getPrisma } from "../src/infra/database/prisma.service";
 export const prisma = getPrisma();
 
 
+
+

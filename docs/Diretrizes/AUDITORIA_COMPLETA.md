@@ -277,3 +277,5 @@ Os seguintes índices foram criados para otimizar consultas:
 3. Use filtros de data para limitar escopo
 
 
+
+

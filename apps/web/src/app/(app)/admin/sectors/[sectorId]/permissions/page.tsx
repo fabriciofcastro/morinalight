@@ -20,3 +20,5 @@ export default function SectorPermissionsPage({ params }: { params: { sectorId: 
 
 
 
+
+

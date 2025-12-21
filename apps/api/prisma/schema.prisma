@@ -830,18 +830,8 @@ model Cliente {
   cidade             String?       @db.VarChar(100)
   estado             String?       @db.VarChar(2)
   cep                String?       @db.VarChar(10)
-  pontoReferencia    String?       @db.VarChar(255) // Ponto de referência
-  latitude           String?       @db.VarChar(20) // Coordenada GPS - Latitude
-  longitude          String?       @db.VarChar(20) // Coordenada GPS - Longitude
-  codigoIBGE         String?       @db.VarChar(10) // Código IBGE da cidade
-  codigoMunicipio    String?       @db.VarChar(10) // Código do município
-  regiao             String?       @db.VarChar(50) // Região (Norte, Sul, etc)
-  zona               String?       @db.VarChar(20) // Zona (Urbana/Rural)
   status             ClienteStatus @default(ativo)
   observacoes        String?       @db.VarChar(2048)
-  horarioPreferencialContato String? @db.VarChar(100) // Horário preferencial de contato (ex: "08:00-18:00")
-  idiomaPreferido    String?       @db.VarChar(10) // Idioma preferido (pt-BR, en-US, etc)
-  formaPreferidaComunicacao String? @db.VarChar(50) // Forma preferida (email, telefone, whatsapp, etc)
   createdBy          String
   updatedBy          String
   createdAt          DateTime      @default(now())

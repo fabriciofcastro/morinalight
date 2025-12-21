@@ -107,8 +107,29 @@ export async function buscarCnpj(cnpj: string): Promise<CnpjData | null> {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: "Erro ao buscar CNPJ" }));
-      throw new Error(error.message || "CNPJ não encontrado");
+      const error = await response.json().catch(() => ({ 
+        message: "Erro ao buscar CNPJ",
+        code: "UNKNOWN_ERROR"
+      }));
+      
+      // Tratamento específico por status code
+      if (response.status === 403) {
+        throw new Error(error.message || "Acesso negado. O serviço pode estar bloqueando requisições ou o CNPJ pode estar restrito.");
+      }
+      
+      if (response.status === 503 || response.status === 502) {
+        throw new Error(error.message || "Serviço temporariamente indisponível. Tente novamente mais tarde.");
+      }
+      
+      if (response.status === 404) {
+        throw new Error("CNPJ não encontrado na base de dados.");
+      }
+      
+      if (response.status === 429) {
+        throw new Error("Muitas requisições. Aguarde alguns instantes antes de tentar novamente.");
+      }
+      
+      throw new Error(error.message || "Erro ao buscar CNPJ. Tente novamente mais tarde.");
     }
 
     const data: CnpjBrasilApiResponse = await response.json();

@@ -26,7 +26,7 @@ const EnvSchema = z.object({
   REALTIME_HOST: z.string().default("0.0.0.0"),
   REDIS_URL: z.string().url().default("redis://localhost:6379"),
   REDIS_PASSWORD: z.string().min(1).optional(),
-  REALTIME_SECRET: z.string().min(16).default("dev_realtime_secret"),
+  REALTIME_SECRET: z.string().min(16).default("dev_realtime_secret_change_me_in_production"),
   REALTIME_STREAM: z.string().default("realtime.catalogo"),
   REALTIME_PENDING_ALERT_THRESHOLD: z.coerce.number().int().min(1).default(100),
   REALTIME_PENDING_ALERT_INTERVAL_MS: z.coerce.number().int().min(1000).default(30000),

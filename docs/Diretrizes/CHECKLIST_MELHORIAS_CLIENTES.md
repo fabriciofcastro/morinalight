@@ -66,7 +66,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Modo de edição em linha - Editar campos inline sem abrir formulário completo ✅ IMPLEMENTADO (componente InlineEditField, edição direta na tabela de nome, email, telefone, cidade, estado)
 - [x] Comparação antes/depois - Visualizar mudanças antes de salvar ✅ IMPLEMENTADO (componente de comparação entre versões)
 - [x] Validação condicional - Campos que aparecem baseados em outros campos ✅ IMPLEMENTADO
-- [ ] Formulário adaptativo - Campos mudam baseado em tipo de cliente
+- [x] Formulário adaptativo - Campos mudam baseado em tipo de cliente
 
 #### Experiência do Usuário
 - [x] Validação em tempo real com feedback visual

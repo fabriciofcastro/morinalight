@@ -14,42 +14,13 @@ function toDomain(record: {
   id: string;
   orgId: string;
   nome: string;
-  nomeSocial?: string | null;
   razaoSocial: string | null;
-  nomeFantasia?: string | null;
   tipo: string;
   documento: string;
-  documentoValidade?: Date | null;
-  situacaoCadastral?: string | null;
-  fotoUrl?: string | null;
-  rg?: string | null;
-  orgaoEmissor?: string | null;
-  dataNascimento?: Date | null;
-  sexo?: string | null;
-  estadoCivil?: string | null;
-  nacionalidade?: string | null;
-  naturalidadeCidade?: string | null;
-  naturalidadeEstado?: string | null;
-  tituloEleitor?: string | null;
-  certidaoNascimento?: string | null;
-  certidaoCasamento?: string | null;
-  nomeMae?: string | null;
-  nomePai?: string | null;
-  inscricaoEstadual?: string | null;
-  inscricaoMunicipal?: string | null;
   email: string | null;
-  emailSecundario?: string | null;
-  emailCorporativo?: string | null;
   telefone: string | null;
-  telefoneComercial?: string | null;
   celular: string | null;
-  whatsapp?: string | null;
-  telegram?: string | null;
-  website?: string | null;
   endereco: string | null;
-  numero?: string | null;
-  complemento?: string | null;
-  bairro?: string | null;
   cidade: string | null;
   estado: string | null;
   cep: string | null;
@@ -63,55 +34,16 @@ function toDomain(record: {
   const props: ClienteProps = {
     orgId: record.orgId,
     nome: record.nome,
-    nomeSocial: record.nomeSocial ?? null,
     razaoSocial: record.razaoSocial,
-    nomeFantasia: record.nomeFantasia ?? null,
     tipo: record.tipo as "fisica" | "juridica",
     documento: record.documento,
-    documentoValidade: record.documentoValidade ?? null,
-    situacaoCadastral: record.situacaoCadastral ?? null,
-    fotoUrl: record.fotoUrl ?? null,
-    rg: record.rg ?? null,
-    orgaoEmissor: record.orgaoEmissor ?? null,
-    dataNascimento: record.dataNascimento ?? null,
-    sexo: (record.sexo as "masculino" | "feminino" | "outro" | "nao_informar") ?? null,
-    estadoCivil: (record.estadoCivil as "solteiro" | "casado" | "divorciado" | "viuvo" | "uniao_estavel") ?? null,
-    nacionalidade: record.nacionalidade ?? null,
-    naturalidadeCidade: record.naturalidadeCidade ?? null,
-    naturalidadeEstado: record.naturalidadeEstado ?? null,
-    tituloEleitor: record.tituloEleitor ?? null,
-    certidaoNascimento: record.certidaoNascimento ?? null,
-    certidaoCasamento: record.certidaoCasamento ?? null,
-    nomeMae: record.nomeMae ?? null,
-    nomePai: record.nomePai ?? null,
-    inscricaoEstadual: record.inscricaoEstadual ?? null,
-    inscricaoMunicipal: record.inscricaoMunicipal ?? null,
     email: record.email,
-    emailSecundario: record.emailSecundario ?? null,
-    emailCorporativo: record.emailCorporativo ?? null,
     telefone: record.telefone,
-    telefoneComercial: record.telefoneComercial ?? null,
     celular: record.celular,
-    whatsapp: record.whatsapp ?? null,
-    telegram: record.telegram ?? null,
-    website: record.website ?? null,
     endereco: record.endereco,
-    numero: record.numero ?? null,
-    complemento: record.complemento ?? null,
-    bairro: record.bairro ?? null,
     cidade: record.cidade,
     estado: record.estado,
     cep: record.cep,
-    pontoReferencia: record.pontoReferencia ?? null,
-    latitude: record.latitude ?? null,
-    longitude: record.longitude ?? null,
-    codigoIBGE: record.codigoIBGE ?? null,
-    codigoMunicipio: record.codigoMunicipio ?? null,
-    regiao: record.regiao ?? null,
-    zona: record.zona as "urbana" | "rural" | null,
-    horarioPreferencialContato: record.horarioPreferencialContato ?? null,
-    idiomaPreferido: record.idiomaPreferido ?? null,
-    formaPreferidaComunicacao: record.formaPreferidaComunicacao as "email" | "telefone" | "whatsapp" | "telegram" | "presencial" | null,
     status: record.status as ClienteStatus,
     observacoes: record.observacoes,
     createdBy: record.createdBy,
@@ -133,58 +65,13 @@ export class PrismaClienteRepository implements ClienteRepository {
         id: cliente.clienteId,
         orgId: dados.orgId,
         nome: dados.nome,
-        nomeSocial: dados.nomeSocial,
         razaoSocial: dados.razaoSocial,
-        nomeFantasia: dados.nomeFantasia,
         tipo: dados.tipo,
         documento: dados.documento,
-        documentoValidade: dados.documentoValidade,
-        situacaoCadastral: dados.situacaoCadastral,
-        fotoUrl: dados.fotoUrl,
-        rg: dados.rg,
-        orgaoEmissor: dados.orgaoEmissor,
-        dataNascimento: dados.dataNascimento,
-        sexo: dados.sexo,
-        estadoCivil: dados.estadoCivil,
-        nacionalidade: dados.nacionalidade,
-        naturalidadeCidade: dados.naturalidadeCidade,
-        naturalidadeEstado: dados.naturalidadeEstado,
-        tituloEleitor: dados.tituloEleitor,
-        certidaoNascimento: dados.certidaoNascimento,
-        certidaoCasamento: dados.certidaoCasamento,
-        nomeMae: dados.nomeMae,
-        nomePai: dados.nomePai,
-        inscricaoEstadual: dados.inscricaoEstadual,
-        inscricaoMunicipal: dados.inscricaoMunicipal,
         email: dados.email,
-        emailSecundario: dados.emailSecundario,
-        emailCorporativo: dados.emailCorporativo,
         telefone: dados.telefone,
-        telefoneComercial: dados.telefoneComercial,
         celular: dados.celular,
-        whatsapp: dados.whatsapp,
-        telegram: dados.telegram,
-        website: dados.website,
-        linkedin: dados.linkedin,
-        facebook: dados.facebook,
-        instagram: dados.instagram,
-        twitter: dados.twitter,
-        youtube: dados.youtube,
-        blog: dados.blog,
         endereco: dados.endereco,
-        pontoReferencia: dados.pontoReferencia,
-        latitude: dados.latitude,
-        longitude: dados.longitude,
-        codigoIBGE: dados.codigoIBGE,
-        codigoMunicipio: dados.codigoMunicipio,
-        regiao: dados.regiao,
-        zona: dados.zona,
-        horarioPreferencialContato: dados.horarioPreferencialContato,
-        idiomaPreferido: dados.idiomaPreferido,
-        formaPreferidaComunicacao: dados.formaPreferidaComunicacao,
-        numero: dados.numero,
-        complemento: dados.complemento,
-        bairro: dados.bairro,
         cidade: dados.cidade,
         estado: dados.estado,
         cep: dados.cep,
@@ -197,54 +84,12 @@ export class PrismaClienteRepository implements ClienteRepository {
       },
       update: {
         nome: dados.nome,
-        nomeSocial: dados.nomeSocial,
         razaoSocial: dados.razaoSocial,
-        nomeFantasia: dados.nomeFantasia,
         tipo: dados.tipo,
-        rg: dados.rg,
-        orgaoEmissor: dados.orgaoEmissor,
-        dataNascimento: dados.dataNascimento,
-        sexo: dados.sexo,
-        estadoCivil: dados.estadoCivil,
-        nacionalidade: dados.nacionalidade,
-        naturalidadeCidade: dados.naturalidadeCidade,
-        naturalidadeEstado: dados.naturalidadeEstado,
-        tituloEleitor: dados.tituloEleitor,
-        certidaoNascimento: dados.certidaoNascimento,
-        certidaoCasamento: dados.certidaoCasamento,
-        nomeMae: dados.nomeMae,
-        nomePai: dados.nomePai,
-        inscricaoEstadual: dados.inscricaoEstadual,
-        inscricaoMunicipal: dados.inscricaoMunicipal,
         email: dados.email,
-        emailSecundario: dados.emailSecundario,
-        emailCorporativo: dados.emailCorporativo,
         telefone: dados.telefone,
-        telefoneComercial: dados.telefoneComercial,
         celular: dados.celular,
-        whatsapp: dados.whatsapp,
-        telegram: dados.telegram,
-        website: dados.website,
-        linkedin: dados.linkedin,
-        facebook: dados.facebook,
-        instagram: dados.instagram,
-        twitter: dados.twitter,
-        youtube: dados.youtube,
-        blog: dados.blog,
         endereco: dados.endereco,
-        pontoReferencia: dados.pontoReferencia,
-        latitude: dados.latitude,
-        longitude: dados.longitude,
-        codigoIBGE: dados.codigoIBGE,
-        codigoMunicipio: dados.codigoMunicipio,
-        regiao: dados.regiao,
-        zona: dados.zona,
-        horarioPreferencialContato: dados.horarioPreferencialContato,
-        idiomaPreferido: dados.idiomaPreferido,
-        formaPreferidaComunicacao: dados.formaPreferidaComunicacao,
-        numero: dados.numero,
-        complemento: dados.complemento,
-        bairro: dados.bairro,
         cidade: dados.cidade,
         estado: dados.estado,
         cep: dados.cep,
@@ -257,16 +102,7 @@ export class PrismaClienteRepository implements ClienteRepository {
   }
 
   async encontrarPorId(orgId: string, clienteId: string) {
-    const record = await prisma.cliente.findUnique({
-      where: { id: clienteId },
-      include: {
-        tags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
-    });
+    const record = await prisma.cliente.findUnique({ where: { id: clienteId } });
 
     if (!record || record.orgId !== orgId) {
       return null;
@@ -320,13 +156,6 @@ export class PrismaClienteRepository implements ClienteRepository {
       where,
       take: limit,
       orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
-      include: {
-        tags: {
-          include: {
-            tag: true,
-          },
-        },
-      },
     });
 
     const last = records.at(-1);

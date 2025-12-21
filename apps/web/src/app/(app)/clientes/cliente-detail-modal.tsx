@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, GlassCard, FormField, Input, FormTextarea } from "@morina/ui";
+import { Button, GlassCard } from "@morina/ui";
 import {
   Building2,
   User,
@@ -15,14 +15,11 @@ import {
   History,
   UserPlus,
   FileText,
-  Plus,
-  Save,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { notificationCenter } from "@/components/notifications/notification-center";
-import { ContactsManager } from "@/components/clientes/contacts-manager";
 
 type Cliente = {
   clienteId: string;
@@ -63,10 +60,9 @@ type HistoricoItem = {
   actorId: string;
   createdAt: string;
   justificativa: string | null;
-  performedByEmail?: string | null;
 };
 
-type TabType = "info" | "contatos" | "representantes" | "historico";
+type TabType = "info" | "representantes" | "historico";
 
 interface ClienteDetailModalProps {
   cliente: Cliente;
@@ -116,21 +112,6 @@ export function ClienteDetailModal({
   const [historico, setHistorico] = useState<HistoricoItem[]>([]);
   const [loadingRep, setLoadingRep] = useState(false);
   const [loadingHist, setLoadingHist] = useState(false);
-  const [showRepForm, setShowRepForm] = useState(false);
-  const [savingRep, setSavingRep] = useState(false);
-  const [repFormData, setRepFormData] = useState({
-    nome: "",
-    documento: "",
-    email: "",
-    telefone: "",
-    celular: "",
-    endereco: "",
-    cidade: "",
-    estado: "",
-    cep: "",
-    percentualComissao: "0",
-    observacoes: "",
-  });
 
   useEffect(() => {
     if (activeTab === "representantes") {
@@ -161,103 +142,14 @@ export function ClienteDetailModal({
     }
   };
 
-  const handleCreateRepresentante = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSavingRep(true);
-
-    try {
-      const percentual = parseFloat(repFormData.percentualComissao);
-      if (isNaN(percentual) || percentual < 0 || percentual > 100) {
-        notificationCenter.add({
-          type: "error",
-          title: "Erro",
-          message: "Percentual de comissão deve estar entre 0 e 100",
-        });
-        return;
-      }
-
-      const response = await fetch("/api/representantes", {
-        method: "POST",
-        headers: {
-          ...getAuthHeadersWithTenant(),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          clienteId: cliente.clienteId,
-          nome: repFormData.nome,
-          documento: repFormData.documento.replace(/\D/g, ""),
-          email: repFormData.email || null,
-          telefone: repFormData.telefone.replace(/\D/g, "") || null,
-          celular: repFormData.celular.replace(/\D/g, "") || null,
-          endereco: repFormData.endereco || null,
-          cidade: repFormData.cidade || null,
-          estado: repFormData.estado || null,
-          cep: repFormData.cep.replace(/\D/g, "") || null,
-          percentualComissao: percentual,
-          observacoes: repFormData.observacoes || null,
-        }),
-      });
-
-      if (response.ok) {
-        notificationCenter.add({
-          type: "success",
-          title: "Sucesso",
-          message: "Representante vinculado com sucesso",
-        });
-        setShowRepForm(false);
-        setRepFormData({
-          nome: "",
-          documento: "",
-          email: "",
-          telefone: "",
-          celular: "",
-          endereco: "",
-          cidade: "",
-          estado: "",
-          cep: "",
-          percentualComissao: "0",
-          observacoes: "",
-        });
-        await loadRepresentantes();
-      } else {
-        const error = await response.json();
-        notificationCenter.add({
-          type: "error",
-          title: "Erro",
-          message: error.message || "Erro ao vincular representante",
-        });
-      }
-    } catch (error) {
-      console.error("Erro ao criar representante:", error);
-      notificationCenter.add({
-        type: "error",
-        title: "Erro",
-        message: "Erro ao vincular representante. Tente novamente.",
-      });
-    } finally {
-      setSavingRep(false);
-    }
-  };
-
   const loadHistorico = async () => {
     setLoadingHist(true);
     try {
-      const response = await fetch(`/api/clientes/${cliente.clienteId}/audit?limite=50`, {
-        headers: {
-          ...getAuthHeadersWithTenant(),
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setHistorico(data.itens || []);
-      } else {
-        setHistorico([]);
-      }
+      // TODO: Implementar API de histórico de clientes
+      // Por enquanto, retornar array vazio
+      setHistorico([]);
     } catch (error) {
       console.error("Erro ao carregar histórico:", error);
-      setHistorico([]);
     } finally {
       setLoadingHist(false);
     }
@@ -265,7 +157,6 @@ export function ClienteDetailModal({
 
   const tabs = [
     { id: "info" as TabType, label: "Informações", icon: FileText },
-    { id: "contatos" as TabType, label: "Contatos", icon: Phone },
     { id: "representantes" as TabType, label: "Representantes", icon: UserPlus },
     { id: "historico" as TabType, label: "Histórico", icon: History },
   ];
@@ -456,17 +347,6 @@ export function ClienteDetailModal({
                 </motion.div>
               )}
 
-              {activeTab === "contatos" && (
-                <motion.div
-                  key="contatos"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
-                  <ContactsManager clienteId={cliente.clienteId} />
-                </motion.div>
-              )}
-
               {activeTab === "representantes" && (
                 <motion.div
                   key="representantes"
@@ -481,206 +361,47 @@ export function ClienteDetailModal({
                         Carregando representantes...
                       </p>
                     </div>
+                  ) : representantes.length === 0 ? (
+                    <div className="text-center py-12">
+                      <UserPlus className="h-12 w-12 mx-auto text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mb-4" />
+                      <p className="text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mb-4">
+                        Nenhum representante vinculado
+                      </p>
+                      <Button variant="outline">
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Vincular Representante
+                      </Button>
+                    </div>
                   ) : (
                     <div className="space-y-4">
-                      {!showRepForm && (
-                        <div className="flex justify-end">
-                          <Button
-                            variant="outline"
-                            onClick={() => setShowRepForm(true)}
-                            className="gap-2"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Vincular Representante
-                          </Button>
-                        </div>
-                      )}
-
-                      {showRepForm && (
-                        <GlassCard className="p-6">
-                          <h3 className="text-lg font-semibold mb-4">Novo Representante</h3>
-                          <form onSubmit={handleCreateRepresentante} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <FormField label="Nome" required fieldId="rep-nome">
-                                <Input
-                                  id="rep-nome"
-                                  value={repFormData.nome}
-                                  onChange={(e) => setRepFormData({ ...repFormData, nome: e.target.value })}
-                                  required
-                                />
-                              </FormField>
-                              <FormField label="CPF" required fieldId="rep-documento">
-                                <Input
-                                  id="rep-documento"
-                                  value={formatCPF(repFormData.documento)}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setRepFormData({ ...repFormData, documento: value });
-                                  }}
-                                  maxLength={14}
-                                  required
-                                />
-                              </FormField>
-                              <FormField label="Email" fieldId="rep-email">
-                                <Input
-                                  id="rep-email"
-                                  type="email"
-                                  value={repFormData.email}
-                                  onChange={(e) => setRepFormData({ ...repFormData, email: e.target.value })}
-                                />
-                              </FormField>
-                              <FormField label="Telefone" fieldId="rep-telefone">
-                                <Input
-                                  id="rep-telefone"
-                                  value={formatPhone(repFormData.telefone)}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setRepFormData({ ...repFormData, telefone: value });
-                                  }}
-                                  maxLength={14}
-                                />
-                              </FormField>
-                              <FormField label="Celular" fieldId="rep-celular">
-                                <Input
-                                  id="rep-celular"
-                                  value={formatPhone(repFormData.celular)}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setRepFormData({ ...repFormData, celular: value });
-                                  }}
-                                  maxLength={15}
-                                />
-                              </FormField>
-                              <FormField label="Percentual de Comissão (%)" required fieldId="rep-comissao">
-                                <Input
-                                  id="rep-comissao"
-                                  type="number"
-                                  min="0"
-                                  max="100"
-                                  step="0.01"
-                                  value={repFormData.percentualComissao}
-                                  onChange={(e) => setRepFormData({ ...repFormData, percentualComissao: e.target.value })}
-                                  required
-                                />
-                              </FormField>
-                              <FormField label="CEP" fieldId="rep-cep">
-                                <Input
-                                  id="rep-cep"
-                                  value={formatCEP(repFormData.cep)}
-                                  onChange={(e) => {
-                                    const value = e.target.value.replace(/\D/g, "");
-                                    setRepFormData({ ...repFormData, cep: value });
-                                  }}
-                                  maxLength={9}
-                                />
-                              </FormField>
-                              <FormField label="Estado (UF)" fieldId="rep-estado">
-                                <Input
-                                  id="rep-estado"
-                                  value={repFormData.estado}
-                                  onChange={(e) =>
-                                    setRepFormData({ ...repFormData, estado: e.target.value.toUpperCase().slice(0, 2) })
-                                  }
-                                  maxLength={2}
-                                />
-                              </FormField>
-                              <FormField label="Cidade" fieldId="rep-cidade" className="md:col-span-2">
-                                <Input
-                                  id="rep-cidade"
-                                  value={repFormData.cidade}
-                                  onChange={(e) => setRepFormData({ ...repFormData, cidade: e.target.value })}
-                                />
-                              </FormField>
-                              <FormField label="Endereço" fieldId="rep-endereco" className="md:col-span-2">
-                                <Input
-                                  id="rep-endereco"
-                                  value={repFormData.endereco}
-                                  onChange={(e) => setRepFormData({ ...repFormData, endereco: e.target.value })}
-                                />
-                              </FormField>
-                              <FormTextarea
-                                label="Observações"
-                                id="rep-observacoes"
-                                value={repFormData.observacoes}
-                                onChange={(e) => setRepFormData({ ...repFormData, observacoes: e.target.value })}
-                                className="md:col-span-2"
-                              />
+                      {representantes.map((rep) => (
+                        <GlassCard key={rep.id} className="p-4">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h4 className="font-semibold">{rep.nome}</h4>
+                              <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                                {rep.documento}
+                              </p>
+                              {rep.email && (
+                                <p className="text-sm flex items-center gap-1.5 mt-1">
+                                  <Mail className="h-3.5 w-3.5" />
+                                  {rep.email}
+                                </p>
+                              )}
+                              <p className="text-sm mt-2">
+                                Comissão: <span className="font-medium">{rep.percentualComissao}%</span>
+                              </p>
                             </div>
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={() => {
-                                  setShowRepForm(false);
-                                  setRepFormData({
-                                    nome: "",
-                                    documento: "",
-                                    email: "",
-                                    telefone: "",
-                                    celular: "",
-                                    endereco: "",
-                                    cidade: "",
-                                    estado: "",
-                                    cep: "",
-                                    percentualComissao: "0",
-                                    observacoes: "",
-                                  });
-                                }}
-                              >
-                                Cancelar
-                              </Button>
-                              <Button type="submit" disabled={savingRep}>
-                                <Save className="h-4 w-4 mr-2" />
-                                {savingRep ? "Salvando..." : "Salvar"}
-                              </Button>
+                            <div className="flex items-center gap-2">
+                              {rep.status === "ativo" ? (
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-red-500" />
+                              )}
                             </div>
-                          </form>
+                          </div>
                         </GlassCard>
-                      )}
-
-                      {representantes.length === 0 && !showRepForm ? (
-                        <div className="text-center py-12">
-                          <UserPlus className="h-12 w-12 mx-auto text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mb-4" />
-                          <p className="text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                            Nenhum representante vinculado
-                          </p>
-                        </div>
-                      ) : (
-                        representantes.map((rep) => (
-                          <GlassCard key={rep.id} className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div>
-                                <h4 className="font-semibold">{rep.nome}</h4>
-                                <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                                  {formatCPF(rep.documento)}
-                                </p>
-                                {rep.email && (
-                                  <p className="text-sm flex items-center gap-1.5 mt-1">
-                                    <Mail className="h-3.5 w-3.5" />
-                                    {rep.email}
-                                  </p>
-                                )}
-                                {rep.telefone && (
-                                  <p className="text-sm flex items-center gap-1.5 mt-1">
-                                    <Phone className="h-3.5 w-3.5" />
-                                    {formatPhone(rep.telefone)}
-                                  </p>
-                                )}
-                                <p className="text-sm mt-2">
-                                  Comissão: <span className="font-medium">{rep.percentualComissao}%</span>
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {rep.status === "ativo" ? (
-                                  <CheckCircle2 className="h-4 w-4 text-green-500" />
-                                ) : (
-                                  <XCircle className="h-4 w-4 text-red-500" />
-                                )}
-                              </div>
-                            </div>
-                          </GlassCard>
-                        ))
-                      )}
+                      ))}
                     </div>
                   )}
                 </motion.div>
@@ -717,38 +438,16 @@ export function ClienteDetailModal({
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between mb-2">
-                                <span className="font-semibold capitalize">
-                                  {item.acao === "created" ? "Criado" :
-                                   item.acao === "updated" ? "Atualizado" :
-                                   item.acao === "deleted" ? "Excluído" :
-                                   item.acao}
-                                </span>
+                                <span className="font-semibold capitalize">{item.acao}</span>
                                 <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
                                   {new Date(item.createdAt).toLocaleString("pt-BR")}
                                 </span>
                               </div>
-                              <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mb-2">
-                                Por: {item.performedByEmail || item.actorId}
+                              <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                                Por: {item.actorId}
                               </p>
-                              {item.campo && (
-                                <div className="mt-2 p-2 rounded bg-[color-mix(in oklab,var(--muted-soft) 5%,transparent)]">
-                                  <p className="text-xs font-medium mb-1">Campo: {item.campo}</p>
-                                  {item.estadoAnterior && (
-                                    <p className="text-xs text-red-500 line-through mb-1">
-                                      Antes: {String(item.estadoAnterior)}
-                                    </p>
-                                  )}
-                                  {item.estadoNovo && (
-                                    <p className="text-xs text-green-500">
-                                      Depois: {String(item.estadoNovo)}
-                                    </p>
-                                  )}
-                                </div>
-                              )}
                               {item.justificativa && (
-                                <p className="text-sm mt-2 italic text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                                  Justificativa: {item.justificativa}
-                                </p>
+                                <p className="text-sm mt-2 italic">{item.justificativa}</p>
                               )}
                             </div>
                           </div>

@@ -255,3 +255,5 @@ O `ImportExportPanel` está integrado como uma aba no painel de detalhes:
 5. **Histórico de Importações**: Rastrear todas as importações realizadas
 
 
+
+

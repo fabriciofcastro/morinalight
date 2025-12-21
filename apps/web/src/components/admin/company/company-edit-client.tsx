@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { type ChangeEvent, useState, useEffect, useCallback, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Path } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@morina/ui";
 import { SectionCard } from "./SectionCard";
@@ -50,6 +50,8 @@ import { Tooltip } from "./Tooltip";
 import { notificationCenter } from "../../notifications/notification-center";
 import { useUndoRedo } from "../../../hooks/use-undo-redo";
 import { companySettingsAPI } from "../../../lib/api/company-settings";
+import { StandardFormPage } from "../../templates";
+import { useAutoSave } from "../../../hooks/useAutoSave";
 
 // Mock Data (Simulando API)
 const MOCK_COMPANY: CompanySettingsFormData = {
@@ -119,14 +121,11 @@ function calculateCompleteness(data: Partial<CompanySettingsFormData>): number {
 export function CompanyEditClient() {
   const [activeSection, setActiveSection] = useState("general");
   const [saving, setSaving] = useState(false);
-  const [autoSaving, setAutoSaving] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [searchingCnpj, setSearchingCnpj] = useState(false);
   const [searchingCep, setSearchingCep] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [documents, setDocuments] = useState<any[]>([]);
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+  const [documents, setDocuments] = useState<Array<{ id: string; name: string; url: string; type: string }>>([]);
 
   const [loading, setLoading] = useState(true);
   
@@ -160,6 +159,39 @@ export function CompanyEditClient() {
 
   const { watch, setValue, formState: { errors, isDirty } } = form;
   const formData = watch();
+  
+  // Auto-save usando hook padronizado
+  const { status: autoSaveStatus, hasUnsavedChanges, markDirty, markClean } = useAutoSave({
+    onSave: async () => {
+      if (!isDirty) return;
+      const isValid = await form.trigger();
+      if (!isValid) return;
+      
+      try {
+        await companySettingsAPI.updateSettings(formData);
+        form.reset(formData, { keepValues: true });
+      } catch (error) {
+        console.error("Erro no auto-save:", error);
+        throw error;
+      }
+    },
+    intervalMs: 30000, // 30 segundos
+    requireValid: true,
+    isValid: async () => {
+      const isValid = await form.trigger();
+      return isValid;
+    },
+    onAutoSaveComplete: () => {
+      // Auto-save concluído
+    },
+  });
+  
+  // Marcar dirty quando formData muda
+  useEffect(() => {
+    if (isDirty) {
+      markDirty();
+    }
+  }, [formData, isDirty, markDirty]);
 
   // Undo/Redo para alterações do formulário
   const undoRedo = useUndoRedo(MOCK_COMPANY, 50);
@@ -209,11 +241,11 @@ export function CompanyEditClient() {
       return;
     }
 
-    setSaving(true);
+      setSaving(true);
     try {
       const savedData = await companySettingsAPI.updateSettings(formData);
-      setLastSaved(new Date());
       form.reset(savedData, { keepValues: true });
+      markClean();
       notificationCenter.add({
         type: "success",
         title: "Configurações salvas",
@@ -231,58 +263,8 @@ export function CompanyEditClient() {
     }
   }, [form, formData]);
 
-  // Atalho Ctrl+S para salvar
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
-        e.preventDefault();
-        if (isDirty && !saving) {
-          handleSave();
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isDirty, saving, handleSave]);
-
   // Calcular completude
   const completeness = calculateCompleteness(formData);
-
-  // Auto-save após 3 segundos sem alterações
-  useEffect(() => {
-    if (!isDirty) return;
-
-    if (autoSaveTimeoutRef.current) {
-      clearTimeout(autoSaveTimeoutRef.current);
-    }
-
-    autoSaveTimeoutRef.current = setTimeout(() => {
-      handleAutoSave();
-    }, 3000);
-
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
-  }, [formData, isDirty]);
-
-  const handleAutoSave = useCallback(async () => {
-    if (!isDirty) return;
-    
-    setAutoSaving(true);
-    try {
-      await companySettingsAPI.updateSettings(formData);
-      setLastSaved(new Date());
-      form.reset(formData, { keepValues: true });
-    } catch (error) {
-      console.error("Erro no auto-save:", error);
-      // Não mostrar notificação para auto-save para não poluir a UI
-    } finally {
-      setAutoSaving(false);
-    }
-  }, [formData, isDirty, form]);
 
   // Busca CNPJ
   const handleSearchCnpj = async () => {
@@ -374,123 +356,67 @@ export function CompanyEditClient() {
     );
   }
 
+  const handleOnSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+      await handleSave();
+    },
+    [handleSave],
+  );
+
   return (
-    <div className="relative z-10 min-h-screen p-6 space-y-8">
-      {/* Header Futurista */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-
-        <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
-          {/* Bordas decorativas */}
-          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-
-          <div className="relative z-10 flex-1">
-            <div className="flex items-center gap-4 mb-3">
-              <Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />
-              <div className="flex-1">
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                  Configurações da Empresa
-                </h1>
-                <p className="text-sm text-white/60 font-medium mt-1">
-                  Gerencie os dados, configurações fiscais, tema e identidade visual da sua organização.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {/* Undo/Redo */}
-            <div className="hidden sm:flex items-center gap-1 border-r border-white/10 pr-3">
-              <button
-                type="button"
-                onClick={handleUndo}
-                disabled={!undoRedo.canUndo}
-                className={cn(
-                  "p-2 rounded-lg transition-all",
-                  undoRedo.canUndo
-                    ? "hover:bg-white/10 text-white"
-                    : "opacity-30 cursor-not-allowed text-zinc-400",
-                )}
-                title="Desfazer (Ctrl+Z)"
-              >
-                <History className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleRedo}
-                disabled={!undoRedo.canRedo}
-                className={cn(
-                  "p-2 rounded-lg transition-all",
-                  undoRedo.canRedo
-                    ? "hover:bg-white/10 text-white"
-                    : "opacity-30 cursor-not-allowed text-zinc-400",
-                )}
-                title="Refazer (Ctrl+Shift+Z)"
-              >
-                <History className="h-4 w-4 rotate-180" />
-              </button>
-            </div>
-
-            {/* Status de salvamento */}
-            {autoSaving && (
-              <div className="flex items-center gap-1.5 text-xs text-[hsl(var(--primary))]">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                <span>Salvando...</span>
-              </div>
-            )}
-            {lastSaved && !autoSaving && !isDirty && (
-              <div className="flex items-center gap-1.5 text-xs text-white/60">
-                <Clock className="h-3 w-3" />
-                <span>Salvo {lastSaved.toLocaleTimeString()}</span>
-              </div>
-            )}
-            {isDirty && !autoSaving && (
-              <div className="flex items-center gap-1.5 text-xs text-amber-400">
-                <Zap className="h-3.5 w-3.5" />
-                <span>Alterações não salvas</span>
-              </div>
-            )}
-
-            <Link href="/admin/company">
-              <Button
-                variant="secondary"
-                type="button"
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar
-              </Button>
-            </Link>
-
-            <Button
+    <StandardFormPage
+      title="Configurações da Empresa"
+      subtitle="Gerencie os dados, configurações fiscais, tema e identidade visual da sua organização."
+      icon={<Building2 className="h-8 w-8" />}
+      onSave={handleOnSubmit}
+      backUrl="/admin/company"
+      isValid={!Object.keys(errors).length}
+      autoSaveStatus={autoSaveStatus}
+      hasUnsavedChanges={hasUnsavedChanges}
+      loading={loading || saving}
+      headerActions={
+        <div className="flex items-center gap-2">
+          {/* Undo/Redo */}
+          <div className="hidden sm:flex items-center gap-1 border-r border-white/10 pr-3">
+            <button
               type="button"
-              onClick={handleSave}
-              disabled={saving || !isDirty}
-              variant="default"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 h-4 w-4" />
-                  Salvar Alterações
-                </>
+              onClick={handleUndo}
+              disabled={!undoRedo.canUndo}
+              className={cn(
+                "p-2 rounded-lg transition-all",
+                undoRedo.canUndo
+                  ? "hover:bg-white/10 text-white"
+                  : "opacity-30 cursor-not-allowed text-zinc-400",
               )}
-            </Button>
+              title="Desfazer (Ctrl+Z)"
+            >
+              <History className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={handleRedo}
+              disabled={!undoRedo.canRedo}
+              className={cn(
+                "p-2 rounded-lg transition-all",
+                undoRedo.canRedo
+                  ? "hover:bg-white/10 text-white"
+                  : "opacity-30 cursor-not-allowed text-zinc-400",
+              )}
+              title="Refazer (Ctrl+Shift+Z)"
+            >
+              <History className="h-4 w-4 rotate-180" />
+            </button>
+          </div>
+          
+          {/* Completude */}
+          <div className="text-xs text-white/60">
+            {completeness}% completo
           </div>
         </div>
-      </motion.div>
+      }
+    >
+      <div className="space-y-8">
 
       {/* Menu de Navegação Elevado */}
       <motion.div
@@ -1228,7 +1154,8 @@ export function CompanyEditClient() {
 
       {/* Atalhos de Teclado */}
       <KeyboardShortcuts />
-    </div>
+      </div>
+    </StandardFormPage>
   );
 }
 

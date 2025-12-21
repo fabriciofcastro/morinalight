@@ -233,3 +233,5 @@ Os alertas são avaliados pelo Prometheus e podem ser encaminhados para:
 5. **Distributed Tracing**: Integrar Jaeger para tracing completo
 
 
+
+

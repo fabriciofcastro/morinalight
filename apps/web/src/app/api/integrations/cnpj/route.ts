@@ -73,10 +73,92 @@ export async function GET(request: Request) {
     });
 
     if (!response.ok) {
-      if (response.status === 404) {
-        return NextResponse.json({ message: "CNPJ não encontrado" }, { status: 404 });
+      // Tentar ler a mensagem de erro da API
+      let errorMessage = "Erro ao buscar CNPJ";
+      let errorCode = "UNKNOWN_ERROR";
+      
+      try {
+        const text = await response.text();
+        if (text) {
+          try {
+            const errorData = JSON.parse(text);
+            // Extrair mensagem de forma segura
+            if (typeof errorData === "string") {
+              errorMessage = errorData;
+            } else if (errorData && typeof errorData === "object") {
+              errorMessage = errorData.message || errorData.error || errorData.detail || errorData.title || JSON.stringify(errorData);
+              errorCode = errorData.code || errorCode;
+            }
+          } catch {
+            // Se não for JSON, usar o texto direto
+            errorMessage = text.length > 200 ? text.substring(0, 200) + "..." : text;
+          }
+        }
+      } catch {
+        // Se não conseguir ler, usar mensagem padrão baseada no status
       }
-      throw new Error(`Erro na API: ${response.status}`);
+      
+      // Mensagens específicas por status code
+      if (response.status === 403) {
+        errorMessage = "Acesso negado. O serviço pode estar bloqueando requisições ou o CNPJ pode estar restrito.";
+        errorCode = "FORBIDDEN";
+      } else if (response.status === 404) {
+        errorMessage = "CNPJ não encontrado na base de dados.";
+        errorCode = "NOT_FOUND";
+      } else if (response.status === 429) {
+        errorMessage = "Muitas requisições. Aguarde alguns instantes antes de tentar novamente.";
+        errorCode = "RATE_LIMIT";
+      } else if (response.status === 503 || response.status === 502) {
+        errorMessage = "Serviço temporariamente indisponível. Tente novamente mais tarde.";
+        errorCode = "SERVICE_UNAVAILABLE";
+      } else if (response.status >= 500) {
+        errorMessage = "Erro no servidor. Tente novamente mais tarde.";
+        errorCode = "SERVER_ERROR";
+      }
+      
+      // Retornar resposta apropriada baseada no status
+      if (response.status === 404) {
+        return NextResponse.json({ message: errorMessage, code: errorCode }, { status: 404 });
+      }
+      
+      if (response.status === 403) {
+        return NextResponse.json(
+          {
+            message: errorMessage,
+            code: errorCode,
+          },
+          { status: 403 },
+        );
+      }
+      
+      if (response.status === 429) {
+        return NextResponse.json(
+          {
+            message: errorMessage,
+            code: errorCode,
+          },
+          { status: 429 },
+        );
+      }
+      
+      if (response.status === 503 || response.status === 502) {
+        return NextResponse.json(
+          {
+            message: errorMessage,
+            code: errorCode,
+          },
+          { status: 503 },
+        );
+      }
+      
+      // Para outros erros, retornar como 503 para não expor detalhes internos
+      return NextResponse.json(
+        {
+          message: errorMessage,
+          code: errorCode,
+        },
+        { status: 503 },
+      );
     }
 
     const data = await response.json();

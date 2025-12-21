@@ -243,3 +243,5 @@ try {
 - Logs muito verbosos podem impactar performance do Loki
 
 
+
+

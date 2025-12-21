@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@morina/ui";
+import { Button, GlassCard } from "@morina/ui";
 import {
   UserPlus,
   ArrowLeft,
@@ -20,8 +20,12 @@ import {
   Shield,
   Copy,
   RefreshCw,
+  Calendar,
+  Phone,
+  FileText,
+  CheckCircle2,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, type CreateUserRequest } from "@/hooks/use-user";
@@ -35,6 +39,8 @@ import { companySettingsAPI } from "@/lib/api/company-settings";
 import { useKeyboardShortcuts } from "@/lib/hooks/use-keyboard-shortcuts";
 import { triggerConfetti } from "@/lib/utils/confetti";
 import { Progress } from "@morina/ui";
+import { StandardFormPage } from "@/components/templates";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 interface Department {
   id: string;
@@ -60,6 +66,13 @@ interface Permission {
   code: string;
   description?: string;
   module: string;
+}
+
+interface Step {
+  id: string;
+  label: string;
+  description: string;
+  icon: React.ReactNode;
 }
 
 export function UsersFormClient() {
@@ -115,12 +128,39 @@ export function UsersFormClient() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Auto-save state
-  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved">("idle");
   const DRAFT_STORAGE_KEY = "user-form-draft";
   
   // Form progress
   const [formProgress, setFormProgress] = useState(0);
+  
+  // Check if form is valid for auto-save
+  const canSave = useMemo(() => {
+    return !!(
+      formData.displayName?.trim() &&
+      formData.email?.trim() &&
+      validateEmail(formData.email) &&
+      formData.password &&
+      formData.password.length >= 8 &&
+      formData.password === formData.confirmPassword &&
+      formData.departmentId &&
+      formData.sectorId &&
+      formData.positionId
+    );
+  }, [formData]);
+  
+  // Auto-save using standardized hook
+  const { status: autoSaveStatus, hasUnsavedChanges, markDirty, markClean } = useAutoSave({
+    onSave: async () => {
+      if (!canSave) return;
+      saveDraft();
+    },
+    intervalMs: 30000, // 30 segundos
+    requireValid: true,
+    isValid: () => canSave,
+    onAutoSaveComplete: () => {
+      // Draft saved successfully
+    },
+  });
   
   // Preview modal state
   const [showPreview, setShowPreview] = useState(false);
@@ -185,7 +225,7 @@ export function UsersFormClient() {
     }
   }, [formData]);
 
-  // Auto-save draft every 30 seconds
+  // Mark dirty when form data changes (for auto-save)
   useEffect(() => {
     const hasData = 
       formData.displayName || 
@@ -193,17 +233,10 @@ export function UsersFormClient() {
       formData.cpf || 
       formData.departmentId;
 
-    if (!hasData) return;
-
-    const interval = setInterval(() => {
-      setAutoSaveStatus("saving");
-      saveDraft();
-      setAutoSaveStatus("saved");
-      setTimeout(() => setAutoSaveStatus("idle"), 2000);
-    }, 30000); // 30 segundos
-
-    return () => clearInterval(interval);
-  }, [formData, saveDraft]);
+    if (hasData) {
+      markDirty();
+    }
+  }, [formData, markDirty]);
 
   // Clear draft after successful save
   const clearDraft = useCallback(() => {
@@ -459,6 +492,7 @@ export function UsersFormClient() {
     try {
       const response = await companySettingsAPI.uploadFile(file, "document", "Foto de perfil do usuário");
       setFormData((prev) => ({ ...prev, photoUrl: response.url }));
+      markDirty();
       notificationCenter.add({
         type: "success",
         title: "Foto enviada",
@@ -483,7 +517,8 @@ export function UsersFormClient() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, []);
+    markDirty();
+  }, [markDirty]);
 
   // Group permissions by module
   const permissionsByModule = permissions.reduce((acc, perm) => {
@@ -505,6 +540,7 @@ export function UsersFormClient() {
           : [...prev.initialPermissions, permissionId],
       };
     });
+    markDirty();
   };
 
   // Calculate form progress
@@ -684,6 +720,7 @@ export function UsersFormClient() {
 
         // Clear draft after successful save
         clearDraft();
+        markClean();
 
         // Confetti celebration!
         triggerConfetti();
@@ -858,80 +895,45 @@ export function UsersFormClient() {
     },
   ]);
 
+  const handleSave = useCallback(async () => {
+    // This is used by StandardFormPage's onSave
+    // We'll use handleSubmit directly instead
+  }, []);
+
+  const handleOnSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+      await handleSubmit(e, false, false);
+    },
+    [handleSubmit],
+  );
+
   return (
-    <div className="relative min-h-screen p-6 space-y-8">
-      {/* Header Futurista */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-linear-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-
-        <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-linear-to-br from-white/5 via-white/2 to-transparent backdrop-blur-xl shadow-2xl">
-          {/* Bordas decorativas */}
-          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-
-          <div className="relative z-10 flex-1">
-            <div className="flex items-center gap-4 mb-3">
-              <UserPlus className="h-8 w-8 text-[hsl(var(--primary))]" />
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                  Criar Novo Usuário
-                </h1>
-                <p className="text-sm text-white/60 font-medium mt-1">Cadastre um novo usuário no sistema</p>
-                {autoSaveStatus !== "idle" && (
-                  <div className="flex items-center gap-2 mt-2">
-                    {autoSaveStatus === "saving" && (
-                      <>
-                        <div className="h-2 w-2 animate-spin rounded-full border-2 border-white/30 border-t-white/60" />
-                        <span className="text-xs text-white/50">Salvando rascunho...</span>
-                      </>
-                    )}
-                    {autoSaveStatus === "saved" && (
-                      <>
-                        <div className="h-2 w-2 rounded-full bg-green-500" />
-                        <span className="text-xs text-green-400">Rascunho salvo automaticamente</span>
-                      </>
-                    )}
-                  </div>
-                )}
-                
-                {/* Progress Bar */}
-                <div className="mt-4 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-white/60">Progresso do formulário</span>
-                    <span className="text-white/80 font-medium">{formProgress}%</span>
-                  </div>
-                  <Progress value={formProgress} className="h-1.5" />
-                </div>
-              </div>
+    <StandardFormPage
+      title="Criar Novo Usuário"
+      subtitle="Cadastre um novo usuário no sistema"
+      icon={<UserPlus className="h-8 w-8" />}
+      onSave={handleOnSubmit}
+      showSaveButton={false}
+      backUrl="/admin/users"
+      isValid={canSave}
+      autoSaveStatus={autoSaveStatus}
+      hasUnsavedChanges={hasUnsavedChanges}
+      loading={creatingUser}
+      headerActions={
+        <div className="flex items-center gap-4">
+          {/* Progress Bar */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-white/60">Progresso do formulário</span>
+              <span className="text-white/80 font-medium">{formProgress}%</span>
             </div>
+            <Progress value={formProgress} className="h-1.5" />
           </div>
-
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4"
-              onClick={() => router.push("/admin/users")}
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-          </motion.div>
         </div>
-      </motion.div>
-
-      {/* Formulário Principal */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent backdrop-blur-xl shadow-xl"
-      >
+      }
+    >
+      <div className="space-y-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* DADOS PESSOAIS */}
           {(!wizardMode || currentWizardStep === 0) && (
@@ -953,6 +955,7 @@ export function UsersFormClient() {
                 onChange={(e) => {
                   setFormData((prev) => ({ ...prev, displayName: e.target.value }));
                   if (errors.displayName) setErrors((prev) => ({ ...prev, displayName: "" }));
+                  markDirty();
                 }}
                 error={!!errors.displayName}
                 errorMessage={errors.displayName}
@@ -967,6 +970,7 @@ export function UsersFormClient() {
                   onChange={(e) => {
                     setFormData((prev) => ({ ...prev, email: e.target.value.toLowerCase() }));
                     if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                    markDirty();
                   }}
                   error={!!errors.email}
                   errorMessage={errors.email}
@@ -995,6 +999,7 @@ export function UsersFormClient() {
                     const formatted = formatCPF(e.target.value);
                     setFormData((prev) => ({ ...prev, cpf: formatted }));
                     if (errors.cpf) setErrors((prev) => ({ ...prev, cpf: "" }));
+                    markDirty();
                   }}
                   error={!!errors.cpf}
                   errorMessage={errors.cpf}
@@ -1019,6 +1024,7 @@ export function UsersFormClient() {
                 onChange={(e) => {
                   const formatted = formatPhone(e.target.value);
                   setFormData((prev) => ({ ...prev, phone: formatted }));
+                  markDirty();
                 }}
                 placeholder="(00) 00000-0000"
                 maxLength={15}
@@ -1027,7 +1033,10 @@ export function UsersFormClient() {
                 label="Data de Nascimento"
                 type="date"
                 value={formData.birthDate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, birthDate: e.target.value }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, birthDate: e.target.value }));
+                  markDirty();
+                }}
               />
               {/* Foto do Perfil */}
               <div className="md:col-span-2">
@@ -1120,6 +1129,7 @@ export function UsersFormClient() {
                   onChange={(e) => {
                     setFormData((prev) => ({ ...prev, password: e.target.value }));
                     if (errors.password) setErrors((prev) => ({ ...prev, password: "" }));
+                    markDirty();
                   }}
                   error={!!errors.password}
                   errorMessage={errors.password}
@@ -1187,6 +1197,7 @@ export function UsersFormClient() {
                   onChange={(e) => {
                     setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }));
                     if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: "" }));
+                    markDirty();
                   }}
                   error={!!errors.confirmPassword}
                   errorMessage={errors.confirmPassword}
@@ -1206,7 +1217,10 @@ export function UsersFormClient() {
                 label="Status"
                 required
                 value={formData.status}
-                onChange={(e) => setFormData((prev) => ({ ...prev, status: e.target.value as typeof formData.status }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, status: e.target.value as typeof formData.status }));
+                  markDirty();
+                }}
               >
                 <option value="pending" className="bg-[#1a1f3a]">Pendente</option>
                 <option value="active" className="bg-[#1a1f3a]">Ativo</option>
@@ -1217,7 +1231,10 @@ export function UsersFormClient() {
                   <input
                     type="checkbox"
                     checked={formData.requirePasswordChange}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, requirePasswordChange: e.target.checked }))}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, requirePasswordChange: e.target.checked }));
+                      markDirty();
+                    }}
                     className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
                   />
                   <span className="text-sm text-white/80">Requer troca de senha</span>
@@ -1226,7 +1243,10 @@ export function UsersFormClient() {
                   <input
                     type="checkbox"
                     checked={formData.sendWelcomeEmail}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, sendWelcomeEmail: e.target.checked }))}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, sendWelcomeEmail: e.target.checked }));
+                      markDirty();
+                    }}
                     className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
                   />
                   <span className="text-sm text-white/80">Enviar email de boas-vindas</span>
@@ -1246,7 +1266,10 @@ export function UsersFormClient() {
                 label="Departamento"
                 required
                 value={formData.departmentId}
-                onChange={(e) => setFormData((prev) => ({ ...prev, departmentId: e.target.value, sectorId: "", positionId: "" }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, departmentId: e.target.value, sectorId: "", positionId: "" }));
+                  markDirty();
+                }}
                 error={!!errors.departmentId}
                 errorMessage={errors.departmentId}
                 disabled={loadingDepartments}
@@ -1264,7 +1287,10 @@ export function UsersFormClient() {
                 label="Setor"
                 required
                 value={formData.sectorId}
-                onChange={(e) => setFormData((prev) => ({ ...prev, sectorId: e.target.value, positionId: "" }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, sectorId: e.target.value, positionId: "" }));
+                  markDirty();
+                }}
                 error={!!errors.sectorId}
                 errorMessage={errors.sectorId}
                 disabled={!formData.departmentId || loadingSectors}
@@ -1282,7 +1308,10 @@ export function UsersFormClient() {
                 label="Cargo"
                 required
                 value={formData.positionId}
-                onChange={(e) => setFormData((prev) => ({ ...prev, positionId: e.target.value }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, positionId: e.target.value }));
+                  markDirty();
+                }}
                 error={!!errors.positionId}
                 errorMessage={errors.positionId}
                 disabled={!formData.sectorId || loadingPositions}
@@ -1300,13 +1329,19 @@ export function UsersFormClient() {
                 label="Data de Admissão"
                 type="date"
                 value={formData.admissionDate}
-                onChange={(e) => setFormData((prev) => ({ ...prev, admissionDate: e.target.value }))}
+                onChange={(e) => {
+                  setFormData((prev) => ({ ...prev, admissionDate: e.target.value }));
+                  markDirty();
+                }}
               />
               <div className="md:col-span-2">
                 <FuturisticTextarea
                   label="Observações"
                   value={formData.observations}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, observations: e.target.value }))}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, observations: e.target.value }));
+                    markDirty();
+                  }}
                   placeholder="Observações adicionais sobre o usuário..."
                   rows={4}
                 />
@@ -1458,12 +1493,10 @@ export function UsersFormClient() {
                 )}
                   </Button>
                 </motion.div>
-                </>
-              )}
             </div>
           </div>
         </form>
-      </motion.div>
+      </div>
 
       {/* Preview Modal */}
       <AnimatePresence>
@@ -1681,6 +1714,6 @@ export function UsersFormClient() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </StandardFormPage>
   );
 }

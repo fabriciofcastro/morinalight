@@ -76,7 +76,7 @@ export function csrfValidateToken() {
     }
 
     // Excluir rotas públicas que não precisam de CSRF
-    const publicRoutes = ["/auth/login", "/auth/register", "/health"];
+    const publicRoutes = ["/auth/login", "/auth/register", "/health", "/realtime/token"];
     const isPublic = publicRoutes.some((route) => request.url.startsWith(route));
 
     if (isPublic) {
@@ -141,4 +141,3 @@ export function registerCsrfProtection(app: FastifyInstance): void {
   // Validar token em métodos mutantes (depois da geração)
   app.addHook("onRequest", csrfValidateToken());
 }
-

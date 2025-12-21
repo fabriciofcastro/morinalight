@@ -221,7 +221,7 @@ export class FichasCustoApi {
     const queryString = params.toString();
     const url = `/organizations/${orgId}/fichas-custo${queryString ? `?${queryString}` : ""}`;
     
-    return api.get<ListaFichasCustoResultado>(url);
+    return api.get<ListaFichasCustoResultado>(url, { timeout: 15000 });
   }
 
   /**

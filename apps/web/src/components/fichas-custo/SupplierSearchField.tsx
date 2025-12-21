@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { suppliersApi, type Supplier } from "@/lib/api/suppliers";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { CnpjLookup } from "@/components/admin/company/CnpjLookup";
+import { formatCnpj } from "@/lib/validators/brazilian";
 
 interface SupplierSearchFieldProps {
   value: string;
@@ -115,10 +116,23 @@ export function SupplierSearchField({
     }
   };
 
+  // Formatar CNPJ enquanto digita
+  const formatCnpjInput = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1/$2")
+      .replace(/(\d{4})(\d)/, "$1-$2")
+      .slice(0, 18);
+  };
+
   // Buscar CNPJ e preencher dados
   const handleCnpjFound = (data: any) => {
     setNewSupplierName(data.name || data.legal_name || "");
-    setNewSupplierCnpj(data.cnpj || "");
+    // Formatar o CNPJ retornado
+    const cnpjFormatted = formatCnpjInput(data.cnpj || "");
+    setNewSupplierCnpj(cnpjFormatted);
   };
 
   return (
@@ -127,42 +141,46 @@ export function SupplierSearchField({
         <label className="block text-sm font-semibold text-white/90 mb-2">
           Fornecedor <span className="text-red-400">*</span>
         </label>
-        <div className="relative">
-          <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-          <div className="relative flex items-center gap-2">
-            <Search className="absolute left-4 h-4 w-4 text-white/60" />
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => {
-                onChange(e.target.value);
-                setSearchTerm(e.target.value);
-                if (e.target.value.length >= 2) {
-                  setShowDropdown(true);
-                }
-              }}
-              onFocus={() => {
-                if (suppliers.length > 0) {
-                  setShowDropdown(true);
-                }
-              }}
-              placeholder="Buscar ou digite o nome do fornecedor..."
-              onFocus={() => setShowTooltip(error && !!errorMessage)}
-              onBlur={() => setShowTooltip(false)}
-              className={`relative w-full pl-10 pr-20 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300`}
-              aria-invalid={error}
-              aria-describedby={error && errorMessage ? "supplier-error" : undefined}
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowCreateModal(true)}
-              className="absolute right-2 px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 backdrop-blur-sm text-sm font-medium transition-all"
-            >
-              <Plus className="h-4 w-4 inline mr-1" />
-              Novo
-            </motion.button>
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+            <div className="relative flex items-center">
+              <Search className="absolute left-4 h-4 w-4 text-white/60 z-10" />
+              <input
+                type="text"
+                value={value}
+                onChange={(e) => {
+                  onChange(e.target.value);
+                  setSearchTerm(e.target.value);
+                  if (e.target.value.length >= 2) {
+                    setShowDropdown(true);
+                  }
+                }}
+                onFocus={() => {
+                  if (suppliers.length > 0) {
+                    setShowDropdown(true);
+                  }
+                  setShowTooltip(error && !!errorMessage);
+                }}
+                onBlur={() => setShowTooltip(false)}
+                placeholder="Buscar ou digite o nome do fornecedor..."
+                className={`relative w-full pl-10 pr-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300`}
+                aria-invalid={error}
+                aria-describedby={error && errorMessage ? "supplier-error" : undefined}
+              />
+            </div>
           </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowCreateModal(true)}
+            className="px-3 py-3 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 backdrop-blur-sm transition-all flex items-center justify-center"
+            type="button"
+            title="Como cadastrar um novo fornecedor"
+            aria-label="Cadastrar novo fornecedor"
+          >
+            <Plus className="h-5 w-5" />
+          </motion.button>
           {error && errorMessage && (
             <div
               id="supplier-error"
@@ -249,13 +267,17 @@ export function SupplierSearchField({
 
                 <div>
                   <label className="block text-sm font-semibold text-white/90 mb-2">
-                    CNPJ
+                    CNPJ (será preenchido automaticamente se buscar acima)
                   </label>
                   <input
                     type="text"
                     value={newSupplierCnpj}
-                    onChange={(e) => setNewSupplierCnpj(e.target.value)}
+                    onChange={(e) => {
+                      const formatted = formatCnpjInput(e.target.value);
+                      setNewSupplierCnpj(formatted);
+                    }}
                     placeholder="00.000.000/0000-00"
+                    maxLength={18}
                     className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
                   />
                 </div>

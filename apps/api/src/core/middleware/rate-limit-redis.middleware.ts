@@ -23,12 +23,17 @@ type RateLimitOptions = {
 const fallbackStore = new Map<string, { count: number; resetTime: number }>();
 
 function getClientIdentifier(request: FastifyRequest): string {
-  // Priorizar userId se autenticado
-  if (request.auth?.userId) {
-    return `user:${request.auth.userId}`;
-  }
-  // Caso contrário, usar IP
+  const orgId = extractOrgId(request);
+  const userId = request.auth?.userId;
   const ip = request.ip || request.socket.remoteAddress || "unknown";
+  
+  // Prioridade: orgId > userId > IP
+  if (orgId) {
+    return userId ? `org:${orgId}:user:${userId}` : `org:${orgId}:ip:${ip}`;
+  }
+  if (userId) {
+    return `user:${userId}`;
+  }
   return `ip:${ip}`;
 }
 

@@ -64,11 +64,18 @@ export async function createServer() {
       const payload = verifyToken(query.token);
 
       if (payload.type !== "realtime") {
-        (connection as { socket: WebSocket }).socket.close(4403, "Invalid token type");
+        const socket = getSocket(connection);
+        if (socket) {
+          socket.close(4403, "Invalid token type");
+        }
         return;
       }
 
-      const socket = (connection as { socket: WebSocket }).socket;
+      const socket = getSocket(connection);
+      if (!socket) {
+        app.log.warn("Conexao WS sem socket disponivel");
+        return;
+      }
       hub.addConnection(payload.orgId, payload.actorId, socket);
       socket.send(
         JSON.stringify({
@@ -78,7 +85,10 @@ export async function createServer() {
       );
     } catch (error: unknown) {
       app.log.warn({ err: error }, "Erro na conexão WS");
-      (connection as { socket: WebSocket }).socket.close(4401, "Unauthorized");
+      const socket = getSocket(connection);
+      if (socket) {
+        socket.close(4401, "Unauthorized");
+      }
     }
   });
 
@@ -91,4 +101,12 @@ export async function createServer() {
 
 function verifyToken(token: string): TokenPayload {
   return jwt.verify(token, env.REALTIME_SECRET) as TokenPayload;
+}
+
+function getSocket(connection: unknown): WebSocket | null {
+  if (!connection || typeof connection !== "object") {
+    return null;
+  }
+  const socket = (connection as { socket?: WebSocket }).socket;
+  return socket ?? null;
 }
