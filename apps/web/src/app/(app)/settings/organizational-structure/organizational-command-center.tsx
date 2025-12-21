@@ -6,6 +6,7 @@ import {
   Building2,
   CheckCircle2,
   ChevronRight,
+  Download,
   Edit,
   FolderTree,
   Plus,
@@ -13,6 +14,7 @@ import {
   Search,
   Shield,
   Trash2,
+  Upload,
   Users,
   X,
   XCircle,
@@ -30,6 +32,7 @@ import {
 } from "@/components/organizational-structure/organization-tree";
 import { OrganizationalToolbar } from "@/components/organizational-structure/OrganizationalToolbar";
 import { OrganizationalAuditPanel } from "@/components/organizational-structure/OrganizationalAuditPanel";
+import { ImportExportPanel } from "@/components/organizational-structure/ImportExportPanel";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type Department = {
@@ -45,10 +48,25 @@ type Department = {
   updatedAt: string;
 };
 
+type Subdepartment = {
+  subdepartmentId: string;
+  orgId: string;
+  departmentId: string;
+  name: string;
+  code: string;
+  description: string | null;
+  parentId: string | null;
+  status: "ativo" | "inativo" | "arquivado";
+  ordem: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 type Sector = {
   id: string;
   orgId: string;
   departmentId: string;
+  subdepartmentId?: string | null; // Setor pode pertencer a um subdepartamento
   name: string;
   code: string;
   description: string | null;
@@ -86,7 +104,7 @@ type SelectedNode =
   | { type: "sector"; id: string; data: SectorNode }
   | { type: "position"; id: string; data: PositionNode };
 
-type DetailsTab = "overview" | "members" | "permissions" | "audit" | "move";
+type DetailsTab = "overview" | "members" | "permissions" | "audit" | "move" | "import-export";
 
 type DrawerMode = "create" | "edit";
 type DrawerEntityType = "department" | "sector" | "position";
@@ -163,6 +181,7 @@ function entityLabel(node: SelectedNode | null) {
 export function OrganizationalCommandCenter() {
   const [loading, setLoading] = useState(true);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [subdepartments, setSubdepartments] = useState<Subdepartment[]>([]);
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
 
@@ -266,11 +285,30 @@ export function OrganizationalCommandCenter() {
   const [pendingApprovalInfo, setPendingApprovalInfo] = useState<PendingApprovalInfo | null>(null);
 
   const tree = useMemo<DepartmentNode[]>(() => {
+    // Organizar setores por departamento e subdepartamento
     const sectorsByDepartment = new Map<string, Sector[]>();
+    const sectorsBySubdepartment = new Map<string, Sector[]>();
+    
     for (const s of sectors) {
-      const list = sectorsByDepartment.get(s.departmentId) ?? [];
-      list.push(s);
-      sectorsByDepartment.set(s.departmentId, list);
+      if (s.subdepartmentId) {
+        // Setor pertence a um subdepartamento
+        const list = sectorsBySubdepartment.get(s.subdepartmentId) ?? [];
+        list.push(s);
+        sectorsBySubdepartment.set(s.subdepartmentId, list);
+      } else {
+        // Setor pertence diretamente ao departamento
+        const list = sectorsByDepartment.get(s.departmentId) ?? [];
+        list.push(s);
+        sectorsByDepartment.set(s.departmentId, list);
+      }
+    }
+
+    // Organizar subdepartamentos por departamento
+    const subdepartmentsByDepartment = new Map<string, Subdepartment[]>();
+    for (const sd of subdepartments) {
+      const list = subdepartmentsByDepartment.get(sd.departmentId) ?? [];
+      list.push(sd);
+      subdepartmentsByDepartment.set(sd.departmentId, list);
     }
 
     const positionsBySector = new Map<string, Position[]>();
@@ -282,12 +320,13 @@ export function OrganizationalCommandCenter() {
 
     const depts = departments
       .map((d) => {
-        const deptNode: DepartmentNode = {
-          id: d.departmentId,
-          name: d.name,
-          code: d.code,
-          status: d.status,
-          sectors: (sectorsByDepartment.get(d.departmentId) ?? [])
+        // Subdepartamentos do departamento
+        const subdepts = (subdepartmentsByDepartment.get(d.departmentId) ?? []).map((sd) => ({
+          id: sd.subdepartmentId,
+          name: sd.name,
+          code: sd.code,
+          status: sd.status,
+          sectors: (sectorsBySubdepartment.get(sd.subdepartmentId) ?? [])
             .map((s) => {
               const secNode: SectorNode = {
                 id: s.id,
@@ -309,6 +348,39 @@ export function OrganizationalCommandCenter() {
               return secNode;
             })
             .sort((a, b) => a.name.localeCompare(b.name)),
+        }));
+
+        // Setores diretos do departamento (quando não há subdepartamentos)
+        const directSectors = (sectorsByDepartment.get(d.departmentId) ?? [])
+          .map((s) => {
+            const secNode: SectorNode = {
+              id: s.id,
+              departmentId: s.departmentId,
+              name: s.name,
+              code: s.code,
+              status: s.status,
+              positions: (positionsBySector.get(s.id) ?? []).map((p) => {
+                const posNode: PositionNode = {
+                  id: p.id,
+                  sectorId: p.sectorId,
+                  name: p.name,
+                  code: p.code,
+                  status: p.status,
+                };
+                return posNode;
+              }),
+            };
+            return secNode;
+          })
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        const deptNode: DepartmentNode = {
+          id: d.departmentId,
+          name: d.name,
+          code: d.code,
+          status: d.status,
+          subdepartments: subdepts.length > 0 ? subdepts : undefined,
+          sectors: subdepts.length === 0 ? directSectors : undefined, // Só mostra setores diretos se não houver subdepartamentos
         };
         return deptNode;
       })
@@ -347,11 +419,22 @@ export function OrganizationalCommandCenter() {
         .filter((d) => d.status === filters.status)
         .map((d) => ({
           ...d,
+          subdepartments: d.subdepartments
+            ?.filter((sd) => sd.status === filters.status)
+            .map((sd) => ({
+              ...sd,
+              sectors: sd.sectors
+                ?.filter((s) => s.status === filters.status)
+                .map((s) => ({
+                  ...s,
+                  positions: s.positions?.filter((p) => p.status === filters.status) ?? [],
+                })),
+            })),
           sectors: d.sectors
-            .filter((s) => s.status === filters.status)
+            ?.filter((s) => s.status === filters.status)
             .map((s) => ({
               ...s,
-              positions: s.positions.filter((p) => p.status === filters.status),
+              positions: s.positions?.filter((p) => p.status === filters.status) ?? [],
             })),
         }));
     }
@@ -361,6 +444,25 @@ export function OrganizationalCommandCenter() {
 
     return filteredDepts
       .map((d) => {
+        // Filtrar subdepartamentos
+        const subdeptsFiltered = (d.subdepartments ?? [])
+          .map((sd) => {
+            const sectorsFiltered = (sd.sectors ?? [])
+              .map((s) => {
+                const positionsFiltered = (s.positions ?? []).filter((p) => match(p.name) || match(p.code));
+                const keepSector = match(s.name) || match(s.code) || positionsFiltered.length > 0;
+                if (!keepSector) return null;
+                return { ...s, positions: positionsFiltered };
+              })
+              .filter((s): s is SectorNode => Boolean(s));
+            
+            const keepSubdept = match(sd.name) || match(sd.code) || sectorsFiltered.length > 0;
+            if (!keepSubdept) return null;
+            return { ...sd, sectors: sectorsFiltered };
+          })
+          .filter((sd): sd is SubdepartmentNode => Boolean(sd));
+
+        // Filtrar setores diretos
         const sectorsFiltered = (d.sectors ?? [])
           .map((s) => {
             const positionsFiltered = (s.positions ?? []).filter((p) => match(p.name) || match(p.code));
@@ -370,12 +472,16 @@ export function OrganizationalCommandCenter() {
           })
           .filter((s): s is SectorNode => Boolean(s));
 
-        const keepDept = match(d.name) || match(d.code) || sectorsFiltered.length > 0;
+        const keepDept = match(d.name) || match(d.code) || subdeptsFiltered.length > 0 || sectorsFiltered.length > 0;
         if (!keepDept) return null;
-        return { ...d, sectors: sectorsFiltered };
+        return { 
+          ...d, 
+          subdepartments: subdeptsFiltered.length > 0 ? subdeptsFiltered : undefined,
+          sectors: subdeptsFiltered.length === 0 ? sectorsFiltered : undefined,
+        };
       })
       .filter((d): d is DepartmentNode => Boolean(d));
-  }, [departments, positions, search, sectors, filters]);
+  }, [departments, subdepartments, positions, search, sectors, filters]);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -385,8 +491,12 @@ export function OrganizationalCommandCenter() {
         "Content-Type": "application/json",
       };
 
-      const [dRes, sRes, pRes] = await Promise.all([
+      // Obter orgId do tenant
+      const orgId = localStorage.getItem("selected_org_id") || "";
+      
+      const [dRes, sdRes, sRes, pRes] = await Promise.all([
         fetch("/api/departments", { headers, cache: "no-store" }),
+        orgId ? fetch(`/api/subdepartments?orgId=${orgId}&status=ativo&limite=1000`, { headers, cache: "no-store" }) : Promise.resolve({ ok: false }),
         fetch("/api/sectors", { headers, cache: "no-store" }),
         fetch("/api/positions", { headers, cache: "no-store" }),
       ]);
@@ -394,6 +504,10 @@ export function OrganizationalCommandCenter() {
       if (dRes.ok) {
         const data = (await dRes.json()) as ListResponse<Department>;
         setDepartments(data.itens ?? []);
+      }
+      if (sdRes.ok) {
+        const data = (await sdRes.json()) as ListResponse<Subdepartment>;
+        setSubdepartments(data.itens ?? []);
       }
       if (sRes.ok) {
         const data = (await sRes.json()) as ListResponse<Sector>;
@@ -1605,6 +1719,7 @@ export function OrganizationalCommandCenter() {
                     { id: "permissions", label: "Permissões", icon: Shield },
                     { id: "audit", label: "Auditoria", icon: CheckCircle2 },
                     { id: "move", label: "Movimentações", icon: XCircle },
+                    { id: "import-export", label: "Import/Export", icon: Download },
                   ] as const
                 ).map((t) => {
                   const Icon = t.icon;
@@ -1967,6 +2082,66 @@ export function OrganizationalCommandCenter() {
                 <OrganizationalAuditPanel
                   entityType={selected?.type}
                   entityId={selected?.id}
+                />
+              ) : tab === "import-export" ? (
+                <ImportExportPanel
+                  departments={departments.map((d) => ({
+                    id: d.departmentId,
+                    departmentId: d.departmentId,
+                    orgId: d.orgId,
+                    name: d.name,
+                    code: d.code,
+                    description: d.description,
+                    type: "CORE" as const,
+                    filialId: null,
+                    parentId: d.parentId,
+                    active: d.status === "ativo",
+                    createdAt: d.createdAt,
+                    updatedAt: d.updatedAt,
+                  }))}
+                  subdepartments={subdepartments.map((sd) => ({
+                    id: sd.subdepartmentId,
+                    subdepartmentId: sd.subdepartmentId,
+                    orgId: sd.orgId,
+                    departmentId: sd.departmentId,
+                    name: sd.name,
+                    code: sd.code,
+                    description: sd.description,
+                    status: sd.status,
+                    createdAt: sd.createdAt,
+                    updatedAt: sd.updatedAt,
+                  }))}
+                  sectors={sectors.map((s) => ({
+                    id: s.id,
+                    orgId: s.orgId,
+                    departmentId: s.departmentId,
+                    subdepartmentId: s.subdepartmentId,
+                    name: s.name,
+                    code: s.code,
+                    description: s.description,
+                    status: s.status,
+                    createdAt: s.createdAt,
+                    updatedAt: s.updatedAt,
+                  }))}
+                  positions={positions.map((p) => ({
+                    id: p.id,
+                    orgId: p.orgId,
+                    sectorId: p.sectorId,
+                    name: p.name,
+                    code: p.code,
+                    description: p.description,
+                    responsabilidades: p.responsabilidades,
+                    requisitos: p.requisitos,
+                    salarioMin: p.salarioMin,
+                    salarioMax: p.salarioMax,
+                    status: p.status,
+                    createdAt: p.createdAt,
+                    updatedAt: p.updatedAt,
+                  }))}
+                  orgId={departments[0]?.orgId || ""}
+                  onImportComplete={async () => {
+                    await loadAll();
+                  }}
                 />
               ) : (
                 <MovePanel

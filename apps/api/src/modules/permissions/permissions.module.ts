@@ -34,6 +34,7 @@ import { registerListPermissionsRoute } from "./http/list-permissions.route";
 import { registerListRolesRoute } from "./http/list-roles.route";
 import { registerUpdatePermissionRoute } from "./http/update-permission.route";
 import { registerUpdateRoleRoute } from "./http/update-role.route";
+import { PrismaAccessAuditLogRepository } from "./infra/prisma/prisma-access-audit-log.repository";
 import { PrismaDepartmentPermissionRepository } from "./infra/prisma/prisma-department-permission.repository";
 import { PrismaPermissionRepository } from "./infra/prisma/prisma-permission.repository";
 import { PrismaPermissionAuditLogRepository } from "./infra/prisma/prisma-permission-audit-log.repository";
@@ -43,6 +44,10 @@ import { PrismaPositionPermissionRepository } from "./infra/prisma/prisma-positi
 import { PrismaRoleRepository } from "./infra/prisma/prisma-role.repository";
 import { PrismaSectorPermissionRepository } from "./infra/prisma/prisma-sector-permission.repository";
 import { PrismaUserPermissionRepository } from "./infra/prisma/prisma-user-permission.repository";
+import { InMemoryPermissionCacheService } from "./infra/cache/in-memory-permission-cache.service";
+import { PermissionInheritanceServiceImpl } from "./infra/services/permission-inheritance.service";
+import type { PermissionCacheService } from "./domain/services/permission-cache.service";
+import type { PermissionInheritanceService } from "./domain/services/permission-inheritance.service";
 
 export type PermissionsModuleOptions = {
   permissionRepository?: PermissionRepository;

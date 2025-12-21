@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassCard, cn } from "@morina/ui";
-import { Building2, Briefcase, FolderTree, X } from "lucide-react";
+import { Building2, Briefcase, FolderTree, X, Layers } from "lucide-react";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -11,6 +11,24 @@ type Department = {
   name: string;
   code: string;
   status: "ativo" | "inativo" | "arquivado";
+  subdepartments?: Array<{
+    id: string;
+    name: string;
+    code: string;
+    status: "ativo" | "inativo" | "arquivado";
+    sectors?: Array<{
+      id: string;
+      name: string;
+      code: string;
+      status: "ativo" | "inativo" | "arquivado";
+      positions?: Array<{
+        id: string;
+        name: string;
+        code: string;
+        status: "ativo" | "inativo" | "arquivado";
+      }>;
+    }>;
+  }>;
   sectors?: Array<{
     id: string;
     name: string;
@@ -66,31 +84,75 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
         height: nodeHeight,
       };
 
-      // Setores
-      dept.sectors?.forEach((sector, sectorIdx) => {
-        const sectorX = deptX - 100 + (sectorIdx - (dept.sectors?.length || 0) / 2) * horizontalSpacing;
-        const sectorY = deptY + verticalSpacing;
+      let currentY = deptY + verticalSpacing;
 
-        positions[`sector-${sector.id}`] = {
-          x: sectorX,
-          y: sectorY,
-          width: nodeWidth,
-          height: nodeHeight,
-        };
+      // Subdepartamentos (se existirem)
+      if (dept.subdepartments && dept.subdepartments.length > 0) {
+        dept.subdepartments.forEach((subdept, subdeptIdx) => {
+          const subdeptX = deptX - 100 + (subdeptIdx - (dept.subdepartments?.length || 0) / 2) * horizontalSpacing;
+          const subdeptY = currentY;
 
-        // Cargos
-        sector.positions?.forEach((position, posIdx) => {
-          const posX = sectorX - 50 + (posIdx - (sector.positions?.length || 0) / 2) * (horizontalSpacing * 0.8);
-          const posY = sectorY + verticalSpacing;
-
-          positions[`position-${position.id}`] = {
-            x: posX,
-            y: posY,
-            width: nodeWidth * 0.8,
-            height: nodeHeight * 0.8,
+          positions[`subdept-${subdept.id}`] = {
+            x: subdeptX,
+            y: subdeptY,
+            width: nodeWidth,
+            height: nodeHeight,
           };
+
+          // Setores do subdepartamento
+          subdept.sectors?.forEach((sector, sectorIdx) => {
+            const sectorX = subdeptX - 80 + (sectorIdx - (subdept.sectors?.length || 0) / 2) * (horizontalSpacing * 0.9);
+            const sectorY = subdeptY + verticalSpacing;
+
+            positions[`sector-${sector.id}`] = {
+              x: sectorX,
+              y: sectorY,
+              width: nodeWidth * 0.9,
+              height: nodeHeight * 0.9,
+            };
+
+            // Cargos do setor
+            sector.positions?.forEach((position, posIdx) => {
+              const posX = sectorX - 40 + (posIdx - (sector.positions?.length || 0) / 2) * (horizontalSpacing * 0.7);
+              const posY = sectorY + verticalSpacing;
+
+              positions[`position-${position.id}`] = {
+                x: posX,
+                y: posY,
+                width: nodeWidth * 0.75,
+                height: nodeHeight * 0.75,
+              };
+            });
+          });
         });
-      });
+        currentY += verticalSpacing * 2; // Espaço extra para subdepartamentos
+      } else {
+        // Setores diretos do departamento (quando não há subdepartamentos)
+        dept.sectors?.forEach((sector, sectorIdx) => {
+          const sectorX = deptX - 100 + (sectorIdx - (dept.sectors?.length || 0) / 2) * horizontalSpacing;
+          const sectorY = currentY;
+
+          positions[`sector-${sector.id}`] = {
+            x: sectorX,
+            y: sectorY,
+            width: nodeWidth,
+            height: nodeHeight,
+          };
+
+          // Cargos
+          sector.positions?.forEach((position, posIdx) => {
+            const posX = sectorX - 50 + (posIdx - (sector.positions?.length || 0) / 2) * (horizontalSpacing * 0.8);
+            const posY = sectorY + verticalSpacing;
+
+            positions[`position-${position.id}`] = {
+              x: posX,
+              y: posY,
+              width: nodeWidth * 0.8,
+              height: nodeHeight * 0.8,
+            };
+          });
+        });
+      }
     });
 
     return positions;
@@ -122,13 +184,15 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
     setZoom((prev) => Math.max(0.5, Math.min(2, prev * delta)));
   };
 
-  const getNodeColor = (type: "department" | "sector" | "position", status: string) => {
+  const getNodeColor = (type: "department" | "subdepartment" | "sector" | "position", status: string) => {
     if (status !== "ativo") {
       return "bg-gray-500/20 border-gray-500/30 text-gray-400";
     }
     switch (type) {
       case "department":
         return "bg-blue-500/20 border-blue-500/30 text-blue-300";
+      case "subdepartment":
+        return "bg-cyan-500/20 border-cyan-500/30 text-cyan-300";
       case "sector":
         return "bg-purple-500/20 border-purple-500/30 text-purple-300";
       case "position":
@@ -138,10 +202,12 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
     }
   };
 
-  const getNodeIcon = (type: "department" | "sector" | "position") => {
+  const getNodeIcon = (type: "department" | "subdepartment" | "sector" | "position") => {
     switch (type) {
       case "department":
         return Building2;
+      case "subdepartment":
+        return Layers;
       case "sector":
         return FolderTree;
       case "position":
@@ -210,28 +276,109 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
               const deptPos = nodePositions[`dept-${deptId}`];
               if (!deptPos) return null;
 
-              return dept.sectors?.map((sector) => {
-                const sectorPos = nodePositions[`sector-${sector.id}`];
-                if (!sectorPos) return null;
+              // Conexões: Departamento → Subdepartamento ou Departamento → Setor (direto)
+              if (dept.subdepartments && dept.subdepartments.length > 0) {
+                // Departamento → Subdepartamento
+                return dept.subdepartments.map((subdept) => {
+                  const subdeptPos = nodePositions[`subdept-${subdept.id}`];
+                  if (!subdeptPos) return null;
 
-                return (
-                  <line
-                    key={`line-dept-${deptId}-sector-${sector.id}`}
-                    x1={deptPos.x + deptPos.width / 2}
-                    y1={deptPos.y + deptPos.height}
-                    x2={sectorPos.x + sectorPos.width / 2}
-                    y2={sectorPos.y}
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="2"
-                    strokeOpacity="0.3"
-                  />
-                );
+                  return (
+                    <line
+                      key={`line-dept-${deptId}-subdept-${subdept.id}`}
+                      x1={deptPos.x + deptPos.width / 2}
+                      y1={deptPos.y + deptPos.height}
+                      x2={subdeptPos.x + subdeptPos.width / 2}
+                      y2={subdeptPos.y}
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="2"
+                      strokeOpacity="0.3"
+                    />
+                  );
+                });
+              } else {
+                // Departamento → Setor (direto, quando não há subdepartamentos)
+                return dept.sectors?.map((sector) => {
+                  const sectorPos = nodePositions[`sector-${sector.id}`];
+                  if (!sectorPos) return null;
+
+                  return (
+                    <line
+                      key={`line-dept-${deptId}-sector-${sector.id}`}
+                      x1={deptPos.x + deptPos.width / 2}
+                      y1={deptPos.y + deptPos.height}
+                      x2={sectorPos.x + sectorPos.width / 2}
+                      y2={sectorPos.y}
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="2"
+                      strokeOpacity="0.3"
+                    />
+                  );
+                });
+              }
+            })}
+
+            {/* Subdepartamento → Setor */}
+            {departments.map((dept) => {
+              if (!dept.subdepartments) return null;
+              return dept.subdepartments.map((subdept) => {
+                const subdeptPos = nodePositions[`subdept-${subdept.id}`];
+                if (!subdeptPos) return null;
+
+                return subdept.sectors?.map((sector) => {
+                  const sectorPos = nodePositions[`sector-${sector.id}`];
+                  if (!sectorPos) return null;
+
+                  return (
+                    <line
+                      key={`line-subdept-${subdept.id}-sector-${sector.id}`}
+                      x1={subdeptPos.x + subdeptPos.width / 2}
+                      y1={subdeptPos.y + subdeptPos.height}
+                      x2={sectorPos.x + sectorPos.width / 2}
+                      y2={sectorPos.y}
+                      stroke="hsl(var(--primary))"
+                      strokeWidth="1.8"
+                      strokeOpacity="0.25"
+                    />
+                  );
+                });
               });
             })}
 
+            {/* Setor → Cargo (tanto de subdepartamento quanto direto de departamento) */}
             {departments.map((dept) => {
               const deptId = dept.departmentId || dept.id || "";
               if (!deptId) return null;
+
+              // Setores de subdepartamentos
+              if (dept.subdepartments) {
+                return dept.subdepartments.flatMap((subdept) => {
+                  return subdept.sectors?.map((sector) => {
+                    const sectorPos = nodePositions[`sector-${sector.id}`];
+                    if (!sectorPos) return null;
+
+                    return sector.positions?.map((position) => {
+                      const posPos = nodePositions[`position-${position.id}`];
+                      if (!posPos) return null;
+
+                      return (
+                        <line
+                          key={`line-sector-${sector.id}-position-${position.id}`}
+                          x1={sectorPos.x + sectorPos.width / 2}
+                          y1={sectorPos.y + sectorPos.height}
+                          x2={posPos.x + posPos.width / 2}
+                          y2={posPos.y}
+                          stroke="hsl(var(--primary))"
+                          strokeWidth="1.5"
+                          strokeOpacity="0.2"
+                        />
+                      );
+                    });
+                  });
+                });
+              }
+
+              // Setores diretos do departamento
               return dept.sectors?.map((sector) => {
                 const sectorPos = nodePositions[`sector-${sector.id}`];
                 if (!sectorPos) return null;
@@ -308,10 +455,105 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
               );
             })}
 
+            {/* Subdepartamentos */}
+            {departments.map((dept) => {
+              if (!dept.subdepartments) return null;
+              return dept.subdepartments.map((subdept) => {
+                const pos = nodePositions[`subdept-${subdept.id}`];
+                if (!pos) return null;
+                const Icon = getNodeIcon("subdepartment");
+                const isSelected = selectedNode === `subdept-${subdept.id}`;
+
+                return (
+                  <motion.div
+                    key={`subdept-${subdept.id}`}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={cn(
+                      "absolute cursor-pointer rounded border-2 p-2.5 transition-all",
+                      getNodeColor("subdepartment", subdept.status),
+                      isSelected && "ring-2 ring-[hsl(var(--primary))] ring-offset-2 ring-offset-black",
+                    )}
+                    style={{
+                      left: `${pos.x}px`,
+                      top: `${pos.y}px`,
+                      width: `${pos.width}px`,
+                      minHeight: `${pos.height}px`,
+                    }}
+                    onClick={() => setSelectedNode(isSelected ? null : `subdept-${subdept.id}`)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <div className="flex items-start gap-2">
+                      <Icon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold truncate">{subdept.name}</p>
+                        <p className="text-[10px] opacity-70 font-mono">{subdept.code}</p>
+                        {subdept.sectors && subdept.sectors.length > 0 && (
+                          <p className="text-[10px] opacity-50 mt-0.5">
+                            {subdept.sectors.length} setor(es)
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              });
+            })}
+
             {/* Setores */}
             {departments.map((dept) => {
               const deptId = dept.departmentId || dept.id || "";
               if (!deptId) return null;
+
+              // Setores de subdepartamentos
+              if (dept.subdepartments) {
+                return dept.subdepartments.flatMap((subdept) => {
+                  return subdept.sectors?.map((sector) => {
+                    const pos = nodePositions[`sector-${sector.id}`];
+                    if (!pos) return null;
+                    const Icon = getNodeIcon("sector");
+                    const isSelected = selectedNode === `sector-${sector.id}`;
+
+                    return (
+                      <motion.div
+                        key={`sector-${sector.id}`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={cn(
+                          "absolute cursor-pointer rounded border-2 p-2.5 transition-all",
+                          getNodeColor("sector", sector.status),
+                          isSelected && "ring-2 ring-[hsl(var(--primary))] ring-offset-2 ring-offset-black",
+                        )}
+                        style={{
+                          left: `${pos.x}px`,
+                          top: `${pos.y}px`,
+                          width: `${pos.width}px`,
+                          minHeight: `${pos.height}px`,
+                        }}
+                        onClick={() => setSelectedNode(isSelected ? null : `sector-${sector.id}`)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <div className="flex items-start gap-2">
+                          <Icon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold truncate">{sector.name}</p>
+                            <p className="text-[10px] opacity-70 font-mono">{sector.code}</p>
+                            {sector.positions && sector.positions.length > 0 && (
+                              <p className="text-[10px] opacity-50 mt-0.5">
+                                {sector.positions.length} cargo(s)
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  });
+                });
+              }
+
+              // Setores diretos do departamento
               return dept.sectors?.map((sector) => {
                 const pos = nodePositions[`sector-${sector.id}`];
                 if (!pos) return null;
@@ -359,7 +601,53 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
             {departments.map((dept) => {
               const deptId = dept.departmentId || dept.id || "";
               if (!deptId) return null;
-              return dept.sectors?.map((sector) => {
+
+              // Cargos de setores de subdepartamentos
+              if (dept.subdepartments) {
+                return dept.subdepartments.flatMap((subdept) => {
+                  return subdept.sectors?.flatMap((sector) => {
+                    return sector.positions?.map((position) => {
+                      const pos = nodePositions[`position-${position.id}`];
+                      if (!pos) return null;
+                      const Icon = getNodeIcon("position");
+                      const isSelected = selectedNode === `position-${position.id}`;
+
+                      return (
+                        <motion.div
+                          key={`position-${position.id}`}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className={cn(
+                            "absolute cursor-pointer rounded border p-2 transition-all",
+                            getNodeColor("position", position.status),
+                            isSelected && "ring-2 ring-[hsl(var(--primary))] ring-offset-2 ring-offset-black",
+                          )}
+                          style={{
+                            left: `${pos.x}px`,
+                            top: `${pos.y}px`,
+                            width: `${pos.width}px`,
+                            minHeight: `${pos.height}px`,
+                          }}
+                          onClick={() => setSelectedNode(isSelected ? null : `position-${position.id}`)}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className="flex items-start gap-1.5">
+                            <Icon className="h-3 w-3 shrink-0 mt-0.5" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium truncate">{position.name}</p>
+                              <p className="text-[10px] opacity-70 font-mono">{position.code}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    });
+                  });
+                });
+              }
+
+              // Cargos de setores diretos do departamento
+              return dept.sectors?.flatMap((sector) => {
                 return sector.positions?.map((position) => {
                   const pos = nodePositions[`position-${position.id}`];
                   if (!pos) return null;
@@ -406,6 +694,10 @@ export function OrganogramView({ departments, onClose }: OrganogramViewProps) {
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded border border-blue-500/30 bg-blue-500/20" />
             <span className="text-xs text-white/70">Departamento</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded border border-cyan-500/30 bg-cyan-500/20" />
+            <span className="text-xs text-white/70">Subdepartamento</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded border border-purple-500/30 bg-purple-500/20" />

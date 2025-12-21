@@ -78,3 +78,4 @@ export const listarApprovalsResultadoSchema = z.object({
 export type ListarApprovalsResultado = z.infer<typeof listarApprovalsResultadoSchema>;
 
 
+

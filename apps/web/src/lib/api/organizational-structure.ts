@@ -93,6 +93,34 @@ export const organizationalStructureApi = {
         return api.delete(`/departments/${id}`);
     },
 
+    // Subdepartments
+    getSubdepartments: async (params?: { orgId?: string; departmentId?: string; status?: string; busca?: string }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.orgId) queryParams.append("orgId", params.orgId);
+        if (params?.departmentId) queryParams.append("departmentId", params.departmentId);
+        if (params?.status) queryParams.append("status", params.status);
+        if (params?.busca) queryParams.append("busca", params.busca);
+        const query = queryParams.toString();
+        return api.get<{ itens: Subdepartment[]; proximoCursor?: string | null }>(`/subdepartments${query ? `?${query}` : ""}`);
+    },
+
+    getSubdepartment: async (id: string) => {
+        return api.get<Subdepartment>(`/subdepartments/${id}`);
+    },
+
+    createSubdepartment: async (data: CreateSubdepartmentInput & { orgId: string }) => {
+        return api.post<Subdepartment>("/subdepartments", data);
+    },
+
+    updateSubdepartment: async (data: UpdateSubdepartmentInput & { orgId: string }) => {
+        const { subdepartmentId, orgId, ...body } = data;
+        return api.put<Subdepartment>(`/subdepartments/${subdepartmentId}`, { ...body, orgId });
+    },
+
+    deleteSubdepartment: async (id: string) => {
+        return api.delete(`/subdepartments/${id}`);
+    },
+
     // Sectors
     getSectors: async () => {
         return api.get<Sector[]>("/sectors");
@@ -209,6 +237,34 @@ export interface CreateDepartmentInput {
 
 export interface UpdateDepartmentInput extends Partial<CreateDepartmentInput> {
     id: string;
+}
+
+export interface Subdepartment {
+    subdepartmentId: string;
+    orgId: string;
+    departmentId: string;
+    name: string;
+    code: string;
+    description?: string | null;
+    parentId?: string | null;
+    status: "ativo" | "inativo" | "arquivado";
+    ordem: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateSubdepartmentInput {
+    name: string;
+    code: string;
+    description?: string;
+    departmentId: string;
+    parentId?: string;
+    status?: "ativo" | "inativo" | "arquivado";
+    ordem?: number;
+}
+
+export interface UpdateSubdepartmentInput extends Partial<CreateSubdepartmentInput> {
+    subdepartmentId: string;
 }
 
 export interface Sector {

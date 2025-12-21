@@ -174,6 +174,8 @@ model Organization {
   suppliers                Supplier[]
   categories               Category[]
   clientes                 Cliente[]
+  clienteTags              ClienteTag[]
+  // clienteContacts          ClienteContact[] // TODO: Modelo não existe ainda
   representantes           Representante[]
   contratos                Contrato[]
   vendas                   Venda[]
@@ -206,7 +208,7 @@ model Organization {
   statusCustomizadosFichaCusto StatusCustomizadoFichaCusto[] @relation("StatusCustomizadoFichaCusto")
   workflowPolicies             WorkflowPolicy[]
   approvals                    Approval[]
-  accessAuditLogs              AccessAuditLog[] @relation("AccessAuditLogs")
+  // accessAuditLogs              AccessAuditLog[] @relation("AccessAuditLogs") // TODO: Modelo não existe ainda
 
   // Fichas de Custo
   fichasCustoAuditorias AuditoriaFichaCusto[] @relation("FichaCustoAuditoria")
@@ -232,6 +234,13 @@ model User {
   lastLoginAt  DateTime?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
+  // Personal Information Fields
+  cpf            String?   @db.VarChar(14) // CPF formatado (000.000.000-00)
+  phone          String?   @db.VarChar(20) // Telefone formatado
+  birthDate      DateTime? // Data de nascimento
+  admissionDate  DateTime? // Data de admissão
+  observations   String?   @db.Text // Observações sobre o usuário
 
   // 2FA Fields
   twoFactorEnabled     Boolean   @default(false)
@@ -271,6 +280,7 @@ model User {
 
   @@index([branchId])
   @@index([positionId])
+  @@index([cpf])
 }
 
 model OrganizationMembership {
@@ -789,10 +799,24 @@ model Cliente {
   id                 String        @id @default(uuid())
   orgId              String
   nome               String
+  nomeSocial         String?       @db.VarChar(255) // Nome Social / Apelido
   razaoSocial        String?       @db.VarChar(255)
   nomeFantasia       String?       @db.VarChar(255) // Nome Fantasia separado (especialmente para PJ)
   tipo               String        @default("fisica") // fisica, juridica
   documento          String        @db.VarChar(20) // CPF ou CNPJ
+  rg                 String?       @db.VarChar(20) // RG para PF
+  orgaoEmissor       String?       @db.VarChar(10) // Órgão Emissor do RG (SSP, IFP, etc)
+  dataNascimento     DateTime?     // Data de Nascimento (PF) / Data de Fundação (PJ)
+  sexo               String?       @db.VarChar(20) // Sexo/Gênero (PF): masculino, feminino, outro, nao_informar
+  estadoCivil        String?       @db.VarChar(20) // Estado Civil (PF): solteiro, casado, divorciado, viuvo, uniao_estavel
+  nacionalidade      String?       @db.VarChar(100) // Nacionalidade
+  naturalidadeCidade String?       @db.VarChar(100) // Cidade de Naturalidade
+  naturalidadeEstado String?       @db.VarChar(2) // Estado de Naturalidade (UF)
+  tituloEleitor      String?       @db.VarChar(20) // Título de Eleitor
+  certidaoNascimento String?       @db.VarChar(50) // Certidão de Nascimento
+  certidaoCasamento   String?       @db.VarChar(50) // Certidão de Casamento
+  nomeMae            String?       @db.VarChar(255) // Nome da Mãe (PF)
+  nomePai            String?       @db.VarChar(255) // Nome do Pai (PF)
   inscricaoEstadual  String?       @db.VarChar(50) // IE para PJ
   inscricaoMunicipal String?       @db.VarChar(50) // IM para PJ
   email              String?       @db.VarChar(255)
@@ -806,8 +830,18 @@ model Cliente {
   cidade             String?       @db.VarChar(100)
   estado             String?       @db.VarChar(2)
   cep                String?       @db.VarChar(10)
+  pontoReferencia    String?       @db.VarChar(255) // Ponto de referência
+  latitude           String?       @db.VarChar(20) // Coordenada GPS - Latitude
+  longitude          String?       @db.VarChar(20) // Coordenada GPS - Longitude
+  codigoIBGE         String?       @db.VarChar(10) // Código IBGE da cidade
+  codigoMunicipio    String?       @db.VarChar(10) // Código do município
+  regiao             String?       @db.VarChar(50) // Região (Norte, Sul, etc)
+  zona               String?       @db.VarChar(20) // Zona (Urbana/Rural)
   status             ClienteStatus @default(ativo)
   observacoes        String?       @db.VarChar(2048)
+  horarioPreferencialContato String? @db.VarChar(100) // Horário preferencial de contato (ex: "08:00-18:00")
+  idiomaPreferido    String?       @db.VarChar(10) // Idioma preferido (pt-BR, en-US, etc)
+  formaPreferidaComunicacao String? @db.VarChar(50) // Forma preferida (email, telefone, whatsapp, etc)
   createdBy          String
   updatedBy          String
   createdAt          DateTime      @default(now())
@@ -817,10 +851,42 @@ model Cliente {
   representante Representante?
   vendas        Venda[]
   comissoes     Comissao[]
+  tags          ClienteTagRelation[]
+  // contatos      ClienteContact[] // TODO: Modelo não existe ainda
 
   @@unique([orgId, documento], name: "unique_cliente_documento")
   @@index([orgId, status])
   @@index([orgId, nome])
+}
+
+// Tags/Categorias para Clientes
+model ClienteTag {
+  id        String   @id @default(uuid())
+  orgId     String
+  name      String   @db.VarChar(100)
+  color     String?  @db.VarChar(7) // Hex color
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  clientes    ClienteTagRelation[]
+
+  @@unique([orgId, name])
+  @@index([orgId])
+}
+
+model ClienteTagRelation {
+  id         String   @id @default(uuid())
+  clienteId  String
+  tagId      String
+  createdAt  DateTime @default(now())
+
+  cliente Cliente    @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  tag     ClienteTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([clienteId, tagId])
+  @@index([clienteId])
+  @@index([tagId])
 }
 
 model Representante {

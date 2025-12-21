@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { ContactsManager } from "@/components/clientes/contacts-manager";
 
 type Cliente = {
   clienteId: string;
@@ -65,7 +66,7 @@ type HistoricoItem = {
   performedByEmail?: string | null;
 };
 
-type TabType = "info" | "representantes" | "historico";
+type TabType = "info" | "contatos" | "representantes" | "historico";
 
 interface ClienteDetailModalProps {
   cliente: Cliente;
@@ -264,6 +265,7 @@ export function ClienteDetailModal({
 
   const tabs = [
     { id: "info" as TabType, label: "Informações", icon: FileText },
+    { id: "contatos" as TabType, label: "Contatos", icon: Phone },
     { id: "representantes" as TabType, label: "Representantes", icon: UserPlus },
     { id: "historico" as TabType, label: "Histórico", icon: History },
   ];
@@ -451,6 +453,17 @@ export function ClienteDetailModal({
                       Editar
                     </Button>
                   </div>
+                </motion.div>
+              )}
+
+              {activeTab === "contatos" && (
+                <motion.div
+                  key="contatos"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <ContactsManager clienteId={cliente.clienteId} />
                 </motion.div>
               )}
 

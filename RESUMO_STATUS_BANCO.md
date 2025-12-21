@@ -62,3 +62,4 @@ Após executar, verifique:
 - ✅ Migrations: `pnpm prisma migrate status`
 
 
+

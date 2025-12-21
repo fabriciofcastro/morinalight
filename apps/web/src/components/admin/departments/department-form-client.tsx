@@ -1,18 +1,41 @@
 "use client";
 
 import { Button } from "@morina/ui";
-import { ArrowLeft, Save, RefreshCw, Building2 } from "lucide-react";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { Building2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { organizationalStructureApi, type Department, type CreateDepartmentInput, type UpdateDepartmentInput } from "@/lib/api/organizational-structure";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
+import { StandardFormPage } from "@/components/templates";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { notificationCenter } from "@/components/notifications/notification-center";
 
 interface DepartmentFormClientProps {
   departmentId?: string;
+}
+
+function getCurrentOrgId(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  const selectedOrgId = localStorage.getItem("selected_org_id");
+  if (selectedOrgId) {
+    return selectedOrgId;
+  }
+  const orgsStr = localStorage.getItem("auth_organizations");
+  if (orgsStr) {
+    try {
+      const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
+      if (orgs.length > 0) {
+        return orgs[0].organizationId;
+      }
+    } catch {
+      // Ignorar erro de parsing
+    }
+  }
+  return null;
 }
 
 export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps) {
@@ -20,7 +43,6 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
   const isEditing = !!departmentId;
 
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [department, setDepartment] = useState<Department | null>(null);
   const [branches, setBranches] = useState<Array<{ id: string; name: string }>>([]);
   const [departments, setDepartments] = useState<Array<{ id: string; name: string }>>([]);
@@ -39,6 +61,20 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
     () => form.name.trim().length >= 2 && form.code.trim().length >= 2,
     [form],
   );
+
+  // Auto-save
+  const { status, hasUnsavedChanges, markDirty, markClean, manualSave } = useAutoSave({
+    onSave: async () => {
+      if (!canSave) return;
+      await handleSave();
+    },
+    intervalMs: 30000, // 30 segundos
+    requireValid: true,
+    isValid: () => canSave,
+    onAutoSaveComplete: () => {
+      markClean();
+    },
+  });
 
   useEffect(() => {
     const loadData = async () => {
@@ -74,114 +110,91 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
     void loadData();
   }, [departmentId]);
 
-  const onSubmit = useCallback(
+  const handleSave = useCallback(async () => {
+    const newErrors: Record<string, string> = {};
+    if (!form.name.trim()) newErrors.name = "Nome é obrigatório";
+    if (!form.code.trim()) newErrors.code = "Código é obrigatório";
+    if (newErrors.name || newErrors.code) {
+      setErrors(newErrors);
+      throw new Error("Formulário inválido");
+    }
+
+    const orgId = getCurrentOrgId();
+    if (!orgId) {
+      throw new Error("Organização não encontrada");
+    }
+
+    if (isEditing && departmentId) {
+      const updateData: UpdateDepartmentInput = {
+        id: departmentId,
+        orgId,
+        name: form.name.trim(),
+        code: form.code.trim(),
+        type: form.type,
+        filialId: form.filialId || undefined,
+        parentId: form.parentId || undefined,
+        active: form.active,
+        description: form.description.trim() || undefined,
+      };
+      await organizationalStructureApi.updateDepartment(updateData);
+      notificationCenter.add({
+        type: "success",
+        title: "Departamento atualizado",
+        message: "As alterações foram salvas com sucesso.",
+      });
+    } else {
+      await organizationalStructureApi.createDepartment({ ...form, orgId });
+      notificationCenter.add({
+        type: "success",
+        title: "Departamento criado",
+        message: "O departamento foi criado com sucesso.",
+      });
+      router.push("/admin/departments");
+    }
+  }, [form, isEditing, departmentId, router]);
+
+  const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (!canSave) return;
-
-      const newErrors: Record<string, string> = {};
-      if (!form.name.trim()) newErrors.name = "Nome é obrigatório";
-      if (!form.code.trim()) newErrors.code = "Código é obrigatório";
-      if (newErrors.name || newErrors.code) {
-        setErrors(newErrors);
-        return;
-      }
-
       try {
-        setSaving(true);
+        await handleSave();
+        markClean();
         if (isEditing && departmentId) {
-          const updateData: UpdateDepartmentInput = {
-            id: departmentId,
-            name: form.name.trim(),
-            code: form.code.trim(),
-            type: form.type,
-            filialId: form.filialId || undefined,
-            parentId: form.parentId || undefined,
-            active: form.active,
-            description: form.description.trim() || undefined,
-          };
-          await organizationalStructureApi.updateDepartment(updateData);
           router.push(`/admin/departments/${departmentId}`);
         } else {
-          await organizationalStructureApi.createDepartment(form);
           router.push("/admin/departments");
         }
       } catch (error) {
         console.error("Failed to save department", error);
-        alert("Erro ao salvar departamento.");
-      } finally {
-        setSaving(false);
+        notificationCenter.add({
+          type: "error",
+          title: "Erro ao salvar",
+          message: error instanceof Error ? error.message : "Erro ao salvar departamento.",
+        });
       }
     },
-    [canSave, form, isEditing, departmentId, router],
+    [canSave, handleSave, markClean, isEditing, departmentId, router],
   );
 
-  if (loading) {
-    return (
-      <div className="relative min-h-screen p-6">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4" />
-          <p className="text-white/60">Carregando...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative min-h-screen p-6 space-y-8">
-      {/* Header Futurista */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-
-        <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
-          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-
-          <div className="relative z-10 flex-1">
-            <div className="flex items-center gap-4 mb-3">
-              <Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                  {isEditing ? "Editar Departamento" : "Novo Departamento"}
-                </h1>
-                <p className="text-sm text-white/60 font-medium mt-1">
-                  {isEditing
-                    ? `Atualizar informações do departamento ${department?.name}`
-                    : "Cadastre um novo departamento no sistema"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link href={isEditing && departmentId ? `/admin/departments/${departmentId}` : "/admin/departments"}>
-              <Button
-                variant="secondary"
-                type="button"
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Formulário */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-8 rounded-2xl border border-white/10 bg-white/[0.05] backdrop-blur-sm"
-      >
-        <form onSubmit={onSubmit} className="space-y-6">
+    <StandardFormPage
+      title={isEditing ? "Editar Departamento" : "Novo Departamento"}
+      subtitle={
+        isEditing
+          ? `Atualizar informações do departamento ${department?.name}`
+          : "Cadastre um novo departamento no sistema"
+      }
+      icon={<Building2 className="h-8 w-8" />}
+      onSave={handleSubmit}
+      backUrl={isEditing && departmentId ? `/admin/departments/${departmentId}` : "/admin/departments"}
+      isValid={canSave}
+      autoSaveStatus={status}
+      hasUnsavedChanges={hasUnsavedChanges}
+      loading={loading}
+      onSave={handleSubmit}
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <FuturisticInput
               label="Nome"
@@ -190,6 +203,7 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
               onChange={(e) => {
                 setForm((p) => ({ ...p, name: e.target.value }));
                 if (errors.name) setErrors((e) => ({ ...e, name: "" }));
+                markDirty();
               }}
               error={!!errors.name}
               errorMessage={errors.name}
@@ -202,6 +216,7 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
               onChange={(e) => {
                 setForm((p) => ({ ...p, code: e.target.value }));
                 if (errors.code) setErrors((e) => ({ ...e, code: "" }));
+                markDirty();
               }}
               error={!!errors.code}
               errorMessage={errors.code}
@@ -213,7 +228,10 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
             <FuturisticSelect
               label="Tipo"
               value={form.type}
-              onChange={(e) => setForm((p) => ({ ...p, type: e.target.value }))}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, type: e.target.value }));
+                markDirty();
+              }}
             >
               <option value="CORE" className="bg-slate-900">Core Business</option>
               <option value="SUPORTE" className="bg-slate-900">Suporte</option>
@@ -223,7 +241,10 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
             <FuturisticSelect
               label="Filial (Opcional)"
               value={form.filialId}
-              onChange={(e) => setForm((p) => ({ ...p, filialId: e.target.value }))}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, filialId: e.target.value }));
+                markDirty();
+              }}
             >
               <option value="" className="bg-slate-900">Todas as Filiais (Global)</option>
               {branches.map((branch) => (
@@ -237,7 +258,10 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
           <FuturisticSelect
             label="Departamento Pai (Opcional)"
             value={form.parentId}
-            onChange={(e) => setForm((p) => ({ ...p, parentId: e.target.value }))}
+            onChange={(e) => {
+              setForm((p) => ({ ...p, parentId: e.target.value }));
+              markDirty();
+            }}
           >
             <option value="" className="bg-slate-900">Nenhum (Raiz)</option>
             {departments.map((dept) => (
@@ -250,7 +274,10 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
           <FuturisticTextarea
             label="Descrição"
             value={form.description}
-            onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+            onChange={(e) => {
+              setForm((p) => ({ ...p, description: e.target.value }));
+              markDirty();
+            }}
             placeholder="Descrição das responsabilidades do departamento..."
             rows={4}
           />
@@ -260,7 +287,10 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
               type="checkbox"
               id="active"
               checked={form.active}
-              onChange={(e) => setForm((p) => ({ ...p, active: e.target.checked }))}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, active: e.target.checked }));
+                markDirty();
+              }}
               className="rounded border-white/10 bg-black/20 text-[hsl(var(--primary))] focus:ring-[hsl(var(--primary))]"
             />
             <label htmlFor="active" className="text-sm font-medium text-white/70 cursor-pointer">
@@ -268,26 +298,13 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
             </label>
           </div>
 
-          <div className="flex items-center justify-between border-t border-white/10 pt-6">
-            <div className="text-xs text-white/40">
-              {isEditing && department && (
-                <>
-                  ID: <span className="font-mono">{department.id}</span>
-                </>
-              )}
+          {isEditing && department && (
+            <div className="text-xs text-white/40 pt-4 border-t border-white/10">
+              ID: <span className="font-mono">{department.id}</span>
             </div>
-            <Button
-              type="submit"
-              disabled={!canSave || saving}
-              className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white shadow-lg shadow-[hsl(var(--primary))]/25 hover:shadow-[hsl(var(--primary))]/40 transition-all"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              {saving ? "Salvando…" : isEditing ? "Salvar Alterações" : "Criar Departamento"}
-            </Button>
-          </div>
+          )}
         </form>
-      </motion.div>
-    </div>
+    </StandardFormPage>
   );
 }
 

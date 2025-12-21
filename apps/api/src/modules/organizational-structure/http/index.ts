@@ -31,6 +31,7 @@ import { registerUpdateDepartmentRoute } from "./update-department.route";
 import { registerUpdatePositionRoute } from "./update-position.route";
 import { registerUpdateSectorRoute } from "./update-sector.route";
 import { registerUpdateSubdepartmentRoute } from "./update-subdepartment.route";
+import { registerListOrganizationalStructureAuditLogRoute } from "./list-organizational-structure-audit-log.route";
 
 type OrganizationalStructureHttpDeps = {
   departmentRepository: DepartmentRepository;
@@ -168,4 +169,11 @@ export async function registerOrganizationalStructureHttpRoutes(
     auditLogRepository: deps.auditLogRepository,
     eventBus: deps.eventBus,
   });
+
+  // Audit Log
+  if (deps.auditLogRepository) {
+    await registerListOrganizationalStructureAuditLogRoute(app, {
+      auditLogRepository: deps.auditLogRepository,
+    });
+  }
 }

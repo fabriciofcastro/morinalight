@@ -1,6 +1,6 @@
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import fastify from "fastify";
+import fastify, { type FastifyLoggerOptions } from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { registerHttp } from "../../app/http/routes";
 import type { AuthModuleOptions as CoreAuthModuleOptions } from "../../core/auth/auth.module";
@@ -31,11 +31,41 @@ type CreateServerOptions = {
 };
 
 export async function createServer({ registerDocs = false, modules }: CreateServerOptions = {}) {
-  const app = fastify({
-    logger: {
-      level: env.LOG_LEVEL,
-      transport: env.NODE_ENV === "development" ? { target: "pino-pretty" } : undefined,
+  // Configuração do logger Pino com formato estruturado para Loki
+  const loggerConfig: fastify.FastifyLoggerOptions = {
+    level: env.LOG_LEVEL,
+    serializers: {
+      req: (req) => ({
+        method: req.method,
+        url: req.url,
+        headers: {
+          "user-agent": req.headers["user-agent"],
+          "x-organization-id": req.headers["x-organization-id"],
+        },
+        remoteAddress: req.ip,
+        remotePort: req.socket.remotePort,
+      }),
+      res: (res) => ({
+        statusCode: res.statusCode,
+      }),
+      err: (err) => ({
+        type: err.type,
+        message: err.message,
+        stack: err.stack,
+        code: err.code,
+        statusCode: err.statusCode,
+      }),
     },
+    // Em produção, usar formato JSON para Loki
+    // Em desenvolvimento, usar pino-pretty para legibilidade
+    transport:
+      env.NODE_ENV === "development"
+        ? { target: "pino-pretty", options: { colorize: true, translateTime: "SYS:standard" } }
+        : undefined,
+  };
+
+  const app = fastify({
+    logger: loggerConfig,
   });
 
   app.setValidatorCompiler(validatorCompiler);
@@ -85,6 +115,11 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
   app.addHook("onRequest", async (request) => {
     await sanitizeInputs(request);
   });
+
+  // Structured Logging - Adicionar contexto estruturado aos logs
+  const { structuredLoggingMiddleware, logResponse } = await import("../logging/structured-logging.middleware");
+  app.addHook("onRequest", structuredLoggingMiddleware);
+  app.addHook("onResponse", logResponse);
 
   // CSRF Protection
   const { registerCsrfProtection } = await import("../middleware/csrf.middleware");

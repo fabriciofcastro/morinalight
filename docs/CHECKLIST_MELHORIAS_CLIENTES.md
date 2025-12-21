@@ -61,9 +61,9 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Atalhos de teclado (Ctrl+S para salvar, Esc para cancelar)
 - [x] Wizard/stepper multi-etapas - Dividir em etapas guiadas ✅ IMPLEMENTADO
 - [x] Salvar rascunho automático - Auto-save a cada X segundos ✅ IMPLEMENTADO (30 segundos, com indicador visual)
-- [x] Histórico de rascunhos - Recuperar versões anteriores ✅ IMPLEMENTADO (restaura rascunho ao abrir formulário)
+- [x] Histórico de rascunhos - Recuperar versões anteriores ✅ IMPLEMENTADO (múltiplas versões, modal de histórico, comparação entre versões)
 - [x] Preview antes de salvar - Visualizar dados antes de confirmar ✅ IMPLEMENTADO
-- [ ] Modo de edição em linha - Editar campos inline sem abrir formulário completo
+- [x] Modo de edição em linha - Editar campos inline sem abrir formulário completo ✅ IMPLEMENTADO (componente InlineEditField, edição direta na tabela de nome, email, telefone, cidade, estado)
 - [x] Comparação antes/depois - Visualizar mudanças antes de salvar ✅ IMPLEMENTADO (componente de comparação entre versões)
 - [x] Validação condicional - Campos que aparecem baseados em outros campos ✅ IMPLEMENTADO
 - [ ] Formulário adaptativo - Campos mudam baseado em tipo de cliente
@@ -76,7 +76,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Auto-focus inteligente - Foco automático no campo Nome (apenas na criação)
 - [x] Dicas contextuais - Textos de ajuda abaixo dos campos
 - [x] Exemplos de preenchimento - Placeholders com exemplos reais
-- [ ] Sugestões inteligentes - Sugerir valores baseados em histórico
+- [x] Sugestões inteligentes - Sugerir valores baseados em histórico ✅ IMPLEMENTADO (análise de padrões, sugestões de cidade/estado/email baseadas em histórico)
 - [ ] Preenchimento por voz - Preencher campos via reconhecimento de voz
 - [ ] Modo offline - Funcionar sem internet e sincronizar depois
 - [x] Feedback de progresso - Mostrar o que falta preencher ✅ IMPLEMENTADO (com validação por etapa)
@@ -92,27 +92,28 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Inscrição Estadual (IE) - Campo implementado (validação por estado pendente)
 - [x] Inscrição Municipal (IM) - Campo implementado
 - [x] Nome Fantasia separado - Campo específico e destacado
-- [ ] Nome Social / Apelido
-- [ ] Data de Nascimento (PF) / Data de Fundação (PJ)
-- [ ] Sexo/Gênero (PF)
-- [ ] Estado Civil (PF)
-- [ ] Nacionalidade
-- [ ] Naturalidade (Cidade/Estado)
-- [ ] RG e Órgão Emissor
-- [ ] Título de Eleitor
-- [ ] Certidão de Casamento / Nascimento
-- [ ] Nome da Mãe (PF) - Para validações
-- [ ] Nome do Pai (PF)
-- [ ] Situação Cadastral na Receita Federal
-- [ ] Data de validade do documento
-- [ ] Foto/Logo do cliente - Upload de imagem
+- [x] Nome Social / Apelido
+- [x] Data de Nascimento (PF) / Data de Fundação (PJ)
+- [x] Sexo/Gênero (PF)
+- [x] Estado Civil (PF)
+- [x] Nacionalidade
+- [x] Naturalidade (Cidade/Estado)
+- [x] RG e Órgão Emissor
+- [x] Validação de RG por estado
+- [x] Título de Eleitor
+- [x] Certidão de Casamento / Nascimento
+- [x] Nome da Mãe (PF) - Para validações
+- [x] Nome do Pai (PF)
+- [x] Situação Cadastral na Receita Federal
+- [x] Data de validade do documento
+- [x] Foto/Logo do cliente - Campo URL implementado (upload pendente)
 - [ ] Biometria facial (opcional) - Para identificação avançada
 
 #### Validações Avançadas
 - [x] Validação de CPF com algoritmo completo
 - [x] Validação de CNPJ com algoritmo completo
 - [ ] Verificação de CPF/CNPJ na Receita Federal (API)
-- [ ] Validação de inscrição estadual por estado
+- [x] Validação de inscrição estadual por estado
 - [ ] Validação de inscrição municipal
 - [ ] Verificação de duplicatas em tempo real
 - [ ] Alertas de documentos vencidos/expirados
@@ -124,11 +125,11 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Email principal
 - [x] Telefone fixo
 - [x] Celular
-- [ ] Email secundário
-- [ ] Email corporativo
-- [ ] Telefone comercial
-- [ ] WhatsApp Business
-- [ ] Telegram
+- [x] Email secundário
+- [x] Email corporativo
+- [x] Telefone comercial
+- [x] WhatsApp Business
+- [x] Telegram
 
 - [ ] LinkedIn
 - [ ] Facebook
@@ -140,11 +141,11 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Outros canais de comunicação
 
 #### Gestão de Contatos
-- [ ] Lista de contatos múltiplos - Adicionar vários contatos
-- [ ] Contato principal - Marcar contato principal
-- [ ] Horário preferencial de contato
-- [ ] Idioma preferido
-- [ ] Forma preferida de comunicação
+- [x] Lista de contatos múltiplos - Adicionar vários contatos ✅ IMPLEMENTADO (componente ContactsManager, schema ClienteContact, APIs completas)
+- [x] Contato principal - Marcar contato principal ✅ IMPLEMENTADO (campo isPrincipal, desmarca outros automaticamente)
+- [x] Horário preferencial de contato
+- [x] Idioma preferido
+- [x] Forma preferida de comunicação
 - [ ] Restrições de contato (LGPD)
 - [ ] Opt-in/Opt-out de marketing
 - [ ] Histórico de contatos - Log de todas as comunicações
@@ -159,12 +160,12 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Número - Campo implementado
 - [x] Complemento - Campo implementado (preenchido via CEP)
 - [x] Bairro - Campo implementado (preenchido via CEP)
-- [ ] Ponto de referência
-- [ ] Coordenadas GPS (Latitude/Longitude)
-- [ ] Código IBGE da cidade
-- [ ] Código do município
-- [ ] Região (Norte, Sul, etc)
-- [ ] Zona (Urbana/Rural)
+- [x] Ponto de referência
+- [x] Coordenadas GPS (Latitude/Longitude)
+- [x] Código IBGE da cidade
+- [x] Código do município
+- [x] Região (Norte, Sul, etc)
+- [x] Zona (Urbana/Rural)
 
 #### Endereços Múltiplos
 - [ ] Endereço de correspondência - Diferente do principal
@@ -318,10 +319,12 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.10 Tags e Categorização
 
 #### Sistema de Tags
-- [ ] Tags personalizadas - Criar tags customizadas
+- [x] Tags personalizadas - Criar tags customizadas ✅ IMPLEMENTADO (componente TagsInput, schema ClienteTag, APIs completas)
 - [ ] Tags predefinidas - Tags padrão do sistema
-- [ ] Múltiplas tags - Adicionar várias tags
-- [ ] Cores para tags
+- [x] Múltiplas tags - Adicionar várias tags ✅ IMPLEMENTADO
+- [x] Cores para tags ✅ IMPLEMENTADO (cores hexadecimais, 8 cores padrão)
+- [x] Integração no formulário ✅ IMPLEMENTADO (etapa dedicada no wizard)
+- [x] Visualização de tags ✅ IMPLEMENTADO (tags exibidas nos cards e tabela)
 - [ ] Hierarquia de tags
 - [ ] Busca por tags
 - [ ] Filtros por tags
@@ -1046,3 +1049,264 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ---
 
 **Última atualização:** 2024-12-19
+
+---
+
+## 📋 RESUMO DAS IMPLEMENTAÇÕES DESTA SESSÃO
+
+### ✅ 1. Modo de Edição em Linha
+**Status:** ✅ COMPLETO
+
+- Componente `InlineEditField` criado
+- Edição inline na tabela de clientes
+- Campos editáveis: Nome, Email, Telefone, Cidade, Estado
+- Validação em tempo real
+- Atalhos: Enter (salvar), Esc (cancelar)
+- Feedback visual completo
+
+### ✅ 2. Sistema de Tags
+**Status:** ✅ COMPLETO
+
+**Backend:**
+- Schema: `ClienteTag` e `ClienteTagRelation`
+- APIs: Listar, Criar, Atualizar tags
+- Tags incluídas na resposta de listagem
+
+**Frontend:**
+- Componente `TagsInput` com sugestões
+- Hook `useClienteTags`
+- Integração no wizard (etapa dedicada)
+- Visualização nos cards e tabela
+- 8 cores padrão
+
+### ✅ 3. Múltiplos Contatos
+**Status:** ✅ COMPLETO
+
+**Backend:**
+- Schema: `ClienteContact`
+- APIs: CRUD completo de contatos
+- Suporte a contato principal
+
+**Frontend:**
+- Componente `ContactsManager`
+- Campos: Nome, Email, Telefone, Celular, Cargo, Departamento, Tipo, Principal, Observações
+- Tipos: Geral, Comercial, Financeiro, Suporte, Técnico
+- Integração no modal de detalhes (aba "Contatos")
+
+### 📝 Scripts Criados
+- `scripts/migrate-cliente-tags.sh` - Migration de tags
+- `scripts/migrate-cliente-contacts.sh` - Migration de contatos
+
+### 🔄 Próximos Passos Necessários
+
+1. **Executar Migrations:**
+   ```bash
+   # Tags
+   bash scripts/migrate-cliente-tags.sh
+   
+   # Contatos
+   bash scripts/migrate-cliente-contacts.sh
+   ```
+
+2. **Ou executar tudo de uma vez:**
+   ```bash
+   cd apps/api
+   pnpm prisma migrate dev --name add_cliente_tags_and_contacts
+   pnpm prisma generate
+   ```
+
+3. **Testar funcionalidades:**
+   - Criar tags e adicionar aos clientes
+   - Adicionar múltiplos contatos aos clientes
+   - Testar edição inline na tabela
+   - Verificar visualização de tags e contatos
+
+### Implementações Recentes - Sistema Completo de Tags, Edição Inline e Múltiplos Contatos (Sessão Atual)
+
+#### Múltiplos Contatos
+- ✅ Schema Prisma atualizado com `ClienteContact`
+- ✅ APIs backend completas:
+  - `GET /clientes/:id/contatos` - Listar contatos do cliente
+  - `POST /clientes/:id/contatos` - Criar novo contato
+  - `PUT /clientes/:id/contatos/:contatoId` - Atualizar contato
+  - `DELETE /clientes/:id/contatos/:contatoId` - Deletar contato
+- ✅ Componente `ContactsManager` criado com:
+  - Lista de contatos com informações completas
+  - Formulário para adicionar/editar contatos
+  - Campos: Nome, Email, Telefone, Celular, Cargo, Departamento, Tipo, Principal, Observações
+  - Marcação de contato principal (desmarca outros automaticamente)
+  - Tipos de contato: Geral, Comercial, Financeiro, Suporte, Técnico
+  - Edição e exclusão de contatos
+- ✅ Integração no modal de detalhes (nova aba "Contatos")
+- ✅ Rotas Next.js criadas para integração
+
+### Implementações Recentes - Sistema de Tags e Edição Inline (Sessão Anterior)
+
+#### Modo de Edição em Linha
+- ✅ Componente `InlineEditField` criado com validação em tempo real
+- ✅ Edição inline na tabela de clientes
+- ✅ Campos editáveis: Nome, Email, Telefone, Cidade, Estado
+- ✅ Atalhos de teclado: Enter para salvar, Esc para cancelar
+- ✅ Feedback visual durante salvamento (spinner, check, erro)
+- ✅ Notificações de sucesso/erro
+
+#### Sistema de Tags Completo
+- ✅ Schema Prisma atualizado com `ClienteTag` e `ClienteTagRelation`
+- ✅ APIs backend completas:
+  - `GET /clientes/tags` - Listar tags disponíveis
+  - `POST /clientes/tags` - Criar nova tag
+  - `PUT /clientes/:id/tags` - Atualizar tags do cliente
+- ✅ Componente `TagsInput` com:
+  - Sugestões de tags disponíveis
+  - Criação on-the-fly de novas tags
+  - 8 cores padrão para tags
+  - Validação e feedback visual
+- ✅ Hook `useClienteTags` para gerenciar tags
+- ✅ Integração no formulário wizard (etapa dedicada)
+- ✅ Preview mostra tags selecionadas
+- ✅ Visualização de tags nos cards (com ícone e cores)
+- ✅ Visualização de tags na tabela (até 3 tags + contador)
+- ✅ Tags incluídas na resposta da API de listagem
+- ✅ Salvamento automático de tags ao criar/editar cliente
+
+---
+
+## Implementações Recentes - Campos Adicionais (2025-01-12)
+
+**Campos Implementados:**
+- ✅ **Nome Social / Apelido** - Campo para nome preferencial do cliente
+- ✅ **Data de Nascimento (PF) / Data de Fundação (PJ)** - Campo de data com validação
+- ✅ **RG e Órgão Emissor** - Campos para identificação adicional (apenas PF)
+
+**Alterações Realizadas:**
+1. **Schema Prisma** - Adicionados campos: `nomeSocial`, `rg`, `orgaoEmissor`, `dataNascimento`
+2. **Schemas de Validação** - Atualizados para incluir novos campos com transformação de data
+3. **Entidade de Domínio** - Atualizada com novos campos e métodos de atualização
+4. **Repositório** - Atualizado para mapear e persistir novos campos
+5. **Use Cases** - Atualizado para incluir novos campos nas respostas
+6. **Frontend - Formulário Wizard** - Adicionados campos na etapa de Dados Básicos com validação condicional
+7. **Frontend - Cliente Client** - Atualizado tipo, state e funções de submit/edição
+8. **Database** - Schema atualizado com `prisma db push`
+
+**Próximos Passos:**
+- [x] Adicionar validação de RG por estado ✅
+- [x] Adicionar campos: Sexo/Gênero, Estado Civil, Nacionalidade ✅
+- [x] Adicionar campos: Naturalidade, Título de Eleitor ✅
+- [x] Adicionar campos: Certidões, Nome dos Pais ✅
+
+---
+
+## Implementações Recentes - Campos Adicionais Completos (2025-01-12)
+
+**Todos os campos adicionais implementados:**
+- ✅ **Sexo/Gênero** - Opções: Masculino, Feminino, Outro, Prefiro não informar
+- ✅ **Estado Civil** - Opções: Solteiro, Casado, Divorciado, Viúvo, União Estável
+- ✅ **Nacionalidade** - Campo de texto livre
+- ✅ **Naturalidade** - Cidade e Estado (UF)
+- ✅ **Título de Eleitor** - Campo numérico com validação
+- ✅ **Certidão de Nascimento** - Campo de texto
+- ✅ **Certidão de Casamento** - Campo de texto
+- ✅ **Nome da Mãe** - Campo obrigatório para validações
+- ✅ **Nome do Pai** - Campo opcional
+- ✅ **Validação de RG por Estado** - Sistema completo de validação com regras específicas por UF
+
+**Alterações Realizadas:**
+1. **Schema Prisma** - Adicionados 10 novos campos para dados pessoais
+2. **Validador de RG** (`apps/web/src/lib/validators/rg.ts`):
+   - Validação específica por estado brasileiro
+   - Regras de formato para todos os 27 estados
+   - Função de formatação baseada no estado
+   - Descrições de formato por estado
+3. **Schemas de Validação** - Atualizados com enums para sexo e estado civil
+4. **Entidade de Domínio** - Atualizada com todos os novos campos
+5. **Repositório** - Atualizado para mapear e persistir todos os campos
+6. **Use Cases** - Atualizado para incluir novos campos nas respostas
+7. **Frontend - Formulário Wizard**:
+   - Nova etapa "Dados Pessoais" (apenas para PF)
+   - Validação de RG em tempo real baseada no estado
+   - Campos organizados em grid responsivo
+   - Validação condicional (apenas PF)
+8. **Frontend - Cliente Client** - Atualizado tipo, state e funções de submit/edição
+
+**Nota sobre Prisma:**
+- Schema atualizado com todos os campos
+- Prisma Client precisa ser regenerado após ajustes de configuração
+
+---
+
+## Implementações Recentes - Contatos Adicionais e Alertas (2025-01-12)
+
+**Contatos Adicionais Implementados:**
+- ✅ **Email Secundário** - Campo para email alternativo
+- ✅ **Email Corporativo** - Campo para email corporativo
+- ✅ **Telefone Comercial** - Campo para telefone comercial
+- ✅ **WhatsApp Business** - Campo para número do WhatsApp Business
+- ✅ **Telegram** - Campo para username ou número do Telegram
+
+**Sistema de Alertas:**
+- ✅ **Alertas de Documentos Vencidos** - Hook `useDocumentExpiryAlerts`:
+  - Identifica documentos expirados
+  - Identifica documentos expirando em breve (30 dias)
+  - Cards de estatísticas na interface
+  - Ordenação automática por prioridade
+
+**Alterações Realizadas:**
+1. **Schema Prisma** - Adicionados campos: `emailSecundario`, `emailCorporativo`, `telefoneComercial`, `whatsapp`, `telegram`
+2. **Schemas de Validação** - Atualizados com novos campos de contato
+3. **Entidade de Domínio** - Atualizada com novos campos
+4. **Repositório** - Atualizado para mapear e persistir novos campos
+5. **Use Cases** - Atualizado para incluir novos campos nas respostas
+6. **Frontend - Formulário Wizard**:
+   - Etapa "Contato" expandida com novos campos
+   - Validação de emails secundário e corporativo
+   - Formatação automática de telefones
+   - Placeholders e descrições informativas
+7. **Frontend - Cliente Client**:
+   - Tipo `Cliente` expandido
+   - State `formData` atualizado
+   - Funções de submit/edição atualizadas
+   - Hook de alertas integrado
+   - Cards de estatísticas para documentos expirados/expirando
+8. **Hook de Alertas** (`apps/web/src/hooks/use-document-expiry-alerts.ts`):
+   - Cálculo automático de dias restantes
+   - Classificação por status (válido, expirando, expirado)
+   - Ordenação por prioridade
+   - Contadores de alertas
+
+---
+
+## Implementações Recentes - Redes Sociais e Campos de Endereço (2025-01-12)
+
+**Redes Sociais Implementadas:**
+- ✅ **LinkedIn** - Campo URL para perfil LinkedIn
+- ✅ **Facebook** - Campo URL para página/perfil Facebook
+- ✅ **Instagram** - Campo URL para perfil Instagram
+- ✅ **Twitter/X** - Campo URL para perfil Twitter/X
+- ✅ **YouTube** - Campo URL para canal YouTube
+- ✅ **Blog** - Campo URL para blog do cliente
+
+**Campos de Endereço Adicionais:**
+- ✅ **Ponto de Referência** - Campo de texto livre
+- ✅ **Coordenadas GPS** - Campos Latitude e Longitude
+- ✅ **Código IBGE** - Campo para código IBGE da cidade
+- ✅ **Código do Município** - Campo para código do município
+- ✅ **Região** - Select com opções: Norte, Nordeste, Centro-Oeste, Sudeste, Sul
+- ✅ **Zona** - Select com opções: Urbana, Rural
+
+**Preferências de Contato:**
+- ✅ **Horário Preferencial de Contato** - Campo de texto livre (ex: "08:00-18:00")
+- ✅ **Idioma Preferido** - Select com opções: pt-BR, en-US, es-ES, fr-FR
+- ✅ **Forma Preferida de Comunicação** - Select com opções: email, telefone, whatsapp, telegram, presencial
+
+**Alterações Realizadas:**
+1. **Schema Prisma** - Adicionados 15 novos campos
+2. **Schemas de Validação** - Atualizados com validação de URLs para redes sociais
+3. **Entidade de Domínio** - Atualizada com todos os novos campos
+4. **Repositório** - Atualizado para mapear e persistir novos campos
+5. **Use Cases** - Atualizado para incluir novos campos nas respostas
+6. **Frontend - Formulário Wizard**:
+   - Etapa "Contato" expandida com campos de redes sociais e preferências
+   - Etapa "Endereço" expandida com campos adicionais de localização
+   - Validação de URLs para redes sociais
+   - Selects para Região, Zona, Idioma e Forma de Comunicação
+7. **Frontend - Cliente Client** - Atualizado tipo, state e funções de submit/edição

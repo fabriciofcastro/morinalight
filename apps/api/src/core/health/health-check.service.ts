@@ -5,6 +5,10 @@
 
 import { getPrisma } from "../../infra/database/prisma.service";
 import type { RedisEventBus } from "../../infra/events/redis-event-bus";
+import { getRedisClient } from "../../infra/cache/redis.service";
+import { statfs } from "fs/promises";
+import { existsSync } from "fs";
+import { join } from "path";
 
 export type HealthStatus = "healthy" | "degraded" | "unhealthy";
 
@@ -111,60 +115,192 @@ export class HealthCheckService {
   }
 
   /**
-   * Check Redis connectivity
+   * Check Redis connectivity with real ping
    */
   private async checkRedis(): Promise<ComponentHealth> {
     const startTime = Date.now();
 
-    if (!this.eventBus) {
-      return {
-        status: "healthy",
-        message: "Redis not configured (optional service)",
-        latency: 0,
-      };
-    }
-
     try {
-      // Try to publish a health check event (non-blocking)
+      // Try to get Redis client
+      const redis = getRedisClient();
+
+      // Check if Redis is configured
+      if (!redis || redis.status === "end") {
+        return {
+          status: "healthy",
+          message: "Redis not configured (optional service)",
+          latency: 0,
+        };
+      }
+
+      // Ensure Redis is connected
+      if (redis.status !== "ready" && redis.status !== "connect") {
+        if (redis.status === "wait") {
+          // Try to connect with timeout
+          await Promise.race([
+            redis.connect(),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Redis connection timeout")), 2000),
+            ),
+          ]);
+        }
+      }
+
+      // Perform actual PING command
+      const pingResult = await Promise.race([
+        redis.ping(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Redis ping timeout")), 2000),
+        ),
+      ]);
+
       const latency = Date.now() - startTime;
 
-      // For now, assume healthy if event bus exists
-      // In a real implementation, you'd ping Redis
+      // Check if ping was successful
+      if (pingResult === "PONG") {
+        // Get Redis info for additional details
+        let info: Record<string, string> = {};
+        try {
+          const redisInfo = await redis.info("server");
+          // Parse basic info
+          const connectedClients = redisInfo.match(/connected_clients:(\d+)/)?.[1];
+          const usedMemory = redisInfo.match(/used_memory:(\d+)/)?.[1];
+          if (connectedClients) info.connectedClients = connectedClients;
+          if (usedMemory) info.usedMemoryMB = `${Math.round(Number(usedMemory) / 1024 / 1024)}`;
+        } catch {
+          // Ignore info errors
+        }
+
+        return {
+          status: latency < 500 ? "healthy" : latency < 1000 ? "degraded" : "degraded",
+          message: "Redis is connected",
+          latency,
+          details: {
+            ...info,
+            status: redis.status,
+          },
+        };
+      }
+
       return {
-        status: latency < 500 ? "healthy" : "degraded",
-        message: "Redis is connected",
+        status: "degraded",
+        message: "Redis ping failed",
         latency,
       };
     } catch (error) {
+      // Redis is optional, so degraded not unhealthy
       return {
-        status: "degraded", // Redis is optional, so degraded not unhealthy
+        status: "degraded",
         message: error instanceof Error ? error.message : "Redis check failed",
         latency: Date.now() - startTime,
+        details: {
+          error: error instanceof Error ? error.message : String(error),
+        },
       };
     }
   }
 
   /**
-   * Check disk space (simplified - in production use system metrics)
+   * Check disk space using filesystem stats
    */
   private async checkDiskSpace(): Promise<ComponentHealth> {
     try {
-      // In production, use system metrics or Prometheus
-      // For now, return healthy
+      // Determine path to check (use current working directory or root)
+      const pathsToCheck = [
+        process.cwd(), // Current working directory
+        "/", // Root (Unix-like)
+        "C:\\", // Root (Windows)
+      ];
+
+      let pathToCheck: string | null = null;
+      for (const path of pathsToCheck) {
+        if (existsSync(path)) {
+          pathToCheck = path;
+          break;
+        }
+      }
+
+      if (!pathToCheck) {
+        // Fallback: can't determine path, return healthy with warning
+        return {
+          status: "healthy",
+          message: "Disk space check skipped (path not available)",
+          details: {
+            note: "Unable to determine filesystem path for disk space check",
+          },
+        };
+      }
+
+      // Get filesystem stats
+      const stats = await statfs(pathToCheck);
+
+      // Calculate available space
+      const totalBytes = Number(stats.blocks) * Number(stats.bsize);
+      const availableBytes = Number(stats.bavail) * Number(stats.bsize);
+      const usedBytes = totalBytes - availableBytes;
+      const usedPercent = (usedBytes / totalBytes) * 100;
+      const availablePercent = (availableBytes / totalBytes) * 100;
+
+      // Convert to human-readable format
+      const totalGB = totalBytes / 1024 / 1024 / 1024;
+      const availableGB = availableBytes / 1024 / 1024 / 1024;
+      const usedGB = usedBytes / 1024 / 1024 / 1024;
+
+      // Determine status based on available space
+      // Healthy: > 20% available
+      // Degraded: 10-20% available
+      // Unhealthy: < 10% available
+      const status: HealthStatus =
+        availablePercent > 20
+          ? "healthy"
+          : availablePercent > 10
+            ? "degraded"
+            : "unhealthy";
+
       return {
-        status: "healthy",
-        message: "Disk space check passed",
+        status,
+        message:
+          availablePercent > 20
+            ? `Disk space healthy (${availablePercent.toFixed(1)}% available)`
+            : availablePercent > 10
+              ? `Disk space low (${availablePercent.toFixed(1)}% available)`
+              : `Disk space critical (${availablePercent.toFixed(1)}% available)`,
+        details: {
+          path: pathToCheck,
+          totalGB: totalGB.toFixed(2),
+          usedGB: usedGB.toFixed(2),
+          availableGB: availableGB.toFixed(2),
+          usedPercent: usedPercent.toFixed(1),
+          availablePercent: availablePercent.toFixed(1),
+        },
       };
     } catch (error) {
+      // If statfs is not available (e.g., Windows without proper support), return degraded
+      const isWindows = process.platform === "win32";
+      if (isWindows) {
+        // On Windows, statfs might not be available, return healthy with note
+        return {
+          status: "healthy",
+          message: "Disk space check skipped (Windows platform)",
+          details: {
+            note: "Disk space check requires additional setup on Windows",
+            platform: process.platform,
+          },
+        };
+      }
+
       return {
         status: "degraded",
         message: error instanceof Error ? error.message : "Disk space check failed",
+        details: {
+          error: error instanceof Error ? error.message : String(error),
+        },
       };
     }
   }
 
   /**
-   * Check memory usage (simplified - in production use system metrics)
+   * Check memory usage with configurable thresholds
    */
   private async checkMemory(): Promise<ComponentHealth> {
     try {
@@ -172,24 +308,53 @@ export class HealthCheckService {
       const heapUsedMB = usage.heapUsed / 1024 / 1024;
       const heapTotalMB = usage.heapTotal / 1024 / 1024;
       const heapUsagePercent = (usage.heapUsed / usage.heapTotal) * 100;
+      const rssMB = usage.rss / 1024 / 1024;
+      const externalMB = usage.external / 1024 / 1024;
+      const arrayBuffersMB = usage.arrayBuffers / 1024 / 1024;
+
+      // Configurable thresholds (can be made configurable via env vars)
+      const HEALTHY_THRESHOLD = 80; // < 80% = healthy
+      const DEGRADED_THRESHOLD = 90; // 80-90% = degraded, >= 90% = unhealthy
 
       const status: HealthStatus =
-        heapUsagePercent < 80 ? "healthy" : heapUsagePercent < 90 ? "degraded" : "unhealthy";
+        heapUsagePercent < HEALTHY_THRESHOLD
+          ? "healthy"
+          : heapUsagePercent < DEGRADED_THRESHOLD
+            ? "degraded"
+            : "unhealthy";
+
+      // Calculate memory pressure (RSS vs heap)
+      const memoryPressure = (usage.rss / usage.heapTotal) * 100;
 
       return {
         status,
-        message: `Heap usage: ${heapUsagePercent.toFixed(1)}%`,
+        message:
+          heapUsagePercent < HEALTHY_THRESHOLD
+            ? `Memory healthy (${heapUsagePercent.toFixed(1)}% heap used)`
+            : heapUsagePercent < DEGRADED_THRESHOLD
+              ? `Memory usage high (${heapUsagePercent.toFixed(1)}% heap used)`
+              : `Memory usage critical (${heapUsagePercent.toFixed(1)}% heap used)`,
         details: {
           heapUsedMB: Math.round(heapUsedMB),
           heapTotalMB: Math.round(heapTotalMB),
-          heapUsagePercent: Math.round(heapUsagePercent),
-          rssMB: Math.round(usage.rss / 1024 / 1024),
+          heapUsagePercent: Math.round(heapUsagePercent * 10) / 10,
+          rssMB: Math.round(rssMB),
+          externalMB: Math.round(externalMB),
+          arrayBuffersMB: Math.round(arrayBuffersMB),
+          memoryPressure: Math.round(memoryPressure * 10) / 10,
+          thresholds: {
+            healthy: HEALTHY_THRESHOLD,
+            degraded: DEGRADED_THRESHOLD,
+          },
         },
       };
     } catch (error) {
       return {
         status: "degraded",
         message: error instanceof Error ? error.message : "Memory check failed",
+        details: {
+          error: error instanceof Error ? error.message : String(error),
+        },
       };
     }
   }

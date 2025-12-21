@@ -1,18 +1,16 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import { ArrowLeft, Save, Loader2, Settings, Palette } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Save, Loader2, Settings } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   statusCustomizadoApi,
   type CreateStatusCustomizadoInput,
   type UpdateStatusCustomizadoInput,
-  type StatusCustomizado,
 } from "@/lib/api/status-customizado-ficha-custo";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") return null;
@@ -33,7 +31,6 @@ function getCurrentOrgId(): string | null {
 export function StatusCustomizadoFormClient({ statusId }: { statusId?: string }) {
   const router = useRouter();
   const orgId = getCurrentOrgId() || "";
-  const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(!!statusId);
   const [formData, setFormData] = useState<CreateStatusCustomizadoInput>({
     nome: "",
@@ -41,6 +38,25 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
     descricao: null,
     ordem: 0,
     ativo: true,
+  });
+
+  const canSave = useMemo(
+    () => formData.nome.trim().length >= 2 && /^#[0-9A-Fa-f]{6}$/.test(formData.cor),
+    [formData],
+  );
+
+  // Auto-save
+  const { status, hasUnsavedChanges, markDirty, markClean, manualSave } = useAutoSave({
+    onSave: async () => {
+      if (!canSave || !orgId) return;
+      await handleSave();
+    },
+    intervalMs: 30000, // 30 segundos
+    requireValid: true,
+    isValid: () => canSave && !!orgId,
+    onAutoSaveComplete: () => {
+      markClean();
+    },
   });
 
   useEffect(() => {
@@ -56,6 +72,7 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
             ordem: status.ordem,
             ativo: status.ativo,
           });
+          markClean();
         } catch (error) {
           console.error("Failed to load status", error);
           notificationCenter.add({
@@ -69,16 +86,15 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
         }
       };
       void loadStatus();
+    } else {
+      markDirty();
     }
-  }, [statusId, orgId, router]);
+  }, [statusId, orgId, router, markClean, markDirty]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!orgId) return;
+  const handleSave = useCallback(async () => {
+    if (!orgId || !canSave) return;
 
     try {
-      setLoading(true);
-
       if (statusId) {
         const input: UpdateStatusCustomizadoInput = {
           nome: formData.nome,
@@ -88,21 +104,23 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
           ativo: formData.ativo,
         };
         await statusCustomizadoApi.atualizar(orgId, statusId, input);
+        markClean();
         notificationCenter.add({
           type: "success",
           title: "Sucesso",
           message: "Status customizado atualizado com sucesso",
         });
+        router.push("/admin/status-customizados-ficha-custo");
       } else {
         await statusCustomizadoApi.criar(orgId, formData);
+        markClean();
         notificationCenter.add({
           type: "success",
           title: "Sucesso",
           message: "Status customizado criado com sucesso",
         });
+        router.push("/admin/status-customizados-ficha-custo");
       }
-
-      router.push("/admin/status-customizados-ficha-custo");
     } catch (error) {
       console.error("Failed to save status", error);
       notificationCenter.add({
@@ -110,55 +128,36 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
         title: "Erro",
         message: error instanceof Error ? error.message : "Erro ao salvar status customizado",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [orgId, canSave, formData, statusId, router, markClean]);
 
-  if (loadingData) {
-    return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-white/40 mx-auto mb-4" />
-          <p className="text-white/60">Carregando status customizado...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+      if (!canSave) return;
+      await handleSave();
+    },
+    [canSave, handleSave],
+  );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-4"
-      >
-        <Link href="/admin/status-customizados-ficha-custo">
-          <button className="p-2 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-white">
-            {statusId ? "Editar Status Customizado" : "Novo Status Customizado"}
-          </h1>
-          <p className="text-sm text-white/50">
-            {statusId
-              ? "Atualize as informações do status customizado"
-              : "Preencha os dados do novo status customizado"}
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Form */}
-      <motion.form
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        onSubmit={handleSubmit}
-        className="space-y-6 rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
-      >
+    <StandardFormPage
+      title={statusId ? "Editar Status Customizado" : "Novo Status Customizado"}
+      subtitle={
+        statusId
+          ? "Atualize as informações do status customizado"
+          : "Preencha os dados do novo status customizado"
+      }
+      icon={<Settings className="h-8 w-8 text-[hsl(var(--primary))]" />}
+      onSave={handleSubmit}
+      backUrl="/admin/status-customizados-ficha-custo"
+      isValid={canSave}
+      loading={loadingData}
+      loadingMessage="Carregando status customizado..."
+      autoSaveStatus={status}
+      hasUnsavedChanges={hasUnsavedChanges}
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-6">
           {/* Nome */}
           <div className="group">
@@ -171,7 +170,10 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
                 type="text"
                 required
                 value={formData.nome}
-                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                onChange={(e) => {
+                  setFormData({ ...formData, nome: e.target.value });
+                  markDirty();
+                }}
                 className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300"
                 placeholder="Ex: Em Produção"
                 maxLength={100}
@@ -190,7 +192,10 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
                 <input
                   type="color"
                   value={formData.cor}
-                  onChange={(e) => setFormData({ ...formData, cor: e.target.value })}
+                  onChange={(e) => {
+                    setFormData({ ...formData, cor: e.target.value });
+                    markDirty();
+                  }}
                   className="w-16 h-16 rounded-lg border border-white/20 cursor-pointer"
                 />
                 <input
@@ -201,6 +206,7 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
                     const value = e.target.value;
                     if (value === "" || /^#[0-9A-Fa-f]{0,6}$/.test(value)) {
                       setFormData({ ...formData, cor: value });
+                      markDirty();
                     }
                   }}
                   className="flex-1 px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 font-mono"
@@ -229,9 +235,10 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
               <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
               <textarea
                 value={formData.descricao || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, descricao: e.target.value || null })
-                }
+                onChange={(e) => {
+                  setFormData({ ...formData, descricao: e.target.value || null });
+                  markDirty();
+                }}
                 className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 resize-none h-24"
                 placeholder="Descrição do status (opcional)"
                 maxLength={500}
@@ -249,9 +256,10 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
                   type="number"
                   min="0"
                   value={formData.ordem}
-                  onChange={(e) =>
-                    setFormData({ ...formData, ordem: parseInt(e.target.value) || 0 })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, ordem: parseInt(e.target.value) || 0 });
+                    markDirty();
+                  }}
                   className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300"
                 />
               </div>
@@ -263,7 +271,10 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
                 type="checkbox"
                 id="ativo"
                 checked={formData.ativo}
-                onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
+                onChange={(e) => {
+                  setFormData({ ...formData, ativo: e.target.checked });
+                  markDirty();
+                }}
                 className="rounded border-white/10 bg-black/20 text-[hsl(var(--primary))] focus:ring-[hsl(var(--primary))] w-5 h-5"
               />
               <label htmlFor="ativo" className="text-sm font-medium text-white/70 cursor-pointer">
@@ -273,27 +284,8 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
           </div>
         </div>
 
-        {/* Botões */}
-        <div className="pt-4 border-t border-white/10 flex justify-end gap-3">
-          <Link href="/admin/status-customizados-ficha-custo">
-            <button
-              type="button"
-              className="px-4 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              Cancelar
-            </button>
-          </Link>
-          <button
-            type="submit"
-            disabled={loading || !formData.nome.trim() || !/^#[0-9A-Fa-f]{6}$/.test(formData.cor)}
-            className="flex items-center gap-2 rounded-lg bg-[hsl(var(--primary))] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[hsl(var(--primary))/0.8] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            {statusId ? "Atualizar Status" : "Criar Status"}
-          </button>
-        </div>
-      </motion.form>
-    </div>
+      </form>
+    </StandardFormPage>
   );
 }
 

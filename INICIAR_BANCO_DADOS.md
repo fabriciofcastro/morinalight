@@ -135,3 +135,4 @@ docker logs morina-redis
 4. ✅ Recarregar a aplicação (os serviços já devem reconectar automaticamente)
 
 
+

@@ -177,3 +177,4 @@ const result = await companySettingsAPI.uploadFileMultipart(file, "logo", "Descr
 **Próximo Passo:** Testes end-to-end
 
 
+

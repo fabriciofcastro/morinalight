@@ -290,3 +290,4 @@ Esses IDs são incluídos nos headers HTTP:
 - [Prometheus Metrics](https://prometheus.io/docs/concepts/metric_types/)
 
 
+

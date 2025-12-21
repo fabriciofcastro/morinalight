@@ -9,6 +9,12 @@ const updateUserSchema = z.object({
   displayName: z.string().optional().nullable(),
   status: z.enum(["active", "pending", "suspended"]).optional(),
   password: z.string().min(6).optional(),
+  cpf: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  birthDate: z.string().datetime().optional().nullable().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable()),
+  admissionDate: z.string().datetime().optional().nullable().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable()),
+  observations: z.string().optional().nullable(),
+  avatarUrl: z.string().url().optional().nullable(),
 });
 
 type UpdateUserDeps = {
@@ -55,12 +61,22 @@ export async function registerUpdateUserRoute(app: FastifyInstance, deps: Update
       });
     }
 
+    // Parse dates from strings
+    const birthDate = body.birthDate ? new Date(body.birthDate) : undefined;
+    const admissionDate = body.admissionDate ? new Date(body.admissionDate) : undefined;
+
     const updateData: {
       userId: string;
       email?: string;
       displayName?: string | null;
       status?: string;
       passwordHash?: string;
+      cpf?: string | null;
+      phone?: string | null;
+      birthDate?: Date | null;
+      admissionDate?: Date | null;
+      observations?: string | null;
+      avatarUrl?: string | null;
     } = {
       userId,
     };
@@ -71,6 +87,12 @@ export async function registerUpdateUserRoute(app: FastifyInstance, deps: Update
     if (body.password !== undefined) {
       updateData.passwordHash = await bcrypt.hash(body.password, 10);
     }
+    if (body.cpf !== undefined) updateData.cpf = body.cpf;
+    if (body.phone !== undefined) updateData.phone = body.phone;
+    if (birthDate !== undefined) updateData.birthDate = birthDate;
+    if (admissionDate !== undefined) updateData.admissionDate = admissionDate;
+    if (body.observations !== undefined) updateData.observations = body.observations;
+    if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
 
     const updated = await deps.userRepository.update(updateData);
 
@@ -86,6 +108,12 @@ export async function registerUpdateUserRoute(app: FastifyInstance, deps: Update
         email: updated.email,
         displayName: updated.displayName,
         status: updated.status,
+        cpf: updated.cpf,
+        phone: updated.phone,
+        birthDate: updated.birthDate,
+        admissionDate: updated.admissionDate,
+        observations: updated.observations,
+        avatarUrl: updated.avatarUrl,
       },
     });
   });

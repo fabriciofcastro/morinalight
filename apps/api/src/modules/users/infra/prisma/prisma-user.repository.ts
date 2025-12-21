@@ -46,6 +46,12 @@ export class PrismaUserRepository implements UserRepository {
         displayName: input.displayName ?? null,
         passwordHash: input.passwordHash,
         status: (input.status ?? "active") as UserStatus,
+        avatarUrl: input.avatarUrl ?? null,
+        cpf: input.cpf ?? null,
+        phone: input.phone ?? null,
+        birthDate: input.birthDate ?? null,
+        admissionDate: input.admissionDate ?? null,
+        observations: input.observations ?? null,
       },
     });
     return mapUser(user);
@@ -68,6 +74,11 @@ export class PrismaUserRepository implements UserRepository {
     if (input.avatarUrl !== undefined) updateData.avatarUrl = input.avatarUrl;
     if (input.status !== undefined) updateData.status = input.status as UserStatus;
     if (input.passwordHash !== undefined) updateData.passwordHash = input.passwordHash;
+    if (input.cpf !== undefined) updateData.cpf = input.cpf;
+    if (input.phone !== undefined) updateData.phone = input.phone;
+    if (input.birthDate !== undefined) updateData.birthDate = input.birthDate;
+    if (input.admissionDate !== undefined) updateData.admissionDate = input.admissionDate;
+    if (input.observations !== undefined) updateData.observations = input.observations;
 
     const user = await prisma.user.update({
       where: { id: input.userId },
@@ -102,6 +113,11 @@ function mapUser(user: {
   updatedAt: Date;
   branchId: string | null;
   positionId: string | null;
+  cpf: string | null;
+  phone: string | null;
+  birthDate: Date | null;
+  admissionDate: Date | null;
+  observations: string | null;
 }): UserRecord {
   if (!user.passwordHash) {
     throw new Error("User passwordHash is required");
@@ -116,5 +132,10 @@ function mapUser(user: {
     lastLoginAt: user.lastLoginAt ?? undefined,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    cpf: user.cpf ?? undefined,
+    phone: user.phone ?? undefined,
+    birthDate: user.birthDate ?? undefined,
+    admissionDate: user.admissionDate ?? undefined,
+    observations: user.observations ?? undefined,
   };
 }

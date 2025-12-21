@@ -21,7 +21,7 @@ type AuditLog = {
 };
 
 type OrganizationalAuditPanelProps = {
-  entityType?: "department" | "sector" | "position" | "all";
+  entityType?: "department" | "subdepartment" | "sector" | "position" | "all";
   entityId?: string;
 };
 
@@ -30,7 +30,7 @@ export function OrganizationalAuditPanel({ entityType, entityId }: Organizationa
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [fieldFilter, setFieldFilter] = useState("all");
-  const [entityTypeFilter, setEntityTypeFilter] = useState<"all" | "department" | "sector" | "position">("all");
+  const [entityTypeFilter, setEntityTypeFilter] = useState<"all" | "department" | "subdepartment" | "sector" | "position">("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
@@ -89,6 +89,7 @@ export function OrganizationalAuditPanel({ entityType, entityId }: Organizationa
         entityTypeFilter === "all" ||
         log.entityType === entityTypeFilter ||
         (entityTypeFilter === "department" && log.entityType === "department") ||
+        (entityTypeFilter === "subdepartment" && log.entityType === "subdepartment") ||
         (entityTypeFilter === "sector" && log.entityType === "sector") ||
         (entityTypeFilter === "position" && log.entityType === "position");
       return matchesSearch && matchesField && matchesEntityType;
@@ -200,14 +201,14 @@ export function OrganizationalAuditPanel({ entityType, entityId }: Organizationa
               id="entity-type-filter"
               value={entityTypeFilter}
               onChange={(e) =>
-                setEntityTypeFilter(e.target.value as "all" | "department" | "sector" | "position")
+                setEntityTypeFilter(e.target.value as "all" | "department" | "subdepartment" | "sector" | "position")
               }
               className="mt-1 flex h-10 w-full border border-white/10 bg-white/5 px-3 text-sm text-white focus:border-[hsl(var(--primary))] focus:outline-none"
             >
               <option value="all">Todos os tipos</option>
               {uniqueEntityTypes.map((type) => (
                 <option key={type} value={type}>
-                  {type === "department" ? "Departamento" : type === "sector" ? "Setor" : type === "position" ? "Cargo" : type}
+                  {type === "department" ? "Departamento" : type === "subdepartment" ? "Subdepartamento" : type === "sector" ? "Setor" : type === "position" ? "Cargo" : type}
                 </option>
               ))}
             </select>
@@ -286,11 +287,13 @@ export function OrganizationalAuditPanel({ entityType, entityId }: Organizationa
                           <span className="text-xs text-white/40 border border-white/10 bg-white/5 px-2 py-0.5">
                             {log.entityType === "department"
                               ? "Departamento"
+                              : log.entityType === "subdepartment"
+                              ? "Subdepartamento"
                               : log.entityType === "sector"
-                                ? "Setor"
-                                : log.entityType === "position"
-                                  ? "Cargo"
-                                  : log.entityType}
+                              ? "Setor"
+                              : log.entityType === "position"
+                              ? "Cargo"
+                              : log.entityType}
                           </span>
                         )}
                         {log.action && (

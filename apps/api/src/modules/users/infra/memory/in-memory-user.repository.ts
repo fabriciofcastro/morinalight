@@ -70,6 +70,11 @@ export class InMemoryUserRepository implements UserRepository {
     if (input.avatarUrl !== undefined) updated.avatarUrl = input.avatarUrl;
     if (input.status !== undefined) updated.status = input.status;
     if (input.passwordHash !== undefined) updated.passwordHash = input.passwordHash;
+    if (input.cpf !== undefined) updated.cpf = input.cpf;
+    if (input.phone !== undefined) updated.phone = input.phone;
+    if (input.birthDate !== undefined) updated.birthDate = input.birthDate;
+    if (input.admissionDate !== undefined) updated.admissionDate = input.admissionDate;
+    if (input.observations !== undefined) updated.observations = input.observations;
 
     this.users.set(input.userId, updated);
     return { ...updated };

@@ -13,6 +13,7 @@ import {
   Eye,
   CheckCircle2,
   AlertCircle,
+  Tag,
 } from "lucide-react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { buscarCnpj } from "@/lib/integrations/cnpj";
@@ -20,13 +21,38 @@ import { buscarEnderecoPorCep } from "@/lib/integrations/viacep";
 import { Loader2, History } from "lucide-react";
 import { useDraftHistory } from "@/hooks/use-draft-history";
 import { DraftHistoryModal } from "./draft-history-modal";
+import { useSmartSuggestions, type SmartSuggestion } from "@/hooks/use-smart-suggestions";
+import { SmartSuggestionsPanel } from "./smart-suggestions-panel";
+import { TagsInput, type Tag } from "./tags-input";
+import { useClienteTags } from "@/hooks/use-cliente-tags";
+import { validateRG, formatRG, getRGFormatDescription, type EstadoUF } from "@/lib/validators/rg";
+import { validateIE, formatIE, getIEFormatDescription } from "@/lib/validators/inscricao-estadual";
+import { formatCPF, formatCNPJ } from "@/lib/validators/brazilian";
+import { formatPhone, formatCEP } from "@/lib/validators/brazilian";
 
 type ClienteFormData = {
   nome: string;
+  nomeSocial: string;
   razaoSocial: string;
   nomeFantasia: string;
   tipo: "fisica" | "juridica";
   documento: string;
+  documentoValidade: string;
+  situacaoCadastral: string;
+  fotoUrl: string;
+  rg: string;
+  orgaoEmissor: string;
+  dataNascimento: string;
+  sexo: string;
+  estadoCivil: string;
+  nacionalidade: string;
+  naturalidadeCidade: string;
+  naturalidadeEstado: string;
+  tituloEleitor: string;
+  certidaoNascimento: string;
+  certidaoCasamento: string;
+  nomeMae: string;
+  nomePai: string;
   inscricaoEstadual: string;
   inscricaoMunicipal: string;
   email: string;
@@ -41,6 +67,7 @@ type ClienteFormData = {
   estado: string;
   cep: string;
   observacoes: string;
+  tags?: Tag[];
 };
 
 interface ClienteFormWizardProps {
@@ -48,6 +75,7 @@ interface ClienteFormWizardProps {
   onSubmit: (data: ClienteFormData) => Promise<void>;
   onCancel: () => void;
   isEditing?: boolean;
+  clienteId?: string;
 }
 
 // Funções utilitárias
@@ -140,20 +168,59 @@ export function ClienteFormWizard({
   onSubmit,
   onCancel,
   isEditing = false,
+  clienteId,
 }: ClienteFormWizardProps) {
   const [formData, setFormData] = useState<ClienteFormData>({
     nome: initialData?.nome || "",
+    nomeSocial: initialData?.nomeSocial || "",
     razaoSocial: initialData?.razaoSocial || "",
     nomeFantasia: initialData?.nomeFantasia || "",
     tipo: initialData?.tipo || "fisica",
     documento: initialData?.documento || "",
+    documentoValidade: initialData?.documentoValidade || "",
+    situacaoCadastral: initialData?.situacaoCadastral || "",
+    fotoUrl: initialData?.fotoUrl || "",
+    rg: initialData?.rg || "",
+    orgaoEmissor: initialData?.orgaoEmissor || "",
+    dataNascimento: initialData?.dataNascimento || "",
+    sexo: initialData?.sexo || "",
+    estadoCivil: initialData?.estadoCivil || "",
+    nacionalidade: initialData?.nacionalidade || "",
+    naturalidadeCidade: initialData?.naturalidadeCidade || "",
+    naturalidadeEstado: initialData?.naturalidadeEstado || "",
+    tituloEleitor: initialData?.tituloEleitor || "",
+    certidaoNascimento: initialData?.certidaoNascimento || "",
+    certidaoCasamento: initialData?.certidaoCasamento || "",
+    nomeMae: initialData?.nomeMae || "",
+    nomePai: initialData?.nomePai || "",
     inscricaoEstadual: initialData?.inscricaoEstadual || "",
     inscricaoMunicipal: initialData?.inscricaoMunicipal || "",
     email: initialData?.email || "",
+    emailSecundario: initialData?.emailSecundario || "",
+    emailCorporativo: initialData?.emailCorporativo || "",
     telefone: initialData?.telefone || "",
+    telefoneComercial: initialData?.telefoneComercial || "",
     celular: initialData?.celular || "",
+    whatsapp: initialData?.whatsapp || "",
+    telegram: initialData?.telegram || "",
     website: initialData?.website || "",
+    linkedin: initialData?.linkedin || "",
+    facebook: initialData?.facebook || "",
+    instagram: initialData?.instagram || "",
+    twitter: initialData?.twitter || "",
+    youtube: initialData?.youtube || "",
+    blog: initialData?.blog || "",
     endereco: initialData?.endereco || "",
+    pontoReferencia: initialData?.pontoReferencia || "",
+    latitude: initialData?.latitude || "",
+    longitude: initialData?.longitude || "",
+    codigoIBGE: initialData?.codigoIBGE || "",
+    codigoMunicipio: initialData?.codigoMunicipio || "",
+    regiao: initialData?.regiao || "",
+    zona: initialData?.zona || "",
+    horarioPreferencialContato: initialData?.horarioPreferencialContato || "",
+    idiomaPreferido: initialData?.idiomaPreferido || "",
+    formaPreferidaComunicacao: initialData?.formaPreferidaComunicacao || "",
     numero: initialData?.numero || "",
     complemento: initialData?.complemento || "",
     bairro: initialData?.bairro || "",
@@ -169,6 +236,19 @@ export function ClienteFormWizard({
   const [buscandoCEP, setBuscandoCEP] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showDraftHistory, setShowDraftHistory] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(initialData?.tags || []);
+
+  // Hook para gerenciar tags
+  const { availableTags, loading: loadingTags, createTag, loadClienteTags } = useClienteTags();
+
+  // Carregar tags do cliente se estiver editando
+  useEffect(() => {
+    if (isEditing && clienteId) {
+      loadClienteTags(clienteId).then((tags) => {
+        setSelectedTags(tags);
+      });
+    }
+  }, [isEditing, clienteId, loadClienteTags]);
 
   // Histórico de rascunhos
   const {
@@ -226,6 +306,39 @@ export function ClienteFormWizard({
     clearHistory();
   }, [clearHistory]);
 
+  // Sugestões inteligentes
+  const { suggestions, isLoading: isLoadingSuggestions, applySuggestion } =
+    useSmartSuggestions(formData, {
+      enabled: !isEditing,
+      minConfidence: 0.3,
+    });
+
+  // Filtrar sugestões descartadas
+  const activeSuggestions = suggestions.filter(
+    (s) => !dismissedSuggestions.has(`${s.field}-${s.value}`)
+  );
+
+  const handleApplySuggestion = useCallback((suggestion: SmartSuggestion) => {
+    const value = applySuggestion(suggestion);
+    setFormData((prev) => ({
+      ...prev,
+      [suggestion.field]: value,
+    }));
+    setDismissedSuggestions((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(`${suggestion.field}-${suggestion.value}`);
+      return newSet;
+    });
+  }, [applySuggestion]);
+
+  const handleDismissSuggestion = useCallback((suggestion: SmartSuggestion) => {
+    setDismissedSuggestions((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(`${suggestion.field}-${suggestion.value}`);
+      return newSet;
+    });
+  }, []);
+
   const steps: Step[] = [
     {
       id: "dados-basicos",
@@ -246,10 +359,22 @@ export function ClienteFormWizard({
       icon: <MapPin className="h-5 w-5" />,
     },
     {
+      id: "dados-pessoais",
+      label: "Dados Pessoais",
+      description: "Informações adicionais (PF)",
+      icon: <User className="h-5 w-5" />,
+    },
+    {
       id: "observacoes",
       label: "Observações",
       description: "Informações adicionais",
       icon: <FileText className="h-5 w-5" />,
+    },
+    {
+      id: "tags",
+      label: "Tags",
+      description: "Categorização",
+      icon: <Tag className="h-5 w-5" />,
     },
     {
       id: "preview",
@@ -411,7 +536,7 @@ export function ClienteFormWizard({
 
   const handleFinish = useCallback(async () => {
     // Validação final completa
-    const validacao = validateStep(0) && validateStep(1) && validateStep(2);
+    const validacao = validateStep(0) && validateStep(1) && validateStep(2) && (formData.tipo === "juridica" || validateStep(3));
     if (!validacao) {
       notificationCenter.add({
         type: "error",
@@ -423,8 +548,11 @@ export function ClienteFormWizard({
 
     // Limpar rascunho após salvar com sucesso
     clearDraft();
-    await onSubmit(formData);
-  }, [formData, validateStep, onSubmit, clearDraft]);
+    
+    // Incluir tags nos dados
+    const dataWithTags = { ...formData, tags: selectedTags };
+    await onSubmit(dataWithTags);
+  }, [formData, selectedTags, validateStep, onSubmit, clearDraft]);
 
   // Renderizar conteúdo de cada etapa
   const renderStepContent = (stepIndex: number) => {
@@ -541,11 +669,38 @@ export function ClienteFormWizard({
                   <Input
                     id="inscricaoEstadual"
                     value={formData.inscricaoEstadual}
-                    onChange={(e) =>
-                      setFormData({ ...formData, inscricaoEstadual: e.target.value })
-                    }
+                    onChange={(e) => {
+                      const value = e.target.value.toUpperCase();
+                      setFormData({ ...formData, inscricaoEstadual: value });
+                      // Validar IE se tiver estado
+                      if (formData.estado && value && value !== "ISENTO") {
+                        const cleaned = value.replace(/\D/g, "");
+                        const isValid = validateIE(cleaned, formData.estado as EstadoUF);
+                        if (!isValid && cleaned.length > 0) {
+                          setErrosValidacao((prev) => ({
+                            ...prev,
+                            inscricaoEstadual: `IE inválida para ${formData.estado}. ${getIEFormatDescription(formData.estado as EstadoUF)}`,
+                          }));
+                        } else {
+                          setErrosValidacao((prev) => {
+                            const novo = { ...prev };
+                            delete novo.inscricaoEstadual;
+                            return novo;
+                          });
+                        }
+                      }
+                    }}
                     placeholder="Ex: 123.456.789.012 ou ISENTO"
+                    className={errosValidacao.inscricaoEstadual ? "border-red-500 border-2" : ""}
                   />
+                  {errosValidacao.inscricaoEstadual && (
+                    <p className="text-xs text-red-500 mt-1">{errosValidacao.inscricaoEstadual}</p>
+                  )}
+                  {formData.estado && !errosValidacao.inscricaoEstadual && (
+                    <p className="text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)] mt-1">
+                      Formato esperado para {formData.estado}: {getIEFormatDescription(formData.estado as EstadoUF)} ou ISENTO
+                    </p>
+                  )}
                 </FormField>
                 <FormField label="Inscrição Municipal (IM)" fieldId="inscricaoMunicipal">
                   <Input
@@ -614,6 +769,91 @@ export function ClienteFormWizard({
               />
             </FormField>
 
+            <FormField label="Email Secundário" fieldId="emailSecundario">
+              <Input
+                id="emailSecundario"
+                type="email"
+                value={formData.emailSecundario}
+                onChange={(e) => {
+                  setFormData({ ...formData, emailSecundario: e.target.value });
+                  if (errosValidacao.emailSecundario) {
+                    setErrosValidacao((prev) => {
+                      const novo = { ...prev };
+                      delete novo.emailSecundario;
+                      return novo;
+                    });
+                  }
+                }}
+                placeholder="Ex: contato2@empresa.com.br"
+                className={errosValidacao.emailSecundario ? "border-red-500 border-2" : ""}
+              />
+              {errosValidacao.emailSecundario && (
+                <p className="text-xs text-red-500 mt-1">{errosValidacao.emailSecundario}</p>
+              )}
+            </FormField>
+
+            <FormField label="Email Corporativo" fieldId="emailCorporativo">
+              <Input
+                id="emailCorporativo"
+                type="email"
+                value={formData.emailCorporativo}
+                onChange={(e) => {
+                  setFormData({ ...formData, emailCorporativo: e.target.value });
+                  if (errosValidacao.emailCorporativo) {
+                    setErrosValidacao((prev) => {
+                      const novo = { ...prev };
+                      delete novo.emailCorporativo;
+                      return novo;
+                    });
+                  }
+                }}
+                placeholder="Ex: empresa@corporativo.com.br"
+                className={errosValidacao.emailCorporativo ? "border-red-500 border-2" : ""}
+              />
+              {errosValidacao.emailCorporativo && (
+                <p className="text-xs text-red-500 mt-1">{errosValidacao.emailCorporativo}</p>
+              )}
+            </FormField>
+
+            <FormField label="Telefone Comercial" fieldId="telefoneComercial">
+              <Input
+                id="telefoneComercial"
+                value={formatPhone(formData.telefoneComercial)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  setFormData({ ...formData, telefoneComercial: value });
+                }}
+                placeholder="Ex: (11) 3456-7890"
+              />
+            </FormField>
+
+            <FormField label="WhatsApp Business" fieldId="whatsapp">
+              <Input
+                id="whatsapp"
+                value={formatPhone(formData.whatsapp)}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  setFormData({ ...formData, whatsapp: value });
+                }}
+                placeholder="Ex: (11) 98765-4321"
+              />
+              <p className="text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)] mt-1">
+                Número do WhatsApp Business
+              </p>
+            </FormField>
+
+            <FormField label="Telegram" fieldId="telegram">
+              <Input
+                id="telegram"
+                value={formData.telegram}
+                onChange={(e) => setFormData({ ...formData, telegram: e.target.value })}
+                placeholder="Ex: @usuario ou +5511987654321"
+              />
+              <p className="text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)] mt-1">
+                Username do Telegram ou número de telefone
+              </p>
+            </FormField>
+
             <FormField label="Website" fieldId="website" className="md:col-span-2">
               <Input
                 id="website"
@@ -635,6 +875,104 @@ export function ClienteFormWizard({
               {errosValidacao.website && (
                 <p className="text-xs text-red-500 mt-1">{errosValidacao.website}</p>
               )}
+            </FormField>
+
+            <FormField label="LinkedIn" fieldId="linkedin">
+              <Input
+                id="linkedin"
+                type="url"
+                value={formData.linkedin}
+                onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                placeholder="https://linkedin.com/in/usuario"
+              />
+            </FormField>
+
+            <FormField label="Facebook" fieldId="facebook">
+              <Input
+                id="facebook"
+                type="url"
+                value={formData.facebook}
+                onChange={(e) => setFormData({ ...formData, facebook: e.target.value })}
+                placeholder="https://facebook.com/empresa"
+              />
+            </FormField>
+
+            <FormField label="Instagram" fieldId="instagram">
+              <Input
+                id="instagram"
+                type="url"
+                value={formData.instagram}
+                onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                placeholder="https://instagram.com/empresa"
+              />
+            </FormField>
+
+            <FormField label="Twitter/X" fieldId="twitter">
+              <Input
+                id="twitter"
+                type="url"
+                value={formData.twitter}
+                onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                placeholder="https://twitter.com/empresa"
+              />
+            </FormField>
+
+            <FormField label="YouTube" fieldId="youtube">
+              <Input
+                id="youtube"
+                type="url"
+                value={formData.youtube}
+                onChange={(e) => setFormData({ ...formData, youtube: e.target.value })}
+                placeholder="https://youtube.com/@empresa"
+              />
+            </FormField>
+
+            <FormField label="Blog" fieldId="blog">
+              <Input
+                id="blog"
+                type="url"
+                value={formData.blog}
+                onChange={(e) => setFormData({ ...formData, blog: e.target.value })}
+                placeholder="https://blog.empresa.com.br"
+              />
+            </FormField>
+
+            <FormField label="Horário Preferencial de Contato" fieldId="horarioPreferencialContato">
+              <Input
+                id="horarioPreferencialContato"
+                value={formData.horarioPreferencialContato}
+                onChange={(e) => setFormData({ ...formData, horarioPreferencialContato: e.target.value })}
+                placeholder="Ex: 08:00-18:00 ou Segunda a Sexta, 9h às 17h"
+              />
+            </FormField>
+
+            <FormField label="Idioma Preferido" fieldId="idiomaPreferido">
+              <FormSelect
+                id="idiomaPreferido"
+                value={formData.idiomaPreferido}
+                onChange={(e) => setFormData({ ...formData, idiomaPreferido: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="en-US">Inglês (EUA)</option>
+                <option value="es-ES">Espanhol</option>
+                <option value="fr-FR">Francês</option>
+              </FormSelect>
+            </FormField>
+
+            <FormField label="Forma Preferida de Comunicação" fieldId="formaPreferidaComunicacao">
+              <FormSelect
+                id="formaPreferidaComunicacao"
+                value={formData.formaPreferidaComunicacao}
+                onChange={(e) => setFormData({ ...formData, formaPreferidaComunicacao: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="email">Email</option>
+                <option value="telefone">Telefone</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="telegram">Telegram</option>
+                <option value="presencial">Presencial</option>
+              </FormSelect>
             </FormField>
           </div>
         );
@@ -745,10 +1083,204 @@ export function ClienteFormWizard({
                 <p className="text-xs text-red-500 mt-1">{errosValidacao.estado}</p>
               )}
             </FormField>
+
+            <FormField label="Ponto de Referência" fieldId="pontoReferencia" className="md:col-span-2">
+              <Input
+                id="pontoReferencia"
+                value={formData.pontoReferencia}
+                onChange={(e) => setFormData({ ...formData, pontoReferencia: e.target.value })}
+                placeholder="Ex: Próximo ao shopping, em frente à padaria"
+              />
+            </FormField>
+
+            <FormField label="Latitude (GPS)" fieldId="latitude">
+              <Input
+                id="latitude"
+                type="text"
+                value={formData.latitude}
+                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                placeholder="Ex: -23.5505199"
+              />
+            </FormField>
+
+            <FormField label="Longitude (GPS)" fieldId="longitude">
+              <Input
+                id="longitude"
+                type="text"
+                value={formData.longitude}
+                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                placeholder="Ex: -46.6333094"
+              />
+            </FormField>
+
+            <FormField label="Código IBGE" fieldId="codigoIBGE">
+              <Input
+                id="codigoIBGE"
+                value={formData.codigoIBGE}
+                onChange={(e) => setFormData({ ...formData, codigoIBGE: e.target.value })}
+                placeholder="Ex: 3550308"
+              />
+            </FormField>
+
+            <FormField label="Código do Município" fieldId="codigoMunicipio">
+              <Input
+                id="codigoMunicipio"
+                value={formData.codigoMunicipio}
+                onChange={(e) => setFormData({ ...formData, codigoMunicipio: e.target.value })}
+                placeholder="Ex: 0308"
+              />
+            </FormField>
+
+            <FormField label="Região" fieldId="regiao">
+              <FormSelect
+                id="regiao"
+                value={formData.regiao}
+                onChange={(e) => setFormData({ ...formData, regiao: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="Norte">Norte</option>
+                <option value="Nordeste">Nordeste</option>
+                <option value="Centro-Oeste">Centro-Oeste</option>
+                <option value="Sudeste">Sudeste</option>
+                <option value="Sul">Sul</option>
+              </FormSelect>
+            </FormField>
+
+            <FormField label="Zona" fieldId="zona">
+              <FormSelect
+                id="zona"
+                value={formData.zona}
+                onChange={(e) => setFormData({ ...formData, zona: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="urbana">Urbana</option>
+                <option value="rural">Rural</option>
+              </FormSelect>
+            </FormField>
           </div>
         );
 
-      case 3: // Observações
+      case 3: // Dados Pessoais (apenas PF)
+        if (formData.tipo !== "fisica") {
+          return (
+            <div className="text-center py-8 text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]">
+              <p>Esta etapa é apenas para Pessoa Física.</p>
+            </div>
+          );
+        }
+        return (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField label="Sexo/Gênero" fieldId="sexo">
+              <FormSelect
+                id="sexo"
+                value={formData.sexo}
+                onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="masculino">Masculino</option>
+                <option value="feminino">Feminino</option>
+                <option value="outro">Outro</option>
+                <option value="nao_informar">Prefiro não informar</option>
+              </FormSelect>
+            </FormField>
+
+            <FormField label="Estado Civil" fieldId="estadoCivil">
+              <FormSelect
+                id="estadoCivil"
+                value={formData.estadoCivil}
+                onChange={(e) => setFormData({ ...formData, estadoCivil: e.target.value })}
+              >
+                <option value="">Selecione...</option>
+                <option value="solteiro">Solteiro(a)</option>
+                <option value="casado">Casado(a)</option>
+                <option value="divorciado">Divorciado(a)</option>
+                <option value="viuvo">Viúvo(a)</option>
+                <option value="uniao_estavel">União Estável</option>
+              </FormSelect>
+            </FormField>
+
+            <FormField label="Nacionalidade" fieldId="nacionalidade" className="md:col-span-2">
+              <Input
+                id="nacionalidade"
+                value={formData.nacionalidade}
+                onChange={(e) => setFormData({ ...formData, nacionalidade: e.target.value })}
+                placeholder="Ex: Brasileira, Portuguesa, etc."
+              />
+            </FormField>
+
+            <FormField label="Cidade de Naturalidade" fieldId="naturalidadeCidade">
+              <Input
+                id="naturalidadeCidade"
+                value={formData.naturalidadeCidade}
+                onChange={(e) => setFormData({ ...formData, naturalidadeCidade: e.target.value })}
+                placeholder="Ex: São Paulo"
+              />
+            </FormField>
+
+            <FormField label="Estado de Naturalidade (UF)" fieldId="naturalidadeEstado">
+              <Input
+                id="naturalidadeEstado"
+                value={formData.naturalidadeEstado}
+                onChange={(e) =>
+                  setFormData({ ...formData, naturalidadeEstado: e.target.value.toUpperCase().slice(0, 2) })
+                }
+                placeholder="Ex: SP"
+                maxLength={2}
+              />
+            </FormField>
+
+            <FormField label="Título de Eleitor" fieldId="tituloEleitor">
+              <Input
+                id="tituloEleitor"
+                value={formData.tituloEleitor}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  setFormData({ ...formData, tituloEleitor: value });
+                }}
+                placeholder="Ex: 123456789012"
+                maxLength={12}
+              />
+            </FormField>
+
+            <FormField label="Certidão de Nascimento" fieldId="certidaoNascimento">
+              <Input
+                id="certidaoNascimento"
+                value={formData.certidaoNascimento}
+                onChange={(e) => setFormData({ ...formData, certidaoNascimento: e.target.value })}
+                placeholder="Ex: Livro 123, Folha 456, Termo 789"
+              />
+            </FormField>
+
+            <FormField label="Certidão de Casamento" fieldId="certidaoCasamento">
+              <Input
+                id="certidaoCasamento"
+                value={formData.certidaoCasamento}
+                onChange={(e) => setFormData({ ...formData, certidaoCasamento: e.target.value })}
+                placeholder="Ex: Livro 123, Folha 456, Termo 789"
+              />
+            </FormField>
+
+            <FormField label="Nome da Mãe" fieldId="nomeMae" className="md:col-span-2">
+              <Input
+                id="nomeMae"
+                value={formData.nomeMae}
+                onChange={(e) => setFormData({ ...formData, nomeMae: e.target.value })}
+                placeholder="Ex: Maria Silva"
+              />
+            </FormField>
+
+            <FormField label="Nome do Pai" fieldId="nomePai" className="md:col-span-2">
+              <Input
+                id="nomePai"
+                value={formData.nomePai}
+                onChange={(e) => setFormData({ ...formData, nomePai: e.target.value })}
+                placeholder="Ex: João Silva"
+              />
+            </FormField>
+          </div>
+        );
+
+      case 4: // Observações
         return (
           <div>
             <FormTextarea
@@ -762,7 +1294,24 @@ export function ClienteFormWizard({
           </div>
         );
 
-      case 4: // Preview
+      case 5: // Tags
+        return (
+          <div>
+            <TagsInput
+              tags={selectedTags}
+              availableTags={availableTags}
+              onTagsChange={setSelectedTags}
+              onCreateTag={createTag}
+              placeholder="Digite para criar ou selecionar uma tag..."
+              className="w-full"
+            />
+            <p className="text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)] mt-2">
+              Adicione tags para categorizar e organizar seus clientes. Você pode criar novas tags ou usar as existentes.
+            </p>
+          </div>
+        );
+
+      case 6: // Preview
         return (
           <div className="space-y-6">
             <div className="bg-[color-mix(in oklab,var(--muted-soft)_5%,transparent)] rounded-lg p-6 border border-[color-mix(in oklab,var(--muted-soft)_20%,transparent)]">
@@ -857,6 +1406,31 @@ export function ClienteFormWizard({
                     <p className="font-medium whitespace-pre-wrap">{formData.observacoes}</p>
                   </div>
                 )}
+                {selectedTags.length > 0 && (
+                  <div className="md:col-span-2">
+                    <p className="text-xs text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)] mb-2">
+                      Tags
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                          style={{
+                            backgroundColor: tag.color
+                              ? `${tag.color}20`
+                              : "var(--muted-soft)",
+                            color: tag.color || "inherit",
+                            border: `1px solid ${tag.color ? `${tag.color}40` : "transparent"}`,
+                          }}
+                        >
+                          <Tag className="h-3 w-3" />
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             {Object.keys(errosValidacao).length > 0 && (
@@ -918,6 +1492,30 @@ export function ClienteFormWizard({
           )}
         </div>
       )}
+
+      {/* Painel de sugestões inteligentes */}
+      {!isEditing && activeSuggestions && activeSuggestions.length > 0 && (
+        <div className="mb-4">
+          <SmartSuggestionsPanel
+            suggestions={activeSuggestions}
+            isLoading={isLoadingSuggestions}
+            onApply={handleApplySuggestion}
+            onDismiss={handleDismissSuggestion}
+            getFieldLabel={(key) => {
+              const labels: Record<string, string> = {
+                nome: "Nome",
+                cidade: "Cidade",
+                estado: "Estado",
+                email: "Email",
+                telefone: "Telefone",
+                celular: "Celular",
+              };
+              return labels[key] || key;
+            }}
+          />
+        </div>
+      )}
+
       <Wizard
         steps={steps}
         currentStep={currentStep}

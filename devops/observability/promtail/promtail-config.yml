@@ -1,0 +1,104 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Coletar logs do container da API
+  - job_name: morina-api
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: morina-api
+          service: api
+          __path__: /var/log/morina-api/*.log
+    
+    # Parser para logs JSON do Pino
+    pipeline_stages:
+      - json:
+          expressions:
+            level: level
+            time: time
+            msg: msg
+            requestId: requestId
+            userId: userId
+            orgId: orgId
+            method: method
+            url: url
+            statusCode: statusCode
+            duration: duration
+            error: error
+            type: type
+      
+      # Converter level numérico do Pino para string
+      - template:
+          source: level_label
+          template: |
+            {{ if eq .level 10 }}trace{{ else if eq .level 20 }}debug{{ else if eq .level 30 }}info{{ else if eq .level 40 }}warn{{ else if eq .level 50 }}error{{ else if eq .level 60 }}fatal{{ else }}unknown{{ end }}
+      
+      - labels:
+          level: level_label
+          service: service
+          requestId: requestId
+          userId: userId
+          orgId: orgId
+          method: method
+          statusCode: statusCode
+          log_type: type
+      
+      # Timestamp do log
+      - timestamp:
+          source: time
+          format: RFC3339Nano
+      
+      # Output format
+      - output:
+          source: |
+            [{{ .timestamp }}] {{ .level_label | upper }} {{ .msg }}
+            {{- if .requestId }} requestId={{ .requestId }}{{ end }}
+            {{- if .userId }} userId={{ .userId }}{{ end }}
+            {{- if .orgId }} orgId={{ .orgId }}{{ end }}
+            {{- if .method }} method={{ .method }}{{ end }}
+            {{- if .url }} url={{ .url }}{{ end }}
+            {{- if .statusCode }} statusCode={{ .statusCode }}{{ end }}
+            {{- if .duration }} duration={{ .duration }}ms{{ end }}
+            {{- if .error }} error={{ .error }}{{ end }}
+
+  # Coletar logs do Docker (fallback)
+  - job_name: docker-containers
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    
+    relabel_configs:
+      - source_labels: [__meta_docker_container_name]
+        regex: /(.*)
+        target_label: container_name
+      
+      - source_labels: [__meta_docker_container_log_stream]
+        target_label: log_stream
+      
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: service
+
+    pipeline_stages:
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            attrs: attrs
+      
+      - labels:
+          stream: stream
+          service: service
+      
+      - output:
+          source: output
+
+

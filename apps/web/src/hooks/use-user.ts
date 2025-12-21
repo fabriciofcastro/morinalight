@@ -12,6 +12,12 @@ export interface CreateUserRequest {
   departmentId?: string;
   sectorId?: string;
   positionId?: string;
+  cpf?: string;
+  phone?: string;
+  birthDate?: string;
+  admissionDate?: string;
+  observations?: string;
+  avatarUrl?: string;
 }
 
 export interface UpdateUserRequest {
@@ -20,6 +26,12 @@ export interface UpdateUserRequest {
   departmentId?: string;
   sectorId?: string;
   positionId?: string;
+  cpf?: string;
+  phone?: string;
+  birthDate?: string;
+  admissionDate?: string;
+  observations?: string;
+  avatarUrl?: string;
 }
 
 export function useUser(userId?: string) {

@@ -369,3 +369,4 @@ export function SectorDetailClient({ sectorId }: SectorDetailClientProps) {
 }
 
 
+

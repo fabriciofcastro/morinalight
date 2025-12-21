@@ -1,5 +1,5 @@
 export type OrganizationalStructureAuditLogFilter = {
-  entityType?: "unit" | "department" | "team" | "branch" | "sector" | "position";
+  entityType?: "unit" | "department" | "team" | "branch" | "sector" | "position" | "subdepartment";
   entityId?: string;
   action?: string;
   cursor?: string;
@@ -14,7 +14,7 @@ export type OrganizationalStructureAuditLogPage = {
 export type OrganizationalStructureAuditLog = {
   id: string;
   orgId: string;
-  entityType: "unit" | "department" | "team" | "branch" | "sector" | "position";
+  entityType: "unit" | "department" | "team" | "branch" | "sector" | "position" | "subdepartment";
   entityId: string;
   action: string;
   actorId: string;

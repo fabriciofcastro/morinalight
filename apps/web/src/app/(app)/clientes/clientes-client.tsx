@@ -37,6 +37,7 @@ import {
   TrendingUp,
   BarChart3,
   Loader2,
+  Tag,
 } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,23 +48,67 @@ import { ClienteFormWizard } from "@/components/clientes/cliente-form-wizard";
 import { buscarCnpj } from "@/lib/integrations/cnpj";
 import { buscarEnderecoPorCep } from "@/lib/integrations/viacep";
 import { triggerConfetti } from "@/lib/utils/confetti";
+import { InlineEditField } from "@/components/clientes/inline-edit-field";
+import { useDocumentExpiryAlerts } from "@/hooks/use-document-expiry-alerts";
+
+type ClienteTag = {
+  id: string;
+  name: string;
+  color?: string | null;
+};
 
 type Cliente = {
   clienteId: string;
   orgId: string;
   nome: string;
+  nomeSocial?: string | null;
   razaoSocial: string | null;
+  nomeFantasia?: string | null;
   tipo: "fisica" | "juridica";
   documento: string;
+  documentoValidade?: string | null;
+  situacaoCadastral?: string | null;
+  fotoUrl?: string | null;
+  rg?: string | null;
+  orgaoEmissor?: string | null;
+  dataNascimento?: string | null;
+  inscricaoEstadual?: string | null;
+  inscricaoMunicipal?: string | null;
   email: string | null;
+  emailSecundario?: string | null;
+  emailCorporativo?: string | null;
   telefone: string | null;
+  telefoneComercial?: string | null;
   celular: string | null;
+  whatsapp?: string | null;
+  telegram?: string | null;
+  website?: string | null;
+  linkedin?: string | null;
+  facebook?: string | null;
+  instagram?: string | null;
+  twitter?: string | null;
+  youtube?: string | null;
+  blog?: string | null;
   endereco: string | null;
+  pontoReferencia?: string | null;
+  latitude?: string | null;
+  longitude?: string | null;
+  codigoIBGE?: string | null;
+  codigoMunicipio?: string | null;
+  regiao?: string | null;
+  zona?: string | null;
+  horarioPreferencialContato?: string | null;
+  idiomaPreferido?: string | null;
+  formaPreferidaComunicacao?: string | null;
+  numero?: string | null;
+  complemento?: string | null;
+  bairro?: string | null;
   cidade: string | null;
   estado: string | null;
   cep: string | null;
   status: "ativo" | "inativo" | "bloqueado";
   observacoes: string | null;
+  tags?: ClienteTag[];
   createdAt: string;
   updatedAt: string;
 };
@@ -180,7 +225,7 @@ export function ClientesClient() {
   const [showFilters, setShowFilters] = useState(false);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [selectedClientes, setSelectedClientes] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<"info" | "representantes" | "historico">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "contatos" | "representantes" | "historico">("info");
   const [pending, startTransition] = useTransition();
   const [errosValidacao, setErrosValidacao] = useState<Record<string, string>>({});
   const [buscandoCNPJ, setBuscandoCNPJ] = useState(false);
@@ -204,15 +249,37 @@ export function ClientesClient() {
 
   const [formData, setFormData] = useState({
     nome: "",
+    nomeSocial: "",
     razaoSocial: "",
     nomeFantasia: "",
     tipo: "fisica" as "fisica" | "juridica",
     documento: "",
+    documentoValidade: "",
+    situacaoCadastral: "",
+    fotoUrl: "",
+    rg: "",
+    orgaoEmissor: "",
+    dataNascimento: "",
+    sexo: "",
+    estadoCivil: "",
+    nacionalidade: "",
+    naturalidadeCidade: "",
+    naturalidadeEstado: "",
+    tituloEleitor: "",
+    certidaoNascimento: "",
+    certidaoCasamento: "",
+    nomeMae: "",
+    nomePai: "",
     inscricaoEstadual: "",
     inscricaoMunicipal: "",
     email: "",
+    emailSecundario: "",
+    emailCorporativo: "",
     telefone: "",
+    telefoneComercial: "",
     celular: "",
+    whatsapp: "",
+    telegram: "",
     website: "",
     endereco: "",
     numero: "",
@@ -223,6 +290,18 @@ export function ClientesClient() {
     cep: "",
     observacoes: "",
   });
+
+  // Alertas de documentos vencidos
+  const documentAlerts = useDocumentExpiryAlerts(
+    clientes.map((c) => ({
+      clienteId: c.clienteId,
+      nome: c.nome,
+      documento: c.documento,
+      tipo: c.tipo,
+      documentoValidade: (c as any).documentoValidade,
+    })),
+    { diasAviso: 30 }
+  );
 
   // Debounce para busca
   useEffect(() => {
@@ -530,13 +609,35 @@ export function ClientesClient() {
         const dadosParaEnviar = {
           ...formData,
           documento: documentoLimpo,
+          documentoValidade: formData.documentoValidade ? new Date(formData.documentoValidade) : null,
+          situacaoCadastral: formData.situacaoCadastral || null,
+          fotoUrl: formData.fotoUrl || null,
+          nomeSocial: formData.nomeSocial || null,
           razaoSocial: formData.razaoSocial || null,
           nomeFantasia: formData.nomeFantasia || null,
+          rg: formData.rg || null,
+          orgaoEmissor: formData.orgaoEmissor || null,
+          dataNascimento: formData.dataNascimento ? new Date(formData.dataNascimento) : null,
+          sexo: formData.sexo || null,
+          estadoCivil: formData.estadoCivil || null,
+          nacionalidade: formData.nacionalidade || null,
+          naturalidadeCidade: formData.naturalidadeCidade || null,
+          naturalidadeEstado: formData.naturalidadeEstado || null,
+          tituloEleitor: formData.tituloEleitor || null,
+          certidaoNascimento: formData.certidaoNascimento || null,
+          certidaoCasamento: formData.certidaoCasamento || null,
+          nomeMae: formData.nomeMae || null,
+          nomePai: formData.nomePai || null,
           inscricaoEstadual: formData.inscricaoEstadual || null,
           inscricaoMunicipal: formData.inscricaoMunicipal || null,
           email: formData.email || null,
+          emailSecundario: formData.emailSecundario || null,
+          emailCorporativo: formData.emailCorporativo || null,
           telefone: formData.telefone || null,
+          telefoneComercial: formData.telefoneComercial || null,
           celular: formData.celular || null,
+          whatsapp: formData.whatsapp || null,
+          telegram: formData.telegram || null,
           website: formData.website || null,
           endereco: formData.endereco || null,
           numero: formData.numero || null,
@@ -572,10 +673,14 @@ export function ClientesClient() {
           setEditingCliente(null);
           setFormData({
             nome: "",
+            nomeSocial: "",
             razaoSocial: "",
             nomeFantasia: "",
             tipo: "fisica",
             documento: "",
+            rg: "",
+            orgaoEmissor: "",
+            dataNascimento: "",
             inscricaoEstadual: "",
             inscricaoMunicipal: "",
             email: "",
@@ -797,10 +902,31 @@ export function ClientesClient() {
     setEditingCliente(cliente);
     setFormData({
       nome: cliente.nome,
+      nomeSocial: (cliente as any).nomeSocial || "",
       razaoSocial: cliente.razaoSocial || "",
       nomeFantasia: (cliente as any).nomeFantasia || "",
       tipo: cliente.tipo,
       documento: cliente.documento,
+      documentoValidade: (cliente as any).documentoValidade
+        ? new Date((cliente as any).documentoValidade).toISOString().split("T")[0]
+        : "",
+      situacaoCadastral: (cliente as any).situacaoCadastral || "",
+      fotoUrl: (cliente as any).fotoUrl || "",
+      rg: (cliente as any).rg || "",
+      orgaoEmissor: (cliente as any).orgaoEmissor || "",
+      dataNascimento: (cliente as any).dataNascimento
+        ? new Date((cliente as any).dataNascimento).toISOString().split("T")[0]
+        : "",
+      sexo: (cliente as any).sexo || "",
+      estadoCivil: (cliente as any).estadoCivil || "",
+      nacionalidade: (cliente as any).nacionalidade || "",
+      naturalidadeCidade: (cliente as any).naturalidadeCidade || "",
+      naturalidadeEstado: (cliente as any).naturalidadeEstado || "",
+      tituloEleitor: (cliente as any).tituloEleitor || "",
+      certidaoNascimento: (cliente as any).certidaoNascimento || "",
+      certidaoCasamento: (cliente as any).certidaoCasamento || "",
+      nomeMae: (cliente as any).nomeMae || "",
+      nomePai: (cliente as any).nomePai || "",
       inscricaoEstadual: (cliente as any).inscricaoEstadual || "",
       inscricaoMunicipal: (cliente as any).inscricaoMunicipal || "",
       email: cliente.email || "",
@@ -824,13 +950,24 @@ export function ClientesClient() {
     setEditingCliente(null);
     setFormData({
       nome: "",
+      nomeSocial: "",
       razaoSocial: "",
+      nomeFantasia: "",
       tipo: "fisica",
       documento: "",
+      rg: "",
+      orgaoEmissor: "",
+      dataNascimento: "",
+      inscricaoEstadual: "",
+      inscricaoMunicipal: "",
       email: "",
       telefone: "",
       celular: "",
+      website: "",
       endereco: "",
+      numero: "",
+      complemento: "",
+      bairro: "",
       cidade: "",
       estado: "",
       cep: "",
@@ -1041,6 +1178,38 @@ export function ClientesClient() {
             {stats.total > 0 ? ((stats.juridica / stats.total) * 100).toFixed(0) : 0}% do total
           </p>
         </GlassCard>
+        {documentAlerts.hasAlerts && (
+          <>
+            {documentAlerts.expiredCount > 0 && (
+              <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer border-red-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <XCircle className="h-4 w-4 text-red-500" />
+                  <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                    Documentos Expirados
+                  </span>
+                </div>
+                <p className="text-2xl font-semibold text-red-500">{documentAlerts.expiredCount}</p>
+                <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
+                  Requerem atenção imediata
+                </p>
+              </GlassCard>
+            )}
+            {documentAlerts.expiringSoonCount > 0 && (
+              <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer border-yellow-500/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                  <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                    Expirando em Breve
+                  </span>
+                </div>
+                <p className="text-2xl font-semibold text-yellow-500">{documentAlerts.expiringSoonCount}</p>
+                <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
+                  Expirarão nos próximos 30 dias
+                </p>
+              </GlassCard>
+            )}
+          </>
+        )}
       </div>
 
       {/* Barra de ações em massa */}
@@ -1337,17 +1506,45 @@ export function ClientesClient() {
           </div>
           {useWizard ? (
             <ClienteFormWizard
+              clienteId={editingCliente?.clienteId}
+              isEditing={!!editingCliente}
               initialData={editingCliente ? {
                 nome: editingCliente.nome,
+                nomeSocial: (editingCliente as any).nomeSocial || "",
                 razaoSocial: editingCliente.razaoSocial || "",
                 nomeFantasia: (editingCliente as any).nomeFantasia || "",
                 tipo: editingCliente.tipo,
                 documento: editingCliente.documento,
+                documentoValidade: (editingCliente as any).documentoValidade
+                  ? new Date((editingCliente as any).documentoValidade).toISOString().split("T")[0]
+                  : "",
+                situacaoCadastral: (editingCliente as any).situacaoCadastral || "",
+                fotoUrl: (editingCliente as any).fotoUrl || "",
+                rg: (editingCliente as any).rg || "",
+                orgaoEmissor: (editingCliente as any).orgaoEmissor || "",
+                dataNascimento: (editingCliente as any).dataNascimento
+                  ? new Date((editingCliente as any).dataNascimento).toISOString().split("T")[0]
+                  : "",
+                sexo: (editingCliente as any).sexo || "",
+                estadoCivil: (editingCliente as any).estadoCivil || "",
+                nacionalidade: (editingCliente as any).nacionalidade || "",
+                naturalidadeCidade: (editingCliente as any).naturalidadeCidade || "",
+                naturalidadeEstado: (editingCliente as any).naturalidadeEstado || "",
+                tituloEleitor: (editingCliente as any).tituloEleitor || "",
+                certidaoNascimento: (editingCliente as any).certidaoNascimento || "",
+                certidaoCasamento: (editingCliente as any).certidaoCasamento || "",
+                nomeMae: (editingCliente as any).nomeMae || "",
+                nomePai: (editingCliente as any).nomePai || "",
                 inscricaoEstadual: (editingCliente as any).inscricaoEstadual || "",
                 inscricaoMunicipal: (editingCliente as any).inscricaoMunicipal || "",
                 email: editingCliente.email || "",
+                emailSecundario: (editingCliente as any).emailSecundario || "",
+                emailCorporativo: (editingCliente as any).emailCorporativo || "",
                 telefone: editingCliente.telefone || "",
+                telefoneComercial: (editingCliente as any).telefoneComercial || "",
                 celular: editingCliente.celular || "",
+                whatsapp: (editingCliente as any).whatsapp || "",
+                telegram: (editingCliente as any).telegram || "",
                 website: (editingCliente as any).website || "",
                 endereco: editingCliente.endereco || "",
                 numero: (editingCliente as any).numero || "",
@@ -1363,8 +1560,12 @@ export function ClientesClient() {
                 const dadosParaEnviar = {
                   ...data,
                   documento: documentoLimpo,
+                  nomeSocial: data.nomeSocial || null,
                   razaoSocial: data.razaoSocial || null,
                   nomeFantasia: data.nomeFantasia || null,
+                  rg: data.rg || null,
+                  orgaoEmissor: data.orgaoEmissor || null,
+                  dataNascimento: data.dataNascimento ? new Date(data.dataNascimento) : null,
                   inscricaoEstadual: data.inscricaoEstadual || null,
                   inscricaoMunicipal: data.inscricaoMunicipal || null,
                   email: data.email || null,
@@ -1394,6 +1595,42 @@ export function ClientesClient() {
                 });
 
                 if (response.ok) {
+                  const clienteData = await response.json();
+                  const clienteId = editingCliente ? editingCliente.clienteId : clienteData.clienteId;
+
+                  // Salvar tags se houver
+                  if (data.tags && data.tags.length > 0 && clienteId) {
+                    try {
+                      await fetch(`/api/clientes/${clienteId}/tags`, {
+                        method: "PUT",
+                        headers: {
+                          ...getAuthHeadersWithTenant(),
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          tagIds: data.tags.map((tag) => tag.id),
+                        }),
+                      });
+                    } catch (error) {
+                      console.error("Erro ao salvar tags:", error);
+                      // Não bloquear o fluxo se houver erro ao salvar tags
+                    }
+                  } else if (clienteId) {
+                    // Remover todas as tags se não houver tags selecionadas
+                    try {
+                      await fetch(`/api/clientes/${clienteId}/tags`, {
+                        method: "PUT",
+                        headers: {
+                          ...getAuthHeadersWithTenant(),
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ tagIds: [] }),
+                      });
+                    } catch (error) {
+                      console.error("Erro ao remover tags:", error);
+                    }
+                  }
+
                   if (!editingCliente) {
                     triggerConfetti();
                   }
@@ -2013,6 +2250,26 @@ export function ClientesClient() {
                         </p>
                       )}
                     </div>
+                    {cliente.tags && cliente.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {cliente.tags.map((tag) => (
+                          <span
+                            key={tag.id}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
+                            style={{
+                              backgroundColor: tag.color
+                                ? `${tag.color}20`
+                                : "var(--muted-soft)",
+                              color: tag.color || "inherit",
+                              border: `1px solid ${tag.color ? `${tag.color}40` : "transparent"}`,
+                            }}
+                          >
+                            <Tag className="h-2.5 w-2.5" />
+                            {tag.name}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <div className="flex justify-end gap-2 pt-4 border-t border-[color-mix(in oklab,var(--muted-soft) 20%,transparent)]">
                       <Button
                         variant="outline"
@@ -2154,10 +2411,29 @@ export function ClientesClient() {
                           ) : (
                             <User className="h-4 w-4 text-[var(--primary)]" />
                           )}
-                          <div>
-                            <p className="font-medium">{cliente.nome}</p>
+                          <div className="flex-1 min-w-0">
+                            <InlineEditField
+                              value={cliente.nome}
+                              clienteId={cliente.clienteId}
+                              field="nome"
+                              fieldLabel="Nome"
+                              onUpdate={(newValue) => {
+                                setClientes((prev) =>
+                                  prev.map((c) =>
+                                    c.clienteId === cliente.clienteId ? { ...c, nome: newValue } : c
+                                  )
+                                );
+                                void loadClientes();
+                              }}
+                              validate={(value) => {
+                                if (!value || value.trim().length < 2) {
+                                  return "Nome deve ter pelo menos 2 caracteres";
+                                }
+                                return null;
+                              }}
+                            />
                             {cliente.razaoSocial && (
-                              <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                              <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
                                 {cliente.razaoSocial}
                               </p>
                             )}
@@ -2181,31 +2457,126 @@ export function ClientesClient() {
                       </td>
                       <td className="p-4">
                         <div className="space-y-1 text-sm">
-                          {cliente.email && (
-                            <p className="flex items-center gap-1.5">
-                              <Mail className="h-3.5 w-3.5" />
-                              {cliente.email}
-                            </p>
-                          )}
-                          {cliente.telefone && (
-                            <p className="flex items-center gap-1.5">
-                              <Phone className="h-3.5 w-3.5" />
-                              {formatPhone(cliente.telefone)}
-                            </p>
-                          )}
+                          <div className="flex items-center gap-1.5">
+                            <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                            <InlineEditField
+                              value={cliente.email || ""}
+                              clienteId={cliente.clienteId}
+                              field="email"
+                              fieldLabel="Email"
+                              type="email"
+                              placeholder="email@exemplo.com"
+                              onUpdate={(newValue) => {
+                                setClientes((prev) =>
+                                  prev.map((c) =>
+                                    c.clienteId === cliente.clienteId ? { ...c, email: newValue || null } : c
+                                  )
+                                );
+                                void loadClientes();
+                              }}
+                              validate={(value) => {
+                                if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                                  return "Email inválido";
+                                }
+                                return null;
+                              }}
+                            />
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Phone className="h-3.5 w-3.5 flex-shrink-0" />
+                            <InlineEditField
+                              value={cliente.telefone || ""}
+                              clienteId={cliente.clienteId}
+                              field="telefone"
+                              fieldLabel="Telefone"
+                              type="tel"
+                              placeholder="(00) 0000-0000"
+                              formatValue={(value) => value ? formatPhone(value) : ""}
+                              onUpdate={(newValue) => {
+                                setClientes((prev) =>
+                                  prev.map((c) =>
+                                    c.clienteId === cliente.clienteId ? { ...c, telefone: newValue || null } : c
+                                  )
+                                );
+                                void loadClientes();
+                              }}
+                            />
+                          </div>
                         </div>
                       </td>
                       <td className="p-4">
-                        {cliente.endereco ? (
-                          <p className="text-sm flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5" />
-                            {cliente.cidade}, {cliente.estado}
-                          </p>
-                        ) : (
-                          <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                            -
-                          </span>
-                        )}
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 text-sm">
+                            <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                            <InlineEditField
+                              value={cliente.cidade || ""}
+                              clienteId={cliente.clienteId}
+                              field="cidade"
+                              fieldLabel="Cidade"
+                              placeholder="Nome da cidade"
+                              onUpdate={(newValue) => {
+                                setClientes((prev) =>
+                                  prev.map((c) =>
+                                    c.clienteId === cliente.clienteId ? { ...c, cidade: newValue || null } : c
+                                  )
+                                );
+                                void loadClientes();
+                              }}
+                            />
+                          </div>
+                          {cliente.cidade && (
+                            <div className="flex items-center gap-1.5 text-xs">
+                              <InlineEditField
+                                value={cliente.estado || ""}
+                                clienteId={cliente.clienteId}
+                                field="estado"
+                                fieldLabel="Estado"
+                                placeholder="UF"
+                                maxLength={2}
+                                formatValue={(value) => value ? value.toUpperCase() : ""}
+                                onUpdate={(newValue) => {
+                                  setClientes((prev) =>
+                                    prev.map((c) =>
+                                      c.clienteId === cliente.clienteId ? { ...c, estado: newValue.toUpperCase() || null } : c
+                                    )
+                                  );
+                                  void loadClientes();
+                                }}
+                                validate={(value) => {
+                                  if (value && value.length !== 2) {
+                                    return "Estado deve ter 2 caracteres (UF)";
+                                  }
+                                  return null;
+                                }}
+                              />
+                            </div>
+                          )}
+                          {cliente.tags && cliente.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {cliente.tags.slice(0, 3).map((tag) => (
+                                <span
+                                  key={tag.id}
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-medium"
+                                  style={{
+                                    backgroundColor: tag.color
+                                      ? `${tag.color}20`
+                                      : "var(--muted-soft)",
+                                    color: tag.color || "inherit",
+                                    border: `1px solid ${tag.color ? `${tag.color}40` : "transparent"}`,
+                                  }}
+                                >
+                                  <Tag className="h-2 w-2" />
+                                  {tag.name}
+                                </span>
+                              ))}
+                              {cliente.tags.length > 3 && (
+                                <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                                  +{cliente.tags.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[color-mix(in oklab,var(--muted-soft) 10%,transparent)] w-fit">

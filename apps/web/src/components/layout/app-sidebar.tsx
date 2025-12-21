@@ -22,6 +22,9 @@ import {
   Network,
   Briefcase,
   GitBranch,
+  CheckSquare,
+  Shield,
+  Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -73,6 +76,32 @@ const navItems: NavItem[] = [
     href: "/clientes",
     icon: Users,
     permission: "clients:view",
+  },
+  {
+    label: "Usuários",
+    href: "/admin/users",
+    icon: Users,
+    permission: "users:view",
+    children: [
+      {
+        label: "Lista de Usuários",
+        href: "/admin/users",
+        icon: List,
+        permission: "users:view",
+      },
+      {
+        label: "Novo Usuário",
+        href: "/admin/users/new",
+        icon: Plus,
+        permission: "users:create",
+      },
+      {
+        label: "Checklist de Melhorias",
+        href: "/admin/users/checklist",
+        icon: CheckSquare,
+        permission: "users:view",
+      },
+    ],
   },
   {
     label: "Representantes",

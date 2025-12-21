@@ -48,3 +48,4 @@ pnpm studio
 - Para associar a uma organização, use o comando acima ou o Prisma Studio
 
 
+
