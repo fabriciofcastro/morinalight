@@ -10,6 +10,11 @@ export interface User {
   status: "active" | "inactive" | "suspended" | "pending";
   createdAt: string;
   lastLogin?: string;
+  cpf?: string;
+  phone?: string;
+  birthDate?: string;
+  admissionDate?: string;
+  observations?: string;
   departmentId?: string;
   departmentName?: string;
   sectorId?: string;
@@ -129,7 +134,6 @@ export function useUsers(params: ListUsersParams = {}) {
     refetch,
   };
 }
-
 
 
 

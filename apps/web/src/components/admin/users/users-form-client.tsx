@@ -659,7 +659,28 @@ export function UsersFormClient() {
           observations: formData.observations || undefined,
           avatarUrl: formData.photoUrl || undefined,
         };
-        await createUser(userData);
+        const createdUser = await createUser(userData);
+
+        if (formData.initialPermissions.length > 0) {
+          try {
+            await permissionsApi.assignPermissionsToUser(
+              createdUser.userId,
+              formData.initialPermissions,
+            );
+            notificationCenter.add({
+              type: "success",
+              title: "Permissões aplicadas",
+              message: `${formData.initialPermissions.length} permissão(ões) atribuída(s) ao usuário.`,
+            });
+          } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Erro ao aplicar permissões iniciais";
+            notificationCenter.add({
+              type: "error",
+              title: "Permissões iniciais",
+              message: errorMessage,
+            });
+          }
+        }
 
         // Clear draft after successful save
         clearDraft();

@@ -35,12 +35,17 @@ export async function registerGetUserRoute(app: FastifyInstance, deps: Dependenc
         email: user.email,
         displayName: user.displayName,
         status: user.status,
+        avatarUrl: user.avatarUrl,
+        cpf: user.cpf,
+        phone: user.phone,
+        birthDate: user.birthDate,
+        admissionDate: user.admissionDate,
+        observations: user.observations,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
     });
   });
 }
-
 
 

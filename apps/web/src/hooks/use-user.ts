@@ -39,6 +39,11 @@ export function useUser(userId?: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const parseUserResponse = useCallback((data: unknown): User => {
+    const payload = data as any;
+    return (payload?.user ?? payload) as User;
+  }, []);
+
   const fetchUser = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
@@ -59,8 +64,8 @@ export function useUser(userId?: string) {
         throw new Error(errorData.message || "Não foi possível carregar o usuário.");
       }
 
-      const data = (await response.json()) as User;
-      setUser(data);
+      const data = await response.json();
+      setUser(parseUserResponse(data));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Erro inesperado ao carregar usuário.";
       setError(errorMessage);
@@ -91,7 +96,8 @@ export function useUser(userId?: string) {
         throw new Error(errorData.message || "Não foi possível criar o usuário.");
       }
 
-      const newUser = (await response.json()) as User;
+      const data = await response.json();
+      const newUser = parseUserResponse(data);
       setUser(newUser);
       return newUser;
     } catch (err) {
@@ -124,7 +130,8 @@ export function useUser(userId?: string) {
         throw new Error(errorData.message || "Não foi possível atualizar o usuário.");
       }
 
-      const updatedUser = (await response.json()) as User;
+      const data = await response.json();
+      const updatedUser = parseUserResponse(data);
       setUser(updatedUser);
       return updatedUser;
     } catch (err) {
@@ -182,7 +189,6 @@ export function useUser(userId?: string) {
     fetchUserIfNeeded,
   };
 }
-
 
 
 

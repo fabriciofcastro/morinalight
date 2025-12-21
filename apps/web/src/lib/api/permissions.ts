@@ -277,4 +277,19 @@ export const permissionsApi = {
   deletePermission: async (id: string) => {
     return api.delete(`/permissions/${id}`);
   },
+
+  assignPermissionsToUser: async (
+    userId: string,
+    permissionIds: string[],
+    options?: { granted?: boolean; reason?: string },
+  ) => {
+    const payload = {
+      entityType: "user",
+      entityId: userId,
+      permissionIds,
+      granted: options?.granted ?? true,
+      reason: options?.reason,
+    };
+    await api.post("/permissions/bulk-assign", payload);
+  },
 };

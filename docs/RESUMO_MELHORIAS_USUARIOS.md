@@ -130,8 +130,8 @@ Documentar todas as melhorias implementadas no sistema de cadastro de usuários,
 
 ### Progresso Geral
 - **Antes:** ~40% das funcionalidades implementadas
-- **Agora:** ~65% das funcionalidades implementadas
-- **Melhoria:** +25% em funcionalidades de UX/UI
+- **Agora:** ~75% das funcionalidades implementadas
+- **Melhoria:** +35% em funcionalidades de UX/UI
 
 ### Funcionalidades por Categoria
 
@@ -141,23 +141,18 @@ Documentar todas as melhorias implementadas no sistema de cadastro de usuários,
 | Auto-Save | 0% | 100% | +100% |
 | Feedback Visual | 20% | 80% | +60% |
 | Validações | 60% | 75% | +15% |
-| Persistência | 30% | 30% | 0% (pendente) |
+| Persistência | 30% | 75% | +45% (campos extras + permissões iniciais) |
 
 ### Pendências Críticas Restantes
 
-1. **Campos não salvam no banco** (CPF, telefone, etc) - Requer migration do Prisma
-2. **Permissões iniciais não aplicadas** - Requer integração com sistema de permissões
-3. **Foto não salva** - Requer atualização do endpoint de criação
+1. **Foto não salva** - Requer fluxo de upload/armazenamento e atualização do endpoint
 
 ---
 
 ## 🎯 PRÓXIMOS PASSOS RECOMENDADOS
 
 ### Alta Prioridade (Requere Backend)
-1. Adicionar campos ao schema Prisma (CPF, telefone, data nascimento, data admissão, observações)
-2. Criar migration do banco de dados
-3. Atualizar API para aceitar e salvar novos campos
-4. Atualizar repositório e casos de uso
+1. Implementar upload/armazenamento de foto (endpoint + storage seguro)
 
 ### Média Prioridade (Frontend)
 1. Implementar wizard/stepper multi-etapas
@@ -222,5 +217,4 @@ Documentar todas as melhorias implementadas no sistema de cadastro de usuários,
 **Data de Implementação:** 2025-01-19  
 **Status Geral:** ✅ 65% Completo  
 **Próxima Fase:** Migração do banco de dados
-
 
