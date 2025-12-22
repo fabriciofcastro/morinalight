@@ -860,7 +860,7 @@ export function FichasCustoClient() {
 
         // Limpar alterações não salvas
         markClean();
-        
+
         // Resetar formulário
         setFormData({
           idFicha: "",
@@ -973,14 +973,19 @@ export function FichasCustoClient() {
       hasUnsavedChanges={hasUnsavedChanges}
       loading={pending || isInitialLoading}
       headerActions={
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-xs font-medium text-white/60 uppercase tracking-wider">
-            Número da Ficha
-          </span>
-          <span className="text-3xl font-bold text-[hsl(var(--primary))]">
-            {numeroFicha ?? "..."}
-          </span>
-        </div>
+        <div className="flex flex-col items-end gap-2 min-w-[140px]">
+          <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  Número da Ficha
+                </span>
+          <div className="flex items-center gap-2">
+            <span className="text-4xl font-bold bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] bg-clip-text text-transparent drop-shadow-lg">
+                  {numeroFicha ?? "..."}
+                </span>
+            {numeroFicha && (
+              <div className="w-1 h-8 bg-gradient-to-b from-[hsl(var(--primary))] to-[hsl(var(--accent))] rounded-full opacity-60" />
+                )}
+              </div>
+          </div>
       }
       showSaveButton={false}
     >

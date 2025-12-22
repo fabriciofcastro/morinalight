@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition, useMemo } from "react";
+import { useCallback, useEffect, useState, useTransition, useMemo, useId } from "react";
 import { useRouter } from "next/navigation";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { suppliersApi, type Supplier, type CreateSupplierInput, type UpdateSupplierInput } from "@/lib/api/suppliers";
@@ -45,7 +45,6 @@ function getCurrentOrgId(): string | null {
 }
 
 // Helper para inputs futuristas com hover azul
-let inputCounter = 0;
 const FuturisticInput = ({ 
   label, 
   required = false,
@@ -56,7 +55,8 @@ const FuturisticInput = ({
   required?: boolean;
   id?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>) => {
-  const inputId = id || `input-${++inputCounter}`;
+  const generatedId = useId();
+  const inputId = id || generatedId;
   return (
     <div className="group">
       <label htmlFor={inputId} className="block text-sm font-semibold text-white/90 mb-2">
@@ -74,7 +74,6 @@ const FuturisticInput = ({
   );
 };
 
-let selectCounter = 0;
 const FuturisticSelect = ({ 
   label, 
   required = false,
@@ -87,7 +86,8 @@ const FuturisticSelect = ({
   id?: string;
   children: React.ReactNode;
 } & React.SelectHTMLAttributes<HTMLSelectElement>) => {
-  const selectId = id || `select-${++selectCounter}`;
+  const generatedId = useId();
+  const selectId = id || generatedId;
   return (
     <div className="group">
       <label htmlFor={selectId} className="block text-sm font-semibold text-white/90 mb-2">
@@ -107,7 +107,6 @@ const FuturisticSelect = ({
   );
 };
 
-let textareaCounter = 0;
 const FuturisticTextarea = ({ 
   label, 
   required = false,
@@ -118,7 +117,8 @@ const FuturisticTextarea = ({
   required?: boolean;
   id?: string;
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
-  const textareaId = id || `textarea-${++textareaCounter}`;
+  const generatedId = useId();
+  const textareaId = id || generatedId;
   return (
     <div className="group">
       <label htmlFor={textareaId} className="block text-sm font-semibold text-white/90 mb-2">

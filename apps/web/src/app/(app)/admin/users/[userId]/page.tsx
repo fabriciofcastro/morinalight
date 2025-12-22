@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { PageBackground } from "@/components/layout/PageBackground";
+import { NetworkBackground } from "@/components/animations/network-background";
 import { UsersDetailClient } from "@/components/admin/users/users-detail-client";
 
 export const metadata: Metadata = {
@@ -9,9 +9,10 @@ export const metadata: Metadata = {
 
 export default function UserDetailPage({ params }: { params: { userId: string } }) {
   return (
-    <PageBackground>
+    <>
+      <NetworkBackground variant="users" />
       <UsersDetailClient userId={params.userId} />
-    </PageBackground>
+    </>
   );
 }
 

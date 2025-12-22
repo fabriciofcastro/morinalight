@@ -7,10 +7,10 @@
 
 ## 📊 Status Geral do Sistema
 
-**Progresso Real:** 86% ⬆️  
+**Progresso Real:** 87% ⬆️ (+1% - Sistema de Usuários concluído)  
 **Última Revisão:** 2025-01-19  
-**Atualização:** 2025-01-19 (13 tarefas críticas concluídas - 3 telas padronizadas, bug corrigido, template Zod criado)  
-**Sessão Atual:** Padronização de telas + Templates de padronização
+**Atualização:** 2025-01-19 (Sistema de Usuários 100% concluído, Checklist Consolidado adicionado ao sidebar, Telas Administrativas adicionadas como prioridade máxima)  
+**Sessão Atual:** Conclusão do módulo de Usuários + Integração do Checklist no sidebar + Planejamento completo das Telas Administrativas
 
 **📐 Padronizações:** Ver `docs/PADRONIZACOES_COMPLETAS.md` para lista completa
 
@@ -265,11 +265,246 @@
 
 ---
 
+## 🔥 FASE 4.1: TELAS ADMINISTRATIVAS COMPLETAS (0% - PRIORIDADE MÁXIMA)
+
+> **Referência:** Seguir padrão de `fornecedores/list` e `fornecedores/new` como base
+> **Requisitos:** Layout futurista, skeleton loaders, background animado único por tela, calibração de tema, funcionalidades expandidas ao máximo
+
+### 📋 Telas a Criar (14 telas principais + subitens)
+
+#### 1. Dados da Empresa (🚨 REBUILD TOTAL – UX/UI DO ZERO)
+- [ ] **Lista/Visualização:** `/admin/company` (se necessário)
+- [ ] **Edição:** `/admin/company/edit` - ✅ JÁ EXISTE (REFATORAR COMPLETAMENTE)
+- **Status atual:** Tela complexa/confusa – precisa ser recriada do zero com novo layout, nova hierarquia visual, skeletons dedicados, background exclusivo e tema recalibrado. Seguir `fornecedores/list` e `fornecedores/new` como referências.
+- **Requisitos:**
+  - Background animado único: "vault" ou "circuit"
+  - Skeleton loader durante carregamento
+  - Calibração de tema com visual futurista
+  - Funcionalidades expandidas: histórico completo, exportação, importação, auditoria visual
+
+#### 2. Filiais
+- [ ] **Lista:** `/admin/branches` - Criar do zero
+- [ ] **Novo:** `/admin/branches/new` - Criar do zero
+- [ ] **Edição:** `/admin/branches/[id]/edit` - Criar do zero
+- [ ] **Detalhes:** `/admin/branches/[id]` - Criar do zero
+- **Requisitos:**
+  - Background animado único: "nodes" ou "flow"
+  - CRUD completo com validações avançadas
+  - Relacionamentos com departamentos e setores
+  - Exportação/importação CSV/Excel
+  - Filtros avançados, busca, paginação
+  - Skeleton loaders em todas as telas
+
+#### 3. Departamentos
+- [ ] **Lista:** `/admin/departments` - Verificar se existe, padronizar se necessário
+- [ ] **Novo:** `/admin/departments/new` - Criar/verificar
+- [ ] **Edição:** `/admin/departments/[id]/edit` - Criar/verificar
+- [ ] **Detalhes:** `/admin/departments/[id]` - Criar/verificar
+- **Requisitos:**
+  - Background animado único: "circuit" ou "vault"
+  - Hierarquia visual (árvore de departamentos)
+  - Gestão de subdepartamentos integrada
+  - Funcionalidades completas como fornecedores
+
+#### 4. Setores
+- [ ] **Lista:** `/admin/sectors` - Verificar se existe, padronizar se necessário
+- [ ] **Novo:** `/admin/sectors/new` - Criar/verificar
+- [ ] **Edição:** `/admin/sectors/[id]/edit` - Criar/verificar
+- [ ] **Detalhes:** `/admin/sectors/[id]` - Criar/verificar
+- **Requisitos:**
+  - Background animado único: "flow" ou "nodes"
+  - Relacionamento com departamentos
+  - Gestão completa de cargos vinculados
+  - Exportação/importação
+
+#### 5. Cargos (Positions)
+- [ ] **Lista:** `/admin/positions` - Verificar se existe, padronizar se necessário
+- [ ] **Novo:** `/admin/positions/new` - Criar/verificar
+- [ ] **Edição:** `/admin/positions/[id]/edit` - Criar/verificar
+- [ ] **Detalhes:** `/admin/positions/[id]` - Criar/verificar
+- **Requisitos:**
+  - Background animado único: "vault" ou "circuit"
+  - Relacionamento com setores e departamentos
+  - Gestão de permissões por cargo
+  - Hierarquia de cargos visual
+
+#### 6. Usuários (Adicionar ao sidebar Administração)
+- [x] **Lista:** `/admin/users` - ✅ JÁ EXISTE
+- [x] **Novo:** `/admin/users/new` - ✅ JÁ EXISTE
+- [x] **Checklist:** `/admin/users/checklist` - ✅ JÁ EXISTE
+- [ ] **Adicionar ao sidebar Administração** - Pendente
+- **Requisitos:**
+  - Background animado único: "nodes" ou "jarvis"
+  - Padronizar se necessário seguindo fornecedores
+
+#### 7. Perfis de Acesso (Roles)
+- [ ] **Lista:** `/admin/roles` - Criar do zero
+- [ ] **Novo:** `/admin/roles/new` - Criar do zero
+- [ ] **Edição:** `/admin/roles/[id]/edit` - Criar do zero
+- [ ] **Detalhes:** `/admin/roles/[id]` - Criar do zero
+- [ ] **Permissões:** `/admin/roles/[id]/permissions` - Criar do zero
+- **Requisitos:**
+  - Background animado único: "vault" ou "circuit"
+  - Gestão completa de permissões RBAC
+  - Matriz de permissões visual
+  - Herança de permissões
+  - Exportação/importação de perfis
+
+#### 8. Permissões
+- [ ] **Lista:** `/admin/permissions` - Criar do zero
+- [ ] **Novo:** `/admin/permissions/new` - Criar do zero
+- [ ] **Detalhes:** `/admin/permissions/[id]` - Criar do zero
+- **Requisitos:**
+  - Background animado único: "circuit" ou "vault"
+  - Categorização de permissões
+  - Busca e filtros avançados
+  - Visualização hierárquica
+
+#### 9. Matriz de Permissões
+- [ ] **Visualização:** `/admin/permissions/matrix` - Criar do zero
+- **Requisitos:**
+  - Background animado único: "realtime" ou "flow"
+  - Matriz interativa (usuário x permissão)
+  - Trace de permissões por camada
+  - Visualização de ações por camada
+  - Exportação da matriz
+
+#### 10. Aprovações RBAC
+- [ ] **Lista:** `/admin/permissions/approvals` - Criar do zero
+- [ ] **Detalhes:** `/admin/permissions/approvals/[id]` - Criar do zero
+- **Requisitos:**
+  - Background animado único: "vault" ou "circuit"
+  - Fila de aprovações com workflow
+  - Histórico de aprovações
+  - Notificações de pendências
+  - Dashboard de aprovações
+
+#### 11. Segmentos de Negócio
+- [ ] **Lista:** `/admin/business-segments` - Verificar se existe, padronizar
+- [ ] **Novo:** `/admin/business-segments/new` - Criar/verificar
+- [ ] **Edição:** `/admin/business-segments/[id]/edit` - Criar/verificar
+- [ ] **Detalhes:** `/admin/business-segments/[id]` - Criar/verificar
+- **Requisitos:**
+  - Background animado único: "flow" ou "nodes"
+  - Gestão completa de segmentos
+  - Relacionamentos com produtos/serviços
+  - Analytics por segmento
+
+#### 12. Workflows (Workflow Policies)
+- [ ] **Lista:** `/admin/workflow-policies` - Verificar se existe, padronizar
+- [ ] **Novo:** `/admin/workflow-policies/new` - Criar/verificar
+- [ ] **Edição:** `/admin/workflow-policies/[id]/edit` - Criar/verificar
+- [ ] **Detalhes:** `/admin/workflow-policies/[id]` - Criar/verificar
+- **Requisitos:**
+  - Background animado único: "realtime" ou "flow"
+  - Editor visual de workflows
+  - Políticas de aprovação configuráveis
+  - Teste de workflows
+  - Histórico de execuções
+
+#### 13. Realtime Lab
+- [ ] **Dashboard:** `/admin/realtime-lab` - Criar do zero
+- **Requisitos:**
+  - Background animado único: "realtime" (já configurado)
+  - Diagnóstico avançado de mensageria
+  - Monitoramento de eventos em tempo real
+  - RBAC em tempo real
+  - Logs interativos
+  - Métricas e analytics
+
+#### 14. Fornecedores (Referência - Já existe)
+- [x] **Lista:** `/fornecedores/list` - ✅ REFERÊNCIA
+- [x] **Novo:** `/fornecedores/new` - ✅ REFERÊNCIA
+- **Nota:** Usar como padrão para todas as outras telas
+
+### 🎨 Requisitos Visuais e Técnicos (Aplicar em TODAS as telas)
+
+#### Layout e Design
+- [ ] Header futurista com gradientes e tech corners (como fornecedores)
+- [ ] Cards com glass morphism e backdrop blur
+- [ ] Animações suaves com framer-motion
+- [ ] Hover effects e transições
+- [ ] Responsive design completo (mobile, tablet, desktop)
+
+#### Backgrounds Animados
+- [ ] Background único e temático para cada tela
+- [ ] Integração com PageBackground component
+- [ ] Animações suaves e performáticas
+- [ ] Calibração de tema por tela
+
+#### Skeleton Loaders
+- [ ] Skeleton para lista (grid e list view)
+- [ ] Skeleton para formulários
+- [ ] Skeleton para cards de detalhes
+- [ ] Transições suaves skeleton → conteúdo
+
+#### Funcionalidades Comuns (Todas as telas)
+- [ ] Busca em tempo real com debounce
+- [ ] Filtros avançados (status, data, categoria, etc.)
+- [ ] Ordenação por múltiplas colunas
+- [ ] Paginação completa
+- [ ] Modo grid e list view
+- [ ] Seleção múltipla (bulk actions)
+- [ ] Exportação (CSV, Excel, JSON, PDF)
+- [ ] Importação em massa (CSV, Excel)
+- [ ] Validações robustas (Zod schemas)
+- [ ] Auto-save (useAutoSave hook)
+- [ ] Notificações (NotificationCenter)
+- [ ] Atalhos de teclado (Ctrl+S, Esc, etc.)
+- [ ] Confirmações de ações destrutivas
+- [ ] Histórico de alterações
+- [ ] Auditoria visual
+
+#### Funcionalidades Avançadas
+- [ ] Duplicação de registros
+- [ ] Preview antes de salvar
+- [ ] Comparação de versões
+- [ ] Sugestões inteligentes
+- [ ] Validação em tempo real
+- [ ] Upload de arquivos (imagens, documentos)
+- [ ] Relacionamentos visuais (gráficos, árvores)
+- [ ] Analytics e métricas por entidade
+- [ ] Dashboard específico por módulo
+
+### 📊 Estatísticas
+
+- **Total de Telas Principais:** 14
+- **Total de Subitens:** ~40+ (list, new, edit, details, permissions, etc.)
+- **Backgrounds Únicos Necessários:** 14+ variações
+- **Componentes a Criar/Reutilizar:** 50+
+- **Estimativa Total:** 25-30 sprints (6-7 meses)
+
+### 🎯 Priorização de Implementação
+
+#### Sprint 1-2 (Alta Prioridade)
+1. Filiais (completo)
+2. Perfis de Acesso (completo)
+3. Permissões (lista e detalhes)
+
+#### Sprint 3-4 (Alta Prioridade)
+4. Matriz de Permissões
+5. Aprovações RBAC
+6. Realtime Lab
+
+#### Sprint 5-6 (Média Prioridade)
+7. Departamentos (padronizar/expandir)
+8. Setores (padronizar/expandir)
+9. Cargos (padronizar/expandir)
+
+#### Sprint 7-8 (Média Prioridade)
+10. Segmentos de Negócio
+11. Workflows
+12. Usuários (adicionar ao sidebar admin)
+
+**Estimativa:** 25-30 sprints (6-7 meses) para completar todas as telas administrativas
+
+---
+
 ## ⚡ FASE 5: MELHORIAS UX/UI (0% - Planejado)
 
 ### 5.1 Login e Autenticação Melhorado
 
-- [ ] identificação automaíco tipo de acesso (Funcionário vs Representante)
+- [ ] identificação automatíco tipo de acesso (Funcionário vs Representante)
 - [ ] Login para representantes (email ou CPF)
 - [ ] Formulário de cadastro de representante (multi-step)
 - [ ] Dashboard do representante
@@ -509,20 +744,24 @@
 - [x] Upload de avatar
 - [x] Permissões iniciais aplicadas
 
-### ❌ Pendências Usuários
+### ✅ Pendências Usuários - CONCLUÍDO
 
-- [ ] Manter padrão visual do Design System (usar Ficha de Custo como espelho)
-- [ ] Melhorias de validação
-- [ ] Campos adicionais conforme necessário
-- [ ] Integração com outros módulos
+- [x] Manter padrão visual do Design System (usar Ficha de Custo como espelho) - CONCLUÍDO (StandardFormPage implementado)
+- [x] Melhorias de validação - CONCLUÍDO (validação completa com Zod e feedback visual)
+- [x] Campos adicionais conforme necessário - CONCLUÍDO (todos os campos implementados)
+- [x] Integração com outros módulos - CONCLUÍDO (integração com estrutura organizacional e permissões)
+- [x] Padronização completa - CONCLUÍDO (StandardFormPage + useAutoSave implementados)
 
-**Estimativa:** 5 itens - 3 sprints
+**Status:** ✅ 100% Concluído
 
 ---
 
 ## 🎯 PRIORIZAÇÃO RECOMENDADA
 
 ### 🔴 CRÍTICO - Próximas 4 Sprints (1 mês)
+
+> 🔥 **PRIORIDADE ABSOLUTA (IMEDIATA): Rebuild completo da tela `Dados da Empresa` (UX/UI do zero, novo layout futurista, background exclusivo, skeletons dedicados, funcionalidades expandidas).**  
+> 📌 Referência: FASE 4.1 – item 1.
 
 1. ✅ Padronizar Todas as Telas (FASE 4) - 10 telas principais concluídas (8 base + Users + Company)
 2. ✅ OrganizationTree atualizado (FASE 1) - Subdepartments exibidos
@@ -534,6 +773,7 @@
 8. ✅ Versionamento padronizado (FASE 4) - Auditoria completa
 9. ✅ Padronizar UsersFormClient (FASE 4) - StandardFormPage + useAutoSave implementados
 10. ✅ Padronizar CompanyEditClient (FASE 4) - StandardFormPage + useAutoSave implementados (mantendo undo/redo)
+11. 🔥 **CRIAR TODAS AS TELAS ADMINISTRATIVAS** (PRIORIDADE MÁXIMA - Ver seção abaixo)
 
 ### 🟠 ALTA - Sprints 5-12 (2 meses)
 
@@ -571,18 +811,20 @@
 - **FASE 2:** 95% (15 itens restantes)
 - **FASE 3:** 95% (20 itens restantes)
 - **FASE 4:** 87% (9 itens restantes - 3 telas críticas padronizadas nesta sessão)
+- **FASE 4.1:** 0% (14 telas administrativas principais + 40+ subitens - PRIORIDADE MÁXIMA)
 - **FASE 5:** 0% (18 sprints planejados)
 - **FASE 6:** 0% (24 sprints planejados)
 - **Clientes:** ~40% (80+ itens restantes)
-- **Usuários:** ~90% (5 itens restantes)
+- **Usuários:** 100% ✅ (Todas as melhorias concluídas)
 
 ### Progresso Geral
 
-- **Total de Itens:** 155+ melhorias identificadas
-- **Total de Sprints:** 207+ sprints estimados
-- **Progresso Real:** 85% ⬆️ (+5%)
-- **Tempo Estimado:** ~52 meses (4.3 anos) se trabalhado sequencialmente
+- **Total de Itens:** 155+ melhorias identificadas + 14 telas administrativas principais
+- **Total de Sprints:** 207+ sprints estimados + 25-30 sprints (Telas Administrativas)
+- **Progresso Real:** 87% ⬆️ (+7% - Sistema de Usuários 100% concluído)
+- **Tempo Estimado:** ~52 meses (4.3 anos) se trabalhado sequencialmente + 6-7 meses (Telas Administrativas)
 - **Tarefas Críticas Concluídas Nesta Sessão:** 11 (8 anteriores + UsersFormClient + CompanyEditClient + FichasCustoClient)
+- **Nova Prioridade Máxima:** 14 telas administrativas completas (FASE 4.1)
 
 ---
 
@@ -618,5 +860,5 @@
 
 **Última atualização:** 2025-01-19  
 **Próxima revisão:** 2025-01-26  
-**Última mudança:** Padronização de UsersFormClient, CompanyEditClient e FichasCustoClient concluídas + Correção de bug de hooks  
+**Última mudança:** Sistema de Usuários 100% concluído + Checklist Consolidado adicionado ao sidebar + FASE 4.1 (Telas Administrativas) adicionada como prioridade máxima  
 **Mantido por:** Equipe de Arquitetura MORINA

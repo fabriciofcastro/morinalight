@@ -1,6 +1,6 @@
 "use client";
 
-let textareaCounter = 0;
+import { useId } from "react";
 
 export interface FuturisticTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
@@ -17,7 +17,8 @@ export function FuturisticTextarea({
   errorMessage,
   ...props
 }: FuturisticTextareaProps) {
-  const textareaId = id || `textarea-${++textareaCounter}`;
+  const generatedId = useId();
+  const textareaId = id || generatedId;
 
   return (
     <div className="group relative">

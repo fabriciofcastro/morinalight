@@ -146,8 +146,13 @@ export function StandardFormPage({
             </div>
           </div>
 
+          <div className="flex items-center gap-6">
+            {headerActions && (
+              <div className="flex items-center gap-6 pr-6 border-r border-white/10">
+                {headerActions}
+              </div>
+            )}
           <div className="flex items-center gap-2">
-            {headerActions}
             {showCancelButton && (backUrl || onCancel) && (
               <Button
                 variant="secondary"
@@ -170,6 +175,7 @@ export function StandardFormPage({
                 Salvar
               </Button>
             )}
+            </div>
           </div>
         </div>
       </motion.div>
@@ -186,6 +192,7 @@ export function StandardFormPage({
     </div>
   );
 }
+
 
 
 

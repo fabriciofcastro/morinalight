@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { PageBackground } from "@/components/layout/PageBackground";
+import { NetworkBackground } from "@/components/animations/network-background";
 import { UsersImportClient } from "@/components/admin/users/users-import-client";
 
 export const metadata: Metadata = {
@@ -9,8 +9,9 @@ export const metadata: Metadata = {
 
 export default function ImportUsersPage() {
   return (
-    <PageBackground>
+    <>
+      <NetworkBackground variant="users" />
       <UsersImportClient />
-    </PageBackground>
+    </>
   );
 }

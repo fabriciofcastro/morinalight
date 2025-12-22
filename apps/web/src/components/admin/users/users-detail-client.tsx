@@ -22,6 +22,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@/hooks/use-user";
 import { UserStatusBadge } from "./user-status-badge";
+import { UserTimeline } from "./UserTimeline";
+import { UserQRCode } from "./UserQRCode";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -155,11 +157,10 @@ export function UsersDetailClient({ userId }: UsersDetailClientProps) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
-                  : "border-transparent text-white/60 hover:text-white/80"
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${activeTab === tab.id
+                ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
+                : "border-transparent text-white/60 hover:text-white/80"
+                }`}
             >
               <Icon className="h-4 w-4" />
               <span className="font-medium">{tab.label}</span>
@@ -261,6 +262,15 @@ export function UsersDetailClient({ userId }: UsersDetailClientProps) {
                 </div>
               </div>
             )}
+
+            {/* QR Code Section */}
+            <div className="mt-6">
+              <UserQRCode
+                userId={userId}
+                displayName={user.displayName}
+                email={user.email}
+              />
+            </div>
           </div>
         )}
 
@@ -278,16 +288,7 @@ export function UsersDetailClient({ userId }: UsersDetailClientProps) {
         )}
 
         {activeTab === "activity" && (
-          <div className="text-center py-12">
-            <Activity className="h-12 w-12 mx-auto text-white/30 mb-4" />
-            <p className="text-white/60 mb-4">Histórico de atividades</p>
-            <Button
-              className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 cursor-pointer"
-              onClick={() => router.push(`/admin/users/${userId}/activity`)}
-            >
-              Ver Atividades Completas
-            </Button>
-          </div>
+          <UserTimeline userId={userId} />
         )}
 
         {activeTab === "sessions" && (

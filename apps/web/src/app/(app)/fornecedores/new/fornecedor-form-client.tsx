@@ -19,7 +19,7 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition, useMemo } from "react";
+import { useCallback, useEffect, useState, useTransition, useMemo, useId } from "react";
 import { useRouter } from "next/navigation";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { useSupplier } from "@/hooks/use-suppliers";
@@ -52,7 +52,6 @@ function getCurrentOrgId(): string | null {
 }
 
 // Helper para inputs futuristas
-let inputCounter = 0;
 const FuturisticInput = ({ 
   label, 
   required = false,
@@ -67,7 +66,8 @@ const FuturisticInput = ({
   error?: boolean;
   errorMessage?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>) => {
-  const inputId = id || `input-${++inputCounter}`;
+  const generatedId = useId();
+  const inputId = id || generatedId;
   const [showTooltip, setShowTooltip] = useState(false);
   
   return (
@@ -104,7 +104,6 @@ const FuturisticInput = ({
   );
 };
 
-let selectCounter = 0;
 const FuturisticSelect = ({ 
   label, 
   required = false,
@@ -121,7 +120,8 @@ const FuturisticSelect = ({
   errorMessage?: string;
   children: React.ReactNode;
 } & React.SelectHTMLAttributes<HTMLSelectElement>) => {
-  const selectId = id || `select-${++selectCounter}`;
+  const generatedId = useId();
+  const selectId = id || generatedId;
   const [showTooltip, setShowTooltip] = useState(false);
   
   return (
@@ -158,7 +158,6 @@ const FuturisticSelect = ({
   );
 };
 
-let textareaCounter = 0;
 const FuturisticTextarea = ({ 
   label, 
   required = false,
@@ -173,7 +172,8 @@ const FuturisticTextarea = ({
   error?: boolean;
   errorMessage?: string;
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
-  const textareaId = id || `textarea-${++textareaCounter}`;
+  const generatedId = useId();
+  const textareaId = id || generatedId;
   return (
     <div className="group">
       <label htmlFor={textareaId} className="block text-sm font-semibold text-white/90 mb-2">

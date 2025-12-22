@@ -36,3 +36,7 @@
 - Estratégia: Focar em tarefas <500 linhas
 
 
+
+
+
+

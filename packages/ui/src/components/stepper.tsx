@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Check, ChevronRight } from "lucide-react";
 import { cn } from "../lib/cn";
 import { motion, AnimatePresence } from "framer-motion";
@@ -214,6 +215,8 @@ export function Wizard({
     </div>
   );
 }
+
+
 
 
 

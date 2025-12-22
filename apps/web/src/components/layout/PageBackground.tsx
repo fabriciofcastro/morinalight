@@ -56,6 +56,8 @@ export function PageBackground() {
         setBgType("jarvis");
       } else if (pathname.startsWith("/admin/realtime-lab")) {
         setBgType("realtime");
+      } else if (pathname.startsWith("/admin/branches")) {
+        setBgType("nodes");
       } else if (pathname.startsWith("/admin")) {
         setBgType("vault");
       } else if (pathname.startsWith("/analytics")) {
@@ -571,7 +573,7 @@ function FichasCustoBackground() {
     <div className="absolute inset-0 overflow-hidden">
       {/* Base gradient com cores vibrantes */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0a0e27] via-[#1a1f3a] to-[#0f1629]" />
-      
+
       {/* Grid holográfico animado */}
       <motion.div
         className="absolute inset-0 opacity-20"

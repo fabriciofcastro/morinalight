@@ -25,6 +25,7 @@ import {
   CheckSquare,
   Shield,
   Activity,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -76,32 +77,6 @@ const navItems: NavItem[] = [
     href: "/clientes",
     icon: Users,
     permission: "clients:view",
-  },
-  {
-    label: "Usuários",
-    href: "/admin/users",
-    icon: Users,
-    permission: "users:view",
-    children: [
-      {
-        label: "Lista de Usuários",
-        href: "/admin/users",
-        icon: List,
-        permission: "users:view",
-      },
-      {
-        label: "Novo Usuário",
-        href: "/admin/users/new",
-        icon: Plus,
-        permission: "users:create",
-      },
-      {
-        label: "Checklist de Melhorias",
-        href: "/admin/users/checklist",
-        icon: CheckSquare,
-        permission: "users:view",
-      },
-    ],
   },
   {
     label: "Representantes",
@@ -160,30 +135,36 @@ const navItems: NavItem[] = [
     permission: "settings:view",
     children: [
       {
-        label: "Equipe",
-        href: "/settings/team",
-        icon: Users,
-        permission: "settings:team:view",
-      },
-      {
-        label: "Permissões",
-        href: "/settings/permissions",
-        icon: UserCog,
-        permission: "settings:permissions:view",
+        label: "Administração",
+        href: "/admin",
+        icon: Shield,
+        permission: "settings:view",
         children: [
           {
-            label: "Gestão de Permissões",
+            label: "Usuários",
+            href: "/admin/users",
+            icon: Users,
+            permission: "users:view",
+          },
+          {
+            label: "Permissões",
             href: "/admin/permissions/dashboard",
             icon: Shield,
             permission: "settings:permissions:view",
           },
           {
-            label: "Auditoria de Acessos",
-            href: "/admin/permissions/access-audit",
-            icon: Activity,
-            permission: "settings:permissions:view",
+            label: "Checklist Consolidado",
+            href: "/admin/checklist",
+            icon: BookOpen,
+            permission: "settings:view",
           },
         ],
+      },
+      {
+        label: "Equipe",
+        href: "/settings/team",
+        icon: Users,
+        permission: "settings:team:view",
       },
       {
         label: "Estrutura Organizacional",
@@ -234,7 +215,7 @@ export function AppSidebar() {
   // Expandir automaticamente itens do menu quando o usuário está em uma página filha
   useEffect(() => {
     const newExpanded = new Set<string>();
-    
+
     const checkItem = (item: NavItem) => {
       if (item.children && item.children.length > 0) {
         // Verificar se algum filho está ativo (incluindo filhos aninhados)
@@ -252,16 +233,16 @@ export function AppSidebar() {
           }
           return isChildActive;
         });
-        
+
         // Verificar se o próprio item está ativo
         const isItemActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-        
+
         if (hasActiveChild || isItemActive) {
           newExpanded.add(item.href);
         }
       }
     };
-    
+
     navItems.forEach(checkItem);
     setExpandedItems(newExpanded);
   }, [pathname]);
@@ -384,9 +365,9 @@ function NavItemComponent({
                 className="ml-8 mt-1 space-y-1 overflow-hidden border-l border-[color-mix(in_oklab,var(--border)_90%,transparent)] pl-3"
               >
                 {item.children?.map((child) => (
-                  <ChildNavItem 
-                    key={child.href} 
-                    item={child} 
+                  <ChildNavItem
+                    key={child.href}
+                    item={child}
                     pathname={pathname}
                     expandedItems={expandedItems}
                     onToggleExpand={onToggleExpand}
@@ -401,13 +382,13 @@ function NavItemComponent({
   );
 }
 
-function ChildNavItem({ 
-  item, 
-  pathname, 
-  expandedItems, 
-  onToggleExpand 
-}: { 
-  item: NavItem; 
+function ChildNavItem({
+  item,
+  pathname,
+  expandedItems,
+  onToggleExpand
+}: {
+  item: NavItem;
   pathname: string;
   expandedItems?: Set<string>;
   onToggleExpand?: (href: string) => void;
@@ -459,10 +440,12 @@ function ChildNavItem({
                 className="ml-6 mt-1 space-y-1 overflow-hidden border-l border-[color-mix(in_oklab,var(--border)_90%,transparent)] pl-3"
               >
                 {item.children?.map((nested) => (
-                  <ChildNavItem 
-                    key={nested.href} 
-                    item={nested} 
+                  <ChildNavItem
+                    key={nested.href}
+                    item={nested}
                     pathname={pathname}
+                    expandedItems={expandedItems}
+                    onToggleExpand={onToggleExpand}
                   />
                 ))}
               </motion.ul>

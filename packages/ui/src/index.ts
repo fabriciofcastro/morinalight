@@ -24,3 +24,4 @@ export * from "./theme/design-tokens";
 export * from "./theme/theme-provider";
 export * from "./theme/tokens";
 export * from "./theme/token-scales";
+export * from "./components/skeleton";

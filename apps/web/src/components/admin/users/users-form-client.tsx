@@ -922,15 +922,15 @@ export function UsersFormClient() {
       loading={creatingUser}
       headerActions={
         <div className="flex items-center gap-4">
-          {/* Progress Bar */}
+                {/* Progress Bar */}
           <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-white/60">Progresso do formulário</span>
-              <span className="text-white/80 font-medium">{formProgress}%</span>
-            </div>
-            <Progress value={formProgress} className="h-1.5" />
-          </div>
-        </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-white/60">Progresso do formulário</span>
+                    <span className="text-white/80 font-medium">{formProgress}%</span>
+                  </div>
+                  <Progress value={formProgress} className="h-1.5" />
+                </div>
+              </div>
       }
     >
       <div className="space-y-8">

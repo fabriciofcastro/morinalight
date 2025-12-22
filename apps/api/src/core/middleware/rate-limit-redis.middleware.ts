@@ -26,7 +26,7 @@ function getClientIdentifier(request: FastifyRequest): string {
   const orgId = extractOrgId(request);
   const userId = request.auth?.userId;
   const ip = request.ip || request.socket.remoteAddress || "unknown";
-  
+
   // Prioridade: orgId > userId > IP
   if (orgId) {
     return userId ? `org:${orgId}:user:${userId}` : `org:${orgId}:ip:${ip}`;
@@ -159,7 +159,18 @@ async function logRateLimitWarning(
   storageKey: string,
 ): Promise<void> {
   try {
-    const orgId = extractOrgId(request) || "system";
+    const orgId = extractOrgId(request);
+
+    // ✅ SOLUÇÃO DEFINITIVA: Só criar log se houver orgId válido
+    // Evita erro de foreign key quando orgId é null, undefined ou "system"
+    if (!orgId || orgId === "system") {
+      console.warn(
+        `[RATE-LIMIT] Warning não registrado - orgId inválido: ${orgId || 'null'} - ` +
+        `key: ${key}, count: ${count}, endpoint: ${request.url}`
+      );
+      return;
+    }
+
     await prisma.organizationAuditLog.create({
       data: {
         orgId,

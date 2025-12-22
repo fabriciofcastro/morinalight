@@ -26,6 +26,8 @@ import { useUsers, type User } from "@/hooks/use-users";
 import { useDebounce } from "@/hooks/use-debounce";
 import { UsersStats } from "./users-stats";
 import { UserStatusBadge } from "./user-status-badge";
+import { UserSkeleton } from "./UserSkeleton";
+import { useBulkActions } from "@/hooks/use-bulk-actions";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "inactive" | "suspended" | "pending";
@@ -62,6 +64,14 @@ export function UsersListClient() {
     sortDir,
     page,
     limit,
+  });
+
+  // Bulk actions
+  const { activateUsers, deactivateUsers, suspendUsers, deleteUsers, loading: bulkLoading } = useBulkActions({
+    onSuccess: () => {
+      setSelectedUserIds(new Set());
+      refetch();
+    },
   });
 
   // Calculate stats
@@ -186,9 +196,8 @@ export function UsersListClient() {
             </div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-                className={`bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4 ${
-                  showAdvancedFilters ? "bg-blue-500/20 border-blue-500/30" : ""
-                } ${hasActiveFilters ? "ring-2 ring-blue-500/50" : ""}`}
+                className={`bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4 ${showAdvancedFilters ? "bg-blue-500/20 border-blue-500/30" : ""
+                  } ${hasActiveFilters ? "ring-2 ring-blue-500/50" : ""}`}
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               >
                 <Filter className="h-4 w-4 mr-2" />
@@ -203,11 +212,10 @@ export function UsersListClient() {
             <div className="flex gap-2 border border-white/20 rounded-lg p-1 bg-white/5 backdrop-blur-sm">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
-                  className={`cursor-pointer h-[40px] w-[40px] p-0 ${
-                    viewMode === "grid"
-                      ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
-                      : "bg-transparent border-transparent text-white/60 hover:text-white"
-                  }`}
+                  className={`cursor-pointer h-[40px] w-[40px] p-0 ${viewMode === "grid"
+                    ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
+                    : "bg-transparent border-transparent text-white/60 hover:text-white"
+                    }`}
                   onClick={() => setViewMode("grid")}
                   aria-label="Visualização em grid"
                 >
@@ -216,11 +224,10 @@ export function UsersListClient() {
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
-                  className={`cursor-pointer h-[40px] w-[40px] p-0 ${
-                    viewMode === "list"
-                      ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
-                      : "bg-transparent border-transparent text-white/60 hover:text-white"
-                  }`}
+                  className={`cursor-pointer h-[40px] w-[40px] p-0 ${viewMode === "list"
+                    ? "bg-blue-500/20 border-blue-500/30 text-blue-400"
+                    : "bg-transparent border-transparent text-white/60 hover:text-white"
+                    }`}
                   onClick={() => setViewMode("list")}
                   aria-label="Visualização em lista"
                 >
@@ -369,19 +376,19 @@ export function UsersListClient() {
             </Button>
             <Button
               className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 backdrop-blur-sm cursor-pointer h-[36px] px-4"
-              onClick={() => {
-                // TODO: Implementar ativação em massa
-                console.log("Ativar usuários:", Array.from(selectedUserIds));
-              }}
+              onClick={() => activateUsers(Array.from(selectedUserIds))}
             >
               Ativar
             </Button>
             <Button
+              className="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/30 text-yellow-400 backdrop-blur-sm cursor-pointer h-[36px] px-4"
+              onClick={() => suspendUsers(Array.from(selectedUserIds))}
+            >
+              Suspender
+            </Button>
+            <Button
               className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-4"
-              onClick={() => {
-                // TODO: Implementar exclusão em massa
-                console.log("Excluir usuários:", Array.from(selectedUserIds));
-              }}
+              onClick={() => deleteUsers(Array.from(selectedUserIds))}
             >
               Excluir
             </Button>
@@ -391,9 +398,7 @@ export function UsersListClient() {
 
       {/* Lista de Usuários */}
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-white/60">Carregando usuários...</p>
-        </div>
+        <UserSkeleton variant={viewMode} count={limit} />
       ) : error ? (
         <div className="p-12 text-center rounded-xl border border-red-500/20 bg-red-500/10">
           <p className="text-red-400">{error}</p>

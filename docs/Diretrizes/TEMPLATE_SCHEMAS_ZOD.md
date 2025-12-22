@@ -277,3 +277,7 @@ export const companyViewSchema = companyBaseSchema.extend({
 
 **Última atualização:** 2025-01-19  
 **Mantido por:** Equipe de Arquitetura MORINA
+
+
+
+

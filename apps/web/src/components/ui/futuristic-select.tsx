@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-let selectCounter = 0;
+import { useState, useId } from "react";
 
 export interface FuturisticSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
@@ -21,7 +19,8 @@ export function FuturisticSelect({
   children,
   ...props
 }: FuturisticSelectProps) {
-  const selectId = id || `select-${++selectCounter}`;
+  const generatedId = useId();
+  const selectId = id || generatedId;
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (

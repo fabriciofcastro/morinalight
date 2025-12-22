@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
-let inputCounter = 0;
+import { useState, useId } from "react";
 
 export interface FuturisticInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -19,7 +17,8 @@ export function FuturisticInput({
   errorMessage,
   ...props
 }: FuturisticInputProps) {
-  const inputId = id || `input-${++inputCounter}`;
+  const generatedId = useId();
+  const inputId = id || generatedId;
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
