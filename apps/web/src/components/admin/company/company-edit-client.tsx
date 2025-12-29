@@ -870,9 +870,16 @@ export function CompanyEditClient() {
                   <label className="text-sm font-semibold text-white/90">
                     Fuso Horário (Timezone)
                   </label>
-                  <Tooltip content="Define o horário padrão para registros e logs.">
-                    <Settings className="h-3 w-3 text-white/40 cursor-help" />
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Settings className="h-3 w-3 text-white/40 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">Define o horário padrão para registros e logs.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <FuturisticSelect
                   label=""
@@ -902,9 +909,16 @@ export function CompanyEditClient() {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 mb-1">
                   <label className="text-sm font-semibold text-white/90">Idioma Padrão</label>
-                  <Tooltip content="Idioma da interface e relatórios.">
-                    <Globe className="h-3 w-3 text-white/40 cursor-help" />
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Globe className="h-3 w-3 text-white/40 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs">Idioma da interface e relatórios.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <FuturisticSelect
                   label=""
