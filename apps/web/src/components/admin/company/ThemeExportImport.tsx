@@ -5,6 +5,7 @@ import { Download, Upload, FileJson, CheckCircle2, AlertCircle } from "lucide-re
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../../lib/utils";
 import { notificationCenter } from "../../notifications/notification-center";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface ThemeData {
   colors: Record<string, string>;
@@ -45,6 +46,10 @@ export function ThemeExportImport({
 }: ThemeExportImportProps) {
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Confirm dialog state
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingThemeData, setPendingThemeData] = useState<ThemeData | null>(null);
 
   const handleExport = useCallback(() => {
     try {
@@ -101,30 +106,16 @@ export function ThemeExportImport({
           throw new Error("Arquivo inválido: estrutura de tema não encontrada");
         }
 
-        // Confirmar importação
-        if (
-          !window.confirm(
-            "Tem certeza que deseja importar este tema? As configurações atuais serão substituídas.",
-          )
-        ) {
-          setImporting(false);
-          return;
-        }
-
-        onThemeImport?.(data.theme);
-
-        notificationCenter.add({
-          type: "success",
-          title: "Tema importado",
-          message: "O tema foi importado com sucesso!",
-        });
+        // Set pending data and open confirm dialog
+        setPendingThemeData(data.theme);
+        setConfirmDialogOpen(true);
+        setImporting(false);
       } catch (error) {
         notificationCenter.add({
           type: "error",
           title: "Erro ao importar",
           message: error instanceof Error ? error.message : "Erro ao processar arquivo",
         });
-      } finally {
         setImporting(false);
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -133,6 +124,22 @@ export function ThemeExportImport({
     },
     [onThemeImport],
   );
+
+  const confirmImport = useCallback(() => {
+    if (pendingThemeData) {
+      onThemeImport?.(pendingThemeData);
+      notificationCenter.add({
+        type: "success",
+        title: "Tema importado",
+        message: "O tema foi importado com sucesso!",
+      });
+    }
+    setConfirmDialogOpen(false);
+    setPendingThemeData(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [pendingThemeData, onThemeImport]);
 
   return (
     <div className={cn("space-y-4", className)}>
@@ -178,6 +185,24 @@ export function ThemeExportImport({
           rapidamente todas as configurações.
         </p>
       </div>
+
+      <ConfirmDialog
+        open={confirmDialogOpen}
+        onOpenChange={(open) => {
+          setConfirmDialogOpen(open);
+          if (!open) {
+            setPendingThemeData(null);
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+            }
+          }
+        }}
+        onConfirm={confirmImport}
+        title="Importar Tema"
+        description="Tem certeza que deseja importar este tema? As configurações atuais serão substituídas."
+        confirmLabel="Importar"
+        variant="warning"
+      />
     </div>
   );
 }

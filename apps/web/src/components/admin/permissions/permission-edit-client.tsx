@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { type Permission, permissionsApi } from "@/lib/api/permissions";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type FormState = {
   name: string;
@@ -23,7 +24,6 @@ export function PermissionEditClient() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [perm, setPerm] = useState<Permission | null>(null);
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -32,6 +32,10 @@ export function PermissionEditClient() {
     action: "",
     description: "",
   });
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const code = useMemo(() => `${form.resource}:${form.action}`, [form.resource, form.action]);
   const canSave = useMemo(
@@ -94,20 +98,20 @@ export function PermissionEditClient() {
     [canSave, code, form, permissionId, router],
   );
 
-  const onDelete = useCallback(async () => {
-    const ok = confirm(
-      "Tem certeza que deseja deletar esta permissão? Isso pode afetar regras e perfis.",
-    );
-    if (!ok) return;
+  const handleDelete = useCallback(() => {
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    setDeleteLoading(true);
     try {
-      setDeleting(true);
       await permissionsApi.deletePermission(permissionId);
       router.push("/admin/permissions");
     } catch (error) {
       console.error("Failed to delete permission", error);
-      alert("Erro ao deletar permissão.");
+      setDeleteDialogOpen(false);
     } finally {
-      setDeleting(false);
+      setDeleteLoading(false);
     }
   }, [permissionId, router]);
 
@@ -165,12 +169,12 @@ export function PermissionEditClient() {
             <Button
               variant="secondary"
               type="button"
-              disabled={deleting}
-              onClick={() => void onDelete()}
+              disabled={deleteLoading}
+              onClick={handleDelete}
               className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              {deleting ? "Deletando…" : "Deletar"}
+              Deletar
             </Button>
           </div>
         </div>
@@ -280,6 +284,16 @@ export function PermissionEditClient() {
           </form>
         )}
       </motion.div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        itemName={perm?.name || ""}
+        itemType="permissão"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

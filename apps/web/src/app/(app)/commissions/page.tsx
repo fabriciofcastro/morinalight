@@ -3,8 +3,19 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
 import { Button, Input, GlassCard } from '@morina/ui';
-import { clientsApi, type Commission } from '@/lib/api/clients';
 import { PageBackground } from '@/components/page-background';
+
+// TODO: Move to separate commissions API module when backend is ready
+interface Commission {
+    comissaoId: string;
+    representanteNome: string;
+    clienteNome?: string;
+    valorVenda: number;
+    valorComissao: number;
+    status: 'aguardando' | 'em_analise' | 'aprovada' | 'contestada' | 'cancelada' | 'paga';
+    mesCompetencia: string;
+    romaneio?: string;
+}
 
 const statusLabels = {
     aguardando: 'Aguardando',
@@ -35,23 +46,15 @@ export default function CommissionsPage() {
 
     const loadCommissions = async () => {
         try {
-            const data = await clientsApi.listCommissions();
-            setCommissions(data);
+            // TODO: Replace with actual API call when backend is ready
+            // const response = await commissionsApi.list(orgId);
+            // setCommissions(response.items);
+
+            // For now, return empty array (no mock data to avoid confusion)
+            setCommissions([]);
         } catch (error: unknown) {
             console.error('Failed to load commissions:', error);
-            // Set empty array to prevent crashes
             setCommissions([]);
-
-            // Show user-friendly message
-            if (
-              typeof error === "object" &&
-              error &&
-              "response" in error &&
-              typeof (error as { response?: { status?: number } }).response?.status === "number" &&
-              (error as { response: { status: number } }).response.status === 400
-            ) {
-                console.warn('Endpoint /comissoes não está disponível ou requer parâmetros');
-            }
         } finally {
             setIsLoading(false);
         }

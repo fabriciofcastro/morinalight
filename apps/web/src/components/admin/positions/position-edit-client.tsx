@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { organizationalStructureApi, type Position } from "@/lib/api/organizational-structure";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type FormState = {
   name: string;
@@ -25,7 +26,6 @@ export function PositionEditClient() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [position, setPosition] = useState<Position | null>(null);
   const [form, setForm] = useState<FormState>({
     name: "",
@@ -36,6 +36,10 @@ export function PositionEditClient() {
     responsabilidades: "",
     requisitos: "",
   });
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const canSave = useMemo(
     () => form.name.trim().length >= 2 && form.code.trim().length >= 2,
@@ -95,18 +99,20 @@ export function PositionEditClient() {
     [canSave, form, positionId, router],
   );
 
-  const onDelete = useCallback(async () => {
-    const ok = confirm("Tem certeza que deseja deletar este cargo?");
-    if (!ok) return;
+  const handleDelete = useCallback(() => {
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    setDeleteLoading(true);
     try {
-      setDeleting(true);
       await organizationalStructureApi.deletePosition(positionId);
       router.push("/admin/positions");
     } catch (error) {
       console.error("Failed to delete position", error);
-      alert("Erro ao deletar cargo.");
+      setDeleteDialogOpen(false);
     } finally {
-      setDeleting(false);
+      setDeleteLoading(false);
     }
   }, [positionId, router]);
 
@@ -164,12 +170,12 @@ export function PositionEditClient() {
             <Button
               variant="secondary"
               type="button"
-              disabled={deleting}
-              onClick={() => void onDelete()}
+              disabled={deleteLoading}
+              onClick={handleDelete}
               className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              {deleting ? "Deletando…" : "Deletar"}
+              Deletar
             </Button>
           </div>
         </div>
@@ -241,11 +247,10 @@ export function PositionEditClient() {
                 <button
                   type="button"
                   onClick={() => setForm((p) => ({ ...p, active: !p.active }))}
-                  className={`w-full px-4 py-3 rounded-lg border transition-all ${
-                    form.active
+                  className={`w-full px-4 py-3 rounded-lg border transition-all ${form.active
                       ? "border-green-500/30 bg-green-500/10 text-green-400"
                       : "border-gray-500/30 bg-gray-500/10 text-gray-400"
-                  }`}
+                    }`}
                 >
                   {form.active ? "Ativo" : "Inativo"}
                 </button>
@@ -304,6 +309,16 @@ export function PositionEditClient() {
           </form>
         )}
       </motion.div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        itemName={position?.name || position?.code || ""}
+        itemType="cargo"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

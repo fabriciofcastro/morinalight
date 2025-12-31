@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../../lib/utils";
 import { formatFileSize } from "../../../lib/utils/image-processing";
 import { notificationCenter } from "../../notifications/notification-center";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface CompanyDocument {
   id: string;
@@ -48,6 +49,10 @@ export function CompanyDocumentsManager({
   const [selectedType, setSelectedType] = useState<string>(DOCUMENT_TYPES[0].value);
   const [expiresAt, setExpiresAt] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const handleFileUpload = useCallback(
     async (file: File) => {
@@ -125,23 +130,26 @@ export function CompanyDocumentsManager({
     [selectedType, expiresAt, description, documents, onDocumentsChange],
   );
 
-  const handleRemove = useCallback(
-    (id: string) => {
-      if (!window.confirm("Tem certeza que deseja remover este documento?")) {
-        return;
-      }
+  const handleRemove = (id: string, name: string) => {
+    setDocumentToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  };
 
-      const updatedDocuments = documents.filter((doc) => doc.id !== id);
-      onDocumentsChange?.(updatedDocuments);
+  const confirmRemove = useCallback(() => {
+    if (!documentToDelete) return;
 
-      notificationCenter.add({
-        type: "success",
-        title: "Documento removido",
-        message: "O documento foi removido com sucesso",
-      });
-    },
-    [documents, onDocumentsChange],
-  );
+    const updatedDocuments = documents.filter((doc) => doc.id !== documentToDelete.id);
+    onDocumentsChange?.(updatedDocuments);
+
+    notificationCenter.add({
+      type: "success",
+      title: "Documento removido",
+      message: "O documento foi removido com sucesso",
+    });
+
+    setDeleteDialogOpen(false);
+    setDocumentToDelete(null);
+  }, [documentToDelete, documents, onDocumentsChange]);
 
   const isExpired = (expiresAt?: string) => {
     if (!expiresAt) return false;
@@ -305,7 +313,7 @@ export function CompanyDocumentsManager({
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleRemove(doc.id)}
+                      onClick={() => handleRemove(doc.id, doc.name)}
                       className="p-2 rounded-lg hover:bg-red-500/10 transition-colors"
                       title="Remover"
                     >
@@ -318,6 +326,17 @@ export function CompanyDocumentsManager({
           </div>
         )}
       </div>
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setDocumentToDelete(null);
+        }}
+        onConfirm={confirmRemove}
+        itemName={documentToDelete?.name || ""}
+        itemType="documento"
+      />
     </div>
   );
 }

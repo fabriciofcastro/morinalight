@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { departmentId: string } }) {
-  const response = await fetch(`${apiUrl}/departments/${params.departmentId}/permissions`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ departmentId: string }> }) {
+  const { departmentId } = await params;
+  const response = await fetch(`${apiUrl}/departments/${departmentId}/permissions`, {
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -20,10 +21,11 @@ export async function GET(_request: Request, { params }: { params: { departmentI
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request, { params }: { params: { departmentId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ departmentId: string }> }) {
+  const { departmentId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/departments/${params.departmentId}/permissions`, {
+  const response = await fetch(`${apiUrl}/departments/${departmentId}/permissions`, {
     method: "POST",
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -43,8 +45,9 @@ export async function POST(request: Request, { params }: { params: { departmentI
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { departmentId: string } },
+  { params }: { params: Promise<{ departmentId: string }> },
 ) {
+  const { departmentId } = await params;
   const url = new URL(request.url);
   const permissionId = url.searchParams.get("permissionId");
 
@@ -53,7 +56,7 @@ export async function DELETE(
   }
 
   const response = await fetch(
-    `${apiUrl}/departments/${params.departmentId}/permissions/${permissionId}`,
+    `${apiUrl}/departments/${departmentId}/permissions/${permissionId}`,
     {
       method: "DELETE",
       headers: buildAuthHeaders({ "Content-Type": "application/json" }),

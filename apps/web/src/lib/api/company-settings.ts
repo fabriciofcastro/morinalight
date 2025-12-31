@@ -24,7 +24,7 @@ class CompanySettingsAPI {
     options: RequestInit = {},
   ): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
-    
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -47,8 +47,13 @@ class CompanySettingsAPI {
     return response.data || response;
   }
 
-  async updateSettings(data: Partial<CompanySettingsFormData>): Promise<CompanySettingsFormData> {
-    const response = await this.request<CompanySettingsFormData>("/company-settings", {
+  async updateSettings(data: Partial<CompanySettingsFormData>, options?: { isDraft?: boolean }): Promise<CompanySettingsFormData> {
+    let endpoint = "/company-settings";
+    if (options?.isDraft) {
+      endpoint += "?draft=true";
+    }
+
+    const response = await this.request<CompanySettingsFormData>(endpoint, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -93,11 +98,11 @@ class CompanySettingsAPI {
   ): Promise<UploadFileResponse> {
     const formData = new FormData();
     formData.append("file", file);
-    
+
     const headers: Record<string, string> = {
       "x-file-type": fileType,
     };
-    
+
     if (description) {
       headers["x-description"] = description;
     }
@@ -116,6 +121,110 @@ class CompanySettingsAPI {
     }
 
     return response.json();
+  }
+  async extractCompanyData(file: File): Promise<{ rawText: string; extracted: Partial<CompanySettingsFormData> }> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const url = `${API_BASE_URL}/intelligence/extract-company-data`;
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: "Erro desconhecido" }));
+      throw new Error(error.message || `Erro ${response.status}: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+  async sendChatMessage(message: string, agentSlug: string, context?: any) {
+    const response = await this.request<{ text: string, agent: string }>("/intelligence/chat", {
+      method: "POST",
+      body: JSON.stringify({ message, agentSlug, context }),
+    });
+    return response;
+  }
+
+  // ============================================================================
+  // INTEGRATIONS (Phase 4)
+  // ============================================================================
+
+  async listApiKeys() {
+    return this.request<any[]>("/integrations/api-keys");
+  }
+
+  async createApiKey(name: string) {
+    return this.request<{ apiKey: any, secret: string }>("/integrations/api-keys", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async revokeApiKey(id: string) {
+    return this.request(`/integrations/api-keys/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // ============================================================================
+  // CONNECTORS (Phase 4.2)
+  // ============================================================================
+
+  async getAvailableConnectors() {
+    return this.request<any[]>("/integrations/connectors/available");
+  }
+
+  async listConnections() {
+    return this.request<any[]>("/integrations/connectors/connections");
+  }
+
+  async createConnection(data: { connectorType: string; name: string; credentials: any; config?: any }) {
+    return this.request("/integrations/connectors/connections", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async testConnection(id: string) {
+    return this.request<{ success: boolean }>(`/integrations/connectors/connections/${id}/test`, {
+      method: "POST",
+    });
+  }
+
+  async syncConnection(id: string, syncType: 'products' | 'orders' | 'customers') {
+    return this.request(`/integrations/connectors/connections/${id}/sync`, {
+      method: "POST",
+      body: JSON.stringify({ syncType }),
+    });
+  }
+
+  async deleteConnection(id: string) {
+    return this.request(`/integrations/connectors/connections/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // ============================================================================
+  // ANALYTICS (Phase 5)
+  // ============================================================================
+
+  async getMetrics(metricType?: string) {
+    const params = metricType ? `?type=${metricType}` : '';
+    return this.request<any[]>(`/analytics/metrics${params}`);
+  }
+
+  async getBenchmark(metricType: string) {
+    return this.request<any>(`/analytics/benchmark/${metricType}`);
+  }
+
+  async logUsage(action: string, resource: string, metadata?: any) {
+    return this.request("/analytics/log", {
+      method: "POST",
+      body: JSON.stringify({ action, resource, metadata }),
+    });
   }
 }
 

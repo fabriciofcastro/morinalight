@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function CompanyEditPage() {
   return (
     <>
-      <PageBackground />
+      <PageBackground variant="structure" />
       <CompanyEditClient />
     </>
   );

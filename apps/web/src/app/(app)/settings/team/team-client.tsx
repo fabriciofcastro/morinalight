@@ -480,149 +480,149 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
           <span>Convites gerenciados no módulo &ldquo;Convites&rdquo;.</span>
         </div>
 
-      {feedback ? (
-        <div
-          className={cn(
-            "rounded-[var(--r-lg)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-sm)]",
-            feedback.type === "success"
-              ? "bg-[color-mix(in oklab,var(--primary-color) 18%,transparent)] text-[var(--primary-contrast)]"
-              : "bg-[color-mix(in oklab,var(--accent-color) 12%,transparent)] text-[color-mix(in oklab,var(--accent-color) 80%,var(--fg) 20%)]",
-          )}
-        >
-          {feedback.message}
-        </div>
-      ) : null}
+        {feedback ? (
+          <div
+            className={cn(
+              "rounded-[var(--r-lg)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-sm)]",
+              feedback.type === "success"
+                ? "bg-[color-mix(in oklab,var(--primary-color) 18%,transparent)] text-[var(--primary-contrast)]"
+                : "bg-[color-mix(in oklab,var(--accent-color) 12%,transparent)] text-[color-mix(in oklab,var(--accent-color) 80%,var(--fg) 20%)]",
+            )}
+          >
+            {feedback.message}
+          </div>
+        ) : null}
 
-      <div className="overflow-hidden rounded-[var(--r-lg)] border border-[color-mix(in oklab,var(--border-color) 70%,transparent)]">
-        <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-[var(--space-3)] bg-[color-mix(in oklab,var(--surface-color) 95%,transparent)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-xs)] font-semibold uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 62%,var(--fg) 38%)]">
-          <span>Colaborador</span>
-          <span>Status</span>
-          <span>Papel</span>
-          <span className="text-right">Ações</span>
-        </div>
+        <div className="overflow-hidden rounded-[var(--r-lg)] border border-[color-mix(in oklab,var(--border-color) 70%,transparent)]">
+          <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-[var(--space-3)] bg-[color-mix(in oklab,var(--surface-color) 95%,transparent)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--fs-xs)] font-semibold uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 62%,var(--fg) 38%)]">
+            <span>Colaborador</span>
+            <span>Status</span>
+            <span>Papel</span>
+            <span className="text-right">Ações</span>
+          </div>
 
-        <div className="divide-y divide-[color-mix(in oklab,var(--border-color) 70%,transparent)]">
-          {members.map((member) => {
-            const isBusy = busyMember === member.userId && pendingAction;
-            const status = member.user?.status ?? "active";
-            const statusLabel = STATUS_LABELS[status] ?? status;
-            const statusVariant = STATUS_VARIANTS[status] ?? "secondary";
+          <div className="divide-y divide-[color-mix(in oklab,var(--border-color) 70%,transparent)]">
+            {members.map((member) => {
+              const isBusy = busyMember === member.userId && pendingAction;
+              const status = member.user?.status ?? "active";
+              const statusLabel = STATUS_LABELS[status] ?? status;
+              const statusVariant = STATUS_VARIANTS[status] ?? "secondary";
 
-            return (
-              <div
-                key={member.userId}
-                className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)] text-[var(--fs-sm)] text-[color-mix(in oklab,var(--muted-soft) 65%,var(--fg) 35%)] hover:bg-white/5 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] text-sm font-semibold text-white">
-                    {(member.user?.displayName || member.user?.email || "U").charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex flex-col gap-[var(--space-1)] min-w-0">
-                    <span className="text-[var(--fs-sm)] font-semibold text-[var(--fg)] truncate">
-                      {member.user?.displayName ?? member.user?.email ?? member.userId}
-                    </span>
-                    <span className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 68%,var(--fg) 32%)] truncate">
-                      {member.user?.email ?? "E-mail não disponível"}
-                    </span>
-                    {member.user?.displayName && (
-                      <span className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] truncate">
-                        {member.user.email}
+              return (
+                <div
+                  key={member.userId}
+                  className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] items-center gap-[var(--space-3)] px-[var(--space-4)] py-[var(--space-4)] text-[var(--fs-sm)] text-[color-mix(in oklab,var(--muted-soft) 65%,var(--fg) 35%)] hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] text-sm font-semibold text-white">
+                      {(member.user?.displayName || member.user?.email || "U").charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col gap-[var(--space-1)] min-w-0">
+                      <span className="text-[var(--fs-sm)] font-semibold text-[var(--fg)] truncate">
+                        {member.user?.displayName ?? member.user?.email ?? member.userId}
                       </span>
-                    )}
-                    <span className="text-[10px] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
-                      Membro desde {new Date(member.createdAt).toLocaleDateString("pt-BR")}
-                    </span>
+                      <span className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 68%,var(--fg) 32%)] truncate">
+                        {member.user?.email ?? "E-mail não disponível"}
+                      </span>
+                      {member.user?.displayName && (
+                        <span className="text-[var(--fs-xs)] text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] truncate">
+                          {member.user.email}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-[color-mix(in oklab,var(--muted-soft) 75%,var(--fg) 25%)]">
+                        Membro desde {new Date(member.createdAt).toLocaleDateString("pt-BR")}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Badge variant={statusVariant} className="text-[10px]">
+                      {statusLabel}
+                    </Badge>
+                  </div>
+
+                  <div>
+                    <label className="flex flex-col gap-[var(--space-1)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 60%,var(--fg) 40%)]">
+                      Papel
+                      <select
+                        className="rounded-[var(--r-md)] border border-[color-mix(in oklab,var(--border-color) 75%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)] px-[var(--space-3)] py-[var(--space-2)] text-[var(--fs-sm)] text-[var(--fg)] shadow-[0_12px_26px_rgba(12,17,29,0.08)] focus:border-[color-mix(in oklab,var(--primary-color) 45%,transparent)] focus:outline-none"
+                        value={member.role}
+                        onChange={(event) =>
+                          handleRoleChange(
+                            member.userId,
+                            event.target.value as OrganizationMember["role"],
+                          )
+                        }
+                        disabled={isBusy}
+                      >
+                        {ROLE_OPTIONS.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-[var(--space-2)]">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-[var(--fs-xs)]">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48 p-2" align="end">
+                        <div className="flex flex-col gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // TODO: Implementar visualizar perfil
+                              notificationCenter.add({
+                                type: "info",
+                                title: "Visualizar Perfil",
+                                message: "Funcionalidade será implementada em breve.",
+                              });
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+                          >
+                            <User className="h-4 w-4" />
+                            Ver Perfil
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // TODO: Implementar enviar mensagem
+                              notificationCenter.add({
+                                type: "info",
+                                title: "Enviar Mensagem",
+                                message: "Funcionalidade será implementada em breve.",
+                              });
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+                          >
+                            <Mail className="h-4 w-4" />
+                            Enviar Mensagem
+                          </button>
+                          <div className="my-1 border-t border-white/10" />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMember(member.userId)}
+                            disabled={isBusy || (member.role === "owner" && ownerCount <= 1)}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-red-400/80 hover:bg-red-500/10 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <UserX className="h-4 w-4" />
+                            Remover
+                          </button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
-
-                <div>
-                  <Badge variant={statusVariant} className="text-[10px]">
-                    {statusLabel}
-                  </Badge>
-                </div>
-
-                <div>
-                  <label className="flex flex-col gap-[var(--space-1)] text-[var(--fs-xs)] uppercase tracking-[var(--tracking-wide)] text-[color-mix(in oklab,var(--muted-soft) 60%,var(--fg) 40%)]">
-                    Papel
-                    <select
-                      className="rounded-[var(--r-md)] border border-[color-mix(in oklab,var(--border-color) 75%,transparent)] bg-[color-mix(in oklab,var(--surface-color) 92%,transparent)] px-[var(--space-3)] py-[var(--space-2)] text-[var(--fs-sm)] text-[var(--fg)] shadow-[0_12px_26px_rgba(12,17,29,0.08)] focus:border-[color-mix(in oklab,var(--primary-color) 45%,transparent)] focus:outline-none"
-                      value={member.role}
-                      onChange={(event) =>
-                        handleRoleChange(
-                          member.userId,
-                          event.target.value as OrganizationMember["role"],
-                        )
-                      }
-                      disabled={isBusy}
-                    >
-                      {ROLE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-
-                <div className="flex items-center justify-end gap-[var(--space-2)]">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="sm" className="text-[var(--fs-xs)]">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48 p-2" align="end">
-                      <div className="flex flex-col gap-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            // TODO: Implementar visualizar perfil
-                            notificationCenter.add({
-                              type: "info",
-                              title: "Visualizar Perfil",
-                              message: "Funcionalidade será implementada em breve.",
-                            });
-                          }}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                          <User className="h-4 w-4" />
-                          Ver Perfil
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            // TODO: Implementar enviar mensagem
-                            notificationCenter.add({
-                              type: "info",
-                              title: "Enviar Mensagem",
-                              message: "Funcionalidade será implementada em breve.",
-                            });
-                          }}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                        >
-                          <Mail className="h-4 w-4" />
-                          Enviar Mensagem
-                        </button>
-                        <div className="my-1 border-t border-white/10" />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMember(member.userId)}
-                          disabled={isBusy || (member.role === "owner" && ownerCount <= 1)}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-red-400/80 hover:bg-red-500/10 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <UserX className="h-4 w-4" />
-                          Remover
-                        </button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </div>
-            );
-          })
-          )}
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </GlassCard>
+      </GlassCard>
+    </div>
   );
 }

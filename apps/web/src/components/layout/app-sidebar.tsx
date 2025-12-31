@@ -1,212 +1,15 @@
 "use client";
 
-import { cn } from "@morina/ui";
+import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  BarChart3,
-  Bell,
-  Building2,
-  ChevronRight,
-  DollarSign,
-  FileText,
-  Home,
-  Package,
-  Settings,
-  ShoppingCart,
-  UserCog,
-  Users,
-  ClipboardList,
-  FileCheck,
-  List,
-  Plus,
-  Network,
-  Briefcase,
-  GitBranch,
-  CheckSquare,
-  Shield,
-  Activity,
-  BookOpen,
-} from "lucide-react";
+import { navItems, NavItem } from "@/config/navigation";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useHasPermission } from "@/hooks/use-permissions";
-
-type NavItem = {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  permission?: string;
-  badge?: number;
-  children?: NavItem[];
-};
-
-const navItems: NavItem[] = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-    permission: "dashboard:view",
-  },
-  {
-    label: "Produtos",
-    href: "/products",
-    icon: Package,
-    permission: "products:view",
-  },
-  {
-    label: "Catálogo",
-    href: "/catalogo/auditoria",
-    icon: FileText,
-    permission: "catalog:view",
-  },
-  {
-    label: "Pré-Fichas Técnicas",
-    href: "/pre-fichas-tecnicas",
-    icon: FileCheck,
-    permission: "pre-fichas-tecnicas:view",
-  },
-  {
-    label: "Fichas de Custo",
-    href: "/fichas-custo",
-    icon: ClipboardList,
-    permission: "fichas-custo:view",
-  },
-  {
-    label: "Clientes",
-    href: "/clientes",
-    icon: Users,
-    permission: "clients:view",
-  },
-  {
-    label: "Representantes",
-    href: "/representantes",
-    icon: UserCog,
-    permission: "representatives:view",
-  },
-  {
-    label: "Comissões",
-    href: "/comissoes",
-    icon: DollarSign,
-    permission: "commissions:view",
-  },
-  {
-    label: "Fornecedores",
-    href: "/fornecedores/list",
-    icon: Building2,
-    permission: "suppliers:view",
-    children: [
-      {
-        label: "Lista de Fornecedores",
-        href: "/fornecedores/list",
-        icon: List,
-        permission: "suppliers:view",
-      },
-      {
-        label: "Novo Fornecedor",
-        href: "/fornecedores/new",
-        icon: Plus,
-        permission: "suppliers:create",
-      },
-    ],
-  },
-  {
-    label: "Vendas",
-    href: "/sales",
-    icon: ShoppingCart,
-    permission: "sales:view",
-  },
-  {
-    label: "Relatórios",
-    href: "/reports",
-    icon: BarChart3,
-    permission: "reports:view",
-  },
-  {
-    label: "Notificações",
-    href: "/notifications",
-    icon: Bell,
-    permission: "notifications:view",
-  },
-  {
-    label: "Configurações",
-    href: "/settings",
-    icon: Settings,
-    permission: "settings:view",
-    children: [
-      {
-        label: "Administração",
-        href: "/admin",
-        icon: Shield,
-        permission: "settings:view",
-        children: [
-          {
-            label: "Usuários",
-            href: "/admin/users",
-            icon: Users,
-            permission: "users:view",
-          },
-          {
-            label: "Permissões",
-            href: "/admin/permissions/dashboard",
-            icon: Shield,
-            permission: "settings:permissions:view",
-          },
-          {
-            label: "Checklist Consolidado",
-            href: "/admin/checklist",
-            icon: BookOpen,
-            permission: "settings:view",
-          },
-        ],
-      },
-      {
-        label: "Equipe",
-        href: "/settings/team",
-        icon: Users,
-        permission: "settings:team:view",
-      },
-      {
-        label: "Estrutura Organizacional",
-        href: "/settings/organizational-structure",
-        icon: Network,
-        permission: "settings:organizational-structure:view",
-        children: [
-          {
-            label: "Departamentos",
-            href: "/admin/departments",
-            icon: Building2,
-            permission: "settings:organizational-structure:view",
-          },
-          {
-            label: "Setores",
-            href: "/admin/sectors",
-            icon: Briefcase,
-            permission: "settings:organizational-structure:view",
-          },
-          {
-            label: "Cargos",
-            href: "/admin/positions",
-            icon: UserCog,
-            permission: "settings:organizational-structure:view",
-          },
-          {
-            label: "Filiais",
-            href: "/admin/branches",
-            icon: GitBranch,
-            permission: "settings:organizational-structure:view",
-          },
-        ],
-      },
-      {
-        label: "Dados da Empresa",
-        href: "/admin/company/edit",
-        icon: Building2,
-        permission: "settings:company:view",
-      },
-    ],
-  },
-];
+import { SidebarCoachAI } from "./sidebar-coach-ai";
+import { SidebarQuickCreate } from "./sidebar-quick-create";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -259,44 +62,52 @@ export function AppSidebar() {
 
 
   return (
-    <aside
-      className={cn(
-        "relative flex h-screen w-[280px] flex-col border-r border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] backdrop-blur-xl",
-      )}
-    >
-      {/* Header da sidebar */}
-      <div className="flex h-16 items-center border-b border-[color-mix(in_oklab,var(--border)_90%,transparent)] px-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white">
-            ML
+    <TooltipProvider delayDuration={300}>
+      <aside
+        className={cn(
+          "relative flex h-screen w-[280px] flex-col border-r border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] backdrop-blur-xl",
+        )}
+      >
+        {/* Header da sidebar */}
+        <div className="flex h-16 items-center border-b border-[color-mix(in_oklab,var(--border)_90%,transparent)] px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] text-sm font-bold text-white">
+              ML
+            </div>
+            <span className="font-semibold text-[var(--fg)]">Morina Light</span>
           </div>
-          <span className="font-semibold text-[var(--fg)]">Morina Light</span>
         </div>
-      </div>
 
-      {/* Navegação */}
-      <nav className="flex-1 overflow-y-auto px-4 py-6">
-        <ul className="space-y-1">
-          {navItems.map((item) => (
-            <NavItemComponent
-              key={item.href}
-              item={item}
-              pathname={pathname}
-              expandedItems={expandedItems}
-              onToggleExpand={toggleExpand}
-            />
-          ))}
-        </ul>
-      </nav>
+        {/* Navegação */}
+        <nav className="flex-1 overflow-y-auto px-4 py-6">
+          <ul className="space-y-1">
+            {navItems.map((item) => (
+              <NavItemComponent
+                key={item.href}
+                item={item}
+                pathname={pathname}
+                expandedItems={expandedItems}
+                onToggleExpand={toggleExpand}
+              />
+            ))}
+          </ul>
+        </nav>
 
-      {/* Footer da sidebar */}
-      <div className="border-t border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-6">
-        <div className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-          <p className="font-medium">v1.0.0</p>
-          <p className="mt-1">Sistema Operacional</p>
+        {/* Quick Create */}
+        <SidebarQuickCreate />
+
+        {/* Coach AI */}
+        <SidebarCoachAI />
+
+        {/* Footer da sidebar */}
+        <div className="border-t border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-6">
+          <div className="text-xs text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
+            <p className="font-medium">v1.0.0</p>
+            <p className="mt-1">Sistema Operacional</p>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </TooltipProvider>
   );
 }
 
@@ -334,7 +145,7 @@ function NavItemComponent({
             }
           }}
           className={cn(
-            "group flex h-10 items-center gap-3 rounded-lg px-3 transition-all",
+            "group flex h-10 items-center gap-3 rounded-lg px-3 transition-all cursor-pointer",
             isActive
               ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
               : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
@@ -414,7 +225,7 @@ function ChildNavItem({
             }
           }}
           className={cn(
-            "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-all",
+            "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-all cursor-pointer",
             isActive
               ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
               : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",

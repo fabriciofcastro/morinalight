@@ -4,13 +4,13 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string;
+   }>;
 };
 
 export async function PUT(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/notifications/${params.id}/unread`, {
+  const { id } = await params;
+  const response = await fetch(`${apiUrl}/notifications/${id}/unread`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",

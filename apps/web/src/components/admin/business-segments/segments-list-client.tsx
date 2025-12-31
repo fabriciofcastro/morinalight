@@ -22,6 +22,7 @@ import {
   type BusinessSegment,
   organizationalStructureApi,
 } from "@/lib/api/organizational-structure";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "inactive";
@@ -34,7 +35,11 @@ export function SegmentsListClient() {
   const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [segmentToDelete, setSegmentToDelete] = useState<{ id: string; description: string } | null>(null);
 
   const loadSegments = useCallback(async () => {
     try {
@@ -81,23 +86,25 @@ export function SegmentsListClient() {
     };
   }, [segments]);
 
-  const onDelete = useCallback(
-    async (segmentId: string) => {
-      const ok = confirm("Tem certeza que deseja deletar este segmento?");
-      if (!ok) return;
-      try {
-        setDeletingId(segmentId);
-        await organizationalStructureApi.deleteBusinessSegment(segmentId);
-        await loadSegments();
-      } catch (error) {
-        console.error("Failed to delete segment", error);
-        alert("Erro ao deletar segmento.");
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [loadSegments],
-  );
+  const handleDelete = useCallback((id: string, description: string) => {
+    setSegmentToDelete({ id, description });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!segmentToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await organizationalStructureApi.deleteBusinessSegment(segmentToDelete.id);
+      await loadSegments();
+      setDeleteDialogOpen(false);
+      setSegmentToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete segment", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [segmentToDelete, loadSegments]);
 
   return (
     <div className="relative min-h-screen p-6 space-y-8">
@@ -200,21 +207,19 @@ export function SegmentsListClient() {
           <div className="flex items-center gap-1 p-1 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "grid"
+              className={`p-2 rounded transition-all ${viewMode === "grid"
                   ? "bg-[hsl(var(--primary))] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <Grid className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "list"
+              className={`p-2 rounded transition-all ${viewMode === "list"
                   ? "bg-[hsl(var(--primary))] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <ListIcon className="h-4 w-4" />
             </button>
@@ -279,12 +284,24 @@ export function SegmentsListClient() {
               viewMode={viewMode}
               onView={() => router.push(`/admin/business-segments/${segment.id}`)}
               onEdit={() => router.push(`/admin/business-segments/${segment.id}/edit`)}
-              onDelete={() => void onDelete(segment.id)}
-              isDeleting={deletingId === segment.id}
+              onDelete={() => handleDelete(segment.id, segment.description || segment.code)}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setSegmentToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        itemName={segmentToDelete?.description || segmentToDelete?.id || ""}
+        itemType="segmento"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }
@@ -295,7 +312,6 @@ interface SegmentCardProps {
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  isDeleting: boolean;
 }
 
 function SegmentCard({
@@ -304,7 +320,6 @@ function SegmentCard({
   onView,
   onEdit,
   onDelete,
-  isDeleting,
 }: SegmentCardProps) {
   if (viewMode === "list") {
     return (
@@ -320,11 +335,10 @@ function SegmentCard({
           <div className="flex items-center gap-3 mb-1">
             <h3 className="text-base font-semibold text-white/90 truncate">{segment.code}</h3>
             <span
-              className={`px-2 py-0.5 rounded text-xs font-medium ${
-                segment.active
+              className={`px-2 py-0.5 rounded text-xs font-medium ${segment.active
                   ? "bg-green-500/20 text-green-400 border border-green-500/30"
                   : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-              }`}
+                }`}
             >
               {segment.active ? "Ativo" : "Inativo"}
             </span>
@@ -349,7 +363,6 @@ function SegmentCard({
           <Button
             className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-3"
             onClick={onDelete}
-            disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -369,11 +382,10 @@ function SegmentCard({
           <PieChart className="h-6 w-6 text-white" />
         </div>
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            segment.active
+          className={`px-2 py-1 rounded text-xs font-medium ${segment.active
               ? "bg-green-500/20 text-green-400 border border-green-500/30"
               : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-          }`}
+            }`}
         >
           {segment.active ? "Ativo" : "Inativo"}
         </span>
@@ -405,7 +417,6 @@ function SegmentCard({
         <Button
           className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer px-3"
           onClick={onDelete}
-          disabled={isDeleting}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

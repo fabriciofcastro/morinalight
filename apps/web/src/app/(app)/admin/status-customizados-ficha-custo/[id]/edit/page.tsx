@@ -7,10 +7,12 @@ export const metadata: Metadata = {
   description: "Editar status customizado para fichas de custo",
 };
 
-export default function EditStatusCustomizadoPage({ params }: { params: { id: string } }) {
+export default async function EditStatusCustomizadoPage({ params }: { params: Promise<{ id: string  }> }) {
+  const { id } = await params;
+
   return (
     <PageBackground>
-      <StatusCustomizadoFormClient statusId={params.id} />
+      <StatusCustomizadoFormClient statusId={id} />
     </PageBackground>
   );
 }

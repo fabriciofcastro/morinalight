@@ -4,13 +4,13 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string;
+   }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/catalogo/produtos/${params.id}`, {
+  const { id } = await params;
+  const response = await fetch(`${apiUrl}/catalogo/produtos/${id}`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -24,9 +24,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { id } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/catalogo/produtos/${params.id}`, {
+  const response = await fetch(`${apiUrl}/catalogo/produtos/${id}`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -45,7 +46,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/catalogo/produtos/${params.id}`, {
+  const { id } = await params;
+  const response = await fetch(`${apiUrl}/catalogo/produtos/${id}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });

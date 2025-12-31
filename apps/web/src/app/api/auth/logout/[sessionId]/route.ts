@@ -8,12 +8,13 @@ export const dynamic = "force-dynamic";
 
 export async function POST(
   request: Request,
-  { params }: { params: { sessionId: string } },
+  { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
+    const { sessionId } = await params;
     const headers = await buildAuthHeaders({ "Content-Type": "application/json" });
     
-    const response = await fetch(`${apiUrl}/auth/logout/${params.sessionId}`, {
+    const response = await fetch(`${apiUrl}/auth/logout/${sessionId}`, {
       method: "POST",
       headers,
     });

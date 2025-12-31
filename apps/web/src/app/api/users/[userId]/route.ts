@@ -4,13 +4,13 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    userId: string;
-  };
+  params: Promise<{ userId: string;
+   }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/users/${params.userId}`, {
+  const { userId } = await params;
+  const response = await fetch(`${apiUrl}/users/${userId}`, {
     method: "GET",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -26,9 +26,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { userId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/users/${params.userId}`, {
+  const response = await fetch(`${apiUrl}/users/${userId}`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -45,7 +46,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/users/${params.userId}`, {
+  const { userId } = await params;
+  const response = await fetch(`${apiUrl}/users/${userId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",

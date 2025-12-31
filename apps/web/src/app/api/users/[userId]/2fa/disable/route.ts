@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
-import { buildAuthHeaders } from "../../../_lib/auth-headers";
+import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     userId: string;
-  };
+  }>;
 };
 
 export async function POST(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/users/${params.userId}/disable-2fa`, {
+  const { userId } = await params;
+  const response = await fetch(`${apiUrl}/users/${userId}/disable-2fa`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -24,5 +25,3 @@ export async function POST(_request: Request, { params }: RouteParams) {
   const data = await response.json();
   return NextResponse.json(data);
 }
-
-

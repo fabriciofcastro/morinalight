@@ -4,13 +4,13 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    userId: string;
-  };
+  params: Promise<{ userId: string;
+   }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/users/${params.userId}/api-tokens`, {
+  const { userId } = await params;
+  const response = await fetch(`${apiUrl}/users/${userId}/api-tokens`, {
     method: "GET",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -26,9 +26,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
+  const { userId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/users/${params.userId}/api-tokens`, {
+  const response = await fetch(`${apiUrl}/users/${userId}/api-tokens`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),

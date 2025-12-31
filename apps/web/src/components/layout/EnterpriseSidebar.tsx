@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@morina/ui";
+import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -197,15 +197,21 @@ const DEPARTMENTS: Department[] = [
         description: "Gestão de fornecedores e parceiros comerciais.",
       },
       {
+        id: "usuarios",
+        name: "Usuários",
+        path: "/admin/users/list",
+        description: "Gestão de usuários e identidade.",
+      },
+      {
         id: "perfis",
         name: "Perfis de Acesso",
-        path: "/admin/roles",
+        path: "/admin/roles/list",
         description: "Controle de acesso (RBAC).",
       },
       {
         id: "permissoes",
         name: "Permissões",
-        path: "/admin/permissions",
+        path: "/admin/permissions/list",
         description: "Permissões granulares.",
       },
       {
@@ -223,13 +229,13 @@ const DEPARTMENTS: Department[] = [
       {
         id: "segmentos",
         name: "Segmentos",
-        path: "/admin/business-segments",
+        path: "/admin/business-segments/list",
         description: "Segmentos de negócio ativos.",
       },
       {
         id: "workflows",
         name: "Workflows",
-        path: "/admin/workflow-policies",
+        path: "/admin/workflow-policies/list",
         description: "Políticas de aprovação.",
       },
       {
@@ -305,24 +311,43 @@ function SidebarItem({
   return (
     <div className="relative flex w-full justify-center py-0.5">
       {href ? (
-        <Link
-          href={href}
-          onClick={onClick}
-          onMouseEnter={() => setHoveredItem(id)}
-          onMouseLeave={() => setHoveredItem(null)}
-        >
-          {Content}
-        </Link>
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <Link
+                href={href}
+                onClick={onClick}
+                onMouseEnter={() => setHoveredItem(id)}
+                onMouseLeave={() => setHoveredItem(null)}
+                className="cursor-pointer"
+              >
+                {Content}
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={10} className="bg-[#0A0D14] border-white/10 text-white font-medium">
+              {label}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ) : (
-        <button
-          type="button"
-          onClick={onClick}
-          onMouseEnter={() => setHoveredItem(id)}
-          onMouseLeave={() => setHoveredItem(null)}
-          className="w-full flex justify-center"
-        >
-          {Content}
-        </button>
+        <TooltipProvider>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                onClick={onClick}
+                onMouseEnter={() => setHoveredItem(id)}
+                onMouseLeave={() => setHoveredItem(null)}
+                className="w-full flex justify-center cursor-pointer"
+              >
+                {Content}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={10} className="bg-[#0A0D14] border-white/10 text-white font-medium">
+              {label}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
 
       {/* Sliding Drawer Panel */}
@@ -476,7 +501,7 @@ function SidebarItem({
                           className={cn(
                             "h-3 w-3 transition-transform opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0",
                             isActive(sol.path) &&
-                              "opacity-100 translate-x-0 text-[hsl(var(--primary))]",
+                            "opacity-100 translate-x-0 text-[hsl(var(--primary))]",
                           )}
                         />
                       </div>
@@ -567,6 +592,19 @@ export function EnterpriseSidebar() {
           icon={Search}
           label="Busca (Ctrl+K)"
           onClick={() => setSearchOpen(true)}
+          dept={undefined}
+          hoveredItem={hoveredItem}
+          setHoveredItem={setHoveredItem}
+          isActive={isActive}
+        />
+
+        <SidebarItem
+          id="home"
+          icon={LayoutDashboard}
+          label="Executive Dashboard"
+          href="/"
+          active={pathname === "/"}
+          color="from-cyan-500 to-blue-500"
           dept={undefined}
           hoveredItem={hoveredItem}
           setHoveredItem={setHoveredItem}

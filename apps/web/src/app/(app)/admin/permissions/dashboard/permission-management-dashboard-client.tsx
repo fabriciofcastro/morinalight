@@ -41,7 +41,7 @@ export function PermissionManagementDashboard() {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  
+
   const [entityType, setEntityType] = useState<EntityType>("user");
   const [selectedEntityIds, setSelectedEntityIds] = useState<Set<string>>(new Set());
   const [selectedPermissionIds, setSelectedPermissionIds] = useState<Set<string>>(new Set());
@@ -49,7 +49,7 @@ export function PermissionManagementDashboard() {
   const [reason, setReason] = useState("");
   const [searchEntity, setSearchEntity] = useState("");
   const [searchPermission, setSearchPermission] = useState("");
-  
+
   const [bulkOperationResult, setBulkOperationResult] = useState<BulkOperationResult | null>(null);
   const [executing, setExecuting] = useState(false);
 
@@ -191,7 +191,7 @@ export function PermissionManagementDashboard() {
     if (selectedEntityIds.size === availableEntities.length) {
       setSelectedEntityIds(new Set());
     } else {
-      setSelectedEntityIds(new Set(availableEntities.map((e) => e.id)));
+      setSelectedEntityIds(new Set(availableEntities.map((e) => "userId" in e ? (e as any).userId : (e as any).id)));
     }
   }, [availableEntities, selectedEntityIds.size]);
 
@@ -248,11 +248,10 @@ export function PermissionManagementDashboard() {
                   setEntityType(value);
                   setSelectedEntityIds(new Set());
                 }}
-                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-left transition-colors ${
-                  entityType === value
-                    ? "bg-white/10 text-white"
-                    : "text-white/70 hover:bg-white/5"
-                }`}
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-left transition-colors ${entityType === value
+                  ? "bg-white/10 text-white"
+                  : "text-white/70 hover:bg-white/5"
+                  }`}
               >
                 <Icon className="h-4 w-4" />
                 {label}
@@ -288,7 +287,7 @@ export function PermissionManagementDashboard() {
           />
           <div className="max-h-96 space-y-2 overflow-y-auto">
             {availableEntities.map((entity) => {
-              const id = entity.id;
+              const id = "userId" in entity ? (entity as any).userId : (entity as any).id;
               const name =
                 entityType === "user"
                   ? (entity as User).displayName || (entity as User).email
@@ -299,9 +298,8 @@ export function PermissionManagementDashboard() {
                 <button
                   key={id}
                   onClick={() => toggleEntitySelection(id)}
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors ${
-                    selected ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
-                  }`}
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors ${selected ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
+                    }`}
                 >
                   <span className="truncate text-sm">{name}</span>
                   {selected ? (
@@ -344,9 +342,8 @@ export function PermissionManagementDashboard() {
                 <button
                   key={permission.id}
                   onClick={() => togglePermissionSelection(permission.id)}
-                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors ${
-                    selected ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
-                  }`}
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors ${selected ? "bg-white/10 text-white" : "text-white/70 hover:bg-white/5"
+                    }`}
                 >
                   <div className="flex flex-col">
                     <span className="truncate text-sm font-medium">{permission.name}</span>

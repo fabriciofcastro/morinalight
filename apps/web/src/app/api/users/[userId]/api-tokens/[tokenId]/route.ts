@@ -4,14 +4,14 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    userId: string;
+  params: Promise<{ userId: string;
     tokenId: string;
-  };
+   }>;
 };
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/users/${params.userId}/api-tokens/${params.tokenId}`, {
+  const { userId, tokenId } = await params;
+  const response = await fetch(`${apiUrl}/users/${userId}/api-tokens/${tokenId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",

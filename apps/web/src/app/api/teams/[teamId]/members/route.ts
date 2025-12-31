@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { teamId: string } }) {
-  const response = await fetch(`${apiUrl}/teams/${params.teamId}/members`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ teamId: string }> }) {
+  const { teamId } = await params;
+  const response = await fetch(`${apiUrl}/teams/${teamId}/members`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -20,10 +21,11 @@ export async function GET(_request: Request, { params }: { params: { teamId: str
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request, { params }: { params: { teamId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ teamId: string }> }) {
+  const { teamId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/teams/${params.teamId}/members`, {
+  const response = await fetch(`${apiUrl}/teams/${teamId}/members`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),

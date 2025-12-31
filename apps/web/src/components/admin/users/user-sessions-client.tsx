@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { useUser } from "@/hooks/use-user";
 import { useUserSessions } from "@/hooks/use-user-sessions";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface UserSessionsClientProps {
   userId: string;
@@ -18,6 +19,12 @@ export function UserSessionsClient({ userId }: UserSessionsClientProps) {
   const { user, loading: loadingUser, fetchUser } = useUser(userId);
   const { sessions, loading, fetchSessions, revokeSession, revokeAllSessions } = useUserSessions(userId);
 
+  // Revoke dialogs state
+  const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
+  const [revokeAllDialogOpen, setRevokeAllDialogOpen] = useState(false);
+  const [revokeLoading, setRevokeLoading] = useState(false);
+  const [sessionToRevoke, setSessionToRevoke] = useState<string | null>(null);
+
   useEffect(() => {
     if (userId) {
       fetchUser(userId);
@@ -25,27 +32,41 @@ export function UserSessionsClient({ userId }: UserSessionsClientProps) {
     }
   }, [userId, fetchUser, fetchSessions]);
 
-  const handleRevokeSession = async (sessionId: string) => {
-    if (!confirm("Tem certeza que deseja revogar esta sessão?")) return;
+  const handleRevokeSession = (sessionId: string) => {
+    setSessionToRevoke(sessionId);
+    setRevokeDialogOpen(true);
+  };
+
+  const confirmRevokeSession = async () => {
+    if (!sessionToRevoke) return;
+    setRevokeLoading(true);
 
     try {
-      await revokeSession(sessionId);
+      await revokeSession(sessionToRevoke);
       notificationCenter.add({
         type: "success",
         title: "Sessão Revogada",
         message: "A sessão foi revogada com sucesso",
       });
+      setRevokeDialogOpen(false);
+      setSessionToRevoke(null);
     } catch (error) {
       notificationCenter.add({
         type: "error",
         title: "Erro",
         message: "Não foi possível revogar a sessão",
       });
+    } finally {
+      setRevokeLoading(false);
     }
   };
 
-  const handleRevokeAll = async () => {
-    if (!confirm("Tem certeza que deseja revogar TODAS as sessões? O usuário será deslogado de todos os dispositivos.")) return;
+  const handleRevokeAll = () => {
+    setRevokeAllDialogOpen(true);
+  };
+
+  const confirmRevokeAll = async () => {
+    setRevokeLoading(true);
 
     try {
       await revokeAllSessions();
@@ -54,12 +75,15 @@ export function UserSessionsClient({ userId }: UserSessionsClientProps) {
         title: "Sessões Revogadas",
         message: "Todas as sessões foram revogadas com sucesso",
       });
+      setRevokeAllDialogOpen(false);
     } catch (error) {
       notificationCenter.add({
         type: "error",
         title: "Erro",
         message: "Não foi possível revogar as sessões",
       });
+    } finally {
+      setRevokeLoading(false);
     }
   };
 
@@ -220,6 +244,31 @@ export function UserSessionsClient({ userId }: UserSessionsClientProps) {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={revokeDialogOpen}
+        onOpenChange={(open) => {
+          setRevokeDialogOpen(open);
+          if (!open) setSessionToRevoke(null);
+        }}
+        onConfirm={confirmRevokeSession}
+        title="Revogar Sessão"
+        description="Tem certeza que deseja revogar esta sessão? O dispositivo será desconectado imediatamente."
+        confirmLabel="Revogar"
+        variant="warning"
+        isLoading={revokeLoading}
+      />
+
+      <ConfirmDialog
+        open={revokeAllDialogOpen}
+        onOpenChange={setRevokeAllDialogOpen}
+        onConfirm={confirmRevokeAll}
+        title="Revogar Todas as Sessões"
+        description="Tem certeza que deseja revogar TODAS as sessões? O usuário será deslogado de todos os dispositivos imediatamente."
+        confirmLabel="Revogar Todas"
+        variant="destructive"
+        isLoading={revokeLoading}
+      />
     </div>
   );
 }

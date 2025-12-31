@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
-export async function GET(request: Request, { params }: { params: { userId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
   const { searchParams } = new URL(request.url);
   const permission = searchParams.get("permission");
 
@@ -12,7 +13,7 @@ export async function GET(request: Request, { params }: { params: { userId: stri
   }
 
   const response = await fetch(
-    `${apiUrl}/users/${params.userId}/permissions/check?permission=${encodeURIComponent(permission)}`,
+    `${apiUrl}/users/${userId}/permissions/check?permission=${encodeURIComponent(permission)}`,
     {
       headers: buildAuthHeaders({ "Content-Type": "application/json" }),
       cache: "no-store",

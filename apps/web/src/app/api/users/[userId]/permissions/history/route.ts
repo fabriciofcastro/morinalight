@@ -5,14 +5,15 @@ import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
+  const { userId } = await params;
   const { searchParams } = new URL(request.url);
   const paramsQuery = new URLSearchParams();
 
   // Filtrar por usuário específico
   paramsQuery.append("entityType", "user");
-  paramsQuery.append("entityId", params.userId);
+  paramsQuery.append("entityId", userId);
 
   // Parâmetros opcionais
   const action = searchParams.get("action");

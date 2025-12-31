@@ -7,14 +7,16 @@ export const metadata: Metadata = {
   description: "Editar subdepartamento",
 };
 
-export default function EditSubdepartmentPage({
+export default async function EditSubdepartmentPage({
+
   params,
 }: {
-  params: { subdepartmentId: string };
+  params: Promise<{ subdepartmentId: string }>;
 }) {
+  const { subdepartmentId } = await params;
   return (
     <PageBackground>
-      <SubdepartmentFormClient subdepartmentId={params.subdepartmentId} />
+      <SubdepartmentFormClient subdepartmentId={subdepartmentId} />
     </PageBackground>
   );
 }

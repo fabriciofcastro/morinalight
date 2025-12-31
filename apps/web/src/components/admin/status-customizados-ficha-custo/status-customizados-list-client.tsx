@@ -27,6 +27,7 @@ import {
   type ListarStatusCustomizadosQuery,
 } from "@/lib/api/status-customizado-ficha-custo";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") return null;
@@ -62,6 +63,11 @@ export function StatusCustomizadosListClient() {
   const [total, setTotal] = useState(0);
   const [ordenacaoCampo, setOrdenacaoCampo] = useState<"nome" | "cor" | "ordem" | "createdAt">("ordem");
   const [ordenacaoDirecao, setOrdenacaoDirecao] = useState<"asc" | "desc">("asc");
+
+  // Delete confirm state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [statusToDelete, setStatusToDelete] = useState<{ id: string; nome: string } | null>(null);
 
   const loadStatus = useCallback(async () => {
     if (!orgId) return;
@@ -103,33 +109,35 @@ export function StatusCustomizadosListClient() {
     };
   }, [status, total]);
 
-  const onDelete = useCallback(
-    async (statusId: string) => {
-      if (!orgId) return;
-      const ok = confirm("Tem certeza que deseja deletar este status customizado?");
-      if (!ok) return;
-      try {
-        setDeletingId(statusId);
-        await statusCustomizadoApi.deletar(orgId, statusId);
-        notificationCenter.add({
-          type: "success",
-          title: "Sucesso",
-          message: "Status customizado deletado com sucesso",
-        });
-        await loadStatus();
-      } catch (error) {
-        console.error("Failed to delete status", error);
-        notificationCenter.add({
-          type: "error",
-          title: "Erro",
-          message: error instanceof Error ? error.message : "Erro ao deletar status customizado",
-        });
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [loadStatus, orgId],
-  );
+  const handleDelete = useCallback((id: string, nome: string) => {
+    setStatusToDelete({ id, nome });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!orgId || !statusToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await statusCustomizadoApi.deletar(orgId, statusToDelete.id);
+      notificationCenter.add({
+        type: "success",
+        title: "Sucesso",
+        message: "Status customizado deletado com sucesso",
+      });
+      await loadStatus();
+      setDeleteDialogOpen(false);
+      setStatusToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete status", error);
+      notificationCenter.add({
+        type: "error",
+        title: "Erro",
+        message: error instanceof Error ? error.message : "Erro ao deletar status customizado",
+      });
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [statusToDelete, loadStatus, orgId]);
 
   const exportarRelatorio = useCallback(() => {
     const csv = [
@@ -249,31 +257,28 @@ export function StatusCustomizadosListClient() {
             <div className="flex gap-2">
               <button
                 onClick={() => setStatusFilter("all")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  statusFilter === "all"
-                    ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === "all"
+                  ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
+                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                  }`}
               >
                 Todos
               </button>
               <button
                 onClick={() => setStatusFilter("active")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  statusFilter === "active"
-                    ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === "active"
+                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                  }`}
               >
                 Ativos
               </button>
               <button
                 onClick={() => setStatusFilter("inactive")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  statusFilter === "inactive"
-                    ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                    : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${statusFilter === "inactive"
+                  ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10"
+                  }`}
               >
                 Inativos
               </button>
@@ -398,14 +403,10 @@ export function StatusCustomizadosListClient() {
                 </Button>
                 <Button
                   className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer"
-                  onClick={() => onDelete(s.id)}
-                  disabled={deletingId === s.id}
+                  onClick={() => handleDelete(s.id, s.nome)}
+                  disabled={false}
                 >
-                  {deletingId === s.id ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </motion.div>
@@ -448,11 +449,10 @@ export function StatusCustomizadosListClient() {
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`px-2 py-1 rounded text-xs font-semibold ${
-                        s.ativo
-                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                          : "bg-red-500/20 text-red-400 border border-red-500/30"
-                      }`}
+                      className={`px-2 py-1 rounded text-xs font-semibold ${s.ativo
+                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                        }`}
                     >
                       {s.ativo ? "Ativo" : "Inativo"}
                     </span>
@@ -472,14 +472,10 @@ export function StatusCustomizadosListClient() {
                       </Button>
                       <Button
                         className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer"
-                        onClick={() => onDelete(s.id)}
-                        disabled={deletingId === s.id}
+                        onClick={() => handleDelete(s.id, s.nome)}
+                        disabled={false}
                       >
-                        {deletingId === s.id ? (
-                          <RefreshCw className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </td>
@@ -511,8 +507,22 @@ export function StatusCustomizadosListClient() {
             Próxima
           </Button>
         </div>
-      )}
-    </div>
+        </div>
+  )
+}
+
+<DeleteConfirmDialog
+  open={deleteDialogOpen}
+  onOpenChange={(open) => {
+    setDeleteDialogOpen(open);
+    if (!open) setStatusToDelete(null);
+  }}
+  onConfirm={confirmDelete}
+  itemName={statusToDelete?.nome || ""}
+  itemType="status customizado"
+  isLoading={deleteLoading}
+/>
+    </div >
   );
 }
 

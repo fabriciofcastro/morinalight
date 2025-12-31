@@ -5,9 +5,10 @@ import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { sectorId: string; userId: string } },
+  { params }: { params: Promise<{ sectorId: string; userId: string }> },
 ) {
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members/${params.userId}`, {
+  const { sectorId, userId } = await params;
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}/members/${userId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -25,11 +26,12 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { sectorId: string; userId: string } },
+  { params }: { params: Promise<{ sectorId: string; userId: string }> },
 ) {
+  const { sectorId, userId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members/${params.userId}`, {
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}/members/${userId}`, {
     method: "PATCH",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),

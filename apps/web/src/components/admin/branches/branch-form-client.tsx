@@ -1,14 +1,55 @@
 "use client";
 
-import { Loader2, Building2, FileText, MapPin, Phone } from "lucide-react";
+import { Loader2, Building2, FileText, MapPin, Phone, Info, CheckCircle2, FolderOpen, History, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import { organizationalStructureApi, type Branch, type CreateBranchInput, type UpdateBranchInput } from "@/lib/api/organizational-structure";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AnimatedNetworkBackground } from "@/components/ui/animated-network-background";
+import { Button } from "@/components/ui/button";
+import { DocumentsTab } from "@/components/admin/branches/documents-tab";
+import { AuditLogModal } from "@/components/ui/audit-log-modal";
+import { DuplicateBranchModal, type DuplicateOptions } from "@/components/ui/duplicate-branch-modal";
+import { BusinessHoursEditor } from "@/components/admin/branches/business-hours-editor";
+import type { BusinessHours } from "@/types/business-hours";
+import { BUSINESS_HOURS_TEMPLATES } from "@/types/business-hours";
+import { MapPicker } from "@/components/ui/map-picker";
+import { useGeocoding } from "@/hooks/use-geocoding";
+import type { Coordinates } from "@/lib/google-maps";
+import { BranchSelector } from "@/components/admin/branches/branch-selector";
+import { CapacityEditor } from "@/components/admin/branches/capacity-editor";
+import { CostsEditor } from "@/components/admin/branches/costs-editor";
+import { CustomFieldsBuilder } from "@/components/admin/branches/custom-fields-builder";
+import { CustomFieldsRenderer } from "@/components/admin/branches/custom-fields-renderer";
+import type { BranchCustomFieldsConfig, CustomFieldsValues } from "@/types/custom-fields";
+import { useState as useReactState } from "react";
+import { Settings2, TrendingUp, DollarSign } from "lucide-react";
+
+// Zod Schema Validation
+const branchSchema = z.object({
+  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  code: z.string().min(2, "Código deve ter pelo menos 2 caracteres"),
+  type: z.string(),
+  active: z.boolean(),
+  cnpj: z.string().optional().refine(val => !val || val.length === 18 || val.length === 14, "CNPJ inválido"),
+  stateRegistration: z.string().optional(),
+  email: z.string().email("Email inválido").optional().or(z.literal("")),
+  phone: z.string().optional(),
+  address: z.object({
+    zipCode: z.string().optional(),
+    street: z.string().optional(),
+    number: z.string().optional(),
+    complement: z.string().optional(),
+    neighborhood: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().max(2).optional(),
+  }).optional(),
+});
 
 interface BranchFormClientProps {
   branchId?: string;
@@ -22,6 +63,7 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
   const [branch, setBranch] = useState<Branch | null>(null);
   const [fetchingCnpj, setFetchingCnpj] = useState(false);
   const [fetchingCep, setFetchingCep] = useState(false);
+
   const [form, setForm] = useState<CreateBranchInput>({
     name: "",
     code: "",
@@ -41,21 +83,62 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
       state: "",
     },
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState<"general" | "fiscal" | "address" | "contact">("general");
 
-  const canSave = useMemo(
-    () => form.name.trim().length >= 2 && form.code.trim().length >= 2,
-    [form],
-  );
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [activeTab, setActiveTab] = useState<"general" | "fiscal" | "address" | "contact" | "documents" | "hours" | "capacity" | "costs" | "custom_fields">("general");
+  const [showAuditLog, setShowAuditLog] = useState(false);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [businessHours, setBusinessHours] = useState<BusinessHours[]>(BUSINESS_HOURS_TEMPLATES.custom.hours);
+  const [coordinates, setCoordinates] = useState<Coordinates | undefined>(undefined);
+  const [parentBranchId, setParentBranchId] = useState<string | undefined>(undefined);
+  const [allBranches, setAllBranches] = useState<Branch[]>([]);
+
+  // Capacity & Costs State
+  const [capacity, setCapacity] = useState({
+    productionLines: 0,
+    maxDailyProduction: 0,
+    maxMonthlyProduction: 0,
+    currentUtilization: 0,
+    goals: { monthly: 0, quarterly: 0, annual: 0 }
+  });
+  const [costs, setCosts] = useState<Record<string, number>>({});
+
+  // Custom Fields State
+  const [customFieldsConfig, setCustomFieldsConfig] = useState<BranchCustomFieldsConfig>({ sections: [], fields: [] });
+  const [customFieldsValues, setCustomFieldsValues] = useState<CustomFieldsValues>({});
+  const [isConfiguringFields, setIsConfiguringFields] = useState(false);
+
+  const { geocode, loading: geocoding } = useGeocoding();
+
+  // Validate form using Zod
+  const validateForm = useCallback(() => {
+    const result = branchSchema.safeParse(form);
+    if (!result.success) {
+      const formattedErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        const path = err.path.join(".");
+        formattedErrors[path] = err.message;
+        // Also map nested address errors to simple keys if needed or handle in UI
+      });
+      setErrors(formattedErrors);
+      return false;
+    }
+    setErrors({});
+    return true;
+  }, [form]);
+
+  const canSave = useMemo(() => {
+    const result = branchSchema.safeParse(form);
+    return result.success;
+  }, [form]);
 
   // Auto-save
-  const { status, hasUnsavedChanges, markDirty, markClean, manualSave } = useAutoSave({
+  const { status, hasUnsavedChanges, markDirty, markClean } = useAutoSave({
     onSave: async () => {
       if (!canSave) return;
       await handleSave();
     },
-    intervalMs: 30000, // 30 segundos
+    intervalMs: 30000,
     requireValid: true,
     isValid: () => canSave,
     onAutoSaveComplete: () => {
@@ -106,8 +189,20 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
       }
     };
 
-    void loadData();
-  }, [branchId, markClean, markDirty]);
+    loadBranch();
+
+    // Carregar lista de filiais para seletor de pai
+    const loadAllBranches = async () => {
+      try {
+        const branches = await organizationalStructureApi.getBranches();
+        setAllBranches(branches);
+      } catch (error) {
+        console.error("Erro ao carregar filiais:", error);
+      }
+    };
+
+    loadAllBranches();
+  }, [branchId, isEditing, markClean, markDirty]);
 
   const handleCnpjBlur = async () => {
     const cnpj = form.cnpj?.replace(/\D/g, "");
@@ -194,11 +289,12 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
   };
 
   const handleSave = useCallback(async () => {
-    const newErrors: Record<string, string> = {};
-    if (!form.name.trim()) newErrors.name = "Nome é obrigatório";
-    if (!form.code.trim()) newErrors.code = "Código é obrigatório";
-    if (newErrors.name || newErrors.code) {
-      setErrors(newErrors);
+    if (!validateForm()) {
+      notificationCenter.add({
+        type: "error",
+        title: "Erro de validação",
+        message: "Verifique os campos obrigatórios.",
+      });
       return;
     }
 
@@ -238,15 +334,84 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
         message: "Não foi possível salvar a filial. Tente novamente.",
       });
     }
-  }, [canSave, form, isEditing, branchId, router, markClean]);
+  }, [form, isEditing, branchId, router, markClean, validateForm]);
+
+  // Auto-geocode quando o endereço completo estiver preenchido
+  useEffect(() => {
+    const address = form.address;
+    if (!address || geocoding) return;
+
+    const fullAddress = [
+      address.street,
+      address.number,
+      address.neighborhood,
+      address.city,
+      address.state,
+      address.zipCode,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    if (
+      address.street &&
+      address.city &&
+      address.state &&
+      fullAddress.length > 20
+    ) {
+      const timeoutId = setTimeout(async () => {
+        const coords = await geocode(fullAddress);
+        if (coords) {
+          setCoordinates(coords);
+        }
+      }, 1000); // Debounce de 1s
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [
+    form.address?.street,
+    form.address?.number,
+    form.address?.city,
+    form.address?.state,
+    form.address?.zipCode,
+    geocode,
+    geocoding,
+  ]);
 
   const onSubmit = useCallback(
     async (e?: React.FormEvent) => {
       if (e) e.preventDefault();
-      if (!canSave) return;
       await handleSave();
     },
-    [canSave, handleSave],
+    [handleSave],
+  );
+
+  const handleDuplicate = useCallback(
+    async (options: DuplicateOptions) => {
+      if (!branchId) return;
+
+      try {
+        const newBranch = await organizationalStructureApi.duplicateBranch(branchId, options);
+
+        notificationCenter.add({
+          type: "success",
+          title: "Filial duplicada",
+          message: `Filial "${options.newName}" criada com sucesso`,
+        });
+
+        setShowDuplicateModal(false);
+
+        // Navegar para a nova filial
+        router.push(`/admin/branches/${newBranch.id}`);
+      } catch (error) {
+        console.error("Erro ao duplicar filial:", error);
+        notificationCenter.add({
+          type: "error",
+          title: "Erro",
+          message: "Não foi possível duplicar a filial",
+        });
+      }
+    },
+    [branchId, router],
   );
 
   const tabs = [
@@ -254,50 +419,77 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
     { id: "fiscal" as const, label: "Fiscal", icon: FileText },
     { id: "address" as const, label: "Endereço", icon: MapPin },
     { id: "contact" as const, label: "Contato", icon: Phone },
+    { id: "hours" as const, label: "Horários", icon: Info },
+    { id: "documents" as const, label: "Documentos", icon: FolderOpen },
+    { id: "capacity" as const, label: "Capacidade", icon: TrendingUp },
+    { id: "costs" as const, label: "Custos", icon: DollarSign },
+    { id: "custom_fields" as const, label: "Extras", icon: Settings2 },
   ];
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Filial" : "Nova Filial"}
-      subtitle={
-        isEditing
-          ? `Atualizar informações da filial ${branch?.name}`
-          : "Cadastre uma nova filial no sistema"
-      }
-      icon={<Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />}
-      onSave={onSubmit}
-      backUrl={isEditing && branchId ? `/admin/branches/${branchId}` : "/admin/branches"}
-      isValid={canSave}
-      loading={loading}
-      loadingMessage="Carregando dados da filial..."
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-    >
-      {/* Tabs */}
-      <div className="flex items-center gap-2 border-b border-white/10 mb-6">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${
-                activeTab === tab.id
+    <AnimatedNetworkBackground className="text-white">
+      <StandardFormPage
+        title={isEditing ? "Editar Filial" : "Nova Filial"}
+        subtitle={
+          isEditing
+            ? `Atualizar informações da filial ${branch?.name}`
+            : "Cadastre uma nova filial no sistema"
+        }
+        icon={<Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />}
+        onSave={onSubmit}
+        backUrl={isEditing && branchId ? `/admin/branches/${branchId}` : "/admin/branches"}
+        isValid={canSave}
+        loading={loading}
+        loadingMessage="Carregando dados da filial..."
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+        headerActions={
+          isEditing && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowDuplicateModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                type="button"
+              >
+                <Copy className="w-4 h-4" />
+                Duplicar
+              </button>
+              <button
+                onClick={() => setShowAuditLog(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                type="button"
+              >
+                <History className="w-4 h-4" />
+                Ver Histórico
+              </button>
+            </div>
+          )
+        }
+      >
+        {/* Tabs */}
+        <div className="flex items-center gap-2 border-b border-white/10 mb-6 overflow-x-auto pb-1">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer hover:bg-white/5 rounded-t-lg ${activeTab === tab.id
                   ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
                   : "border-transparent text-white/60 hover:text-white/80"
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-              <span className="font-medium">{tab.label}</span>
-            </button>
-          );
-        })}
-      </div>
+                  }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="font-medium">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-      <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           {activeTab === "general" && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="grid gap-6 md:grid-cols-2">
                 <FuturisticInput
                   label="Nome da Filial"
@@ -311,6 +503,7 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                   error={!!errors.name}
                   errorMessage={errors.name}
                   placeholder="Ex: Matriz São Paulo"
+                  helperText="Nome identificador da unidade."
                 />
                 <FuturisticInput
                   label="Código Interno"
@@ -324,12 +517,13 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                   error={!!errors.code}
                   errorMessage={errors.code}
                   placeholder="Ex: MTZ-01"
+                  tooltip="Código único para identificação da filial no sistema ERP."
                 />
               </div>
 
               <div className="grid gap-6 md:grid-cols-2">
                 <FuturisticSelect
-                  label="Tipo"
+                  label="Tipo de Unidade"
                   value={form.type}
                   onChange={(e) => {
                     setForm((p) => ({ ...p, type: e.target.value }));
@@ -343,28 +537,44 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                 </FuturisticSelect>
 
                 <div className="flex items-center pt-6">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="active"
-                      checked={form.active}
-                      onChange={(e) => {
-                        setForm((p) => ({ ...p, active: e.target.checked }));
-                        markDirty();
-                      }}
-                      className="rounded border-white/10 bg-black/20 text-[hsl(var(--primary))] focus:ring-[hsl(var(--primary))]"
-                    />
-                    <label htmlFor="active" className="text-sm font-medium text-white/70 cursor-pointer">
-                      Filial Ativa
-                    </label>
+                  <div
+                    onClick={() => {
+                      setForm((p) => ({ ...p, active: !p.active }));
+                      markDirty();
+                    }}
+                    className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all w-full md:w-auto ${form.active
+                      ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
+                      : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
+                      }`}
+                  >
+                    <div className={`p-2 rounded-full ${form.active ? "bg-emerald-500/20" : "bg-white/10"}`}>
+                      <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">{form.active ? "Ativa" : "Inativa"}</p>
+                      <p className="text-xs opacity-70">Status operacional</p>
+                    </div>
                   </div>
                 </div>
+              </div>
+              <div className="pt-4 border-t border-white/5 mt-6">
+                <BranchSelector
+                  branches={allBranches}
+                  value={parentBranchId}
+                  onChange={(id) => {
+                    setParentBranchId(id);
+                    markDirty();
+                  }}
+                  currentBranchId={branchId}
+                  label="Filial Pai (Hierarquia)"
+                  helperText="Selecione a unidade superior caso esta seja uma sub-filial."
+                />
               </div>
             </div>
           )}
 
           {activeTab === "fiscal" && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="relative">
                   <FuturisticInput
@@ -376,13 +586,16 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                     }}
                     onBlur={handleCnpjBlur}
                     placeholder="00.000.000/0000-00"
+                    error={!!errors.cnpj}
+                    errorMessage={errors.cnpj}
+                    helperText="Digite para buscar dados automaticamente."
+                    tooltip="Cadastro Nacional de Pessoa Jurídica da filial."
                   />
                   {fetchingCnpj && (
                     <div className="absolute right-3 top-[38px]">
                       <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--primary))]" />
                     </div>
                   )}
-                  <p className="mt-1 text-xs text-white/30">Digite o CNPJ para buscar dados automaticamente.</p>
                 </div>
 
                 <FuturisticInput
@@ -393,13 +606,14 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                     markDirty();
                   }}
                   placeholder="Ex: 123.456.789.111"
+                  tooltip="Número de inscrição na Secretaria da Fazenda Estadual."
                 />
               </div>
             </div>
           )}
 
           {activeTab === "address" && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="grid gap-6 md:grid-cols-4">
                 <div className="relative col-span-1">
                   <FuturisticInput
@@ -499,13 +713,28 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                     markDirty();
                   }}
                   maxLength={2}
+                  error={!!errors['address.state']}
+                />
+              </div>
+
+              {/* Mapa de localização */}
+              <div className="mt-6">
+                <h4 className="text-sm font-semibold text-white/90 mb-3">Localização no Mapa</h4>
+                <MapPicker
+                  value={coordinates}
+                  onChange={(coords) => {
+                    setCoordinates(coords);
+                    markDirty();
+                  }}
+                  height="450px"
+                  zoom={16}
                 />
               </div>
             </div>
           )}
 
           {activeTab === "contact" && (
-            <div className="space-y-6">
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="grid gap-6 md:grid-cols-2">
                 <FuturisticInput
                   label="Email"
@@ -513,9 +742,12 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
                   value={form.email}
                   onChange={(e) => {
                     setForm((p) => ({ ...p, email: e.target.value }));
+                    if (errors.email) setErrors((e) => ({ ...e, email: "" }));
                     markDirty();
                   }}
                   placeholder="contato@filial.com"
+                  error={!!errors.email}
+                  errorMessage={errors.email}
                 />
                 <FuturisticInput
                   label="Telefone"
@@ -530,16 +762,133 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
             </div>
           )}
 
-        <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
-          {isEditing && branch && (
-            <>
-              ID: <span className="font-mono">{branch.id}</span>
-            </>
+          {activeTab === "hours" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <BusinessHoursEditor
+                value={businessHours}
+                onChange={(hours) => {
+                  setBusinessHours(hours);
+                  markDirty();
+                }}
+              />
+            </div>
           )}
-        </div>
-      </form>
-    </StandardFormPage>
+
+          {activeTab === "documents" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <DocumentsTab branchId={branchId} isNewBranch={!isEditing} />
+            </div>
+          )}
+
+
+
+          {activeTab === "capacity" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <CapacityEditor
+                value={capacity}
+                onChange={(val) => {
+                  setCapacity(val);
+                  markDirty();
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === "costs" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <CostsEditor
+                value={costs}
+                onChange={(val) => {
+                  setCosts(val);
+                  markDirty();
+                }}
+              />
+            </div>
+          )}
+
+          {activeTab === "custom_fields" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant={isConfiguringFields ? "default" : "outline"}
+                  onClick={() => setIsConfiguringFields(!isConfiguringFields)}
+                  className="gap-2"
+                >
+                  <Settings2 className="w-4 h-4" />
+                  {isConfiguringFields ? "Voltar para Dados" : "Configurar Campos"}
+                </Button>
+              </div>
+
+              {isConfiguringFields ? (
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-white mb-2">Construtor de Campos</h3>
+                    <p className="text-white/60">
+                      Defina os campos personalizados que estarão disponíveis para preenchimento nesta e em outras filiais.
+                    </p>
+                  </div>
+                  <CustomFieldsBuilder
+                    config={customFieldsConfig}
+                    onChange={(cfg) => {
+                      setCustomFieldsConfig(cfg);
+                      // Reset values for removed fields if needed, or keep for history
+                      markDirty();
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-white mb-2">Campos Adicionais</h3>
+                    <p className="text-white/60">
+                      Preencha as informações complementares definidas para esta unidade.
+                    </p>
+                  </div>
+                  <CustomFieldsRenderer
+                    config={customFieldsConfig}
+                    values={customFieldsValues}
+                    onChange={(vals) => {
+                      setCustomFieldsValues(vals);
+                      markDirty();
+                    }}
+                    errors={errors}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10 flex justify-between items-center">
+            <span>Os campos marcados com * são obrigatórios.</span>
+            {isEditing && branch && (
+              <span className="font-mono">ID: {branch.id}</span>
+            )}
+          </div>
+        </form>
+      </StandardFormPage>
+
+      {/* Audit Log Modal */}
+      {showAuditLog && isEditing && branchId && (
+        <AuditLogModal
+          entityType="branch"
+          entityId={branchId}
+          entityName={branch?.name}
+          onClose={() => setShowAuditLog(false)}
+        />
+      )}
+
+      {/* Duplicate Branch Modal */}
+      {showDuplicateModal && isEditing && branch && (
+        <DuplicateBranchModal
+          branchName={branch.name}
+          onConfirm={handleDuplicate}
+          onCancel={() => setShowDuplicateModal(false)}
+        />
+      )}
+    </AnimatedNetworkBackground>
   );
 }
+
 
 

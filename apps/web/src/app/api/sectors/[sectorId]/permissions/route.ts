@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { sectorId: string } }) {
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ sectorId: string }> }) {
+  const { sectorId } = await params;
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}/permissions`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -20,10 +21,11 @@ export async function GET(_request: Request, { params }: { params: { sectorId: s
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request, { params }: { params: { sectorId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ sectorId: string }> }) {
+  const { sectorId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/permissions`, {
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}/permissions`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -43,8 +45,9 @@ export async function POST(request: Request, { params }: { params: { sectorId: s
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { sectorId: string } },
+  { params }: { params: Promise<{ sectorId: string }> },
 ) {
+  const { sectorId } = await params;
   const url = new URL(request.url);
   const permissionId = url.searchParams.get("permissionId");
 
@@ -53,7 +56,7 @@ export async function DELETE(
   }
 
   const response = await fetch(
-    `${apiUrl}/sectors/${params.sectorId}/permissions/${permissionId}`,
+    `${apiUrl}/sectors/${sectorId}/permissions/${permissionId}`,
     {
       method: "DELETE",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),

@@ -4,12 +4,12 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    userId: string;
-  };
+  params: Promise<{ userId: string;
+   }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
+  const { userId } = await params;
   const { searchParams } = new URL(_request.url);
   const queryParams = new URLSearchParams();
 
@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
     queryParams.append(key, value);
   });
 
-  const response = await fetch(`${apiUrl}/users/${params.userId}/trusted-devices?${queryParams.toString()}`, {
+  const response = await fetch(`${apiUrl}/users/${userId}/trusted-devices?${queryParams.toString()}`, {
     method: "GET",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -33,9 +33,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function POST(request: Request, { params }: RouteParams) {
+  const { userId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/users/${params.userId}/trusted-devices`, {
+  const response = await fetch(`${apiUrl}/users/${userId}/trusted-devices`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),

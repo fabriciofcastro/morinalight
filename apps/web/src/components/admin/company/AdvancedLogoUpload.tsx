@@ -3,8 +3,9 @@
 import { useState, useCallback, useRef } from "react";
 import { Upload, X, CheckCircle2, AlertCircle, Loader2, Image as ImageIcon, ZoomIn, ZoomOut, RotateCw, Crop } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "../../../lib/utils";
-import { processImage, validateImage, getImageDimensions, type ProcessedImage, formatFileSize } from "../../../lib/utils/image-processing";
+import { cn } from "@morina/ui";
+import { processImage, validateImage, getImageDimensions, type ProcessedImage, formatFileSize } from "@/lib/utils/image-processing";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface AdvancedLogoUploadProps {
   value?: string | null;
@@ -46,6 +47,9 @@ export function AdvancedLogoUpload({
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  // Confirm dialog state
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
 
   const handleFileSelect = useCallback(
     async (file: File) => {
@@ -154,10 +158,11 @@ export function AdvancedLogoUpload({
     [handleFileSelect],
   );
 
-  const handleRemove = useCallback(() => {
-    if (!window.confirm("Tem certeza que deseja remover o logo?")) {
-      return;
-    }
+  const handleRemove = () => {
+    setConfirmRemoveOpen(true);
+  };
+
+  const confirmRemove = useCallback(() => {
     setPreview(null);
     setVariants(null);
     setDimensions(null);
@@ -166,6 +171,7 @@ export function AdvancedLogoUpload({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    setConfirmRemoveOpen(false);
   }, [onChange]);
 
   return (
@@ -377,6 +383,16 @@ export function AdvancedLogoUpload({
           <span>Processando imagem e gerando variantes...</span>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmRemoveOpen}
+        onOpenChange={setConfirmRemoveOpen}
+        onConfirm={confirmRemove}
+        title="Remover Logo"
+        description="Tem certeza que deseja remover o logo da empresa?"
+        confirmLabel="Remover"
+        variant="warning"
+      />
     </div>
   );
 }

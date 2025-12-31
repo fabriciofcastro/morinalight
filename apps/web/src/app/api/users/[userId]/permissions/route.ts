@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(request: Request, { params }: { params: { userId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
   const { searchParams } = new URL(request.url);
   const permission = searchParams.get("permission");
 
-  let url = `${apiUrl}/users/${params.userId}/permissions`;
+  let url = `${apiUrl}/users/${userId}/permissions`;
   if (permission) {
     url += `/check?permission=${encodeURIComponent(permission)}`;
   }

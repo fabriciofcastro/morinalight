@@ -4,13 +4,12 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    departmentId: string;
-  };
+  params: Promise<{ departmentId: string;
+   }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const { departmentId } = params;
+  const { departmentId } = await params;
 
   const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
     method: "GET",
@@ -30,8 +29,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { departmentId } = await params;
   const body = await request.json().catch(() => ({}));
-  const { departmentId } = params;
 
   const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
     method: "PUT",
@@ -44,7 +43,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const { departmentId } = params;
+  const { departmentId } = await params;
 
   const response = await fetch(`${apiUrl}/departments/${departmentId}`, {
     method: "DELETE",

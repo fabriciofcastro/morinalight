@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useState, useRef, useEffect } from "react";
-import { parseError, isRetryableError, getRetryDelay, type AppError } from "./parser";
+import { parseError, isRetryableError, getRetryDelay, type AppError } from "./error-parser";
 import { getUserFriendlyMessage } from "./user-messages";
 import { notificationCenter } from "@/components/notifications/notification-center";
 

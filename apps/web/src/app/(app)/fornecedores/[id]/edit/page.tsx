@@ -7,10 +7,12 @@ export const metadata: Metadata = {
   description: "Editar informações do fornecedor",
 };
 
-export default function FornecedorEditPage({ params }: { params: { id: string } }) {
+export default async function FornecedorEditPage({ params }: { params: Promise<{ id: string  }> }) {
+  const { id } = await params;
+
   return (
     <PageBackground>
-      <FornecedorEditClient supplierId={params.id} />
+      <FornecedorEditClient supplierId={id} />
     </PageBackground>
   );
 }

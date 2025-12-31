@@ -11,13 +11,14 @@ export const metadata: Metadata = {
 };
 
 type InvitePageProps = {
-  params: {
+  params: Promise<{
     token: string;
-  };
+  }>;
 };
 
-export default function InvitePage({ params }: InvitePageProps) {
-  const inviteToken = params.token;
+export default async function InvitePage({ params }: InvitePageProps) {
+  const { token: inviteToken } = await params;
+
 
   return (
     <main className="relative flex min-h-screen flex-col justify-center bg-[var(--bg)] py-[var(--space-10)] text-[var(--fg)]">

@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { unitId: string } }) {
-  const response = await fetch(`${apiUrl}/organizational-units/${params.unitId}/members`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ unitId: string }> }) {
+  const { unitId } = await params;
+  const response = await fetch(`${apiUrl}/organizational-units/${unitId}/members`, {
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -20,10 +21,11 @@ export async function GET(_request: Request, { params }: { params: { unitId: str
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request, { params }: { params: { unitId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ unitId: string }> }) {
+  const { unitId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/organizational-units/${params.unitId}/members`, {
+  const response = await fetch(`${apiUrl}/organizational-units/${unitId}/members`, {
     method: "POST",
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),

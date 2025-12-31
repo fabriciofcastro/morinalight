@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { permissionsApi, type Permission } from "@/lib/api/permissions";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type PermissionsManagerClientProps = {
   entityType: "department" | "sector" | "position" | "role";
@@ -25,6 +26,10 @@ export function PermissionsManagerClient({
   const [showAddPermission, setShowAddPermission] = useState(false);
   const [selectedPermissionId, setSelectedPermissionId] = useState("");
   const [pending, startTransition] = useTransition();
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [permissionToDelete, setPermissionToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const apiBasePath = {
     department: `/api/departments/${entityId}/permissions`,
@@ -100,31 +105,38 @@ export function PermissionsManagerClient({
     });
   }, [selectedPermissionId, apiBasePath, loadPermissions]);
 
-  const handleRemovePermission = useCallback(
-    async (permissionId: string) => {
-      if (!confirm("Tem certeza que deseja remover esta permissão?")) return;
+  const handleRemovePermission = (permissionId: string, permissionName: string) => {
+    setPermissionToDelete({ id: permissionId, name: permissionName });
+    setDeleteDialogOpen(true);
+  };
 
-      try {
-        const response = await fetch(`${apiBasePath}?permissionId=${permissionId}`, {
-          method: "DELETE",
-          headers: {
-            ...getAuthHeadersWithTenant(),
-            "Content-Type": "application/json",
-          },
-        });
+  const confirmRemovePermission = async () => {
+    if (!permissionToDelete) return;
+    setDeleteLoading(true);
 
-        if (response.ok) {
-          await loadPermissions();
-        } else {
-          alert("Erro ao remover permissão");
-        }
-      } catch (error) {
-        console.error("Erro ao remover permissão:", error);
+    try {
+      const response = await fetch(`${apiBasePath}?permissionId=${permissionToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          ...getAuthHeadersWithTenant(),
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        await loadPermissions();
+        setDeleteDialogOpen(false);
+        setPermissionToDelete(null);
+      } else {
         alert("Erro ao remover permissão");
       }
-    },
-    [apiBasePath, loadPermissions],
-  );
+    } catch (error) {
+      console.error("Erro ao remover permissão:", error);
+      alert("Erro ao remover permissão");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   const availablePermissions = allPermissions.filter(
     (perm) => !permissions.some((p) => p.id === perm.id),
@@ -282,7 +294,7 @@ export function PermissionsManagerClient({
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={() => handleRemovePermission(permission.id)}
+                  onClick={() => handleRemovePermission(permission.id, permission.name)}
                   className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-3"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -292,6 +304,18 @@ export function PermissionsManagerClient({
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setPermissionToDelete(null);
+        }}
+        onConfirm={confirmRemovePermission}
+        itemName={permissionToDelete?.name || ""}
+        itemType="permissão"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

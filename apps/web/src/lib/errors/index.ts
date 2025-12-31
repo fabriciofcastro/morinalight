@@ -19,7 +19,7 @@ export {
   parseAxiosError,
   isRetryableError,
   getRetryDelay,
-} from "./parser";
+} from "./error-parser";
 
 // Error Boundary
 export { ErrorBoundary, withErrorBoundary } from "./error-boundary";

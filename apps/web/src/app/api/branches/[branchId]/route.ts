@@ -4,13 +4,14 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     branchId: string;
-  };
+  }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/branches/${params.branchId}`, {
+  const { branchId } = await params;
+  const response = await fetch(`${apiUrl}/branches/${branchId}`, {
     method: "GET",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -21,9 +22,10 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { branchId } = await params;
   const body = await request.json().catch(() => ({}));
 
-  const response = await fetch(`${apiUrl}/branches/${params.branchId}`, {
+  const response = await fetch(`${apiUrl}/branches/${branchId}`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -34,7 +36,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/branches/${params.branchId}`, {
+  const { branchId } = await params;
+  const response = await fetch(`${apiUrl}/branches/${branchId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ConnectionStatusIndicator } from "../connection-status-indicator";
 import { RealtimeNotificationsProvider } from "../notifications/realtime-notifications-provider";
 import { OfflineSyncNotification } from "../offline-sync-notification";
+import { SessionTimeoutWarning } from "../session/session-timeout-warning";
 import { AppBackgroundAdvanced } from "./app-background-advanced";
 import { AppFooter } from "./app-footer";
 import { AppHeader } from "./app-header";
@@ -45,26 +46,26 @@ export function AppLayout({ children }: AppLayoutProps) {
   const cinematicVars: CSSVarProps =
     cinematicPreset === "off"
       ? ({
-          "--cinematic-noise-opacity": "0",
-          "--cinematic-scanlines-opacity": "0",
-          "--cinematic-glow-opacity": "0",
-          "--cinematic-vignette-opacity": "0",
-        } satisfies CSSVarProps)
+        "--cinematic-noise-opacity": "0",
+        "--cinematic-scanlines-opacity": "0",
+        "--cinematic-glow-opacity": "0",
+        "--cinematic-vignette-opacity": "0",
+      } satisfies CSSVarProps)
       : cinematicPreset === "clean"
         ? ({
-            // mais clean (menos distração)
-            "--cinematic-noise-opacity": "0.03",
-            "--cinematic-scanlines-opacity": "0.02",
-            "--cinematic-glow-opacity": "0.06",
-            "--cinematic-vignette-opacity": "0.55",
-          } satisfies CSSVarProps)
+          // mais clean (menos distração)
+          "--cinematic-noise-opacity": "0.03",
+          "--cinematic-scanlines-opacity": "0.02",
+          "--cinematic-glow-opacity": "0.06",
+          "--cinematic-vignette-opacity": "0.55",
+        } satisfies CSSVarProps)
         : ({
-            // padrão “cinematic”
-            "--cinematic-noise-opacity": "0.06",
-            "--cinematic-scanlines-opacity": "0.04",
-            "--cinematic-glow-opacity": "0.08",
-            "--cinematic-vignette-opacity": "0.70",
-          } satisfies CSSVarProps);
+          // padrão “cinematic”
+          "--cinematic-noise-opacity": "0.06",
+          "--cinematic-scanlines-opacity": "0.04",
+          "--cinematic-glow-opacity": "0.08",
+          "--cinematic-vignette-opacity": "0.70",
+        } satisfies CSSVarProps);
 
   useEffect(() => {
     queueMicrotask(() => setMounted(true));
@@ -157,6 +158,21 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Provider de notificações em tempo real */}
       <RealtimeNotificationsProvider />
+
+      {/* Session Timeout Warning */}
+      <SessionTimeoutWarning
+        sessionDurationMinutes={30}
+        warningBeforeMinutes={5}
+        onSessionExpire={() => {
+          // Redirecionar para login
+          window.location.href = '/login';
+        }}
+        onSessionRenew={async () => {
+          // Renovar token/sessão
+          // Em produção, fazer chamada à API
+          console.log('Session renewed');
+        }}
+      />
     </div>
   );
 }

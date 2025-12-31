@@ -9,7 +9,7 @@ export const metadata = {
 export default function NovoFornecedorPage() {
   return (
     <>
-      <PageBackground />
+      <PageBackground variant="dashboard" />
       <FornecedorFormClient />
     </>
   );

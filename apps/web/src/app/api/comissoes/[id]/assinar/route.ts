@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function POST(_request: Request, { params }: { params: { id: string } }) {
-  const response = await fetch(`${apiUrl}/comissoes/${params.id}/assinar`, {
+export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const response = await fetch(`${apiUrl}/comissoes/${id}/assinar`, {
     method: "POST",
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
   });

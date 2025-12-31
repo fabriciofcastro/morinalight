@@ -5,10 +5,11 @@ import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { positionId: string; userId: string } },
+  { params }: { params: Promise<{ positionId: string; userId: string }> },
 ) {
+  const { positionId, userId } = await params;
   const response = await fetch(
-    `${apiUrl}/positions/${params.positionId}/members/${params.userId}`,
+    `${apiUrl}/positions/${positionId}/members/${userId}`,
     {
       method: "DELETE",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
@@ -28,12 +29,13 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { positionId: string; userId: string } },
+  { params }: { params: Promise<{ positionId: string; userId: string }> },
 ) {
+  const { positionId, userId } = await params;
   const body = await request.json();
 
   const response = await fetch(
-    `${apiUrl}/positions/${params.positionId}/members/${params.userId}`,
+    `${apiUrl}/positions/${positionId}/members/${userId}`,
     {
       method: "PATCH",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),

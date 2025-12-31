@@ -158,39 +158,39 @@ export function StatusCustomizadosClient() {
       return;
     }
 
-      try {
-        setSaving(true);
+    try {
+      setSaving(true);
 
-        if (editandoId) {
-          // Atualizar
-          const input: UpdateStatusCustomizadoInput = {
-            nome: formData.nome.trim(),
-            cor: formData.cor,
-            descricao: formData.descricao?.trim() || null,
-            ordem: formData.ordem,
-            ativo: formData.ativo,
-          };
-          await statusCustomizadoApi.atualizar(orgId, editandoId, input);
-          notificationCenter.add({
-            type: "success",
-            title: "Status atualizado",
-            message: `Status "${formData.nome}" foi atualizado com sucesso.`,
-          });
-        } else {
-          // Criar
-          await statusCustomizadoApi.criar(orgId, {
-            nome: formData.nome.trim(),
-            cor: formData.cor,
-            descricao: formData.descricao?.trim() || null,
-            ordem: formData.ordem,
-            ativo: formData.ativo,
-          });
-          notificationCenter.add({
-            type: "success",
-            title: "Status criado",
-            message: `Status "${formData.nome}" foi criado com sucesso.`,
-          });
-        }
+      if (editandoId) {
+        // Atualizar
+        const input: UpdateStatusCustomizadoInput = {
+          nome: formData.nome.trim(),
+          cor: formData.cor,
+          descricao: formData.descricao?.trim() || null,
+          ordem: formData.ordem,
+          ativo: formData.ativo,
+        };
+        await statusCustomizadoApi.atualizar(orgId, editandoId, input);
+        notificationCenter.add({
+          type: "success",
+          title: "Status atualizado",
+          message: `Status "${formData.nome}" foi atualizado com sucesso.`,
+        });
+      } else {
+        // Criar
+        await statusCustomizadoApi.criar(orgId, {
+          nome: formData.nome.trim(),
+          cor: formData.cor,
+          descricao: formData.descricao?.trim() || null,
+          ordem: formData.ordem,
+          ativo: formData.ativo,
+        });
+        notificationCenter.add({
+          type: "success",
+          title: "Status criado",
+          message: `Status "${formData.nome}" foi criado com sucesso.`,
+        });
+      }
 
       cancelar();
       void carregarStatus();
@@ -246,7 +246,7 @@ export function StatusCustomizadosClient() {
         className="relative"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-        
+
         <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
           <div className="flex items-center gap-4">
             <Settings className="h-8 w-8 text-[hsl(var(--primary))]" />
@@ -374,7 +374,7 @@ export function StatusCustomizadosClient() {
               <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
               <input
                 type="text"
-                value={formData.descricao}
+                value={formData.descricao ?? ""}
                 onChange={(e) => setFormData((prev) => ({ ...prev, descricao: e.target.value }))}
                 className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 h-[48px]"
                 placeholder="Descrição do status (opcional)"

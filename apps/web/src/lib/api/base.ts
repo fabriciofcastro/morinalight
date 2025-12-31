@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
+// Force recompile
 import { parseAxiosError, type AppError } from "@/lib/errors";
 
 // Helper para gerar UUID no browser
@@ -118,3 +119,30 @@ export class ApiClient {
 }
 
 export const apiClient = new ApiClient();
+
+/**
+ * Retorna headers com o tenant (organization ID) e headers de correlação
+ * para requisições fetch no lado cliente
+ */
+export function getAuthHeadersWithTenant(): Record<string, string> {
+  const headers: Record<string, string> = {};
+
+  if (typeof window !== "undefined") {
+    const orgId =
+      localStorage.getItem("selected_org_id") ??
+      localStorage.getItem("current_organization_id") ??
+      null;
+
+    if (orgId) {
+      headers["x-org-id"] = orgId;
+      headers["x-organization-id"] = orgId;
+    }
+
+    // Add correlation IDs
+    headers["x-correlation-id"] = randomUUID();
+    headers["x-trace-id"] = randomUUID();
+    headers["x-span-id"] = randomUUID();
+  }
+
+  return headers;
+}

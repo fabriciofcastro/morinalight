@@ -7,9 +7,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     orgId?: string;
-  };
+  }>;
 };
 
 function resolveOrgId(paramOrgId?: string) {
@@ -42,7 +42,8 @@ async function proxy<T>(input: RequestInfo | URL, init?: RequestInit): Promise<N
 
 export async function GET(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
-  const orgId = resolveOrgId(params.orgId);
+  const { orgId: paramOrgId } = await params;
+  const orgId = resolveOrgId(paramOrgId);
   const authHeaders = buildAuthHeaders();
 
   return proxy(`${apiUrl}/organizations/${orgId}/invites`, {
@@ -56,7 +57,8 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 export async function POST(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
-  const orgId = resolveOrgId(params.orgId);
+  const { orgId: paramOrgId } = await params;
+  const orgId = resolveOrgId(paramOrgId);
   const authHeaders = buildAuthHeaders();
 
   let body: unknown;

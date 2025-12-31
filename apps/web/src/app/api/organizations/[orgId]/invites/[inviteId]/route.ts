@@ -7,10 +7,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     orgId?: string;
     inviteId: string;
-  };
+  }>;
 };
 
 function resolveOrgId(paramOrgId?: string) {
@@ -23,8 +23,8 @@ function resolveActorId(request: Request) {
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
-  const orgId = resolveOrgId(params.orgId);
-  const inviteId = params.inviteId;
+  const { orgId: paramOrgId, inviteId } = await params;
+  const orgId = resolveOrgId(paramOrgId);
   const authHeaders = buildAuthHeaders();
 
   const response = await fetch(`${apiUrl}/organizations/${orgId}/invites/${inviteId}`, {

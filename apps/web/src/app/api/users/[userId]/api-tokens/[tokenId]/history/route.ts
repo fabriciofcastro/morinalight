@@ -4,13 +4,13 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    userId: string;
+  params: Promise<{ userId: string;
     tokenId: string;
-  };
+   }>;
 };
 
 export async function GET(request: Request, { params }: RouteParams) {
+  const { userId, tokenId } = await params;
   const { searchParams } = new URL(request.url);
   const paramsQuery = new URLSearchParams();
 
@@ -19,7 +19,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   });
 
   const response = await fetch(
-    `${apiUrl}/users/${params.userId}/api-tokens/${params.tokenId}/history?${paramsQuery.toString()}`,
+    `${apiUrl}/users/${userId}/api-tokens/${tokenId}/history?${paramsQuery.toString()}`,
     {
       method: "GET",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),

@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
-export async function PUT(request: Request, { params }: { params: { unitId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ unitId: string }> }) {
+  const { unitId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/organizational-units/${params.unitId}`, {
+  const response = await fetch(`${apiUrl}/organizational-units/${unitId}`, {
     method: "PUT",
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -24,8 +25,9 @@ export async function PUT(request: Request, { params }: { params: { unitId: stri
   return NextResponse.json(data);
 }
 
-export async function DELETE(_request: Request, { params }: { params: { unitId: string } }) {
-  const response = await fetch(`${apiUrl}/organizational-units/${params.unitId}`, {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ unitId: string }> }) {
+  const { unitId } = await params;
+  const response = await fetch(`${apiUrl}/organizational-units/${unitId}`, {
     method: "DELETE",
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
   });

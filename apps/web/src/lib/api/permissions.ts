@@ -292,4 +292,48 @@ export const permissionsApi = {
     };
     await api.post("/permissions/bulk-assign", payload);
   },
+
+  // Role Permissions
+  getRolePermissions: async (roleId: string) => {
+    type PermissionItemDto = {
+      permissionId: string;
+      name: string;
+      description?: string | null;
+      module: string;
+      resource: string;
+      action: string;
+      createdAt?: unknown;
+      updatedAt?: unknown;
+    };
+    try {
+      const data = await api.get<{ itens: PermissionItemDto[] }>(`/roles/${roleId}/permissions`);
+      return (data.itens ?? []).map((p) => ({
+        id: p.permissionId,
+        name: p.name,
+        code: `${p.resource}:${p.action}`,
+        description: p.description ?? undefined,
+        module: p.module,
+        level: p.action,
+        createdAt: String(p.createdAt),
+        updatedAt: String(p.updatedAt),
+      })) as Permission[];
+    } catch (e) {
+      console.warn("API de permissoes do role falhou ou nao existe", e);
+      return [];
+    }
+  },
+
+  assignPermissionsToRole: async (
+    roleId: string,
+    permissionIds: string[],
+    options?: { granted?: boolean }
+  ) => {
+    const payload = {
+      entityType: "role",
+      entityId: roleId,
+      permissionIds,
+      granted: options?.granted ?? true,
+    };
+    await api.post("/permissions/bulk-assign", payload);
+  },
 };

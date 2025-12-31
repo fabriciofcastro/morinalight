@@ -5,8 +5,9 @@ import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await params;
   const { searchParams } = new URL(request.url);
   const paramsQuery = new URLSearchParams();
 
@@ -18,7 +19,7 @@ export async function GET(
   if (limite) paramsQuery.append("limite", limite);
 
   // Filtrar por entityId (clienteId) e entityType
-  paramsQuery.append("entityId", params.id);
+  paramsQuery.append("entityId", id);
   paramsQuery.append("entityType", "Cliente");
 
   try {

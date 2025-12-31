@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useDebounce } from "@/hooks/use-debounce";
 import { type Role, permissionsApi } from "@/lib/api/permissions";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "inactive";
@@ -31,7 +32,11 @@ export function RolesListClient() {
   const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const loadRoles = useCallback(async () => {
     try {
@@ -79,25 +84,25 @@ export function RolesListClient() {
     };
   }, [roles]);
 
-  const onDelete = useCallback(
-    async (roleId: string) => {
-      const ok = confirm(
-        "Tem certeza que deseja deletar este perfil? Esta ação não pode ser desfeita.",
-      );
-      if (!ok) return;
-      try {
-        setDeletingId(roleId);
-        await permissionsApi.deleteRole(roleId);
-        await loadRoles();
-      } catch (error) {
-        console.error("Failed to delete role", error);
-        alert("Erro ao deletar perfil.");
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [loadRoles],
-  );
+  const handleDelete = useCallback((id: string, name: string) => {
+    setRoleToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!roleToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await permissionsApi.deleteRole(roleToDelete.id);
+      await loadRoles();
+      setDeleteDialogOpen(false);
+      setRoleToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete role", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [roleToDelete, loadRoles]);
 
   return (
     <div className="relative min-h-screen p-6 space-y-8">
@@ -200,21 +205,19 @@ export function RolesListClient() {
           <div className="flex items-center gap-1 p-1 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "grid"
+              className={`p-2 rounded transition-all ${viewMode === "grid"
                   ? "bg-[hsl(var(--primary))] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <Grid className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "list"
+              className={`p-2 rounded transition-all ${viewMode === "list"
                   ? "bg-[hsl(var(--primary))] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <ListIcon className="h-4 w-4" />
             </button>
@@ -279,12 +282,24 @@ export function RolesListClient() {
               viewMode={viewMode}
               onView={() => router.push(`/admin/roles/${role.id}`)}
               onEdit={() => router.push(`/admin/roles/${role.id}/edit`)}
-              onDelete={() => void onDelete(role.id)}
-              isDeleting={deletingId === role.id}
+              onDelete={() => handleDelete(role.id, role.name)}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setRoleToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        itemName={roleToDelete?.name || ""}
+        itemType="perfil"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }
@@ -295,7 +310,6 @@ interface RoleCardProps {
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  isDeleting: boolean;
 }
 
 function RoleCard({
@@ -304,7 +318,6 @@ function RoleCard({
   onView,
   onEdit,
   onDelete,
-  isDeleting,
 }: RoleCardProps) {
   if (viewMode === "list") {
     return (
@@ -320,11 +333,10 @@ function RoleCard({
           <div className="flex items-center gap-3 mb-1">
             <h3 className="text-base font-semibold text-white/90 truncate">{role.name}</h3>
             <span
-              className={`px-2 py-0.5 rounded text-xs font-medium ${
-                role.active
+              className={`px-2 py-0.5 rounded text-xs font-medium ${role.active
                   ? "bg-green-500/20 text-green-400 border border-green-500/30"
                   : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-              }`}
+                }`}
             >
               {role.active ? "Ativo" : "Inativo"}
             </span>
@@ -354,7 +366,6 @@ function RoleCard({
           <Button
             className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-3"
             onClick={onDelete}
-            disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -374,11 +385,10 @@ function RoleCard({
           <Shield className="h-6 w-6 text-white" />
         </div>
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            role.active
+          className={`px-2 py-1 rounded text-xs font-medium ${role.active
               ? "bg-green-500/20 text-green-400 border border-green-500/30"
               : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-          }`}
+            }`}
         >
           {role.active ? "Ativo" : "Inativo"}
         </span>
@@ -417,7 +427,6 @@ function RoleCard({
         <Button
           className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer px-3"
           onClick={onDelete}
-          disabled={isDeleting}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

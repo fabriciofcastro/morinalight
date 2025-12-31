@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useDebounce } from "@/hooks/use-debounce";
 import { type Permission, permissionsApi } from "@/lib/api/permissions";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type ViewMode = "grid" | "list";
 
@@ -28,8 +29,12 @@ export function PermissionsListClient() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [moduleFilter, setModuleFilter] = useState<string>("all");
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [permissionToDelete, setPermissionToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const loadPermissions = useCallback(async () => {
     try {
@@ -82,25 +87,25 @@ export function PermissionsListClient() {
     };
   }, [permissions, modules]);
 
-  const onDelete = useCallback(
-    async (permissionId: string) => {
-      const ok = confirm(
-        "Tem certeza que deseja deletar esta permissão? Isso pode afetar RBAC e regras.",
-      );
-      if (!ok) return;
-      try {
-        setDeletingId(permissionId);
-        await permissionsApi.deletePermission(permissionId);
-        await loadPermissions();
-      } catch (error) {
-        console.error("Failed to delete permission", error);
-        alert("Erro ao deletar permissão.");
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [loadPermissions],
-  );
+  const handleDelete = useCallback((id: string, name: string) => {
+    setPermissionToDelete({ id, name });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!permissionToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await permissionsApi.deletePermission(permissionToDelete.id);
+      await loadPermissions();
+      setDeleteDialogOpen(false);
+      setPermissionToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete permission", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [permissionToDelete, loadPermissions]);
 
   return (
     <div className="relative min-h-screen p-6 space-y-8">
@@ -190,21 +195,19 @@ export function PermissionsListClient() {
           <div className="flex items-center gap-1 p-1 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "grid"
+              className={`p-2 rounded transition-all ${viewMode === "grid"
                   ? "bg-[hsl(var(--primary))] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <Grid className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "list"
+              className={`p-2 rounded transition-all ${viewMode === "list"
                   ? "bg-[hsl(var(--primary))] text-white"
                   : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+                }`}
             >
               <ListIcon className="h-4 w-4" />
             </button>
@@ -269,12 +272,24 @@ export function PermissionsListClient() {
               viewMode={viewMode}
               onView={() => router.push(`/admin/permissions/${permission.id}`)}
               onEdit={() => router.push(`/admin/permissions/${permission.id}/edit`)}
-              onDelete={() => void onDelete(permission.id)}
-              isDeleting={deletingId === permission.id}
+              onDelete={() => handleDelete(permission.id, permission.name)}
             />
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setPermissionToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        itemName={permissionToDelete?.name || ""}
+        itemType="permissão"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }
@@ -285,7 +300,6 @@ interface PermissionCardProps {
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  isDeleting: boolean;
 }
 
 function PermissionCard({
@@ -294,7 +308,6 @@ function PermissionCard({
   onView,
   onEdit,
   onDelete,
-  isDeleting,
 }: PermissionCardProps) {
   if (viewMode === "list") {
     return (
@@ -340,7 +353,6 @@ function PermissionCard({
           <Button
             className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-3"
             onClick={onDelete}
-            disabled={isDeleting}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -401,7 +413,6 @@ function PermissionCard({
         <Button
           className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer px-3"
           onClick={onDelete}
-          disabled={isDeleting}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

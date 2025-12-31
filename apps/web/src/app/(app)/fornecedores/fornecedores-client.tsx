@@ -45,12 +45,12 @@ function getCurrentOrgId(): string | null {
 }
 
 // Helper para inputs futuristas com hover azul
-const FuturisticInput = ({ 
-  label, 
+const FuturisticInput = ({
+  label,
   required = false,
   id,
-  ...props 
-}: { 
+  ...props
+}: {
   label: string;
   required?: boolean;
   id?: string;
@@ -74,13 +74,13 @@ const FuturisticInput = ({
   );
 };
 
-const FuturisticSelect = ({ 
-  label, 
+const FuturisticSelect = ({
+  label,
   required = false,
   id,
-  children, 
-  ...props 
-}: { 
+  children,
+  ...props
+}: {
   label: string;
   required?: boolean;
   id?: string;
@@ -107,12 +107,12 @@ const FuturisticSelect = ({
   );
 };
 
-const FuturisticTextarea = ({ 
-  label, 
+const FuturisticTextarea = ({
+  label,
   required = false,
   id,
-  ...props 
-}: { 
+  ...props
+}: {
   label: string;
   required?: boolean;
   id?: string;
@@ -163,11 +163,11 @@ export function FornecedoresClient() {
   // Carregar fornecedores
   const loadSuppliers = useCallback(async () => {
     if (!orgId) return;
-    
+
     setLoading(true);
     try {
-      const data = await suppliersApi.list(orgId, { busca: search || undefined });
-      setSuppliers(data);
+      const response = await suppliersApi.list(orgId, { busca: search || undefined });
+      setSuppliers(response.itens);
     } catch (error) {
       console.error("Erro ao carregar fornecedores:", error);
       notificationCenter.add({
@@ -323,14 +323,14 @@ export function FornecedoresClient() {
         className="relative"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-        
+
         <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
           {/* Tech corner accents */}
           <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          
+
           <div className="relative z-10 flex-1">
             <div className="flex items-center gap-4 mb-3">
               <Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />

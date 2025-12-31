@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
-export async function PUT(request: Request, { params }: { params: { teamId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ teamId: string }> }) {
+  const { teamId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/teams/${params.teamId}`, {
+  const response = await fetch(`${apiUrl}/teams/${teamId}`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -24,8 +25,9 @@ export async function PUT(request: Request, { params }: { params: { teamId: stri
   return NextResponse.json(data);
 }
 
-export async function DELETE(_request: Request, { params }: { params: { teamId: string } }) {
-  const response = await fetch(`${apiUrl}/teams/${params.teamId}`, {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ teamId: string }> }) {
+  const { teamId } = await params;
+  const response = await fetch(`${apiUrl}/teams/${teamId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });

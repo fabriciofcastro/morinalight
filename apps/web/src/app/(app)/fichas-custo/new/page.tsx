@@ -9,7 +9,7 @@ export const metadata = {
 export default function NovaFichaCustoPage() {
   return (
     <>
-      <PageBackground />
+      <PageBackground variant="dashboard" />
       <FichasCustoFormClient />
     </>
   );

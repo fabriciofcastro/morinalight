@@ -222,6 +222,23 @@ model Organization {
   // Fornecedores - Extensões
   supplierTags    SupplierTag[]
   supplierAlertas AlertaSupplier[]
+
+  // Company Settings Audit
+  companySettingsAuditLogs CompanySettingsAuditLog[] @relation("CompanySettingsAuditLog")
+
+  // Governance
+  approvalWorkflows ApprovalWorkflow[]
+  approvalRequests  ApprovalRequest[]
+  companySettingsVersions CompanySettingsVersion[]
+
+  // Integrations
+  apiKeys           ApiKey[]
+  webhookEndpoints  WebhookEndpoint[]
+  integrationConnections IntegrationConnection[]
+  
+  // Analytics
+  systemMetrics     SystemMetric[]
+  usageLogs         UsageLog[]
 }
 
 model User {
@@ -235,12 +252,15 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  aiUsageLogs  AiUsageLog[]
+  usageLogs    UsageLog[]
+
   // Personal Information Fields
-  cpf            String?   @db.VarChar(14) // CPF formatado (000.000.000-00)
-  phone          String?   @db.VarChar(20) // Telefone formatado
-  birthDate      DateTime? // Data de nascimento
-  admissionDate  DateTime? // Data de admissão
-  observations   String?   @db.Text // Observações sobre o usuário
+  cpf           String?   @db.VarChar(14) // CPF formatado (000.000.000-00)
+  phone         String?   @db.VarChar(20) // Telefone formatado
+  birthDate     DateTime? // Data de nascimento
+  admissionDate DateTime? // Data de admissão
+  observations  String?   @db.Text // Observações sobre o usuário
 
   // 2FA Fields
   twoFactorEnabled     Boolean   @default(false)
@@ -277,6 +297,11 @@ model User {
 
   // Refresh Tokens
   refreshTokens RefreshToken[] @relation("UserRefreshTokens")
+
+  // Governance
+  approvalRequests ApprovalRequest[]
+  approvalRequestComments ApprovalRequestComment[]
+  createdCompanyVersions CompanySettingsVersion[]
 
   @@index([branchId])
   @@index([positionId])
@@ -385,6 +410,69 @@ model CompanySettings {
   updatedAt      DateTime @updatedAt
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+}
+
+// Audit log for Company Settings changes
+model CompanySettingsAuditLog {
+  id    String @id @default(uuid())
+  orgId String
+
+  // Action and Context
+  action String @db.VarChar(100) // create, update, delete, restore
+  entity String @db.VarChar(100) // company_settings, branch, etc
+
+  // Changed field
+  fieldName  String? @db.VarChar(100) // "razaoSocial", "cnpj", etc
+  fieldLabel String? @db.VarChar(255) // "Razão Social", "CNPJ"
+
+  // States
+  oldValue Json? // Previous value (can be complex object)
+  newValue Json? // New value
+
+  // Metadata
+  actorId   String // ID of user who made the change
+  actorName String? @db.VarChar(255) // User name (cached)
+
+  // Security
+  ipAddress String? @db.VarChar(45) // IPv4 or IPv6
+  userAgent String? @db.VarChar(500) // Browser info
+
+  // Additional data
+  justification String? @db.Text // Reason for change (optional)
+  metadata      Json? // Extra data
+
+  createdAt DateTime @default(now())
+
+  // Relationships
+  organization Organization @relation("CompanySettingsAuditLog", fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, createdAt])
+  @@index([actorId])
+  @@index([entity])
+  @@index([fieldName])
+  @@index([action])
+}
+
+model CompanySettingsVersion {
+  id        String   @id @default(uuid())
+  orgId     String
+  version   Int
+  
+  // Snapshot data
+  snapshot  Json     // Full copy of settings
+  name      String?  @db.VarChar(255) // Optional name (e.g. "Backup Pre-Audit")
+  
+  // Metadata
+  createdBy String
+  createdAt DateTime @default(now())
+  
+  restoredAt DateTime? // If this version was restored later
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  creator      User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, version])
+  @@index([orgId, createdAt])
 }
 
 model Preficha {
@@ -806,7 +894,7 @@ model Cliente {
   documento          String        @db.VarChar(20) // CPF ou CNPJ
   rg                 String?       @db.VarChar(20) // RG para PF
   orgaoEmissor       String?       @db.VarChar(10) // Órgão Emissor do RG (SSP, IFP, etc)
-  dataNascimento     DateTime?     // Data de Nascimento (PF) / Data de Fundação (PJ)
+  dataNascimento     DateTime? // Data de Nascimento (PF) / Data de Fundação (PJ)
   sexo               String?       @db.VarChar(20) // Sexo/Gênero (PF): masculino, feminino, outro, nao_informar
   estadoCivil        String?       @db.VarChar(20) // Estado Civil (PF): solteiro, casado, divorciado, viuvo, uniao_estavel
   nacionalidade      String?       @db.VarChar(100) // Nacionalidade
@@ -814,7 +902,7 @@ model Cliente {
   naturalidadeEstado String?       @db.VarChar(2) // Estado de Naturalidade (UF)
   tituloEleitor      String?       @db.VarChar(20) // Título de Eleitor
   certidaoNascimento String?       @db.VarChar(50) // Certidão de Nascimento
-  certidaoCasamento   String?       @db.VarChar(50) // Certidão de Casamento
+  certidaoCasamento  String?       @db.VarChar(50) // Certidão de Casamento
   nomeMae            String?       @db.VarChar(255) // Nome da Mãe (PF)
   nomePai            String?       @db.VarChar(255) // Nome do Pai (PF)
   inscricaoEstadual  String?       @db.VarChar(50) // IE para PJ
@@ -837,7 +925,7 @@ model Cliente {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
-  organization  Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organization  Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
   representante Representante?
   vendas        Venda[]
   comissoes     Comissao[]
@@ -858,18 +946,18 @@ model ClienteTag {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  organization Organization          @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  clientes    ClienteTagRelation[]
+  organization Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  clientes     ClienteTagRelation[]
 
   @@unique([orgId, name])
   @@index([orgId])
 }
 
 model ClienteTagRelation {
-  id         String   @id @default(uuid())
-  clienteId  String
-  tagId      String
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  clienteId String
+  tagId     String
+  createdAt DateTime @default(now())
 
   cliente Cliente    @relation(fields: [clienteId], references: [id], onDelete: Cascade)
   tag     ClienteTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
@@ -1552,22 +1640,22 @@ model WorkflowPolicy {
 
 // Approval genérico para workflows PBAC
 model Approval {
-  id            String        @id @default(uuid())
-  orgId         String
-  workflowId    String        // ID do item do workflow (ex: ficha de custo, proposta)
-  workflowType  String        @db.VarChar(100) // Tipo do workflow (ex: FICHA_CUSTO_APPROVE)
-  policyId      String        // ID da WorkflowPolicy aplicada
-  approverId    String        // User ID do aprovador
-  status        ApprovalStatus @default(PENDING)
-  comments      String?       @db.VarChar(1000) // Comentários do aprovador
-  
-  approvedAt    DateTime?
-  rejectedAt    DateTime?
-  
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id           String         @id @default(uuid())
+  orgId        String
+  workflowId   String // ID do item do workflow (ex: ficha de custo, proposta)
+  workflowType String         @db.VarChar(100) // Tipo do workflow (ex: FICHA_CUSTO_APPROVE)
+  policyId     String // ID da WorkflowPolicy aplicada
+  approverId   String // User ID do aprovador
+  status       ApprovalStatus @default(PENDING)
+  comments     String?        @db.VarChar(1000) // Comentários do aprovador
 
-  organization  Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  approvedAt DateTime?
+  rejectedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization   Organization   @relation(fields: [orgId], references: [id], onDelete: Cascade)
   workflowPolicy WorkflowPolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
 
   @@index([orgId, workflowId, workflowType])
@@ -2255,4 +2343,304 @@ model NotificationInteraction {
   @@index([userId])
   @@index([action])
   @@index([timestamp])
+}
+
+// --- ACCESS GOVERNANCE ---
+
+model AuditEvent {
+  id             String   @id @default(uuid())
+  orgId          String?
+  userId         String?
+  timestamp      DateTime @default(now())
+
+  // Context
+  ip             String
+  location       String?
+  userAgent      String?
+  resource       String   // Screen/Action
+  action         String   // VIEW/EDIT
+
+  // Verdict
+  decision       String   // ALLOW, DENY, etc.
+
+  // Integrity
+  previousHash   String?
+  currentHash    String   @unique
+  signature      String?  // RSA Signature
+
+  trace          DecisionTrace?
+
+  @@index([timestamp])
+  @@index([userId])
+  @@index([currentHash])
+}
+
+model DecisionTrace {
+  id           String @id @default(uuid())
+  auditEventId String @unique
+
+  // JSONB with full trace
+  inputContext  Json
+  policyVersion String
+  scores        Json   // { "aubac": 15, "history": ... }
+  reasons       Json   // ["OUTSIDE_HOURS", "FOREIGN_IP"]
+
+  event        AuditEvent @relation(fields: [auditEventId], references: [id])
+}
+
+// --- Governance System ---
+
+model ApprovalWorkflow {
+  id           String   @id @default(uuid())
+  orgId        String
+  module       String   @db.VarChar(50) // ex: "COMPANY_SETTINGS"
+  fields       Json     // Array of strings: ["cnpj", "legalName"]
+  approverRole String   @db.VarChar(50) // ex: "ADMIN", "MANAGER"
+  minApprovals Int      @default(1)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  organization Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  requests     ApprovalRequest[]
+
+  @@unique([orgId, module])
+  @@index([orgId])
+}
+
+model ApprovalRequest {
+  id          String   @id @default(uuid())
+  orgId       String
+  workflowId  String
+  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, DRAFT
+  
+  data        Json     // O payload da alteração proposta
+  requesterId String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  workflow     ApprovalWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  organization Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  requester    User             @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, status])
+  @@index([workflowId])
+  @@index([requesterId])
+
+  comments ApprovalRequestComment[]
+}
+
+model ApprovalRequestComment {
+  id        String   @id @default(uuid())
+  requestId String
+  authorId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  request   ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  author    User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+  @@index([authorId])
+}
+
+// ============================================================================
+// AI INTELLIGENCE & GATEWAY
+// ============================================================================
+
+model AiProvider {
+  id          String   @id @default(uuid())
+  name        String   // "Google Gemini", "OpenAI"
+  providerKey String   @unique // "gemini", "openai"
+  apiKey      String   // Encriptado (na prática deveria ser, mas aqui para simplificar vai plain ou env ref)
+  isActive    Boolean  @default(true)
+  config      Json?    // Configs específicas (base URL, organization ID)
+  
+  agents      AiAgent[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AiAgent {
+  id           String   @id @default(uuid())
+  name         String   // "Assistente Fiscal", "RH Helper"
+  slug         String   @unique // "fiscal_advisor", "hr_helper"
+  description  String?
+  systemPrompt String  @db.Text // Prompt base do especialista
+  model        String   // "gemini-1.5-flash", "gpt-4o"
+  providerId   String
+  temperature  Float    @default(0.7)
+  
+  provider     AiProvider @relation(fields: [providerId], references: [id])
+  logs         AiUsageLog[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([providerId])
+}
+
+model AiUsageLog {
+  id               String   @id @default(uuid())
+  agentId          String
+  userId           String?  // Pode ser nulo se for sistema
+  timestamp        DateTime @default(now())
+  promptTokens     Int
+  completionTokens Int
+  totalCost        Decimal  @db.Decimal(10, 6) // Custo calculado da chamada
+  durationMs       Int?     // Tempo de resposta
+  
+  agent            AiAgent  @relation(fields: [agentId], references: [id])
+  
+  // Relação opcional com User, pois o user pode ser deletado mas o log deve ficar (set null)
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([agentId])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+// ============================================================================
+// INTEGRATIONS & DEVELOPER API
+// ============================================================================
+
+model ApiKey {
+  id          String    @id @default(uuid())
+  orgId       String
+  name        String    // ex: "Integração Zapier"
+  key         String    @unique // Hashed na verificação
+  prefix      String    // ex: "sk_live_..."
+  lastUsedAt  DateTime?
+  scopes      Json?     // Array de strings: ["read:company", "write:products"]
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([key])
+}
+
+model WebhookEndpoint {
+  id          String   @id @default(uuid())
+  orgId       String
+  url         String
+  events      Json     // Array de strings: ["company.updated", "product.created"]
+  secret      String   // Para assinar o payload (HMAC)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  deliveries   WebhookDelivery[]
+
+  @@index([orgId])
+}
+
+model WebhookDelivery {
+  id          String   @id @default(uuid())
+  webhookId   String
+  eventId     String
+  eventType   String
+  payload     Json
+  statusCode  Int
+  success     Boolean
+  durationMs  Int
+  createdAt   DateTime @default(now())
+
+  webhook     WebhookEndpoint @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId])
+}
+
+// ============================================================================
+// INTEGRATION CONNECTORS (E-commerce, ERPs, etc)
+// ============================================================================
+
+model IntegrationConnection {
+  id            String    @id @default(uuid())
+  orgId         String
+  connectorType String    // "mercadolivre", "shopify", "omie", "contaazul"
+  name          String    // Nome dado pelo usuário
+  credentials   Json      // Encrypted tokens/keys
+  config        Json?     // Configurações específicas do connector
+  isActive      Boolean   @default(true)
+  lastSyncAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  syncLogs      IntegrationSyncLog[]
+
+  @@index([orgId])
+  @@index([connectorType])
+}
+
+model IntegrationSyncLog {
+  id              String   @id @default(uuid())
+  connectionId    String
+  syncType        String   // "products", "orders", "customers"
+  status          String   // "success", "error", "partial"
+  itemsProcessed  Int      @default(0)
+  itemsSuccess    Int      @default(0)
+  itemsFailed     Int      @default(0)
+  errors          Json?    // Array de erros
+  durationMs      Int?
+  createdAt       DateTime @default(now())
+
+  connection      IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@index([connectionId])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// ANALYTICS & BENCHMARKING (Phase 5)
+// ============================================================================
+
+model SystemMetric {
+  id          String   @id @default(uuid())
+  orgId       String
+  metricType  String   // "active_users", "api_calls", "feature_usage", "approval_time"
+  metricKey   String   // Chave específica (ex: "feature:ocr", "api:products")
+  value       Float
+  period      String   // "daily", "weekly", "monthly"
+  periodDate  DateTime // Data do período (ex: 2024-01-01 para janeiro)
+  metadata    Json?    // Dados adicionais
+  createdAt   DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, metricType, periodDate])
+  @@index([periodDate])
+}
+
+model BenchmarkMetric {
+  id          String   @id @default(uuid())
+  metricType  String   // "approval_time", "data_completeness", "feature_adoption"
+  industry    String   // "technology", "retail", "manufacturing", "all"
+  companySize String   // "MEI", "ME", "EPP", "all"
+  percentile  Int      // 25, 50, 75, 90
+  value       Float    // Valor de referência
+  period      String   // "2024-Q1", "2024-01"
+  updatedAt   DateTime @updatedAt
+
+  @@unique([metricType, industry, companySize, percentile, period])
+  @@index([metricType])
+}
+
+model UsageLog {
+  id          String   @id @default(uuid())
+  orgId       String
+  userId      String?
+  action      String   // "page_view", "feature_used", "api_call"
+  resource    String   // "company_settings", "products", "ocr"
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, createdAt])
+  @@index([action, resource])
 }

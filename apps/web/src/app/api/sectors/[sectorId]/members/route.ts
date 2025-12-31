@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { sectorId: string } }) {
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ sectorId: string }> }) {
+  const { sectorId } = await params;
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}/members`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -20,10 +21,11 @@ export async function GET(_request: Request, { params }: { params: { sectorId: s
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request, { params }: { params: { sectorId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ sectorId: string }> }) {
+  const { sectorId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/sectors/${params.sectorId}/members`, {
+  const response = await fetch(`${apiUrl}/sectors/${sectorId}/members`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -43,12 +45,13 @@ export async function POST(request: Request, { params }: { params: { sectorId: s
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { sectorId: string } },
+  { params }: { params: Promise<{ sectorId: string }> },
 ) {
+  const { sectorId } = await params;
   const { membershipId, ...body } = await request.json();
 
   const response = await fetch(
-    `${apiUrl}/sectors/${params.sectorId}/members/${membershipId}`,
+    `${apiUrl}/sectors/${sectorId}/members/${membershipId}`,
     {
       method: "PATCH",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
@@ -70,8 +73,9 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { sectorId: string } },
+  { params }: { params: Promise<{ sectorId: string }> },
 ) {
+  const { sectorId } = await params;
   const url = new URL(request.url);
   const membershipId = url.searchParams.get("membershipId");
 
@@ -80,7 +84,7 @@ export async function DELETE(
   }
 
   const response = await fetch(
-    `${apiUrl}/sectors/${params.sectorId}/members/${membershipId}`,
+    `${apiUrl}/sectors/${sectorId}/members/${membershipId}`,
     {
       method: "DELETE",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),

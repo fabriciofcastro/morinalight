@@ -23,6 +23,7 @@ import {
   type WorkflowPolicy,
   organizationalStructureApi,
 } from "@/lib/api/organizational-structure";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "inactive";
@@ -35,7 +36,11 @@ export function WorkflowsListClient() {
   const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Delete confirm state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [policyToDelete, setPolicyToDelete] = useState<{ id: string; module: string } | null>(null);
 
   const loadPolicies = useCallback(async () => {
     try {
@@ -82,23 +87,25 @@ export function WorkflowsListClient() {
     };
   }, [policies]);
 
-  const onDelete = useCallback(
-    async (policyId: string) => {
-      const ok = confirm("Tem certeza que deseja deletar este workflow?");
-      if (!ok) return;
-      try {
-        setDeletingId(policyId);
-        await organizationalStructureApi.deleteWorkflowPolicy(policyId);
-        await loadPolicies();
-      } catch (error) {
-        console.error("Failed to delete workflow policy", error);
-        alert("Erro ao deletar workflow.");
-      } finally {
-        setDeletingId(null);
-      }
-    },
-    [loadPolicies],
-  );
+  const handleDelete = useCallback((id: string, module: string) => {
+    setPolicyToDelete({ id, module });
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!policyToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await organizationalStructureApi.deleteWorkflowPolicy(policyToDelete.id);
+      await loadPolicies();
+      setDeleteDialogOpen(false);
+      setPolicyToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete workflow policy", error);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [policyToDelete, loadPolicies]);
 
   return (
     <div className="relative min-h-screen p-6 space-y-8">
@@ -201,21 +208,19 @@ export function WorkflowsListClient() {
           <div className="flex items-center gap-1 p-1 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "grid"
-                  ? "bg-[hsl(var(--primary))] text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+              className={`p-2 rounded transition-all ${viewMode === "grid"
+                ? "bg-[hsl(var(--primary))] text-white"
+                : "text-white/60 hover:text-white hover:bg-white/10"
+                }`}
             >
               <Grid className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 rounded transition-all ${
-                viewMode === "list"
-                  ? "bg-[hsl(var(--primary))] text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/10"
-              }`}
+              className={`p-2 rounded transition-all ${viewMode === "list"
+                ? "bg-[hsl(var(--primary))] text-white"
+                : "text-white/60 hover:text-white hover:bg-white/10"
+                }`}
             >
               <ListIcon className="h-4 w-4" />
             </button>
@@ -289,12 +294,24 @@ export function WorkflowsListClient() {
               viewMode={viewMode}
               onView={() => router.push(`/admin/workflow-policies/${policy.id}`)}
               onEdit={() => router.push(`/admin/workflow-policies/${policy.id}/edit`)}
-              onDelete={() => void onDelete(policy.id)}
-              isDeleting={deletingId === policy.id}
+              onDelete={() => handleDelete(policy.id, policy.module)}
+              isDeleting={false}
             />
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setPolicyToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        itemName={policyToDelete?.module || ""}
+        itemType="workflow"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }
@@ -330,11 +347,10 @@ function WorkflowCard({
           <div className="flex items-center gap-3 mb-1">
             <h3 className="text-base font-semibold text-white/90 truncate">{policy.module}</h3>
             <span
-              className={`px-2 py-0.5 rounded text-xs font-medium ${
-                policy.active
-                  ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                  : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-              }`}
+              className={`px-2 py-0.5 rounded text-xs font-medium ${policy.active
+                ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                }`}
             >
               {policy.active ? "Ativo" : "Inativo"}
             </span>
@@ -381,11 +397,10 @@ function WorkflowCard({
           <GitMerge className="h-6 w-6 text-white" />
         </div>
         <span
-          className={`px-2 py-1 rounded text-xs font-medium ${
-            policy.active
-              ? "bg-green-500/20 text-green-400 border border-green-500/30"
-              : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-          }`}
+          className={`px-2 py-1 rounded text-xs font-medium ${policy.active
+            ? "bg-green-500/20 text-green-400 border border-green-500/30"
+            : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+            }`}
         >
           {policy.active ? "Ativo" : "Inativo"}
         </span>

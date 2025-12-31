@@ -22,6 +22,7 @@ export interface User {
   positionId?: string;
   positionName?: string;
   avatarUrl?: string;
+  has2FA?: boolean;
 }
 
 export interface ListUsersParams {

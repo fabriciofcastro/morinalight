@@ -31,6 +31,9 @@ import type { SuppliersModuleOptions } from "../../modules/suppliers/suppliers.m
 import { registerSuppliersModule } from "../../modules/suppliers/suppliers.module";
 import type { UsersModuleOptions } from "../../modules/users/users.module";
 import { registerUsersModule } from "../../modules/users/users.module";
+import governancePlugin from "../../core/security/governance.plugin";
+import { governanceRoutes } from "../../modules/governance/governance.routes";
+import { intelligenceRoutes } from "../../modules/intelligence/intelligence.routes";
 
 type HttpModulesOptions = {
   catalogo?: CatalogoModuleOptions;
@@ -59,8 +62,13 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
   // Registrar módulo de autenticação (login/register) primeiro
   await registerAuthModule(app, options.auth);
 
+
   // Registrar módulo de organizações primeiro para obter organizationRepository
   const organizationsResult = await registerOrganizationsModule(app, options.organizations);
+
+  // Registrar Access Governance Plugin Global (após Auth, antes dos módulos de negócio)
+  await app.register(governancePlugin);
+
   const organizationRepository = organizationsResult?.organizationRepository;
 
   // Registrar middleware JWT global (sempre habilitado para suportar tenant via JWT)
@@ -144,4 +152,18 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
 
   // Registrar módulo de compliance (LGPD, etc.)
   await registerComplianceModule(app);
+
+  // Registrar rotas de governança (sistema de aprovações)
+  await governanceRoutes(app);
+
+  // Registrar rotas de inteligência (OCR, etc)
+  await intelligenceRoutes(app);
+
+  // Registrar rotas de integrações (API Keys, etc)
+  const { integrationRoutes } = await import('../../modules/integrations/integration.routes');
+  await integrationRoutes(app);
+
+  // Registrar rotas de analytics (Phase 5)
+  const { analyticsRoutes } = await import('../../modules/analytics/analytics.routes');
+  await analyticsRoutes(app);
 }

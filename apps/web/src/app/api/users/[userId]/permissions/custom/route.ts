@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { userId: string } }) {
-  const response = await fetch(`${apiUrl}/users/${params.userId}/permissions/custom`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
+  const response = await fetch(`${apiUrl}/users/${userId}/permissions/custom`, {
     method: "GET",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -14,10 +15,11 @@ export async function GET(_request: Request, { params }: { params: { userId: str
   return NextResponse.json(data, { status: response.status });
 }
 
-export async function POST(request: Request, { params }: { params: { userId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ userId: string }> }) {
+  const { userId } = await params;
   const body = await request.json().catch(() => ({}));
 
-  const response = await fetch(`${apiUrl}/users/${params.userId}/permissions/custom`, {
+  const response = await fetch(`${apiUrl}/users/${userId}/permissions/custom`, {
     method: "POST",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),

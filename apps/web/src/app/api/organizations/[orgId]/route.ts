@@ -4,15 +4,15 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    orgId: string;
-  };
+  params: Promise<{ orgId: string;
+   }>;
 };
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { orgId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/organizations/${params.orgId}`, {
+  const response = await fetch(`${apiUrl}/organizations/${orgId}`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -29,7 +29,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const response = await fetch(`${apiUrl}/organizations/${params.orgId}`, {
+  const { orgId } = await params;
+  const response = await fetch(`${apiUrl}/organizations/${orgId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",

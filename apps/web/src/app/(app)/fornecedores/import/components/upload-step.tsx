@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import { Upload, FileSpreadsheet, X, CheckCircle2 } from "lucide-react";
 import { Button } from "@morina/ui";
 import { motion } from "framer-motion";
@@ -14,6 +14,7 @@ interface UploadStepProps {
 
 export function UploadStep({ onFileSelect, selectedFile, onValidate, loading }: UploadStepProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -70,11 +71,10 @@ export function UploadStep({ onFileSelect, selectedFile, onValidate, loading }: 
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`relative rounded-lg border-2 border-dashed p-12 text-center transition-all ${
-            isDragging
-              ? "border-blue-400 bg-blue-400/10"
-              : "border-white/30 bg-white/5 hover:border-white/50"
-          }`}
+          className={`relative rounded-lg border-2 border-dashed p-12 text-center transition-all ${isDragging
+            ? "border-blue-400 bg-blue-400/10"
+            : "border-white/30 bg-white/5 hover:border-white/50"
+            }`}
         >
           <motion.div
             animate={isDragging ? { scale: 1.1 } : { scale: 1 }}
@@ -85,17 +85,19 @@ export function UploadStep({ onFileSelect, selectedFile, onValidate, loading }: 
               Arraste e solte o arquivo aqui
             </p>
             <p className="mb-4 text-sm text-white/70">ou</p>
-            <label>
+            <p className="mb-4 text-sm text-white/70">ou</p>
+            <div>
               <input
+                ref={fileInputRef}
                 type="file"
                 accept=".csv,.xlsx,.xls"
                 onChange={handleFileInput}
                 className="hidden"
               />
-              <Button variant="outline" asChild>
-                <span>Selecionar Arquivo</span>
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+                Selecionar Arquivo
               </Button>
-            </label>
+            </div>
             <p className="mt-4 text-xs text-white/50">
               Formatos suportados: CSV, XLSX, XLS (máx. 10MB)
             </p>

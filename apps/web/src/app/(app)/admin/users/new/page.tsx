@@ -9,9 +9,10 @@ export const metadata: Metadata = {
 
 export default function NewUserPage() {
   return (
-    <PageBackground>
+    <>
+      <PageBackground variant="dashboard" />
       <UsersFormClient />
-    </PageBackground>
+    </>
   );
 }
 

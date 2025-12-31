@@ -4,9 +4,10 @@ import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
+    const { userId } = await params;
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const documentType = formData.get("documentType") as string | null;
@@ -45,7 +46,7 @@ export async function POST(
     const headers = await buildAuthHeaders({});
     delete headers["Content-Type"]; // Permitir que o browser defina o boundary
 
-    const response = await fetch(`${apiUrl}/users/${params.userId}/documents/upload`, {
+    const response = await fetch(`${apiUrl}/users/${userId}/documents/upload`, {
       method: "POST",
       headers,
       body: backendFormData,

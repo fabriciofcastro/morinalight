@@ -3,8 +3,9 @@
 import { useState, useCallback, useRef } from "react";
 import { Upload, X, CheckCircle2, AlertCircle, Loader2, Shield, Lock, Calendar, FileText, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "../../../lib/utils";
-import { formatFileSize } from "../../../lib/utils/image-processing";
+import { cn } from "@morina/ui";
+import { formatFileSize } from "@/lib/utils/image-processing";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface DigitalCertificateData {
   type: "A1" | "A3";
@@ -40,11 +41,14 @@ export function DigitalCertificateUpload({
   const [certificateInfo, setCertificateInfo] = useState<Partial<DigitalCertificateData>>(value || {});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Confirm dialog state
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
+
   const validateCertificateFile = useCallback((file: File): { valid: boolean; error?: string } => {
     // Validar extensão
     const validExtensions = [".pfx", ".p12"];
     const extension = file.name.toLowerCase().substring(file.name.lastIndexOf("."));
-    
+
     if (!validExtensions.includes(extension)) {
       return {
         valid: false,
@@ -127,16 +131,18 @@ export function DigitalCertificateUpload({
     [handleFileSelect],
   );
 
-  const handleRemove = useCallback(() => {
-    if (!window.confirm("Tem certeza que deseja remover o certificado digital? Esta ação não pode ser desfeita.")) {
-      return;
-    }
+  const handleRemove = () => {
+    setConfirmRemoveOpen(true);
+  };
+
+  const confirmRemove = useCallback(() => {
     setCertificateInfo({});
     setPassword("");
     onChange?.(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+    setConfirmRemoveOpen(false);
   }, [onChange]);
 
   const getStatusColor = (status: string) => {
@@ -408,6 +414,16 @@ export function DigitalCertificateUpload({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmDialog
+        open={confirmRemoveOpen}
+        onOpenChange={setConfirmRemoveOpen}
+        onConfirm={confirmRemove}
+        title="Remover Certificado"
+        description="Tem certeza que deseja remover o certificado digital? Esta ação não pode ser desfeita."
+        confirmLabel="Remover"
+        variant="destructive"
+      />
     </div>
   );
 }

@@ -4,13 +4,14 @@ import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function POST(
   request: Request,
-  { params }: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
+    const { userId } = await params;
     const body = await request.json().catch(() => ({}));
     const headers = await buildAuthHeaders({ "Content-Type": "application/json" });
 
-    const response = await fetch(`${apiUrl}/users/${params.userId}/actions/suspend`, {
+    const response = await fetch(`${apiUrl}/users/${userId}/actions/suspend`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),

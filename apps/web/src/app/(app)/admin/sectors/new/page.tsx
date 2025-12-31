@@ -1,16 +1,13 @@
-import { Metadata } from "next";
-import { PageBackground } from "@/components/layout/PageBackground";
-import { SectorFormClient } from "@/components/admin/sectors/sector-form-client";
 
-export const metadata: Metadata = {
-  title: "Novo Setor | Administração",
-  description: "Criar um novo setor",
-};
+import { PageBackground } from "@/components/layout/PageBackground";
+import { SectorForm } from "@/components/admin/sectors/sector-form";
 
 export default function NewSectorPage() {
   return (
-    <PageBackground>
-      <SectorFormClient />
-    </PageBackground>
+    <main>
+      <PageBackground variant="structure">
+        <SectorForm mode="create" />
+      </PageBackground>
+    </main>
   );
 }

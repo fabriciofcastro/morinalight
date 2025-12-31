@@ -4,13 +4,12 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    sectorId: string;
-  };
+  params: Promise<{ sectorId: string;
+   }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const { sectorId } = params;
+  const { sectorId } = await params;
 
   const response = await fetch(`${apiUrl}/sectors/${sectorId}`, {
     method: "GET",
@@ -27,8 +26,8 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PUT(request: Request, { params }: RouteParams) {
+  const { sectorId } = await params;
   const body = await request.json().catch(() => ({}));
-  const { sectorId } = params;
 
   const response = await fetch(`${apiUrl}/sectors/${sectorId}`, {
     method: "PUT",
@@ -41,7 +40,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 }
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
-  const { sectorId } = params;
+  const { sectorId } = await params;
 
   const response = await fetch(`${apiUrl}/sectors/${sectorId}`, {
     method: "DELETE",

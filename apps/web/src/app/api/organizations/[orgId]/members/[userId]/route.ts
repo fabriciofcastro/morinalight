@@ -7,10 +7,10 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     orgId?: string;
     userId: string;
-  };
+  }>;
 };
 
 function resolveOrgId(paramOrgId?: string) {
@@ -47,8 +47,8 @@ async function proxy<T>(input: RequestInfo | URL, init?: RequestInit): Promise<N
 
 export async function PATCH(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
-  const orgId = resolveOrgId(params.orgId);
-  const targetUserId = params.userId;
+  const { orgId: paramOrgId, userId: targetUserId } = await params;
+  const orgId = resolveOrgId(paramOrgId);
   const authHeaders = buildAuthHeaders();
 
   let body: unknown;
@@ -72,8 +72,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
-  const orgId = resolveOrgId(params.orgId);
-  const targetUserId = params.userId;
+  const { orgId: paramOrgId, userId: targetUserId } = await params;
+  const orgId = resolveOrgId(paramOrgId);
   const authHeaders = buildAuthHeaders();
 
   const response = await fetch(`${apiUrl}/organizations/${orgId}/members/${targetUserId}`, {

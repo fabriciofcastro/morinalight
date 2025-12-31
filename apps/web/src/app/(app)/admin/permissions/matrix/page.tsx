@@ -1,7 +1,12 @@
 "use client";
 
-import { PermissionMatrixClient } from "./permission-matrix-client";
+import { PageBackground } from "@/components/layout/PageBackground";
+import { PermissionMatrixClient } from "@/components/admin/permissions/permission-matrix-client";
 
 export default function PermissionsMatrixPage() {
-  return <PermissionMatrixClient />;
+  return (
+    <PageBackground variant="vault">
+      <PermissionMatrixClient />
+    </PageBackground>
+  );
 }

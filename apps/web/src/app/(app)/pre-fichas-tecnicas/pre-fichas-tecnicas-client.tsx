@@ -501,7 +501,7 @@ export function PreFichasTecnicasClient() {
         await loadPreFichas();
         if (selectedPreFicha?.id === preFicha.id) {
           const updated = await buscar(preFicha.id);
-          setSelectedPreFicha(updated);
+          setSelectedPreFicha(updated || null);
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
@@ -526,7 +526,7 @@ export function PreFichasTecnicasClient() {
         await loadPreFichas();
         if (selectedPreFicha?.id === preFicha.id) {
           const updated = await buscar(preFicha.id);
-          setSelectedPreFicha(updated);
+          setSelectedPreFicha(updated || null);
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
@@ -560,7 +560,7 @@ export function PreFichasTecnicasClient() {
         await loadPreFichas();
         if (selectedPreFicha?.id === preFicha.id) {
           const updated = await buscar(preFicha.id);
-          setSelectedPreFicha(updated);
+          setSelectedPreFicha(updated || null);
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
@@ -585,7 +585,7 @@ export function PreFichasTecnicasClient() {
         await loadPreFichas();
         if (selectedPreFicha?.id === preFicha.id) {
           const updated = await buscar(preFicha.id);
-          setSelectedPreFicha(updated);
+          setSelectedPreFicha(updated || null);
         }
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
@@ -816,15 +816,9 @@ export function PreFichasTecnicasClient() {
           onReprovar={handleReprovar}
           onAprovarDiretoria={handleAprovarDiretoria}
           onShowHistorico={() => setShowHistorico(true)}
-          onExportarPdf={() => handleExportarPdf(selectedPreFicha)}
-          onEditar={() => handleEditar(selectedPreFicha)}
-          onAtualizarChecklist={atualizarChecklist}
-          onCompararVersoes={compararVersoes}
-          onBuscar={async (id: string) => {
-            const updated = await buscar(id);
-            setSelectedPreFicha(updated);
-            return updated;
-          }}
+
+
+
           isLoading={pending}
         />
       )}
@@ -919,14 +913,6 @@ function PreFichaTecnicaDetailModal({
             <Button variant="ghost" size="sm" onClick={onShowHistorico} title="Ver histórico">
               <History className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={onExportarPdf} title="Exportar PDF">
-              <Download className="w-4 h-4" />
-            </Button>
-            {preFicha.status === "rascunho" && (
-              <Button variant="ghost" size="sm" onClick={onEditar} title="Editar">
-                <Edit className="w-4 h-4" />
-              </Button>
-            )}
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="w-4 h-4" />
             </Button>
@@ -1038,39 +1024,39 @@ function PreFichaTecnicaDetailModal({
             preFicha.modelistaNome ||
             preFicha.piloteiroNome ||
             preFicha.liberadoPorNome) && (
-            <GlassCard className="p-4">
-              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                Responsáveis Técnicos
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {preFicha.estilistaNome && (
-                  <div>
-                    <p className="text-sm text-gray-400">Estilista</p>
-                    <p className="font-medium text-white">{preFicha.estilistaNome}</p>
-                  </div>
-                )}
-                {preFicha.modelistaNome && (
-                  <div>
-                    <p className="text-sm text-gray-400">Modelista</p>
-                    <p className="font-medium text-white">{preFicha.modelistaNome}</p>
-                  </div>
-                )}
-                {preFicha.piloteiroNome && (
-                  <div>
-                    <p className="text-sm text-gray-400">Piloteiro</p>
-                    <p className="font-medium text-white">{preFicha.piloteiroNome}</p>
-                  </div>
-                )}
-                {preFicha.liberadoPorNome && (
-                  <div>
-                    <p className="text-sm text-gray-400">Liberado por</p>
-                    <p className="font-medium text-white">{preFicha.liberadoPorNome}</p>
-                  </div>
-                )}
-              </div>
-            </GlassCard>
-          )}
+              <GlassCard className="p-4">
+                <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Responsáveis Técnicos
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {preFicha.estilistaNome && (
+                    <div>
+                      <p className="text-sm text-gray-400">Estilista</p>
+                      <p className="font-medium text-white">{preFicha.estilistaNome}</p>
+                    </div>
+                  )}
+                  {preFicha.modelistaNome && (
+                    <div>
+                      <p className="text-sm text-gray-400">Modelista</p>
+                      <p className="font-medium text-white">{preFicha.modelistaNome}</p>
+                    </div>
+                  )}
+                  {preFicha.piloteiroNome && (
+                    <div>
+                      <p className="text-sm text-gray-400">Piloteiro</p>
+                      <p className="font-medium text-white">{preFicha.piloteiroNome}</p>
+                    </div>
+                  )}
+                  {preFicha.liberadoPorNome && (
+                    <div>
+                      <p className="text-sm text-gray-400">Liberado por</p>
+                      <p className="font-medium text-white">{preFicha.liberadoPorNome}</p>
+                    </div>
+                  )}
+                </div>
+              </GlassCard>
+            )}
 
           {/* Grade de Tamanhos */}
           {preFicha.gradeTamanhos && preFicha.gradeTamanhos.length > 0 && (
@@ -1460,10 +1446,6 @@ function HistoricoVersoesModal({
   >([]);
   const [loading, setLoading] = useState(true);
   const [selectedVersao, setSelectedVersao] = useState<any>(null);
-  const [showComparacao, setShowComparacao] = useState(false);
-  const [comparacaoData, setComparacaoData] = useState<any>(null);
-  const [showComparacao, setShowComparacao] = useState(false);
-  const [comparacaoData, setComparacaoData] = useState<any>(null);
   const [showComparacao, setShowComparacao] = useState(false);
   const [comparacaoData, setComparacaoData] = useState<any>(null);
 

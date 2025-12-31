@@ -7,10 +7,12 @@ export const metadata: Metadata = {
   description: "Visualizar detalhes completos do fornecedor",
 };
 
-export default function FornecedorDetailPage({ params }: { params: { id: string } }) {
+export default async function FornecedorDetailPage({ params }: { params: Promise<{ id: string  }> }) {
+  const { id } = await params;
+
   return (
     <PageBackground>
-      <FornecedorDetailClient supplierId={params.id} />
+      <FornecedorDetailClient supplierId={id} />
     </PageBackground>
   );
 }

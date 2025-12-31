@@ -9,7 +9,7 @@ export const metadata = {
 export default function FornecedoresListPage() {
   return (
     <>
-      <PageBackground />
+      <PageBackground variant="dashboard" />
       <FornecedoresListClient />
     </>
   );

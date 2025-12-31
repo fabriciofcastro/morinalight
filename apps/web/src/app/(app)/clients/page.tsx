@@ -16,8 +16,9 @@ export default function ClientsPage() {
 
     const loadClients = async () => {
         try {
-            const data = await clientsApi.listClients();
-            setClients(data);
+            const orgId = localStorage.getItem("selected_org_id") || "1";
+            const response = await clientsApi.list(orgId);
+            setClients(response.items);
         } catch (error) {
             console.error('Failed to load clients:', error);
         } finally {
@@ -27,9 +28,9 @@ export default function ClientsPage() {
 
     const filteredClients = clients.filter(
         (client) =>
-            client.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             client.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            client.documento?.toLowerCase().includes(searchQuery.toLowerCase())
+            client.document?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -85,19 +86,19 @@ export default function ClientsPage() {
                                 </tr>
                             ) : (
                                 filteredClients.map((client) => (
-                                    <tr key={client.clienteId} className="hover:bg-[hsl(var(--surface-hover))]">
-                                        <td className="px-6 py-4 font-medium text-[hsl(var(--text-1))]">{client.nome}</td>
+                                    <tr key={client.id} className="hover:bg-[hsl(var(--surface-hover))]">
+                                        <td className="px-6 py-4 font-medium text-[hsl(var(--text-1))]">{client.name}</td>
                                         <td className="px-6 py-4 text-sm text-[hsl(var(--text-2))]">{client.email || '-'}</td>
-                                        <td className="px-6 py-4 text-sm text-[hsl(var(--text-2))]">{client.telefone || '-'}</td>
-                                        <td className="px-6 py-4 text-sm text-[hsl(var(--text-2))]">{client.documento || '-'}</td>
+                                        <td className="px-6 py-4 text-sm text-[hsl(var(--text-2))]">{client.phone || '-'}</td>
+                                        <td className="px-6 py-4 text-sm text-[hsl(var(--text-2))]">{client.document || '-'}</td>
                                         <td className="px-6 py-4">
                                             <span
-                                                className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${client.status === 'active'
-                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                                                className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${client.status === 'ACTIVE'
+                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
                                                     }`}
                                             >
-                                                {client.status === 'active' ? 'Ativo' : 'Inativo'}
+                                                {client.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                                             </span>
                                         </td>
                                     </tr>

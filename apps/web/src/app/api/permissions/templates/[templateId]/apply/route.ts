@@ -4,13 +4,12 @@ import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: {
-    templateId: string;
-  };
+  params: Promise<{ templateId: string;
+   }>;
 };
 
 export async function POST(request: Request, { params }: RouteParams) {
-  const { templateId } = params;
+  const { templateId } = await params;
   const body = await request.json();
 
   const response = await fetch(`${apiUrl}/permissions/templates/${templateId}/apply`, {

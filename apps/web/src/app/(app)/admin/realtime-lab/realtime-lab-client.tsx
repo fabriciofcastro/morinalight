@@ -98,8 +98,8 @@ export function RealtimeLabClient() {
   const [tab, setTab] = useState<LabTab>("overview");
   const [mounted, setMounted] = useState(false);
 
-  const [orgId, setOrgId] = useState<string>(defaultOrgId);
-  const [actorId, setActorId] = useState<string>(defaultActorId);
+  const [orgId, setOrgId] = useState<string>(defaultOrgId ?? "");
+  const [actorId, setActorId] = useState<string>(defaultActorId ?? "");
 
   const [wsStatus, setWsStatus] = useState<"disconnected" | "connecting" | "connected" | "error">(
     "disconnected",
@@ -129,8 +129,8 @@ export function RealtimeLabClient() {
     if (!mounted) return;
     const user = getAuthUser();
     queueMicrotask(() => {
-      setActorId(user?.userId ?? defaultActorId);
-      setOrgId(getCurrentOrgId() ?? defaultOrgId);
+      setActorId(user?.userId ?? defaultActorId ?? "");
+      setOrgId(getCurrentOrgId() ?? defaultOrgId ?? "");
     });
   }, [mounted]);
 
@@ -289,11 +289,11 @@ export function RealtimeLabClient() {
 
     const effective = Array.isArray(effectiveRaw)
       ? effectiveRaw
-          .map((p) => (p && typeof p === "object" ? (p as Record<string, unknown>) : null))
-          .filter((p): p is Record<string, unknown> =>
-            Boolean(p && typeof (p as { permissionKey?: unknown }).permissionKey === "string"),
-          )
-          .map((p) => ({ permissionKey: String((p as { permissionKey?: unknown }).permissionKey) }))
+        .map((p) => (p && typeof p === "object" ? (p as Record<string, unknown>) : null))
+        .filter((p): p is Record<string, unknown> =>
+          Boolean(p && typeof (p as { permissionKey?: unknown }).permissionKey === "string"),
+        )
+        .map((p) => ({ permissionKey: String((p as { permissionKey?: unknown }).permissionKey) }))
       : [];
 
     const denied = Array.isArray(deniedRaw)
@@ -321,14 +321,14 @@ export function RealtimeLabClient() {
 
     const breakdown = breakdownObj
       ? {
-          role: Array.isArray(breakdownObj.role)
-            ? breakdownObj.role.filter((k): k is string => typeof k === "string")
-            : [],
-          departments: safeGrantArray(breakdownObj.departments),
-          sectors: safeGrantArray(breakdownObj.sectors),
-          positions: safeGrantArray(breakdownObj.positions),
-          custom: safeGrantArray(breakdownObj.custom),
-        }
+        role: Array.isArray(breakdownObj.role)
+          ? breakdownObj.role.filter((k): k is string => typeof k === "string")
+          : [],
+        departments: safeGrantArray(breakdownObj.departments),
+        sectors: safeGrantArray(breakdownObj.sectors),
+        positions: safeGrantArray(breakdownObj.positions),
+        custom: safeGrantArray(breakdownObj.custom),
+      }
       : undefined;
 
     setEffectivePreview({ role, effective, denied, breakdown });

@@ -5,10 +5,11 @@ import { buildAuthHeaders } from "../../../../_lib/auth-headers";
 
 export async function POST(
   request: Request,
-  { params }: { params: { sessionId: string } },
+  { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
-    const response = await fetch(`${apiUrl}/profile/sessions/${params.sessionId}/revoke`, {
+    const { sessionId } = await params;
+    const response = await fetch(`${apiUrl}/profile/sessions/${sessionId}/revoke`, {
       method: "POST",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
       cache: "no-store",

@@ -76,15 +76,15 @@ function getCurrentOrgId(): string | null {
 type FornecedorFichaCusto = {
   id: string;
   name: string;
-  email: null;
-  phone: null;
-  document: null;
-  address: null;
-  city: null;
-  state: null;
-  zipCode: null;
+  email: string | null;
+  phone: string | null;
+  document: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  zipCode: string | null;
   status: "ativo";
-  notes: null;
+  notes: string | null;
   createdBy: "sistema";
   updatedBy: "sistema";
   createdAt: string;
@@ -141,15 +141,15 @@ export function FornecedoresListClient() {
   // Carregar fornecedores de fichas-custo
   const carregarFornecedoresFichasCusto = useCallback(async () => {
     if (!orgId) return;
-    
+
     setLoadingFichasCusto(true);
     try {
       // Buscar todas as fichas de custo
       const resultado = await fichasCustoApi.listar(orgId, { pagina: 1, tamanhoPagina: 1000 });
-      
+
       // Extrair fornecedores únicos dos insumos
       const fornecedoresMap = new Map<string, FornecedorFichaCusto>();
-      
+
       resultado.itens.forEach((ficha) => {
         ficha.insumos.forEach((insumo: Insumo) => {
           if (insumo.fornecedorNome && !insumo.fornecedorId) {
@@ -179,7 +179,7 @@ export function FornecedoresListClient() {
           }
         });
       });
-      
+
       setFornecedoresFichasCusto(Array.from(fornecedoresMap.values()));
     } catch (error) {
       console.error("Erro ao carregar fornecedores de fichas-custo:", error);
@@ -191,7 +191,7 @@ export function FornecedoresListClient() {
   // Combinar fornecedores cadastrados com fornecedores de fichas-custo
   const fornecedoresCompletos = useMemo<FornecedorCompleto[]>(() => {
     const todos: FornecedorCompleto[] = [...suppliers];
-    
+
     // Adicionar fornecedores de fichas-custo que não estão cadastrados
     fornecedoresFichasCusto.forEach((fornecedorFC) => {
       const jaExiste = suppliers.some(
@@ -201,7 +201,7 @@ export function FornecedoresListClient() {
         todos.push(fornecedorFC);
       }
     });
-    
+
     return todos;
   }, [suppliers, fornecedoresFichasCusto]);
 
@@ -209,7 +209,7 @@ export function FornecedoresListClient() {
   const handleBulkStatusChange = useCallback(async (novoStatus: string) => {
     if (selectedSuppliers.size === 0) return;
 
-    const fornecedoresSelecionados = fornecedoresCompletos.filter((f) => 
+    const fornecedoresSelecionados = fornecedoresCompletos.filter((f) =>
       selectedSuppliers.has(f.id) && "orgId" in f
     ) as Supplier[];
 
@@ -229,7 +229,7 @@ export function FornecedoresListClient() {
       suspenso: "suspender",
     };
     const acao = statusLabels[novoStatus] || "alterar status";
-    
+
     if (!confirm(`Deseja realmente ${acao} ${fornecedoresSelecionados.length} fornecedor(es)?`)) {
       return;
     }
@@ -274,7 +274,7 @@ export function FornecedoresListClient() {
   const handleBulkDelete = useCallback(async () => {
     if (selectedSuppliers.size === 0) return;
 
-    const fornecedoresSelecionados = fornecedoresCompletos.filter((f) => 
+    const fornecedoresSelecionados = fornecedoresCompletos.filter((f) =>
       selectedSuppliers.has(f.id) && "orgId" in f
     ) as Supplier[];
 
@@ -329,7 +329,7 @@ export function FornecedoresListClient() {
   const handleBulkExport = useCallback(() => {
     if (selectedSuppliers.size === 0) return;
 
-    const fornecedoresSelecionados = fornecedoresCompletos.filter((f) => 
+    const fornecedoresSelecionados = fornecedoresCompletos.filter((f) =>
       selectedSuppliers.has(f.id) && "orgId" in f
     ) as Supplier[];
 
@@ -523,13 +523,13 @@ export function FornecedoresListClient() {
         className="relative"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-        
+
         <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
           <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          
+
           <div className="relative z-10 flex-1">
             <div className="flex items-center gap-4 mb-3">
               <Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />
@@ -976,8 +976,8 @@ export function FornecedoresListClient() {
         <div className="p-12 text-center rounded-xl border border-white/10 bg-white/[0.03]">
           <Building2 className="h-12 w-12 mx-auto text-white/30 mb-4" />
           <p className="text-white/60">
-            {search || statusFilter !== "all" 
-              ? "Nenhum fornecedor encontrado com os filtros aplicados." 
+            {search || statusFilter !== "all"
+              ? "Nenhum fornecedor encontrado com os filtros aplicados."
               : "Nenhum fornecedor cadastrado. Clique em 'Novo Fornecedor' para começar."}
           </p>
         </div>
@@ -985,7 +985,7 @@ export function FornecedoresListClient() {
         <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-3"}>
           {fornecedoresFiltrados.map((fornecedor) => {
             const isFromFichaCusto = "origem" in fornecedor && fornecedor.origem === "ficha-custo";
-            
+
             return (
               <motion.div
                 key={fornecedor.id}
@@ -1042,8 +1042,8 @@ export function FornecedoresListClient() {
                       )}
                       {!fornecedor.email && !fornecedor.phone && !fornecedor.document && !fornecedor.address && (
                         <p className="text-xs text-white/50 italic">
-                          {isFromFichaCusto 
-                            ? "Cadastrado apenas pelo nome em fichas de custo" 
+                          {isFromFichaCusto
+                            ? "Cadastrado apenas pelo nome em fichas de custo"
                             : "Informações adicionais não disponíveis"}
                         </p>
                       )}

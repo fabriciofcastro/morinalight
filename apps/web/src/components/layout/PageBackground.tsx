@@ -12,6 +12,18 @@ const FLOW_LINES = [
   { id: "flow-e", top: "80%", duration: 18, delay: 2.0 },
 ] as const;
 
+const STRUCTURE_GRID = [
+  { id: "grid-a", size: "40px", opacity: 0.1 },
+  { id: "grid-b", size: "120px", opacity: 0.15 },
+] as const;
+
+const STRUCTURE_BLOCKS = [
+  { id: "s-block-1", left: "15%", size: 40, duration: 15, delay: 0 },
+  { id: "s-block-2", left: "35%", size: 60, duration: 20, delay: 2 },
+  { id: "s-block-3", left: "65%", size: 30, duration: 12, delay: 5 },
+  { id: "s-block-4", left: "85%", size: 50, duration: 18, delay: 1 },
+] as const;
+
 const REALTIME_PULSES = [
   { id: "pulse-a", rotate: 0, delay: 0.0 },
   { id: "pulse-b", rotate: 15, delay: 0.45 },
@@ -44,14 +56,29 @@ const FORGE_SPARKS = [
   { id: "spark-j", top: "91%", left: "27%", rotate: "153deg", duration: 2.8, delay: 1.8 },
 ] as const;
 
-export function PageBackground() {
+interface PageBackgroundProps {
+  children?: React.ReactNode;
+  className?: string;
+  variant?: "terminal" | "jarvis" | "flow" | "nodes" | "circuit" | "vault" | "realtime" | "forge" | "fichas-custo" | "dashboard" | "structure";
+}
+
+export function PageBackground({ children, className, variant }: PageBackgroundProps) {
   const pathname = usePathname();
   const [bgType, setBgType] = useState<
-    "terminal" | "jarvis" | "flow" | "nodes" | "circuit" | "vault" | "realtime" | "forge" | "fichas-custo"
+    "terminal" | "jarvis" | "flow" | "nodes" | "circuit" | "vault" | "realtime" | "forge" | "fichas-custo" | "structure"
   >("terminal");
 
   useEffect(() => {
+    if (variant) {
+      // Mapear "dashboard" para "jarvis" se necessário, ou assumir tipos válidos
+      if (variant === "dashboard") setBgType("jarvis");
+      else if (variant === "none") setBgType("none" as any);
+      else setBgType(variant as any);
+      return;
+    }
+
     queueMicrotask(() => {
+      // Lógica original de pathname...
       if (pathname.startsWith("/dashboard")) {
         setBgType("jarvis");
       } else if (pathname.startsWith("/admin/realtime-lab")) {
@@ -83,7 +110,7 @@ export function PageBackground() {
         setBgType("terminal"); // Default: secure terminal for dashboard/home
       }
     });
-  }, [pathname]);
+  }, [pathname, variant]);
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -106,6 +133,7 @@ export function PageBackground() {
           {bgType === "realtime" && <RealtimeBackground />}
           {bgType === "forge" && <ForgeBackground />}
           {bgType === "fichas-custo" && <FichasCustoBackground />}
+          {bgType === "structure" && <StructureBackground />}
         </motion.div>
       </AnimatePresence>
       {/* Cinematic system overlays (tokens controlam intensidade) */}
@@ -116,6 +144,9 @@ export function PageBackground() {
       />
       <div className="absolute inset-0 cinematic-glow pointer-events-none" aria-hidden="true" />
       <div className="absolute inset-0 cinematic-vignette pointer-events-none" aria-hidden="true" />
+      <div className="relative z-10 w-full h-full overflow-y-auto">
+        {children}
+      </div>
     </div>
   );
 }
@@ -428,6 +459,8 @@ function CircuitBackground() {
   );
 }
 
+
+
 function VaultBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -739,6 +772,72 @@ function FichasCustoBackground() {
 
       {/* Holographic overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_30%,rgba(59,130,246,0.03)_50%,transparent_70%)] opacity-50" />
+    </div>
+  );
+}
+
+function StructureBackground() {
+  const [blocks, setBlocks] = useState<{ id: string; left: string; size: number; duration: number; delay: number }[]>([]);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setBlocks(
+        Array.from({ length: 6 }).map((_, i) => ({
+          id: `block-${i}`,
+          left: `${10 + Math.random() * 80}%`,
+          size: 30 + Math.random() * 50,
+          duration: 15 + Math.random() * 10,
+          delay: Math.random() * 5,
+        }))
+      );
+    });
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Base Foundation Gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,hsl(var(--primary))/0.10,transparent_75%)]" />
+
+      {/* Pseudo-3D Grid Floor - Increased Opacity */}
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+          transform: "perspective(500px) rotateX(10deg) scale(1.1)",
+          transformOrigin: "top center"
+        }}
+      />
+
+      {/* Floating Construction Blocks (Growth) - Enhanced Visibility */}
+      {blocks.map((block) => (
+        <motion.div
+          key={block.id}
+          className="absolute border border-[hsl(var(--primary)/0.5)] bg-[hsl(var(--primary)/0.15)] backdrop-blur-[2px]"
+          style={{
+            left: block.left,
+            width: block.size,
+            height: block.size,
+            bottom: "-100px"
+          }}
+          animate={{
+            y: [0, -1000],
+            opacity: [0, 0.9, 0],
+            rotate: [0, 90]
+          }}
+          transition={{
+            duration: block.duration,
+            repeat: Infinity,
+            ease: "linear",
+            delay: block.delay
+          }}
+        />
+      ))}
+
+
+
+      {/* Structural Nodes Overlay */}
+      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
     </div>
   );
 }

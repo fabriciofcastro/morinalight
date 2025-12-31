@@ -22,9 +22,9 @@ type InteractiveMapProps = {
 
 export function InteractiveMap({
   address,
- onClose,
- height = "500px",
- className,
+  onClose,
+  height = "500px",
+  className,
 }: InteractiveMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
@@ -122,10 +122,10 @@ export function InteractiveMap({
     setLoading(false);
   };
 
-  const geocodeAddress = () => {
+  const geocodeAddress = useCallback(() => {
     if (!geocoder || !map || !fullAddress) return;
 
-    geocoder.geocode({ address: fullAddress }, (results, status) => {
+    geocoder.geocode({ address: fullAddress }, (results: any, status: any) => {
       if (status === "OK" && results && results[0]) {
         const location = results[0].geometry.location;
         map.setCenter(location);

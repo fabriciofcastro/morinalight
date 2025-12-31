@@ -10,6 +10,7 @@ import {
   organizationalStructureApi,
   type BusinessSegment,
 } from "@/lib/api/organizational-structure";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type FormState = {
   code: string;
@@ -24,13 +25,16 @@ export function SegmentEditClient() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [segment, setSegment] = useState<BusinessSegment | null>(null);
   const [form, setForm] = useState<FormState>({
     code: "",
     description: "",
     active: true,
   });
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const canSave = useMemo(() => form.code.trim().length >= 2 && form.description.trim().length >= 2, [form]);
 
@@ -79,18 +83,20 @@ export function SegmentEditClient() {
     [canSave, form, segmentId, router],
   );
 
-  const onDelete = useCallback(async () => {
-    const ok = confirm("Tem certeza que deseja deletar este segmento?");
-    if (!ok) return;
+  const handleDelete = useCallback(() => {
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    setDeleteLoading(true);
     try {
-      setDeleting(true);
       await organizationalStructureApi.deleteBusinessSegment(segmentId);
       router.push("/admin/business-segments");
     } catch (error) {
       console.error("Failed to delete segment", error);
-      alert("Erro ao deletar segmento.");
+      setDeleteDialogOpen(false);
     } finally {
-      setDeleting(false);
+      setDeleteLoading(false);
     }
   }, [segmentId, router]);
 
@@ -148,12 +154,12 @@ export function SegmentEditClient() {
             <Button
               variant="secondary"
               type="button"
-              disabled={deleting}
-              onClick={() => void onDelete()}
+              disabled={deleteLoading}
+              onClick={handleDelete}
               className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              {deleting ? "Deletando…" : "Deletar"}
+              Deletar
             </Button>
           </div>
         </div>
@@ -190,11 +196,10 @@ export function SegmentEditClient() {
                 <button
                   type="button"
                   onClick={() => setForm((p) => ({ ...p, active: !p.active }))}
-                  className={`w-full px-4 py-3 rounded-lg border transition-all ${
-                    form.active
+                  className={`w-full px-4 py-3 rounded-lg border transition-all ${form.active
                       ? "border-green-500/30 bg-green-500/10 text-green-400"
                       : "border-gray-500/30 bg-gray-500/10 text-gray-400"
-                  }`}
+                    }`}
                 >
                   {form.active ? "Ativo" : "Inativo"}
                 </button>
@@ -231,6 +236,16 @@ export function SegmentEditClient() {
           </form>
         )}
       </motion.div>
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={confirmDelete}
+        itemName={segment?.description || segment?.code || ""}
+        itemType="segmento"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

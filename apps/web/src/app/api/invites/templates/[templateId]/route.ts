@@ -4,13 +4,14 @@ import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { templateId: string } },
+  { params }: { params: Promise<{ templateId: string }> },
 ) {
   try {
+    const { templateId } = await params;
     const body = await request.json();
     const headers = await buildAuthHeaders({ "Content-Type": "application/json" });
 
-    const response = await fetch(`${apiUrl}/invites/templates/${params.templateId}`, {
+    const response = await fetch(`${apiUrl}/invites/templates/${templateId}`, {
       method: "PUT",
       headers,
       body: JSON.stringify(body),
@@ -34,12 +35,13 @@ export async function PUT(
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { templateId: string } },
+  { params }: { params: Promise<{ templateId: string }> },
 ) {
   try {
+    const { templateId } = await params;
     const headers = await buildAuthHeaders({ "Content-Type": "application/json" });
 
-    const response = await fetch(`${apiUrl}/invites/templates/${params.templateId}`, {
+    const response = await fetch(`${apiUrl}/invites/templates/${templateId}`, {
       method: "DELETE",
       headers,
     });

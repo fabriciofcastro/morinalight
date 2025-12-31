@@ -9,7 +9,7 @@ export const metadata = {
 export default function FichasCustoListPage() {
   return (
     <>
-      <PageBackground />
+      <PageBackground variant="dashboard" />
       <FichasCustoListClient />
     </>
   );

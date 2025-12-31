@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { roleId: string } }) {
-  const response = await fetch(`${apiUrl}/roles/${params.roleId}`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ roleId: string }> }) {
+  const { roleId } = await params;
+  const response = await fetch(`${apiUrl}/roles/${roleId}`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -17,10 +18,11 @@ export async function GET(_request: Request, { params }: { params: { roleId: str
   return NextResponse.json(data);
 }
 
-export async function PUT(request: Request, { params }: { params: { roleId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ roleId: string }> }) {
+  const { roleId } = await params;
   const body = await request.json().catch(() => ({}));
 
-  const response = await fetch(`${apiUrl}/roles/${params.roleId}`, {
+  const response = await fetch(`${apiUrl}/roles/${roleId}`, {
     method: "PUT",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -35,8 +37,9 @@ export async function PUT(request: Request, { params }: { params: { roleId: stri
   return NextResponse.json(data);
 }
 
-export async function DELETE(_request: Request, { params }: { params: { roleId: string } }) {
-  const response = await fetch(`${apiUrl}/roles/${params.roleId}`, {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ roleId: string }> }) {
+  const { roleId } = await params;
+  const response = await fetch(`${apiUrl}/roles/${roleId}`, {
     method: "DELETE",
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });

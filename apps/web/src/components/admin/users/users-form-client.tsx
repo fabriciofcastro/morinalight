@@ -28,6 +28,7 @@ import {
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useUser, type CreateUserRequest } from "@/hooks/use-user";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
@@ -41,6 +42,7 @@ import { triggerConfetti } from "@/lib/utils/confetti";
 import { Progress } from "@morina/ui";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { FileUpload } from "@/components/ui/file-upload";
 
 interface Department {
   id: string;
@@ -79,6 +81,7 @@ export function UsersFormClient() {
   const router = useRouter();
   const { createUser, loading: creatingUser } = useUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isEditing = false; // Component used for creation
 
   // Form state
   const [formData, setFormData] = useState<CreateUserRequest & {
@@ -116,7 +119,11 @@ export function UsersFormClient() {
   // Photo upload state
   const [photoPreview, setPhotoPreview] = useState<string>("");
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  
+
+  // Resume upload state
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [uploadingResume, setUploadingResume] = useState(false);
+
   // Permissions state
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loadingPermissions, setLoadingPermissions] = useState(false);
@@ -128,11 +135,15 @@ export function UsersFormClient() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Draft restore dialog state
+  const [restoreDraftDialogOpen, setRestoreDraftDialogOpen] = useState(false);
+  const [pendingDraftData, setPendingDraftData] = useState<UserFormData | null>(null);
+
   const DRAFT_STORAGE_KEY = "user-form-draft";
-  
+
   // Form progress
   const [formProgress, setFormProgress] = useState(0);
-  
+
   // Check if form is valid for auto-save
   const canSave = useMemo(() => {
     return !!(
@@ -147,7 +158,7 @@ export function UsersFormClient() {
       formData.positionId
     );
   }, [formData]);
-  
+
   // Auto-save using standardized hook
   const { status: autoSaveStatus, hasUnsavedChanges, markDirty, markClean } = useAutoSave({
     onSave: async () => {
@@ -161,10 +172,10 @@ export function UsersFormClient() {
       // Draft saved successfully
     },
   });
-  
+
   // Preview modal state
   const [showPreview, setShowPreview] = useState(false);
-  
+
   // Wizard mode state
   const [wizardMode, setWizardMode] = useState(false);
   const [currentWizardStep, setCurrentWizardStep] = useState(0);
@@ -187,30 +198,40 @@ export function UsersFormClient() {
         const maxAge = 24 * 60 * 60 * 1000; // 24 horas
 
         if (draftAge < maxAge) {
-          const shouldRestore = window.confirm(
-            "Encontramos um rascunho anterior. Deseja restaurar?"
-          );
-          if (shouldRestore) {
-            setFormData(draftData.data);
-            if (draftData.data.photoUrl) {
-              setPhotoPreview(draftData.data.photoUrl);
-            }
-            notificationCenter.add({
-              type: "info",
-              title: "Rascunho restaurado",
-              message: "Os dados do rascunho foram restaurados com sucesso.",
-            });
-          } else {
-            localStorage.removeItem(DRAFT_STORAGE_KEY);
-          }
+          setPendingDraftData(draftData.data);
+          setRestoreDraftDialogOpen(true);
         } else {
           localStorage.removeItem(DRAFT_STORAGE_KEY);
         }
       }
-    } catch (err) {
-      console.error("Erro ao restaurar rascunho:", err);
+    } catch (e) {
+      console.error("Erro ao carregar rascunho:", e);
     }
+  }, [isEditing]);
+
+  const handleRestoreDraft = useCallback(() => {
+    if (pendingDraftData) {
+      setFormData(pendingDraftData);
+      if (pendingDraftData.photoUrl) {
+        setPhotoPreview(pendingDraftData.photoUrl);
+      }
+      notificationCenter.add({
+        type: "info",
+        title: "Rascunho restaurado",
+        message: "Os dados do rascunho foram restaurados com sucesso.",
+      });
+    }
+    setRestoreDraftDialogOpen(false);
+    setPendingDraftData(null);
+  }, [pendingDraftData]);
+
+  const handleDiscardDraft = useCallback(() => {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
+    setRestoreDraftDialogOpen(false);
+    setPendingDraftData(null);
   }, []);
+
+
 
   // Save draft to localStorage
   const saveDraft = useCallback(() => {
@@ -227,10 +248,10 @@ export function UsersFormClient() {
 
   // Mark dirty when form data changes (for auto-save)
   useEffect(() => {
-    const hasData = 
-      formData.displayName || 
-      formData.email || 
-      formData.cpf || 
+    const hasData =
+      formData.displayName ||
+      formData.email ||
+      formData.cpf ||
       formData.departmentId;
 
     if (hasData) {
@@ -263,7 +284,7 @@ export function UsersFormClient() {
   useEffect(() => {
     const loadPermissions = async () => {
       if (!permissionsExpanded) return;
-      
+
       setLoadingPermissions(true);
       try {
         const data = await permissionsApi.getPermissions();
@@ -400,18 +421,18 @@ export function UsersFormClient() {
     const length = 12;
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*";
     let password = "";
-    
+
     // Ensure at least one of each required type
     password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)];
     password += "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)];
     password += "0123456789"[Math.floor(Math.random() * 10)];
     password += "!@#$%&*"[Math.floor(Math.random() * 7)];
-    
+
     // Fill the rest
     for (let i = password.length; i < length; i++) {
       password += charset[Math.floor(Math.random() * charset.length)];
     }
-    
+
     // Shuffle
     return password.split("").sort(() => Math.random() - 0.5).join("");
   };
@@ -554,7 +575,7 @@ export function UsersFormClient() {
       formData.sectorId,
       formData.positionId,
     ];
-    
+
     const camposOpcionais = [
       formData.cpf,
       formData.phone,
@@ -566,12 +587,12 @@ export function UsersFormClient() {
 
     const preenchidosObrigatorios = camposObrigatorios.filter((campo) => campo && campo.toString().trim() !== "").length;
     const preenchidosOpcionais = camposOpcionais.filter((campo) => campo && campo.toString().trim() !== "").length;
-    
+
     // Progresso: 70% pelos obrigatórios + 30% pelos opcionais
     const progressoObrigatorios = (preenchidosObrigatorios / camposObrigatorios.length) * 70;
     const progressoOpcionais = (preenchidosOpcionais / camposOpcionais.length) * 30;
     const progresso = Math.round(progressoObrigatorios + progressoOpcionais);
-    
+
     setFormProgress(progresso);
     return progresso;
   }, [formData]);
@@ -638,7 +659,7 @@ export function UsersFormClient() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
 
   // Handle preview before submit
   const handlePreview = useCallback(() => {
@@ -718,6 +739,50 @@ export function UsersFormClient() {
           }
         }
 
+        // Check if there is a resume to upload
+        if (resumeFile) {
+          try {
+            setUploadingResume(true);
+            const formDataDoc = new FormData();
+            formDataDoc.append("file", resumeFile);
+            formDataDoc.append("documentType", "RESUME");
+            formDataDoc.append("reason", "Upload inicial no cadastro");
+
+            // Note: The document upload API requires a valid token in context of logged user?
+            // The current implementation of API route (api/users/[userId]/documents/upload) seems to check auth of the requester.
+            // Assuming the requester (Admin) has permission to upload docs for the new user.
+
+            const uploadResponse = await fetch(`/api/users/${createdUser.userId}/documents/upload`, {
+              method: "POST",
+              body: formDataDoc,
+            });
+
+            if (uploadResponse.ok) {
+              notificationCenter.add({
+                type: "success",
+                title: "Currículo enviado",
+                message: "Documento anexado com sucesso.",
+              });
+            } else {
+              console.error("Failed to upload resume", await uploadResponse.text());
+              notificationCenter.add({
+                type: "warning",
+                title: "Atenção",
+                message: "Usuário criado, mas houve erro ao enviar o currículo.",
+              });
+            }
+          } catch (docErr) {
+            console.error("Erro upload curriculo:", docErr);
+            notificationCenter.add({
+              type: "warning",
+              title: "Atenção",
+              message: "Usuário criado, mas houve erro ao enviar o currículo.",
+            });
+          } finally {
+            setUploadingResume(false);
+          }
+        }
+
         // Clear draft after successful save
         clearDraft();
         markClean();
@@ -753,6 +818,7 @@ export function UsersFormClient() {
             initialPermissions: [],
           });
           setPhotoPreview("");
+          setResumeFile(null); // Reset resume file
           setErrors({});
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -767,9 +833,11 @@ export function UsersFormClient() {
           title: "Erro ao criar usuário",
           message: errorMessage,
         });
+      } finally {
+        setUploadingResume(false);
       }
     },
-    [formData, validateForm, createUser, router, clearDraft]
+    [formData, validateForm, createUser, router, clearDraft, resumeFile]
   );
 
   const passwordStrength = getPasswordStrength(formData.password);
@@ -922,196 +990,197 @@ export function UsersFormClient() {
       loading={creatingUser}
       headerActions={
         <div className="flex items-center gap-4">
-                {/* Progress Bar */}
+          {/* Progress Bar */}
           <div className="space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-white/60">Progresso do formulário</span>
-                    <span className="text-white/80 font-medium">{formProgress}%</span>
-                  </div>
-                  <Progress value={formProgress} className="h-1.5" />
-                </div>
-              </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-white/60">Progresso do formulário</span>
+              <span className="text-white/80 font-medium">{formProgress}%</span>
+            </div>
+            <Progress value={formProgress} className="h-1.5" />
+          </div>
+        </div>
       }
     >
       <div className="space-y-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* DADOS PESSOAIS */}
           {(!wizardMode || currentWizardStep === 0) && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-8"
-          >
-            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
-              <User className="h-6 w-6 text-[hsl(var(--primary))]" />
-              Dados Pessoais
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FuturisticInput
-                label="Nome Completo"
-                required
-                value={formData.displayName}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, displayName: e.target.value }));
-                  if (errors.displayName) setErrors((prev) => ({ ...prev, displayName: "" }));
-                  markDirty();
-                }}
-                error={!!errors.displayName}
-                errorMessage={errors.displayName}
-                placeholder="Digite o nome completo"
-              />
-              <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mb-8"
+            >
+              <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
+                <User className="h-6 w-6 text-[hsl(var(--primary))]" />
+                Dados Pessoais
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FuturisticInput
-                  label="Email"
-                  type="email"
+                  label="Nome Completo"
                   required
-                  value={formData.email}
+                  value={formData.displayName}
                   onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, email: e.target.value.toLowerCase() }));
-                    if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                    setFormData((prev) => ({ ...prev, displayName: e.target.value }));
+                    if (errors.displayName) setErrors((prev) => ({ ...prev, displayName: "" }));
                     markDirty();
                   }}
-                  error={!!errors.email}
-                  errorMessage={errors.email}
-                  placeholder="usuario@exemplo.com"
+                  error={!!errors.displayName}
+                  errorMessage={errors.displayName}
+                  placeholder="Digite o nome completo"
                 />
-                {!formData.email && formData.displayName && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const suggested = generateEmailSuggestion(formData.displayName);
-                      setFormData((prev) => ({ ...prev, email: suggested }));
+                <div>
+                  <FuturisticInput
+                    label="Email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, email: e.target.value.toLowerCase() }));
+                      if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                      markDirty();
                     }}
-                    className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors"
-                  >
-                    <Sparkles className="h-3 w-3" />
-                    Sugerir email
-                  </button>
-                )}
-              </div>
-              <div>
+                    error={!!errors.email}
+                    errorMessage={errors.email}
+                    placeholder="usuario@exemplo.com"
+                  />
+                  {!formData.email && formData.displayName && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const suggested = generateEmailSuggestion(formData.displayName);
+                        setFormData((prev) => ({ ...prev, email: suggested }));
+                      }}
+                      className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      Sugerir email
+                    </button>
+                  )}
+                </div>
+                <div>
+                  <FuturisticInput
+                    label="CPF"
+                    required
+                    value={formData.cpf}
+                    onChange={(e) => {
+                      const formatted = formatCPF(e.target.value);
+                      setFormData((prev) => ({ ...prev, cpf: formatted }));
+                      if (errors.cpf) setErrors((prev) => ({ ...prev, cpf: "" }));
+                      markDirty();
+                    }}
+                    error={!!errors.cpf}
+                    errorMessage={errors.cpf}
+                    placeholder="000.000.000-00"
+                    maxLength={14}
+                  />
+                  {formData.cpf.replace(/\D/g, "").length === 11 && validateCPF(formData.cpf) && (
+                    <button
+                      type="button"
+                      onClick={() => searchCPF(formData.cpf)}
+                      disabled={searchingCPF}
+                      className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors disabled:opacity-50"
+                    >
+                      <Search className="h-3 w-3" />
+                      {searchingCPF ? "Buscando..." : "Buscar informações"}
+                    </button>
+                  )}
+                </div>
                 <FuturisticInput
-                  label="CPF"
-                  required
-                  value={formData.cpf}
+                  label="Telefone"
+                  value={formData.phone}
                   onChange={(e) => {
-                    const formatted = formatCPF(e.target.value);
-                    setFormData((prev) => ({ ...prev, cpf: formatted }));
-                    if (errors.cpf) setErrors((prev) => ({ ...prev, cpf: "" }));
+                    const formatted = formatPhone(e.target.value);
+                    setFormData((prev) => ({ ...prev, phone: formatted }));
                     markDirty();
                   }}
-                  error={!!errors.cpf}
-                  errorMessage={errors.cpf}
-                  placeholder="000.000.000-00"
-                  maxLength={14}
+                  placeholder="(00) 00000-0000"
+                  maxLength={15}
                 />
-                {formData.cpf.replace(/\D/g, "").length === 11 && validateCPF(formData.cpf) && (
-                  <button
-                    type="button"
-                    onClick={() => searchCPF(formData.cpf)}
-                    disabled={searchingCPF}
-                    className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors disabled:opacity-50"
-                  >
-                    <Search className="h-3 w-3" />
-                    {searchingCPF ? "Buscando..." : "Buscar informações"}
-                  </button>
-                )}
-              </div>
-              <FuturisticInput
-                label="Telefone"
-                value={formData.phone}
-                onChange={(e) => {
-                  const formatted = formatPhone(e.target.value);
-                  setFormData((prev) => ({ ...prev, phone: formatted }));
-                  markDirty();
-                }}
-                placeholder="(00) 00000-0000"
-                maxLength={15}
-              />
-              <FuturisticInput
-                label="Data de Nascimento"
-                type="date"
-                value={formData.birthDate}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, birthDate: e.target.value }));
-                  markDirty();
-                }}
-              />
-              {/* Foto do Perfil */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-white/80 mb-2">
-                  Foto do Perfil <span className="text-white/40 text-xs">(Opcional)</span>
-                </label>
-                <div className="flex items-start gap-4">
-                  {/* Preview */}
-                  <div className="relative">
-                    {photoPreview ? (
-                      <div className="relative group">
-                        <div className="w-24 h-24 rounded-lg border-2 border-white/20 bg-white/5 overflow-hidden">
-                          <img
-                            src={photoPreview}
-                            alt="Preview"
-                            className="w-full h-full object-cover"
-                          />
+                <FuturisticInput
+                  label="Data de Nascimento"
+                  type="date"
+                  value={formData.birthDate}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, birthDate: e.target.value }));
+                    markDirty();
+                  }}
+                />
+                {/* Foto do Perfil */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Foto do Perfil <span className="text-white/40 text-xs">(Opcional)</span>
+                  </label>
+                  <div className="flex items-start gap-4">
+                    {/* Preview */}
+                    <div className="relative">
+                      {photoPreview ? (
+                        <div className="relative group">
+                          <div className="w-24 h-24 rounded-lg border-2 border-white/20 bg-white/5 overflow-hidden">
+                            <img
+                              src={photoPreview}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={removePhoto}
+                            className="absolute -top-2 -right-2 p-1 bg-red-500/90 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="h-4 w-4 text-white" />
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={removePhoto}
-                          className="absolute -top-2 -right-2 p-1 bg-red-500/90 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="h-4 w-4 text-white" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 bg-white/5 flex items-center justify-center">
-                        <User className="h-8 w-8 text-white/30" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Upload Button */}
-                  <div className="flex-1">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handlePhotoUpload(file);
-                        }
-                      }}
-                      className="hidden"
-                    />
-                    <motion.button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploadingPhoto}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {uploadingPhoto ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                          Enviando...
-                        </>
                       ) : (
-                        <>
-                          <Upload className="h-4 w-4" />
-                          {photoPreview ? "Alterar Foto" : "Adicionar Foto"}
-                        </>
+                        <div className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 bg-white/5 flex items-center justify-center">
+                          <User className="h-8 w-8 text-white/30" />
+                        </div>
                       )}
-                    </motion.button>
-                    <p className="mt-1 text-xs text-white/50">
-                      Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
-                    </p>
+                    </div>
+
+                    {/* Upload Button */}
+                    <div className="flex-1">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            handlePhotoUpload(file);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                      <motion.button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingPhoto}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {uploadingPhoto ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                            Enviando...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4" />
+                            {photoPreview ? "Alterar Foto" : "Adicionar Foto"}
+                          </>
+                        )}
+                      </motion.button>
+                      <p className="mt-1 text-xs text-white/50">
+                        Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          )}
 
           {/* DADOS DE ACESSO */}
           <div className="mb-8 pt-8 border-t border-white/10">
@@ -1345,6 +1414,23 @@ export function UsersFormClient() {
                   placeholder="Observações adicionais sobre o usuário..."
                   rows={4}
                 />
+
+              </div>
+
+              {/* Upload de Currículo */}
+              <div className="md:col-span-2 mt-4 pt-4 border-t border-white/5">
+                <FileUpload
+                  label="Documento / Currículo"
+                  description="Anexar um arquivo PDF ou DOCX (opcional)"
+                  value={resumeFile}
+                  onChange={setResumeFile}
+                  disabled={uploadingResume || creatingUser}
+                  accept={{
+                    "application/pdf": [".pdf"],
+                    "application/msword": [".doc"],
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -1439,7 +1525,7 @@ export function UsersFormClient() {
                 Cancelar
               </Button>
             </motion.div>
-            
+
             <div className="flex items-center gap-3">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
@@ -1461,38 +1547,38 @@ export function UsersFormClient() {
                   )}
                 </Button>
               </motion.div>
-              
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                type="button"
-                onClick={handlePreview}
-                disabled={creatingUser}
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                Visualizar
-              </Button>
-            </motion.div>
-            
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                type="submit"
-                disabled={creatingUser}
-                className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {creatingUser ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-2" />
-                    Salvar
-                  </>
-                )}
-                  </Button>
-                </motion.div>
+
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  type="button"
+                  onClick={handlePreview}
+                  disabled={creatingUser}
+                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Visualizar
+                </Button>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  type="submit"
+                  disabled={creatingUser}
+                  className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {creatingUser ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Salvar
+                    </>
+                  )}
+                </Button>
+              </motion.div>
             </div>
           </div>
         </form>

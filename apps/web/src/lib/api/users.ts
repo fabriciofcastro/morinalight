@@ -7,6 +7,7 @@ export interface User {
     status: 'active' | 'inactive';
     createdAt: string;
     lastLogin?: string;
+    has2FA?: boolean;
 }
 
 export interface CreateUserRequest {
@@ -35,6 +36,18 @@ export class UsersApi {
 
     async delete(userId: string): Promise<void> {
         return apiClient.delete<void>(`/users/${userId}`);
+    }
+
+    async resetPassword(userId: string): Promise<void> {
+        return apiClient.post<void>(`/users/${userId}/reset-password`, {});
+    }
+
+    async enable2FA(userId: string): Promise<void> {
+        return apiClient.post<void>(`/users/${userId}/2fa/enable`, {});
+    }
+
+    async disable2FA(userId: string): Promise<void> {
+        return apiClient.post<void>(`/users/${userId}/2fa/disable`, {});
     }
 }
 

@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
-export async function GET(_request: Request, { params }: { params: { roleId: string } }) {
-  const response = await fetch(`${apiUrl}/roles/${params.roleId}/permissions`, {
+export async function GET(_request: Request, { params }: { params: Promise<{ roleId: string }> }) {
+  const { roleId } = await params;
+  const response = await fetch(`${apiUrl}/roles/${roleId}/permissions`, {
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
@@ -20,10 +21,11 @@ export async function GET(_request: Request, { params }: { params: { roleId: str
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request, { params }: { params: { roleId: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ roleId: string }> }) {
+  const { roleId } = await params;
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/roles/${params.roleId}/permissions`, {
+  const response = await fetch(`${apiUrl}/roles/${roleId}/permissions`, {
     method: "POST",
     headers: buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
@@ -43,8 +45,9 @@ export async function POST(request: Request, { params }: { params: { roleId: str
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { roleId: string } },
+  { params }: { params: Promise<{ roleId: string }> },
 ) {
+  const { roleId } = await params;
   const url = new URL(request.url);
   const permissionId = url.searchParams.get("permissionId");
 
@@ -53,7 +56,7 @@ export async function DELETE(
   }
 
   const response = await fetch(
-    `${apiUrl}/roles/${params.roleId}/permissions/${permissionId}`,
+    `${apiUrl}/roles/${roleId}/permissions/${permissionId}`,
     {
       method: "DELETE",
       headers: buildAuthHeaders({ "Content-Type": "application/json" }),

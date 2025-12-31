@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 type MemberInfo = {
   membershipId: string;
@@ -65,6 +66,11 @@ export function MembersManagerClient({
   const [selectedRole, setSelectedRole] = useState<keyof typeof ROLE_LABELS>("member");
   const [pending, startTransition] = useTransition();
   const [editingRole, setEditingRole] = useState<string | null>(null);
+
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const apiBasePath = {
     branch: `/api/branches/${entityId}/members`,
@@ -155,31 +161,38 @@ export function MembersManagerClient({
     });
   }, [selectedUserId, selectedRole, apiBasePath, loadMembers]);
 
-  const handleRemoveMember = useCallback(
-    async (membershipId: string) => {
-      if (!confirm("Tem certeza que deseja remover este membro?")) return;
+  const handleRemoveMember = (membershipId: string, memberName: string) => {
+    setMemberToDelete({ id: membershipId, name: memberName });
+    setDeleteDialogOpen(true);
+  };
 
-      try {
-        const response = await fetch(`${apiBasePath}?membershipId=${membershipId}`, {
-          method: "DELETE",
-          headers: {
-            ...getAuthHeadersWithTenant(),
-            "Content-Type": "application/json",
-          },
-        });
+  const confirmRemoveMember = async () => {
+    if (!memberToDelete) return;
+    setDeleteLoading(true);
 
-        if (response.ok) {
-          await loadMembers();
-        } else {
-          alert("Erro ao remover membro");
-        }
-      } catch (error) {
-        console.error("Erro ao remover membro:", error);
+    try {
+      const response = await fetch(`${apiBasePath}?membershipId=${memberToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          ...getAuthHeadersWithTenant(),
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        await loadMembers();
+        setDeleteDialogOpen(false);
+        setMemberToDelete(null);
+      } else {
         alert("Erro ao remover membro");
       }
-    },
-    [apiBasePath, loadMembers],
-  );
+    } catch (error) {
+      console.error("Erro ao remover membro:", error);
+      alert("Erro ao remover membro");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   const handleUpdateRole = useCallback(
     async (membershipId: string, newRole: string) => {
@@ -379,13 +392,12 @@ export function MembersManagerClient({
                     {member.user.displayName || member.user.email}
                   </h3>
                   <span
-                    className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      member.user.status === "active"
-                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                        : member.user.status === "suspended"
-                          ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                          : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-                    }`}
+                    className={`px-2 py-0.5 rounded text-xs font-medium ${member.user.status === "active"
+                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                      : member.user.status === "suspended"
+                        ? "bg-red-500/20 text-red-400 border border-red-500/30"
+                        : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                      }`}
                   >
                     {member.user.status}
                   </span>
@@ -418,7 +430,7 @@ export function MembersManagerClient({
                       {ROLE_LABELS[member.role as keyof typeof ROLE_LABELS] || member.role}
                     </button>
                     <Button
-                      onClick={() => handleRemoveMember(member.membershipId)}
+                      onClick={() => handleRemoveMember(member.membershipId, member.user.displayName || member.user.email)}
                       className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-3"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -430,6 +442,18 @@ export function MembersManagerClient({
           ))}
         </div>
       )}
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setMemberToDelete(null);
+        }}
+        onConfirm={confirmRemoveMember}
+        itemName={memberToDelete?.name || ""}
+        itemType="membro"
+        isLoading={deleteLoading}
+      />
     </div>
   );
 }

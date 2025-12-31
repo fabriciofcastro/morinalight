@@ -5,14 +5,15 @@ import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 export async function GET(
   request: Request,
-  { params }: { params: { branchId: string } },
+  { params }: { params: Promise<{ branchId: string }> },
 ) {
+  const { branchId } = await params;
   const { searchParams } = new URL(request.url);
   const paramsQuery = new URLSearchParams();
 
   // Filtrar por filial específica
   paramsQuery.append("entityType", "branch");
-  paramsQuery.append("entityId", params.branchId);
+  paramsQuery.append("entityId", branchId);
 
   // Parâmetros opcionais
   const dateFrom = searchParams.get("dateFrom");

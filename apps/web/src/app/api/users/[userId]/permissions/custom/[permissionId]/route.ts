@@ -5,10 +5,11 @@ import { buildAuthHeaders } from "../../../../../_lib/auth-headers";
 
 export async function DELETE(
   _request: Request,
-  { params }: { params: { userId: string; permissionId: string } },
+  { params }: { params: Promise<{ userId: string; permissionId: string }> },
 ) {
+  const { userId, permissionId } = await params;
   const response = await fetch(
-    `${apiUrl}/users/${params.userId}/permissions/custom/${params.permissionId}`,
+    `${apiUrl}/users/${userId}/permissions/custom/${permissionId}`,
     {
       method: "DELETE",
       headers: await buildAuthHeaders({ "Content-Type": "application/json" }),

@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { notificationCenter } from "@/components/notifications/notification-center";
 
 type NotificationInteraction = {
@@ -58,6 +59,7 @@ const CATEGORY_COLORS: Record<Notification["type"], string> = {
 };
 
 export function NotificationsClient() {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: "1",
@@ -323,7 +325,7 @@ export function NotificationsClient() {
         Mensagem: notif.message,
         Data: notif.timestamp.toLocaleString("pt-BR"),
         Lida: notif.read ? "Sim" : "Não",
-        Arquivada: notif.archive ? "Sim" : "Não",
+        Arquivada: notif.archived ? "Sim" : "Não",
         "URL de Ação": notif.actionUrl || "",
         "Label de Ação": notif.actionLabel || "",
         Interações: notif.interactions?.length || 0,
@@ -431,7 +433,7 @@ export function NotificationsClient() {
                 <Download className="mr-2 h-4 w-4" />
                 Exportar
               </Button>
-              <Button type="button" href="/settings/notifications/preferences">
+              <Button type="button" onClick={() => router.push("/settings/notifications/preferences")}>
                 Configurar Preferências
               </Button>
             </div>
@@ -572,14 +574,8 @@ export function NotificationsClient() {
                     const isExpanded = expandedId === notification.id;
                     const isSelected = selectedIds.has(notification.id);
                     return (
-                      <GlassCard
+                      <div
                         key={notification.id}
-                        className={cn(
-                          "p-4 transition-all cursor-pointer",
-                          !notification.read && "border-l-4 border-l-[hsl(var(--primary))]",
-                          isSelected && "ring-2 ring-[hsl(var(--primary))]",
-                          isExpanded && "bg-white/10",
-                        )}
                         onClick={(e) => {
                           // Não expandir se clicar em checkbox, botão ou popover
                           if (
@@ -592,165 +588,174 @@ export function NotificationsClient() {
                           setExpandedId(isExpanded ? null : notification.id);
                         }}
                       >
-                        <div className="flex gap-4">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              toggleSelect(notification.id);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="mt-1 h-4 w-4 cursor-pointer"
-                          />
+                        <GlassCard
+                          className={cn(
+                            "p-4 transition-all cursor-pointer",
+                            !notification.read && "border-l-4 border-l-[hsl(var(--primary))]",
+                            isSelected && "ring-2 ring-[hsl(var(--primary))]",
+                            isExpanded && "bg-white/10",
+                          )}
+                        >
+                          <div className="flex gap-4">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                toggleSelect(notification.id);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              className="mt-1 h-4 w-4 cursor-pointer"
+                            />
 
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="mb-1 flex items-center gap-2">
-                                  <span
-                                    className={cn(
-                                      "rounded px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border",
-                                      CATEGORY_COLORS[notification.type],
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="mb-1 flex items-center gap-2">
+                                    <span
+                                      className={cn(
+                                        "rounded px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider border",
+                                        CATEGORY_COLORS[notification.type],
+                                      )}
+                                    >
+                                      {CATEGORY_LABELS[notification.type]}
+                                    </span>
+                                    {!notification.read && (
+                                      <span className="h-2 w-2 rounded-full bg-[hsl(var(--primary))]" />
                                     )}
-                                  >
-                                    {CATEGORY_LABELS[notification.type]}
-                                  </span>
-                                  {!notification.read && (
-                                    <span className="h-2 w-2 rounded-full bg-[hsl(var(--primary))]" />
+                                  </div>
+                                  <h3 className="font-semibold text-white">{notification.title}</h3>
+                                  <p className="mt-1 text-sm text-white/70">{notification.message}</p>
+                                  <p className="mt-1 text-xs text-white/40">
+                                    {formatTimestamp(notification.timestamp)}
+                                  </p>
+                                  {isExpanded && (
+                                    <div className="mt-3 space-y-4 border-t border-white/10 pt-3">
+                                      <div className="text-xs text-white/50">
+                                        <p>
+                                          <strong>ID:</strong> {notification.id}
+                                        </p>
+                                        <p>
+                                          <strong>Categoria:</strong> {notification.category}
+                                        </p>
+                                        <p>
+                                          <strong>Data completa:</strong>{" "}
+                                          {notification.timestamp.toLocaleString("pt-BR")}
+                                        </p>
+                                        {notification.actionUrl && (
+                                          <p>
+                                            <strong>Ação:</strong>{" "}
+                                            <a
+                                              href={notification.actionUrl}
+                                              className="text-[hsl(var(--primary))] hover:underline"
+                                              onClick={(e) => e.stopPropagation()}
+                                            >
+                                              {notification.actionLabel || notification.actionUrl}
+                                            </a>
+                                          </p>
+                                        )}
+                                      </div>
+
+                                      {/* Histórico de Interações */}
+                                      <div className="border-t border-white/10 pt-3">
+                                        <h4 className="mb-2 text-sm font-semibold text-white">Histórico de Interações</h4>
+                                        {notification.interactions && notification.interactions.length > 0 ? (
+                                          <div className="space-y-2">
+                                            {notification.interactions.map((interaction) => {
+                                              const actionLabels: Record<NotificationInteraction["action"], string> = {
+                                                viewed: "Visualizada",
+                                                clicked: "Clicada",
+                                                archived: "Arquivada",
+                                                deleted: "Excluída",
+                                                marked_read: "Marcada como lida",
+                                                action_taken: "Ação executada",
+                                              };
+
+                                              return (
+                                                <div
+                                                  key={interaction.id}
+                                                  className="flex items-start justify-between border border-white/10 bg-white/5 p-2 text-xs"
+                                                >
+                                                  <div className="flex-1">
+                                                    <p className="text-white/80">
+                                                      <strong>{actionLabels[interaction.action]}</strong>
+                                                    </p>
+                                                    {interaction.details && (
+                                                      <p className="mt-1 text-white/50">{interaction.details}</p>
+                                                    )}
+                                                    <p className="mt-1 text-white/40">
+                                                      {interaction.timestamp.toLocaleString("pt-BR")}
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        ) : (
+                                          <p className="text-xs text-white/50">
+                                            Nenhuma interação registrada ainda.
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
                                   )}
                                 </div>
-                                <h3 className="font-semibold text-white">{notification.title}</h3>
-                                <p className="mt-1 text-sm text-white/70">{notification.message}</p>
-                                <p className="mt-1 text-xs text-white/40">
-                                  {formatTimestamp(notification.timestamp)}
-                                </p>
-                                {isExpanded && (
-                                  <div className="mt-3 space-y-4 border-t border-white/10 pt-3">
-                                    <div className="text-xs text-white/50">
-                                      <p>
-                                        <strong>ID:</strong> {notification.id}
-                                      </p>
-                                      <p>
-                                        <strong>Categoria:</strong> {notification.category}
-                                      </p>
-                                      <p>
-                                        <strong>Data completa:</strong>{" "}
-                                        {notification.timestamp.toLocaleString("pt-BR")}
-                                      </p>
-                                      {notification.actionUrl && (
-                                        <p>
-                                          <strong>Ação:</strong>{" "}
-                                          <a
-                                            href={notification.actionUrl}
-                                            className="text-[hsl(var(--primary))] hover:underline"
-                                            onClick={(e) => e.stopPropagation()}
-                                          >
-                                            {notification.actionLabel || notification.actionUrl}
-                                          </a>
-                                        </p>
-                                      )}
-                                    </div>
 
-                                    {/* Histórico de Interações */}
-                                    <div className="border-t border-white/10 pt-3">
-                                      <h4 className="mb-2 text-sm font-semibold text-white">Histórico de Interações</h4>
-                                      {notification.interactions && notification.interactions.length > 0 ? (
-                                        <div className="space-y-2">
-                                          {notification.interactions.map((interaction) => {
-                                            const actionLabels: Record<NotificationInteraction["action"], string> = {
-                                              viewed: "Visualizada",
-                                              clicked: "Clicada",
-                                              archived: "Arquivada",
-                                              deleted: "Excluída",
-                                              marked_read: "Marcada como lida",
-                                              action_taken: "Ação executada",
-                                            };
-
-                                            return (
-                                              <div
-                                                key={interaction.id}
-                                                className="flex items-start justify-between border border-white/10 bg-white/5 p-2 text-xs"
-                                              >
-                                                <div className="flex-1">
-                                                  <p className="text-white/80">
-                                                    <strong>{actionLabels[interaction.action]}</strong>
-                                                  </p>
-                                                  {interaction.details && (
-                                                    <p className="mt-1 text-white/50">{interaction.details}</p>
-                                                  )}
-                                                  <p className="mt-1 text-white/40">
-                                                    {interaction.timestamp.toLocaleString("pt-BR")}
-                                                  </p>
-                                                </div>
-                                              </div>
-                                            );
-                                          })}
-                                        </div>
-                                      ) : (
-                                        <p className="text-xs text-white/50">
-                                          Nenhuma interação registrada ainda.
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-
-                              <div className="flex items-center gap-2">
-                                {notification.actionUrl && (
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    href={notification.actionUrl}
-                                  >
-                                    {notification.actionLabel || "Ver"}
-                                  </Button>
-                                )}
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <Button type="button" variant="ghost" size="sm">
-                                      <MoreVertical className="h-4 w-4" />
+                                <div className="flex items-center gap-2">
+                                  {notification.actionUrl && (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => notification.actionUrl && router.push(notification.actionUrl)}
+                                    >
+                                      {notification.actionLabel || "Ver"}
                                     </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-48 p-2" align="end">
-                                    <div className="flex flex-col gap-1">
-                                      {!notification.read && (
+                                  )}
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button type="button" variant="ghost" size="sm">
+                                        <MoreVertical className="h-4 w-4" />
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-48 p-2" align="end">
+                                      <div className="flex flex-col gap-1">
+                                        {!notification.read && (
+                                          <button
+                                            type="button"
+                                            onClick={() => handleMarkAsRead(notification.id)}
+                                            className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
+                                          >
+                                            <Check className="h-4 w-4" />
+                                            Marcar como lida
+                                          </button>
+                                        )}
                                         <button
                                           type="button"
-                                          onClick={() => handleMarkAsRead(notification.id)}
+                                          onClick={() => handleArchive(notification.id)}
                                           className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
                                         >
-                                          <Check className="h-4 w-4" />
-                                          Marcar como lida
+                                          <Archive className="h-4 w-4" />
+                                          Arquivar
                                         </button>
-                                      )}
-                                      <button
-                                        type="button"
-                                        onClick={() => handleArchive(notification.id)}
-                                        className="flex items-center gap-2 px-3 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors"
-                                      >
-                                        <Archive className="h-4 w-4" />
-                                        Arquivar
-                                      </button>
-                                      <div className="my-1 border-t border-white/10" />
-                                      <button
-                                        type="button"
-                                        onClick={() => handleDelete(notification.id)}
-                                        className="flex items-center gap-2 px-3 py-2 text-sm text-red-400/80 hover:bg-red-500/10 hover:text-red-400 transition-colors"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                        Excluir
-                                      </button>
-                                    </div>
-                                  </PopoverContent>
-                                </Popover>
+                                        <div className="my-1 border-t border-white/10" />
+                                        <button
+                                          type="button"
+                                          onClick={() => handleDelete(notification.id)}
+                                          className="flex items-center gap-2 px-3 py-2 text-sm text-red-400/80 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+                                        >
+                                          <Trash2 className="h-4 w-4" />
+                                          Excluir
+                                        </button>
+                                      </div>
+                                    </PopoverContent>
+                                  </Popover>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </GlassCard>
+                        </GlassCard>
+                      </div>
                     );
                   })}
                 </div>

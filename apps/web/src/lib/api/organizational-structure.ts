@@ -71,6 +71,19 @@ export const organizationalStructureApi = {
         return api.delete(`/branches/${id}`);
     },
 
+    duplicateBranch: async (
+        id: string,
+        options: {
+            name: string;
+            code: string;
+            copyDocuments?: boolean;
+            copyBusinessHours?: boolean;
+            maintainHierarchy?: boolean;
+        }
+    ) => {
+        return api.post<Branch>(`/branches/${id}/duplicate`, options);
+    },
+
     // Departments
     getDepartments: async () => {
         return api.get<Department[]>("/departments");
@@ -122,8 +135,11 @@ export const organizationalStructureApi = {
     },
 
     // Sectors
-    getSectors: async () => {
-        return api.get<Sector[]>("/sectors");
+    getSectors: async (params?: { orgId?: string }) => {
+        const queryParams = new URLSearchParams();
+        if (params?.orgId) queryParams.append("orgId", params.orgId);
+        const query = queryParams.toString();
+        return api.get<Sector[]>(`/sectors${query ? `?${query}` : ""}`);
     },
 
     getSector: async (id: string) => {

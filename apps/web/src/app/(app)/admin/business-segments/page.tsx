@@ -1,16 +1,5 @@
-import { Metadata } from "next";
-import { PageBackground } from "@/components/layout/PageBackground";
-import { SegmentsListClient } from "@/components/admin/business-segments/segments-list-client";
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: "Segmentos | Administração",
-  description: "Gerenciamento de segmentos de negócio do sistema",
-};
-
-export default function BusinessSegmentsPage() {
-  return (
-    <PageBackground>
-      <SegmentsListClient />
-    </PageBackground>
-  );
+export default function BusinessSegmentsIndexPage() {
+    redirect('/admin/business-segments/list');
 }
