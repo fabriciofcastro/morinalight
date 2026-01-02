@@ -31,6 +31,7 @@ import { exportFichasToCSV, exportFichasToExcel, exportFichasToJSON, exportFicha
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { DuplicarFichaModal } from "@/components/fichas-custo/DuplicarFichaModal";
 import { FiltrosPresetsModal } from "@/components/fichas-custo/FiltrosPresetsModal";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Copy } from "lucide-react";
 
 function getCurrentOrgId(): string | null {
@@ -100,6 +101,7 @@ export function FichasCustoListClient() {
   const [selectedFichas, setSelectedFichas] = useState<Set<string>>(new Set());
   const [fichaParaDuplicar, setFichaParaDuplicar] = useState<FichaCusto | null>(null);
   const [mostrarPresets, setMostrarPresets] = useState(false);
+  const [excluirEmLoteAberto, setExcluirEmLoteAberto] = useState(false);
   const { fichas, total, totalPaginas, loading, listar } = useFichasCusto(orgId);
 
   // Stats
@@ -173,26 +175,25 @@ export function FichasCustoListClient() {
     });
   };
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
     if (selectedFichas.size === 0) return;
-    
-    if (window.confirm(`Tem certeza que deseja excluir ${selectedFichas.size} ficha(s)?\n\nEsta ação não pode ser desfeita.`)) {
-      // TODO: Implementar exclusão em lote na API
-      notificationCenter.add({
-        type: "info",
-        title: "Exclusão em lote",
-        message: `Exclusão de ${selectedFichas.size} ficha(s) será implementada em breve.`,
-      });
-      setSelectedFichas(new Set());
-    }
+
+    // TODO: Implementar exclusão em lote na API
+    notificationCenter.add({
+      type: "info",
+      title: "Exclusão em lote",
+      message: `Exclusão de ${selectedFichas.size} ficha(s) será implementada em breve.`,
+    });
+    setSelectedFichas(new Set());
+    setExcluirEmLoteAberto(false);
   };
 
   const handleBulkExport = () => {
     if (selectedFichas.size === 0) return;
-    
+
     const fichasSelecionadas = fichas.filter((f) => selectedFichas.has(f.id));
     const format = window.prompt("Escolha o formato:\n1 - CSV\n2 - Excel\n3 - PDF\n4 - JSON");
-    
+
     try {
       if (format === "1") {
         exportFichasToCSV(fichasSelecionadas);
@@ -250,7 +251,7 @@ export function FichasCustoListClient() {
 
     // Navega para a tela de criação
     router.push("/fichas-custo/new");
-    
+
     notificationCenter.add({
       type: "success",
       title: "Ficha preparada para duplicação",
@@ -276,7 +277,7 @@ export function FichasCustoListClient() {
     if (filtros.ordenacao) {
       setOrdenacao(filtros.ordenacao as "data" | "valor" | "nome");
     }
-    
+
     // Recarregar fichas com os novos filtros
     setPagina(1);
     notificationCenter.add({
@@ -296,13 +297,13 @@ export function FichasCustoListClient() {
         className="relative"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-        
+
         <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
           <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
           <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          
+
           <div className="relative z-10 flex-1">
             <div className="flex items-center gap-4 mb-3">
               <FileText className="h-8 w-8 text-[hsl(var(--primary))]" />
@@ -607,7 +608,7 @@ export function FichasCustoListClient() {
             </Button>
             <Button
               className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-4"
-              onClick={handleBulkDelete}
+              onClick={() => setExcluirEmLoteAberto(true)}
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Excluir
@@ -627,8 +628,8 @@ export function FichasCustoListClient() {
         <div className="p-12 text-center rounded-xl border border-white/10 bg-white/[0.03]">
           <FileText className="h-12 w-12 mx-auto text-white/30 mb-4" />
           <p className="text-white/60">
-            {search || statusFilter !== "all" 
-              ? "Nenhuma ficha encontrada com os filtros aplicados." 
+            {search || statusFilter !== "all"
+              ? "Nenhuma ficha encontrada com os filtros aplicados."
               : "Nenhuma ficha cadastrada. Clique em 'Nova Ficha' para começar."}
           </p>
         </div>
@@ -655,12 +656,12 @@ export function FichasCustoListClient() {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-white/90">#{ficha.numeroSequencial}</h3>
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${getStatusBadgeStyle(ficha.status)}`}>
-                          {ficha.status.replace(/_/g, " ")}
-                        </span>
-                      </div>
-                      <h4 className="text-base font-medium text-white/80 mb-1">{ficha.nomePeca}</h4>
-                      <p className="text-sm text-white/60">
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${getStatusBadgeStyle(ficha.status)}`}>
+                            {ficha.status.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                        <h4 className="text-base font-medium text-white/80 mb-1">{ficha.nomePeca}</h4>
+                        <p className="text-sm text-white/60">
                           Ref: {ficha.referenciaPeca}
                           {ficha.categoria && ` • ${ficha.categoria}`}
                         </p>
@@ -833,6 +834,14 @@ export function FichasCustoListClient() {
           ordenacao: ordenacao || undefined,
         }}
         onAplicarPreset={handleAplicarPreset}
+      />
+
+      <DeleteConfirmDialog
+        open={excluirEmLoteAberto}
+        onOpenChange={setExcluirEmLoteAberto}
+        onConfirm={handleBulkDelete}
+        itemName={`${selectedFichas.size} ficha(s)`}
+        itemType="fichas"
       />
     </div>
   );

@@ -1,10 +1,14 @@
-import { apiClient } from './base';
+/**
+ * Users API - Migrated to Factory Pattern
+ */
+
+import { createTypedApiClient } from "./factory";
 
 export interface User {
     userId: string;
     email: string;
     displayName: string;
-    status: 'active' | 'inactive';
+    status: "active" | "inactive";
     createdAt: string;
     lastLogin?: string;
     has2FA?: boolean;
@@ -18,37 +22,43 @@ export interface CreateUserRequest {
 
 export interface UpdateUserRequest {
     displayName?: string;
-    status?: 'active' | 'inactive';
+    status?: "active" | "inactive";
 }
 
-export class UsersApi {
-    async list(): Promise<User[]> {
-        return apiClient.get<User[]>('/users');
-    }
+// Usar factory pattern para métodos CRUD padrão
+const baseUsersApi = createTypedApiClient<User>("/users");
 
-    async create(data: CreateUserRequest): Promise<User> {
-        return apiClient.post<User>('/users', data);
-    }
+// Estender com métodos customizados
+export const usersApi = {
+    ...baseUsersApi,
 
-    async update(userId: string, data: UpdateUserRequest): Promise<User> {
-        return apiClient.put<User>(`/users/${userId}`, data);
-    }
-
-    async delete(userId: string): Promise<void> {
-        return apiClient.delete<void>(`/users/${userId}`);
-    }
-
-    async resetPassword(userId: string): Promise<void> {
+    // Métodos customizados específicos de usuários
+    resetPassword: async (userId: string): Promise<void> => {
+        const { apiClient } = await import("./base");
         return apiClient.post<void>(`/users/${userId}/reset-password`, {});
-    }
+    },
 
-    async enable2FA(userId: string): Promise<void> {
+    enable2FA: async (userId: string): Promise<void> => {
+        const { apiClient } = await import("./base");
         return apiClient.post<void>(`/users/${userId}/2fa/enable`, {});
-    }
+    },
 
-    async disable2FA(userId: string): Promise<void> {
+    disable2FA: async (userId: string): Promise<void> => {
+        const { apiClient } = await import("./base");
         return apiClient.post<void>(`/users/${userId}/2fa/disable`, {});
-    }
-}
+    },
 
-export const usersApi = new UsersApi();
+    // Bulk operations
+    bulkDelete: async (userIds: string[]): Promise<void> => {
+        const { apiClient } = await import("./base");
+        return apiClient.post<void>("/users/bulk-delete", { userIds });
+    },
+
+    bulkUpdateStatus: async (
+        userIds: string[],
+        status: "active" | "inactive",
+    ): Promise<void> => {
+        const { apiClient } = await import("./base");
+        return apiClient.post<void>("/users/bulk-update-status", { userIds, status });
+    },
+};

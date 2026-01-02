@@ -12,6 +12,7 @@ import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { AnimatedNetworkBackground } from "@/components/ui/animated-network-background";
 import { Button } from "@/components/ui/button";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { DocumentsTab } from "@/components/admin/branches/documents-tab";
 import { AuditLogModal } from "@/components/ui/audit-log-modal";
 import { DuplicateBranchModal, type DuplicateOptions } from "@/components/ui/duplicate-branch-modal";
@@ -427,466 +428,468 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
   ];
 
   return (
-    <AnimatedNetworkBackground className="text-white">
-      <StandardFormPage
-        title={isEditing ? "Editar Filial" : "Nova Filial"}
-        subtitle={
-          isEditing
-            ? `Atualizar informações da filial ${branch?.name}`
-            : "Cadastre uma nova filial no sistema"
-        }
-        icon={<Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />}
-        onSave={onSubmit}
-        backUrl={isEditing && branchId ? `/admin/branches/${branchId}` : "/admin/branches"}
-        isValid={canSave}
-        loading={loading}
-        loadingMessage="Carregando dados da filial..."
-        autoSaveStatus={status}
-        hasUnsavedChanges={hasUnsavedChanges}
-        headerActions={
-          isEditing && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowDuplicateModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-                type="button"
-              >
-                <Copy className="w-4 h-4" />
-                Duplicar
-              </button>
-              <button
-                onClick={() => setShowAuditLog(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
-                type="button"
-              >
-                <History className="w-4 h-4" />
-                Ver Histórico
-              </button>
-            </div>
-          )
-        }
-      >
-        {/* Tabs */}
-        <div className="flex items-center gap-2 border-b border-white/10 mb-6 overflow-x-auto pb-1">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer hover:bg-white/5 rounded-t-lg ${activeTab === tab.id
-                  ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
-                  : "border-transparent text-white/60 hover:text-white/80"
-                  }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="font-medium">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <form onSubmit={onSubmit} className="space-y-6">
-          {activeTab === "general" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="grid gap-6 md:grid-cols-2">
-                <FuturisticInput
-                  label="Nome da Filial"
-                  required
-                  value={form.name}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, name: e.target.value }));
-                    if (errors.name) setErrors((e) => ({ ...e, name: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.name}
-                  errorMessage={errors.name}
-                  placeholder="Ex: Matriz São Paulo"
-                  helperText="Nome identificador da unidade."
-                />
-                <FuturisticInput
-                  label="Código Interno"
-                  required
-                  value={form.code}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, code: e.target.value }));
-                    if (errors.code) setErrors((e) => ({ ...e, code: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.code}
-                  errorMessage={errors.code}
-                  placeholder="Ex: MTZ-01"
-                  tooltip="Código único para identificação da filial no sistema ERP."
-                />
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <FuturisticSelect
-                  label="Tipo de Unidade"
-                  value={form.type}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, type: e.target.value }));
-                    markDirty();
-                  }}
-                >
-                  <option value="LOJA" className="bg-slate-900">Loja</option>
-                  <option value="FABRICA" className="bg-slate-900">Fábrica</option>
-                  <option value="CD" className="bg-slate-900">Centro de Distribuição</option>
-                  <option value="ESCRITORIO" className="bg-slate-900">Escritório</option>
-                </FuturisticSelect>
-
-                <div className="flex items-center pt-6">
-                  <div
-                    onClick={() => {
-                      setForm((p) => ({ ...p, active: !p.active }));
-                      markDirty();
-                    }}
-                    className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all w-full md:w-auto ${form.active
-                      ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
-                      : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
-                      }`}
-                  >
-                    <div className={`p-2 rounded-full ${form.active ? "bg-emerald-500/20" : "bg-white/10"}`}>
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">{form.active ? "Ativa" : "Inativa"}</p>
-                      <p className="text-xs opacity-70">Status operacional</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="pt-4 border-t border-white/5 mt-6">
-                <BranchSelector
-                  branches={allBranches}
-                  value={parentBranchId}
-                  onChange={(id) => {
-                    setParentBranchId(id);
-                    markDirty();
-                  }}
-                  currentBranchId={branchId}
-                  label="Filial Pai (Hierarquia)"
-                  helperText="Selecione a unidade superior caso esta seja uma sub-filial."
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "fiscal" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="relative">
-                  <FuturisticInput
-                    label="CNPJ"
-                    value={form.cnpj}
-                    onChange={(e) => {
-                      setForm((p) => ({ ...p, cnpj: e.target.value }));
-                      markDirty();
-                    }}
-                    onBlur={handleCnpjBlur}
-                    placeholder="00.000.000/0000-00"
-                    error={!!errors.cnpj}
-                    errorMessage={errors.cnpj}
-                    helperText="Digite para buscar dados automaticamente."
-                    tooltip="Cadastro Nacional de Pessoa Jurídica da filial."
-                  />
-                  {fetchingCnpj && (
-                    <div className="absolute right-3 top-[38px]">
-                      <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--primary))]" />
-                    </div>
-                  )}
-                </div>
-
-                <FuturisticInput
-                  label="Inscrição Estadual"
-                  value={form.stateRegistration}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, stateRegistration: e.target.value }));
-                    markDirty();
-                  }}
-                  placeholder="Ex: 123.456.789.111"
-                  tooltip="Número de inscrição na Secretaria da Fazenda Estadual."
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "address" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="grid gap-6 md:grid-cols-4">
-                <div className="relative col-span-1">
-                  <FuturisticInput
-                    label="CEP"
-                    value={form.address?.zipCode}
-                    onChange={(e) => {
-                      setForm((p) => ({
-                        ...p,
-                        address: { ...p.address!, zipCode: e.target.value },
-                      }));
-                      markDirty();
-                    }}
-                    onBlur={handleCepBlur}
-                    placeholder="00000-000"
-                  />
-                  {fetchingCep && (
-                    <div className="absolute right-3 top-[38px]">
-                      <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--primary))]" />
-                    </div>
-                  )}
-                </div>
-                <div className="col-span-3">
-                  <FuturisticInput
-                    label="Logradouro"
-                    value={form.address?.street}
-                    onChange={(e) => {
-                      setForm((p) => ({
-                        ...p,
-                        address: { ...p.address!, street: e.target.value },
-                      }));
-                      markDirty();
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-4">
-                <div className="col-span-1">
-                  <FuturisticInput
-                    label="Número"
-                    value={form.address?.number}
-                    onChange={(e) => {
-                      setForm((p) => ({
-                        ...p,
-                        address: { ...p.address!, number: e.target.value },
-                      }));
-                      markDirty();
-                    }}
-                  />
-                </div>
-                <div className="col-span-3">
-                  <FuturisticInput
-                    label="Complemento"
-                    value={form.address?.complement}
-                    onChange={(e) => {
-                      setForm((p) => ({
-                        ...p,
-                        address: { ...p.address!, complement: e.target.value },
-                      }));
-                      markDirty();
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-3">
-                <FuturisticInput
-                  label="Bairro"
-                  value={form.address?.neighborhood}
-                  onChange={(e) => {
-                    setForm((p) => ({
-                      ...p,
-                      address: { ...p.address!, neighborhood: e.target.value },
-                    }));
-                    markDirty();
-                  }}
-                />
-                <FuturisticInput
-                  label="Cidade"
-                  value={form.address?.city}
-                  onChange={(e) => {
-                    setForm((p) => ({
-                      ...p,
-                      address: { ...p.address!, city: e.target.value },
-                    }));
-                    markDirty();
-                  }}
-                />
-                <FuturisticInput
-                  label="Estado (UF)"
-                  value={form.address?.state}
-                  onChange={(e) => {
-                    setForm((p) => ({
-                      ...p,
-                      address: { ...p.address!, state: e.target.value.toUpperCase() },
-                    }));
-                    markDirty();
-                  }}
-                  maxLength={2}
-                  error={!!errors['address.state']}
-                />
-              </div>
-
-              {/* Mapa de localização */}
-              <div className="mt-6">
-                <h4 className="text-sm font-semibold text-white/90 mb-3">Localização no Mapa</h4>
-                <MapPicker
-                  value={coordinates}
-                  onChange={(coords) => {
-                    setCoordinates(coords);
-                    markDirty();
-                  }}
-                  height="450px"
-                  zoom={16}
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "contact" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="grid gap-6 md:grid-cols-2">
-                <FuturisticInput
-                  label="Email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, email: e.target.value }));
-                    if (errors.email) setErrors((e) => ({ ...e, email: "" }));
-                    markDirty();
-                  }}
-                  placeholder="contato@filial.com"
-                  error={!!errors.email}
-                  errorMessage={errors.email}
-                />
-                <FuturisticInput
-                  label="Telefone"
-                  value={form.phone}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, phone: e.target.value }));
-                    markDirty();
-                  }}
-                  placeholder="(00) 0000-0000"
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === "hours" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <BusinessHoursEditor
-                value={businessHours}
-                onChange={(hours) => {
-                  setBusinessHours(hours);
-                  markDirty();
-                }}
-              />
-            </div>
-          )}
-
-          {activeTab === "documents" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <DocumentsTab branchId={branchId} isNewBranch={!isEditing} />
-            </div>
-          )}
-
-
-
-          {activeTab === "capacity" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <CapacityEditor
-                value={capacity}
-                onChange={(val) => {
-                  setCapacity(val);
-                  markDirty();
-                }}
-              />
-            </div>
-          )}
-
-          {activeTab === "costs" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <CostsEditor
-                value={costs}
-                onChange={(val) => {
-                  setCosts(val);
-                  markDirty();
-                }}
-              />
-            </div>
-          )}
-
-          {activeTab === "custom_fields" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
-              <div className="flex justify-end">
-                <Button
+    <AllowedGuard I={isEditing ? "update" : "create"} a="Branch" redirectTo="/admin/branches">
+      <AnimatedNetworkBackground className="text-white">
+        <StandardFormPage
+          title={isEditing ? "Editar Filial" : "Nova Filial"}
+          subtitle={
+            isEditing
+              ? `Atualizar informações da filial ${branch?.name}`
+              : "Cadastre uma nova filial no sistema"
+          }
+          icon={<Building2 className="h-8 w-8 text-[hsl(var(--primary))]" />}
+          onSave={onSubmit}
+          backUrl={isEditing && branchId ? `/admin/branches/${branchId}` : "/admin/branches"}
+          isValid={canSave}
+          loading={loading}
+          loadingMessage="Carregando dados da filial..."
+          autoSaveStatus={status}
+          hasUnsavedChanges={hasUnsavedChanges}
+          headerActions={
+            isEditing && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowDuplicateModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
                   type="button"
-                  variant={isConfiguringFields ? "default" : "outline"}
-                  onClick={() => setIsConfiguringFields(!isConfiguringFields)}
-                  className="gap-2"
                 >
-                  <Settings2 className="w-4 h-4" />
-                  {isConfiguringFields ? "Voltar para Dados" : "Configurar Campos"}
-                </Button>
+                  <Copy className="w-4 h-4" />
+                  Duplicar
+                </button>
+                <button
+                  onClick={() => setShowAuditLog(true)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+                  type="button"
+                >
+                  <History className="w-4 h-4" />
+                  Ver Histórico
+                </button>
               </div>
+            )
+          }
+        >
+          {/* Tabs */}
+          <div className="flex items-center gap-2 border-b border-white/10 mb-6 overflow-x-auto pb-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer hover:bg-white/5 rounded-t-lg ${activeTab === tab.id
+                    ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
+                    : "border-transparent text-white/60 hover:text-white/80"
+                    }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-              {isConfiguringFields ? (
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-white mb-2">Construtor de Campos</h3>
-                    <p className="text-white/60">
-                      Defina os campos personalizados que estarão disponíveis para preenchimento nesta e em outras filiais.
-                    </p>
+          <form onSubmit={onSubmit} className="space-y-6">
+            {activeTab === "general" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <FuturisticInput
+                    label="Nome da Filial"
+                    required
+                    value={form.name}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, name: e.target.value }));
+                      if (errors.name) setErrors((e) => ({ ...e, name: "" }));
+                      markDirty();
+                    }}
+                    error={!!errors.name}
+                    errorMessage={errors.name}
+                    placeholder="Ex: Matriz São Paulo"
+                    helperText="Nome identificador da unidade."
+                  />
+                  <FuturisticInput
+                    label="Código Interno"
+                    required
+                    value={form.code}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, code: e.target.value }));
+                      if (errors.code) setErrors((e) => ({ ...e, code: "" }));
+                      markDirty();
+                    }}
+                    error={!!errors.code}
+                    errorMessage={errors.code}
+                    placeholder="Ex: MTZ-01"
+                    tooltip="Código único para identificação da filial no sistema ERP."
+                  />
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <FuturisticSelect
+                    label="Tipo de Unidade"
+                    value={form.type}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, type: e.target.value }));
+                      markDirty();
+                    }}
+                  >
+                    <option value="LOJA" className="bg-slate-900">Loja</option>
+                    <option value="FABRICA" className="bg-slate-900">Fábrica</option>
+                    <option value="CD" className="bg-slate-900">Centro de Distribuição</option>
+                    <option value="ESCRITORIO" className="bg-slate-900">Escritório</option>
+                  </FuturisticSelect>
+
+                  <div className="flex items-center pt-6">
+                    <div
+                      onClick={() => {
+                        setForm((p) => ({ ...p, active: !p.active }));
+                        markDirty();
+                      }}
+                      className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all w-full md:w-auto ${form.active
+                        ? "bg-emerald-500/10 border-emerald-500 text-emerald-400"
+                        : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
+                        }`}
+                    >
+                      <div className={`p-2 rounded-full ${form.active ? "bg-emerald-500/20" : "bg-white/10"}`}>
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{form.active ? "Ativa" : "Inativa"}</p>
+                        <p className="text-xs opacity-70">Status operacional</p>
+                      </div>
+                    </div>
                   </div>
-                  <CustomFieldsBuilder
-                    config={customFieldsConfig}
-                    onChange={(cfg) => {
-                      setCustomFieldsConfig(cfg);
-                      // Reset values for removed fields if needed, or keep for history
+                </div>
+                <div className="pt-4 border-t border-white/5 mt-6">
+                  <BranchSelector
+                    branches={allBranches}
+                    value={parentBranchId}
+                    onChange={(id) => {
+                      setParentBranchId(id);
+                      markDirty();
+                    }}
+                    currentBranchId={branchId}
+                    label="Filial Pai (Hierarquia)"
+                    helperText="Selecione a unidade superior caso esta seja uma sub-filial."
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "fiscal" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="relative">
+                    <FuturisticInput
+                      label="CNPJ"
+                      value={form.cnpj}
+                      onChange={(e) => {
+                        setForm((p) => ({ ...p, cnpj: e.target.value }));
+                        markDirty();
+                      }}
+                      onBlur={handleCnpjBlur}
+                      placeholder="00.000.000/0000-00"
+                      error={!!errors.cnpj}
+                      errorMessage={errors.cnpj}
+                      helperText="Digite para buscar dados automaticamente."
+                      tooltip="Cadastro Nacional de Pessoa Jurídica da filial."
+                    />
+                    {fetchingCnpj && (
+                      <div className="absolute right-3 top-[38px]">
+                        <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--primary))]" />
+                      </div>
+                    )}
+                  </div>
+
+                  <FuturisticInput
+                    label="Inscrição Estadual"
+                    value={form.stateRegistration}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, stateRegistration: e.target.value }));
+                      markDirty();
+                    }}
+                    placeholder="Ex: 123.456.789.111"
+                    tooltip="Número de inscrição na Secretaria da Fazenda Estadual."
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "address" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid gap-6 md:grid-cols-4">
+                  <div className="relative col-span-1">
+                    <FuturisticInput
+                      label="CEP"
+                      value={form.address?.zipCode}
+                      onChange={(e) => {
+                        setForm((p) => ({
+                          ...p,
+                          address: { ...p.address!, zipCode: e.target.value },
+                        }));
+                        markDirty();
+                      }}
+                      onBlur={handleCepBlur}
+                      placeholder="00000-000"
+                    />
+                    {fetchingCep && (
+                      <div className="absolute right-3 top-[38px]">
+                        <Loader2 className="h-4 w-4 animate-spin text-[hsl(var(--primary))]" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="col-span-3">
+                    <FuturisticInput
+                      label="Logradouro"
+                      value={form.address?.street}
+                      onChange={(e) => {
+                        setForm((p) => ({
+                          ...p,
+                          address: { ...p.address!, street: e.target.value },
+                        }));
+                        markDirty();
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-4">
+                  <div className="col-span-1">
+                    <FuturisticInput
+                      label="Número"
+                      value={form.address?.number}
+                      onChange={(e) => {
+                        setForm((p) => ({
+                          ...p,
+                          address: { ...p.address!, number: e.target.value },
+                        }));
+                        markDirty();
+                      }}
+                    />
+                  </div>
+                  <div className="col-span-3">
+                    <FuturisticInput
+                      label="Complemento"
+                      value={form.address?.complement}
+                      onChange={(e) => {
+                        setForm((p) => ({
+                          ...p,
+                          address: { ...p.address!, complement: e.target.value },
+                        }));
+                        markDirty();
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-3">
+                  <FuturisticInput
+                    label="Bairro"
+                    value={form.address?.neighborhood}
+                    onChange={(e) => {
+                      setForm((p) => ({
+                        ...p,
+                        address: { ...p.address!, neighborhood: e.target.value },
+                      }));
                       markDirty();
                     }}
                   />
-                </div>
-              ) : (
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                  <div className="mb-6">
-                    <h3 className="text-xl font-bold text-white mb-2">Campos Adicionais</h3>
-                    <p className="text-white/60">
-                      Preencha as informações complementares definidas para esta unidade.
-                    </p>
-                  </div>
-                  <CustomFieldsRenderer
-                    config={customFieldsConfig}
-                    values={customFieldsValues}
-                    onChange={(vals) => {
-                      setCustomFieldsValues(vals);
+                  <FuturisticInput
+                    label="Cidade"
+                    value={form.address?.city}
+                    onChange={(e) => {
+                      setForm((p) => ({
+                        ...p,
+                        address: { ...p.address!, city: e.target.value },
+                      }));
                       markDirty();
                     }}
-                    errors={errors}
+                  />
+                  <FuturisticInput
+                    label="Estado (UF)"
+                    value={form.address?.state}
+                    onChange={(e) => {
+                      setForm((p) => ({
+                        ...p,
+                        address: { ...p.address!, state: e.target.value.toUpperCase() },
+                      }));
+                      markDirty();
+                    }}
+                    maxLength={2}
+                    error={!!errors['address.state']}
                   />
                 </div>
+
+                {/* Mapa de localização */}
+                <div className="mt-6">
+                  <h4 className="text-sm font-semibold text-white/90 mb-3">Localização no Mapa</h4>
+                  <MapPicker
+                    value={coordinates}
+                    onChange={(coords) => {
+                      setCoordinates(coords);
+                      markDirty();
+                    }}
+                    height="450px"
+                    zoom={16}
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "contact" && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <FuturisticInput
+                    label="Email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, email: e.target.value }));
+                      if (errors.email) setErrors((e) => ({ ...e, email: "" }));
+                      markDirty();
+                    }}
+                    placeholder="contato@filial.com"
+                    error={!!errors.email}
+                    errorMessage={errors.email}
+                  />
+                  <FuturisticInput
+                    label="Telefone"
+                    value={form.phone}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, phone: e.target.value }));
+                      markDirty();
+                    }}
+                    placeholder="(00) 0000-0000"
+                  />
+                </div>
+              </div>
+            )}
+
+            {activeTab === "hours" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <BusinessHoursEditor
+                  value={businessHours}
+                  onChange={(hours) => {
+                    setBusinessHours(hours);
+                    markDirty();
+                  }}
+                />
+              </div>
+            )}
+
+            {activeTab === "documents" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <DocumentsTab branchId={branchId} isNewBranch={!isEditing} />
+              </div>
+            )}
+
+
+
+            {activeTab === "capacity" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <CapacityEditor
+                  value={capacity}
+                  onChange={(val) => {
+                    setCapacity(val);
+                    markDirty();
+                  }}
+                />
+              </div>
+            )}
+
+            {activeTab === "costs" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <CostsEditor
+                  value={costs}
+                  onChange={(val) => {
+                    setCosts(val);
+                    markDirty();
+                  }}
+                />
+              </div>
+            )}
+
+            {activeTab === "custom_fields" && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant={isConfiguringFields ? "default" : "outline"}
+                    onClick={() => setIsConfiguringFields(!isConfiguringFields)}
+                    className="gap-2"
+                  >
+                    <Settings2 className="w-4 h-4" />
+                    {isConfiguringFields ? "Voltar para Dados" : "Configurar Campos"}
+                  </Button>
+                </div>
+
+                {isConfiguringFields ? (
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-white mb-2">Construtor de Campos</h3>
+                      <p className="text-white/60">
+                        Defina os campos personalizados que estarão disponíveis para preenchimento nesta e em outras filiais.
+                      </p>
+                    </div>
+                    <CustomFieldsBuilder
+                      config={customFieldsConfig}
+                      onChange={(cfg) => {
+                        setCustomFieldsConfig(cfg);
+                        // Reset values for removed fields if needed, or keep for history
+                        markDirty();
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-white mb-2">Campos Adicionais</h3>
+                      <p className="text-white/60">
+                        Preencha as informações complementares definidas para esta unidade.
+                      </p>
+                    </div>
+                    <CustomFieldsRenderer
+                      config={customFieldsConfig}
+                      values={customFieldsValues}
+                      onChange={(vals) => {
+                        setCustomFieldsValues(vals);
+                        markDirty();
+                      }}
+                      errors={errors}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10 flex justify-between items-center">
+              <span>Os campos marcados com * são obrigatórios.</span>
+              {isEditing && branch && (
+                <span className="font-mono">ID: {branch.id}</span>
               )}
             </div>
-          )}
+          </form>
+        </StandardFormPage>
 
-          <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10 flex justify-between items-center">
-            <span>Os campos marcados com * são obrigatórios.</span>
-            {isEditing && branch && (
-              <span className="font-mono">ID: {branch.id}</span>
-            )}
-          </div>
-        </form>
-      </StandardFormPage>
+        {/* Audit Log Modal */}
+        {showAuditLog && isEditing && branchId && (
+          <AuditLogModal
+            entityType="branch"
+            entityId={branchId}
+            entityName={branch?.name}
+            onClose={() => setShowAuditLog(false)}
+          />
+        )}
 
-      {/* Audit Log Modal */}
-      {showAuditLog && isEditing && branchId && (
-        <AuditLogModal
-          entityType="branch"
-          entityId={branchId}
-          entityName={branch?.name}
-          onClose={() => setShowAuditLog(false)}
-        />
-      )}
-
-      {/* Duplicate Branch Modal */}
-      {showDuplicateModal && isEditing && branch && (
-        <DuplicateBranchModal
-          branchName={branch.name}
-          onConfirm={handleDuplicate}
-          onCancel={() => setShowDuplicateModal(false)}
-        />
-      )}
-    </AnimatedNetworkBackground>
+        {/* Duplicate Branch Modal */}
+        {showDuplicateModal && isEditing && branch && (
+          <DuplicateBranchModal
+            branchName={branch.name}
+            onConfirm={handleDuplicate}
+            onCancel={() => setShowDuplicateModal(false)}
+          />
+        )}
+      </AnimatedNetworkBackground>
+    </AllowedGuard>
   );
 }
 

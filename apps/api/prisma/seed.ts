@@ -46,7 +46,35 @@ async function main() {
     console.log('📋 Credenciais de login:');
     console.log('   Email: admin@morina.com');
     console.log('   Senha: Admin@123');
-    console.log('   Senha: Admin@123');
+    console.log('');
+
+    // Criar super administrador Fabricio
+    const fabricioPasswordHash = await bcrypt.hash('67318696Il!@#', 10);
+    const fabricio = await prisma.user.upsert({
+        where: { email: 'fabricio@morina.com' },
+        update: {
+            passwordHash: fabricioPasswordHash,
+            status: 'active',
+        },
+        create: {
+            email: 'fabricio@morina.com',
+            displayName: 'Fabricio Castro',
+            passwordHash: fabricioPasswordHash,
+            status: 'active',
+            memberships: {
+                create: {
+                    organizationId: org.id,
+                    role: 'owner',
+                },
+            },
+        },
+    });
+
+    console.log('✅ Super Administrador criado:', fabricio.email);
+    console.log('');
+    console.log('👑 Super Admin Credentials:');
+    console.log('   Email: fabricio@morina.com');
+    console.log('   Senha: 67318696Il!@#');
     console.log('');
 
     // ===========================================

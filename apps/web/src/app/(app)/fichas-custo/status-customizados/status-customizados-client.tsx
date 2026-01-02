@@ -19,6 +19,7 @@ import { statusCustomizadoApi } from "@/lib/api/status-customizado-ficha-custo";
 import type { StatusCustomizado, CreateStatusCustomizadoInput, UpdateStatusCustomizadoInput } from "@/lib/api/status-customizado-ficha-custo";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { PageLoader } from "@/components/ui/PageLoader";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -51,6 +52,7 @@ export function StatusCustomizadosClient() {
   const [search, setSearch] = useState("");
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [criandoNovo, setCriandoNovo] = useState(false);
+  const [statusParaExcluir, setStatusParaExcluir] = useState<StatusCustomizado | null>(null);
 
   // Form data
   const [formData, setFormData] = useState<CreateStatusCustomizadoInput>({
@@ -207,20 +209,16 @@ export function StatusCustomizadosClient() {
   };
 
   // Excluir
-  const excluir = async (status: StatusCustomizado) => {
-    if (!orgId) return;
-
-    if (!window.confirm(`Tem certeza que deseja excluir o status "${status.nome}"?\n\nEsta ação não pode ser desfeita.`)) {
-      return;
-    }
+  const handleExcluir = async () => {
+    if (!orgId || !statusParaExcluir) return;
 
     try {
-      await statusCustomizadoApi.deletar(orgId, status.id);
       notificationCenter.add({
         type: "success",
         title: "Status excluído",
-        message: `Status "${status.nome}" foi excluído com sucesso.`,
+        message: `Status "${statusParaExcluir.nome}" foi excluído com sucesso.`,
       });
+      setStatusParaExcluir(null);
       void carregarStatus();
     } catch (error) {
       console.error("Erro ao excluir status:", error);
@@ -483,7 +481,7 @@ export function StatusCustomizadosClient() {
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button
                         className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[40px] w-[40px] p-0 flex items-center justify-center"
-                        onClick={() => excluir(status)}
+                        onClick={() => setStatusParaExcluir(status)}
                         title={`Excluir status "${status.nome}"`}
                       >
                         <Trash2 className="h-5 w-5" />
@@ -496,6 +494,15 @@ export function StatusCustomizadosClient() {
           )}
         </motion.div>
       )}
+
+      <DeleteConfirmDialog
+        open={!!statusParaExcluir}
+        onOpenChange={(open) => !open && setStatusParaExcluir(null)}
+        onConfirm={handleExcluir}
+        itemName={statusParaExcluir?.nome || ""}
+        itemType="status"
+        isLoading={saving}
+      />
     </div>
   );
 }

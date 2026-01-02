@@ -25,6 +25,8 @@ import { organizationsApi, Organization } from "@/lib/api/organizations";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { Can } from "@/lib/auth";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 // Componente de Card de Filial
 const BranchCard = ({
@@ -84,9 +86,11 @@ const BranchCard = ({
           </div>
 
           <div className="flex gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white" onClick={onEdit}>
-              <Pencil className="w-4 h-4" />
-            </Button>
+            <Can I="update" a="Branch">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white" onClick={onEdit}>
+                <Pencil className="w-4 h-4" />
+              </Button>
+            </Can>
           </div>
         </div>
 
@@ -106,30 +110,36 @@ const BranchCard = ({
         </div>
 
         <div className="flex gap-2 pt-4 border-t border-white/5">
-          <Button
-            className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
-            variant="outline"
-            size="sm"
-            onClick={onEdit}
-          >
-            Editar
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="w-9 h-9 border-white/10 hover:bg-white/10 text-white/60 hover:text-white"
-            onClick={onClone}
-          >
-            <Copy className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
-            onClick={onDelete}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <Can I="update" a="Branch">
+            <Button
+              className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+            >
+              Editar
+            </Button>
+          </Can>
+          <Can I="create" a="Branch">
+            <Button
+              variant="outline"
+              size="icon"
+              className="w-9 h-9 border-white/10 hover:bg-white/10 text-white/60 hover:text-white"
+              onClick={onClone}
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
+          </Can>
+          <Can I="delete" a="Branch">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
+              onClick={onDelete}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </Can>
         </div>
       </div>
     </motion.div>
@@ -208,152 +218,155 @@ export function BranchesListClient() {
   }, [organizations, searchTerm]);
 
   return (
-    <div className="relative min-h-screen p-8 text-white">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60"
+    <AllowedGuard I="read" a="Branch" redirectTo="/admin">
+      <div className="relative min-h-screen p-8 text-white">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+          <div>
+            <motion.h1
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60"
+            >
+              Filiais
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-white/40 mt-1"
+            >
+              Gerenciamento das unidades operacionais
+            </motion.p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex gap-3"
           >
-            Filiais
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-white/40 mt-1"
-          >
-            Gerenciamento das unidades operacionais
-          </motion.p>
+            <Can I="create" a="Branch">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg blur opacity-40 group-hover:opacity-60 transition-opacity" />
+                <Button
+                  onClick={() => router.push("/admin/branches/new")}
+                  className="relative bg-[#09090b] text-white border border-white/10 hover:bg-white/5"
+                >
+                  <Plus className="w-4 h-4 mr-2 text-blue-400" />
+                  Nova Filial
+                </Button>
+              </div>
+            </Can>
+          </motion.div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex gap-3"
-        >
-          <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg blur opacity-40 group-hover:opacity-60 transition-opacity" />
-            <Button
-              onClick={() => router.push("/admin/branches/new")}
-              className="relative bg-[#09090b] text-white border border-white/10 hover:bg-white/5"
-            >
-              <Plus className="w-4 h-4 mr-2 text-blue-400" />
-              Nova Filial
-            </Button>
-          </div>
-        </motion.div>
-      </div>
+        {/* Stats e Filtros */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* Stats Card: Total */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm relative overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
+              <Store className="w-12 h-12" />
+            </div>
+            <p className="text-sm text-white/40 font-medium uppercase tracking-wider">Total de Unidades</p>
+            <h4 className="text-3xl font-bold mt-1 text-white">{organizations.length}</h4>
+          </motion.div>
 
-      {/* Stats e Filtros */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        {/* Stats Card: Total */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm relative overflow-hidden group"
-        >
-          <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity">
-            <Store className="w-12 h-12" />
-          </div>
-          <p className="text-sm text-white/40 font-medium uppercase tracking-wider">Total de Unidades</p>
-          <h4 className="text-3xl font-bold mt-1 text-white">{organizations.length}</h4>
-        </motion.div>
+          {/* Stats Card: Ativas */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-sm relative overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity text-emerald-500">
+              <CheckCircle2 className="w-12 h-12" />
+            </div>
+            <p className="text-sm text-emerald-400/60 font-medium uppercase tracking-wider">Ativas</p>
+            <h4 className="text-3xl font-bold mt-1 text-emerald-400">
+              {organizations.filter(o => o.isActive).length}
+            </h4>
+          </motion.div>
 
-        {/* Stats Card: Ativas */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-sm relative overflow-hidden group"
-        >
-          <div className="absolute top-0 right-0 p-3 opacity-20 group-hover:opacity-40 transition-opacity text-emerald-500">
-            <CheckCircle2 className="w-12 h-12" />
-          </div>
-          <p className="text-sm text-emerald-400/60 font-medium uppercase tracking-wider">Ativas</p>
-          <h4 className="text-3xl font-bold mt-1 text-emerald-400">
-            {organizations.filter(o => o.isActive).length}
-          </h4>
-        </motion.div>
+          {/* Search Input */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="md:col-span-2 flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 backdrop-blur-sm focus-within:border-blue-500/50 transition-colors"
+          >
+            <Search className="w-5 h-5 text-white/40" />
+            <input
+              type="text"
+              placeholder="Buscar por nome, código ou cidade..."
+              className="w-full bg-transparent border-none py-4 text-white placeholder:text-white/20 focus:outline-none"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
+          </motion.div>
+        </div>
 
-        {/* Search Input */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="md:col-span-2 flex items-center gap-4 bg-white/5 border border-white/10 rounded-xl px-4 backdrop-blur-sm focus-within:border-blue-500/50 transition-colors"
-        >
-          <Search className="w-5 h-5 text-white/40" />
-          <input
-            type="text"
-            placeholder="Buscar por nome, código ou cidade..."
-            className="w-full bg-transparent border-none py-4 text-white placeholder:text-white/20 focus:outline-none"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+        {/* Tabs Layout */}
+        <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
+          <ViewModeToggle
+            viewMode={viewMode}
+            onChange={(mode) => setViewMode(mode as "grid" | "map")}
+            modes={["grid", "map"]}
           />
-        </motion.div>
-      </div>
+        </div>
 
-      {/* Tabs Layout */}
-      <div className="flex gap-2 mb-6 border-b border-white/10 pb-4">
-        <ViewModeToggle
-          viewMode={viewMode}
-          onChange={(mode) => setViewMode(mode as "grid" | "map")}
-          modes={["grid", "map"]}
+        {/* Content */}
+        <div className="min-h-[400px]">
+          {loading ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+            </div>
+          ) : viewMode === "grid" ? (
+            filteredOrganizations.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredOrganizations.map((org, i) => (
+                  <BranchCard
+                    key={org.id}
+                    organization={org}
+                    onEdit={() => router.push(`/admin/branches/${org.id}/edit`)}
+                    onDelete={() => handleDelete(org.id, org.name)}
+                    onClone={() => { }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-white/30">
+                <Store className="w-20 h-20 mb-4 opacity-20" />
+                <p className="text-lg">Nenhuma filial encontrada.</p>
+              </div>
+            )
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-2xl border border-white/10 border-dashed">
+              <MapIcon className="w-20 h-20 mb-4 text-blue-500/40" />
+              <h3 className="text-xl font-bold text-white mb-2">Visualização de Mapa</h3>
+              <p className="text-white/40 max-w-md text-center">
+                A visualização geoespacial das filiais estará disponível na próxima atualização do sistema.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <DeleteConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={(open) => {
+            setDeleteDialogOpen(open);
+            if (!open) setOrgToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          itemName={orgToDelete?.name || ""}
+          itemType="filial"
+          isLoading={deleteLoading}
         />
       </div>
-
-      {/* Content */}
-      <div className="min-h-[400px]">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-          </div>
-        ) : viewMode === "grid" ? (
-          filteredOrganizations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredOrganizations.map((org, i) => (
-                <BranchCard
-                  key={org.id}
-                  organization={org}
-                  onEdit={() => router.push(`/admin/branches/${org.id}/edit`)}
-                  onDelete={() => handleDelete(org.id, org.name)}
-                  onClone={() => { }}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-white/30">
-              <Store className="w-20 h-20 mb-4 opacity-20" />
-              <p className="text-lg">Nenhuma filial encontrada.</p>
-            </div>
-          )
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 bg-white/5 rounded-2xl border border-white/10 border-dashed">
-            <MapIcon className="w-20 h-20 mb-4 text-blue-500/40" />
-            <h3 className="text-xl font-bold text-white mb-2">Visualização de Mapa</h3>
-            <p className="text-white/40 max-w-md text-center">
-              A visualização geoespacial das filiais estará disponível na próxima atualização do sistema.
-            </p>
-          </div>
-        )}
-      </div>
-
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={(open) => {
-          setDeleteDialogOpen(open);
-          if (!open) setOrgToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        itemName={orgToDelete?.name || ""}
-        itemType="filial"
-        isLoading={deleteLoading}
-      />
-    </div>
+    </AllowedGuard>
   );
 }
-```

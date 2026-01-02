@@ -22,6 +22,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@casl/ability": "^6.7.5",
     "@fastify/cors": "^9.0.1",
     "@fastify/helmet": "^11.1.1",
     "@fastify/multipart": "^8.0.1",
@@ -30,8 +31,11 @@
     "@google/generative-ai": "^0.24.1",
     "@morina/catalogo-application": "workspace:*",
     "@morina/catalogo-domain": "workspace:*",
+    "@morina/observability": "workspace:*",
     "@morina/shared-kernel": "workspace:*",
     "@prisma/client": "^5.21.1",
+    "@sentry/node": "^10.32.1",
+    "@sentry/profiling-node": "^10.32.1",
     "bcryptjs": "^3.0.3",
     "dotenv": "^16.4.7",
     "fastify": "^4.28.1",

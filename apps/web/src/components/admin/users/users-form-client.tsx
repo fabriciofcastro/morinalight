@@ -43,6 +43,8 @@ import { Progress } from "@morina/ui";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { FileUpload } from "@/components/ui/file-upload";
+import { Can } from "@/lib/auth";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface Department {
   id: string;
@@ -977,808 +979,593 @@ export function UsersFormClient() {
   );
 
   return (
-    <StandardFormPage
-      title="Criar Novo Usuário"
-      subtitle="Cadastre um novo usuário no sistema"
-      icon={<UserPlus className="h-8 w-8" />}
-      onSave={handleOnSubmit}
-      showSaveButton={false}
-      backUrl="/admin/users"
-      isValid={canSave}
-      autoSaveStatus={autoSaveStatus}
-      hasUnsavedChanges={hasUnsavedChanges}
-      loading={creatingUser}
-      headerActions={
-        <div className="flex items-center gap-4">
-          {/* Progress Bar */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-white/60">Progresso do formulário</span>
-              <span className="text-white/80 font-medium">{formProgress}%</span>
+    <AllowedGuard I="create" a="User" redirectTo="/admin/users">
+      <StandardFormPage
+        title="Criar Novo Usuário"
+        subtitle="Cadastre um novo usuário no sistema"
+        icon={<UserPlus className="h-8 w-8" />}
+        onSave={handleOnSubmit}
+        showSaveButton={false}
+        backUrl="/admin/users"
+        isValid={canSave}
+        autoSaveStatus={autoSaveStatus}
+        hasUnsavedChanges={hasUnsavedChanges}
+        loading={creatingUser}
+        headerActions={
+          <div className="flex items-center gap-4">
+            {/* Progress Bar */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-white/60">Progresso do formulário</span>
+                <span className="text-white/80 font-medium">{formProgress}%</span>
+              </div>
+              <Progress value={formProgress} className="h-1.5" />
             </div>
-            <Progress value={formProgress} className="h-1.5" />
           </div>
-        </div>
-      }
-    >
-      <div className="space-y-8">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* DADOS PESSOAIS */}
-          {(!wizardMode || currentWizardStep === 0) && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mb-8"
-            >
-              <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
-                <User className="h-6 w-6 text-[hsl(var(--primary))]" />
-                Dados Pessoais
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FuturisticInput
-                  label="Nome Completo"
-                  required
-                  value={formData.displayName}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, displayName: e.target.value }));
-                    if (errors.displayName) setErrors((prev) => ({ ...prev, displayName: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.displayName}
-                  errorMessage={errors.displayName}
-                  placeholder="Digite o nome completo"
-                />
-                <div>
+        }
+      >
+        <div className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* DADOS PESSOAIS */}
+            {(!wizardMode || currentWizardStep === 0) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mb-8"
+              >
+                <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
+                  <User className="h-6 w-6 text-[hsl(var(--primary))]" />
+                  Dados Pessoais
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FuturisticInput
-                    label="Email"
-                    type="email"
+                    label="Nome Completo"
                     required
-                    value={formData.email}
+                    value={formData.displayName}
                     onChange={(e) => {
-                      setFormData((prev) => ({ ...prev, email: e.target.value.toLowerCase() }));
-                      if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                      setFormData((prev) => ({ ...prev, displayName: e.target.value }));
+                      if (errors.displayName) setErrors((prev) => ({ ...prev, displayName: "" }));
                       markDirty();
                     }}
-                    error={!!errors.email}
-                    errorMessage={errors.email}
-                    placeholder="usuario@exemplo.com"
+                    error={!!errors.displayName}
+                    errorMessage={errors.displayName}
+                    placeholder="Digite o nome completo"
                   />
-                  {!formData.email && formData.displayName && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const suggested = generateEmailSuggestion(formData.displayName);
-                        setFormData((prev) => ({ ...prev, email: suggested }));
+                  <div>
+                    <FuturisticInput
+                      label="Email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, email: e.target.value.toLowerCase() }));
+                        if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+                        markDirty();
                       }}
-                      className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors"
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      Sugerir email
-                    </button>
-                  )}
-                </div>
-                <div>
-                  <FuturisticInput
-                    label="CPF"
-                    required
-                    value={formData.cpf}
-                    onChange={(e) => {
-                      const formatted = formatCPF(e.target.value);
-                      setFormData((prev) => ({ ...prev, cpf: formatted }));
-                      if (errors.cpf) setErrors((prev) => ({ ...prev, cpf: "" }));
-                      markDirty();
-                    }}
-                    error={!!errors.cpf}
-                    errorMessage={errors.cpf}
-                    placeholder="000.000.000-00"
-                    maxLength={14}
-                  />
-                  {formData.cpf.replace(/\D/g, "").length === 11 && validateCPF(formData.cpf) && (
-                    <button
-                      type="button"
-                      onClick={() => searchCPF(formData.cpf)}
-                      disabled={searchingCPF}
-                      className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors disabled:opacity-50"
-                    >
-                      <Search className="h-3 w-3" />
-                      {searchingCPF ? "Buscando..." : "Buscar informações"}
-                    </button>
-                  )}
-                </div>
-                <FuturisticInput
-                  label="Telefone"
-                  value={formData.phone}
-                  onChange={(e) => {
-                    const formatted = formatPhone(e.target.value);
-                    setFormData((prev) => ({ ...prev, phone: formatted }));
-                    markDirty();
-                  }}
-                  placeholder="(00) 00000-0000"
-                  maxLength={15}
-                />
-                <FuturisticInput
-                  label="Data de Nascimento"
-                  type="date"
-                  value={formData.birthDate}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, birthDate: e.target.value }));
-                    markDirty();
-                  }}
-                />
-                {/* Foto do Perfil */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-white/80 mb-2">
-                    Foto do Perfil <span className="text-white/40 text-xs">(Opcional)</span>
-                  </label>
-                  <div className="flex items-start gap-4">
-                    {/* Preview */}
-                    <div className="relative">
-                      {photoPreview ? (
-                        <div className="relative group">
-                          <div className="w-24 h-24 rounded-lg border-2 border-white/20 bg-white/5 overflow-hidden">
-                            <img
-                              src={photoPreview}
-                              alt="Preview"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={removePhoto}
-                            className="absolute -top-2 -right-2 p-1 bg-red-500/90 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <X className="h-4 w-4 text-white" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 bg-white/5 flex items-center justify-center">
-                          <User className="h-8 w-8 text-white/30" />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Upload Button */}
-                    <div className="flex-1">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handlePhotoUpload(file);
-                          }
-                        }}
-                        className="hidden"
-                      />
-                      <motion.button
+                      error={!!errors.email}
+                      errorMessage={errors.email}
+                      placeholder="usuario@exemplo.com"
+                    />
+                    {!formData.email && formData.displayName && (
+                      <button
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploadingPhoto}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        onClick={() => {
+                          const suggested = generateEmailSuggestion(formData.displayName);
+                          setFormData((prev) => ({ ...prev, email: suggested }));
+                        }}
+                        className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors"
                       >
-                        {uploadingPhoto ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                            Enviando...
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="h-4 w-4" />
-                            {photoPreview ? "Alterar Foto" : "Adicionar Foto"}
-                          </>
-                        )}
-                      </motion.button>
-                      <p className="mt-1 text-xs text-white/50">
-                        Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* DADOS DE ACESSO */}
-          <div className="mb-8 pt-8 border-t border-white/10">
-            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
-              <Mail className="h-6 w-6 text-[hsl(var(--primary))]" />
-              Dados de Acesso
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <FuturisticInput
-                  label="Senha"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={formData.password}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, password: e.target.value }));
-                    if (errors.password) setErrors((prev) => ({ ...prev, password: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.password}
-                  errorMessage={errors.password}
-                  placeholder="Mínimo 8 caracteres"
-                />
-                <div className="mt-2 flex items-center gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="text-white/60 hover:text-white transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                  {formData.password && (
-                    <span className={`text-xs font-medium ${passwordStrength.color}`}>
-                      Força: {passwordStrength.label}
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newPassword = generatePassword();
-                      setFormData((prev) => ({
-                        ...prev,
-                        password: newPassword,
-                        confirmPassword: newPassword,
-                      }));
-                      if (errors.password) setErrors((prev) => ({ ...prev, password: "", confirmPassword: "" }));
-                      notificationCenter.add({
-                        type: "success",
-                        title: "Senha gerada",
-                        message: "Uma senha segura foi gerada automaticamente",
-                      });
-                    }}
-                    className="text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors"
-                  >
-                    <Key className="h-3 w-3" />
-                    Gerar senha
-                  </button>
-                  {formData.password && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(formData.password);
-                        notificationCenter.add({
-                          type: "success",
-                          title: "Senha copiada",
-                          message: "Senha copiada para a área de transferência",
-                        });
-                      }}
-                      className="text-xs text-white/60 hover:text-white flex items-center gap-1 transition-colors"
-                    >
-                      <Copy className="h-3 w-3" />
-                      Copiar
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div>
-                <FuturisticInput
-                  label="Confirmar Senha"
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  value={formData.confirmPassword}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }));
-                    if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.confirmPassword}
-                  errorMessage={errors.confirmPassword}
-                  placeholder="Digite a senha novamente"
-                />
-                <div className="mt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="text-white/60 hover:text-white transition-colors"
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-              <FuturisticSelect
-                label="Status"
-                required
-                value={formData.status}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, status: e.target.value as typeof formData.status }));
-                  markDirty();
-                }}
-              >
-                <option value="pending" className="bg-[#1a1f3a]">Pendente</option>
-                <option value="active" className="bg-[#1a1f3a]">Ativo</option>
-                <option value="inactive" className="bg-[#1a1f3a]">Inativo</option>
-              </FuturisticSelect>
-              <div className="flex items-end gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.requirePasswordChange}
-                    onChange={(e) => {
-                      setFormData((prev) => ({ ...prev, requirePasswordChange: e.target.checked }));
-                      markDirty();
-                    }}
-                    className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
-                  />
-                  <span className="text-sm text-white/80">Requer troca de senha</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.sendWelcomeEmail}
-                    onChange={(e) => {
-                      setFormData((prev) => ({ ...prev, sendWelcomeEmail: e.target.checked }));
-                      markDirty();
-                    }}
-                    className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
-                  />
-                  <span className="text-sm text-white/80">Enviar email de boas-vindas</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* DADOS ORGANIZACIONAIS */}
-          <div className="mb-8 pt-8 border-t border-white/10">
-            <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
-              <Building2 className="h-6 w-6 text-[hsl(var(--primary))]" />
-              Dados Organizacionais
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FuturisticSelect
-                label="Departamento"
-                required
-                value={formData.departmentId}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, departmentId: e.target.value, sectorId: "", positionId: "" }));
-                  markDirty();
-                }}
-                error={!!errors.departmentId}
-                errorMessage={errors.departmentId}
-                disabled={loadingDepartments}
-              >
-                <option value="" className="bg-[#1a1f3a]">
-                  {loadingDepartments ? "Carregando..." : "Selecione um departamento"}
-                </option>
-                {departments.map((dept) => (
-                  <option key={dept.id} value={dept.id} className="bg-[#1a1f3a]">
-                    {dept.name}
-                  </option>
-                ))}
-              </FuturisticSelect>
-              <FuturisticSelect
-                label="Setor"
-                required
-                value={formData.sectorId}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, sectorId: e.target.value, positionId: "" }));
-                  markDirty();
-                }}
-                error={!!errors.sectorId}
-                errorMessage={errors.sectorId}
-                disabled={!formData.departmentId || loadingSectors}
-              >
-                <option value="" className="bg-[#1a1f3a]">
-                  {loadingSectors ? "Carregando..." : formData.departmentId ? "Selecione um setor" : "Selecione primeiro o departamento"}
-                </option>
-                {sectors.map((sector) => (
-                  <option key={sector.id} value={sector.id} className="bg-[#1a1f3a]">
-                    {sector.name}
-                  </option>
-                ))}
-              </FuturisticSelect>
-              <FuturisticSelect
-                label="Cargo"
-                required
-                value={formData.positionId}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, positionId: e.target.value }));
-                  markDirty();
-                }}
-                error={!!errors.positionId}
-                errorMessage={errors.positionId}
-                disabled={!formData.sectorId || loadingPositions}
-              >
-                <option value="" className="bg-[#1a1f3a]">
-                  {loadingPositions ? "Carregando..." : formData.sectorId ? "Selecione um cargo" : "Selecione primeiro o setor"}
-                </option>
-                {positions.map((position) => (
-                  <option key={position.id} value={position.id} className="bg-[#1a1f3a]">
-                    {position.name}
-                  </option>
-                ))}
-              </FuturisticSelect>
-              <FuturisticInput
-                label="Data de Admissão"
-                type="date"
-                value={formData.admissionDate}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, admissionDate: e.target.value }));
-                  markDirty();
-                }}
-              />
-              <div className="md:col-span-2">
-                <FuturisticTextarea
-                  label="Observações"
-                  value={formData.observations}
-                  onChange={(e) => {
-                    setFormData((prev) => ({ ...prev, observations: e.target.value }));
-                    markDirty();
-                  }}
-                  placeholder="Observações adicionais sobre o usuário..."
-                  rows={4}
-                />
-
-              </div>
-
-              {/* Upload de Currículo */}
-              <div className="md:col-span-2 mt-4 pt-4 border-t border-white/5">
-                <FileUpload
-                  label="Documento / Currículo"
-                  description="Anexar um arquivo PDF ou DOCX (opcional)"
-                  value={resumeFile}
-                  onChange={setResumeFile}
-                  disabled={uploadingResume || creatingUser}
-                  accept={{
-                    "application/pdf": [".pdf"],
-                    "application/msword": [".doc"],
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* PERMISSÕES INICIAIS (Colapsável) */}
-          <div className="mb-8 pt-8 border-t border-white/10">
-            <motion.button
-              type="button"
-              onClick={() => setPermissionsExpanded(!permissionsExpanded)}
-              className="w-full flex items-center justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <Shield className="h-6 w-6 text-[hsl(var(--primary))]" />
-                <div className="text-left">
-                  <h2 className="text-2xl font-bold text-white/90">Permissões Iniciais</h2>
-                  <p className="text-xs text-white/60 mt-1">
-                    {formData.initialPermissions.length > 0
-                      ? `${formData.initialPermissions.length} permissão(ões) selecionada(s)`
-                      : "Opcional - Configure permissões iniciais para o usuário"}
-                  </p>
-                </div>
-              </div>
-              {permissionsExpanded ? (
-                <ChevronUp className="h-5 w-5 text-white/60" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-white/60" />
-              )}
-            </motion.button>
-
-            <AnimatePresence>
-              {permissionsExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="overflow-hidden"
-                >
-                  <div className="mt-4 p-4 rounded-lg border border-white/10 bg-white/5">
-                    {loadingPermissions ? (
-                      <div className="flex items-center justify-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--primary))]" />
-                      </div>
-                    ) : permissions.length === 0 ? (
-                      <p className="text-white/60 text-center py-4">Nenhuma permissão disponível</p>
-                    ) : (
-                      <div className="space-y-4 max-h-96 overflow-y-auto">
-                        {Object.entries(permissionsByModule).map(([module, modulePermissions]) => (
-                          <div key={module} className="space-y-2">
-                            <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wide">
-                              {module}
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4">
-                              {modulePermissions.map((permission) => (
-                                <label
-                                  key={permission.id}
-                                  className="flex items-center gap-2 p-2 rounded hover:bg-white/5 cursor-pointer transition-colors"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={formData.initialPermissions.includes(permission.id)}
-                                    onChange={() => togglePermission(permission.id)}
-                                    className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
-                                  />
-                                  <div className="flex-1">
-                                    <span className="text-sm text-white/80">{permission.name}</span>
-                                    {permission.description && (
-                                      <p className="text-xs text-white/50">{permission.description}</p>
-                                    )}
-                                  </div>
-                                </label>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                        <Sparkles className="h-3 w-3" />
+                        Sugerir email
+                      </button>
                     )}
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* AÇÕES */}
-          <div className="flex items-center justify-between gap-4 pt-8 border-t border-white/10">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                type="button"
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6"
-                onClick={() => router.push("/admin/users")}
-              >
-                Cancelar
-              </Button>
-            </motion.div>
-
-            <div className="flex items-center gap-3">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  type="button"
-                  onClick={(e) => handleSubmit(e, true)}
-                  disabled={creatingUser}
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {creatingUser ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Salvar e Criar Outro
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  type="button"
-                  onClick={handlePreview}
-                  disabled={creatingUser}
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Visualizar
-                </Button>
-              </motion.div>
-
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  type="submit"
-                  disabled={creatingUser}
-                  className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {creatingUser ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Salvando...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Salvar
-                    </>
-                  )}
-                </Button>
-              </motion.div>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      {/* Preview Modal */}
-      <AnimatePresence>
-        {showPreview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-            onClick={() => setShowPreview(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-3xl max-h-[90vh] overflow-y-auto"
-            >
-              <GlassCard className="p-8">
-                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
-                      Preview - Novo Usuário
-                    </h2>
-                    <p className="text-sm text-white/60 mt-1">Revise os dados antes de salvar</p>
+                    <FuturisticInput
+                      label="CPF"
+                      required
+                      value={formData.cpf}
+                      onChange={(e) => {
+                        const formatted = formatCPF(e.target.value);
+                        setFormData((prev) => ({ ...prev, cpf: formatted }));
+                        if (errors.cpf) setErrors((prev) => ({ ...prev, cpf: "" }));
+                        markDirty();
+                      }}
+                      error={!!errors.cpf}
+                      errorMessage={errors.cpf}
+                      placeholder="000.000.000-00"
+                      maxLength={14}
+                    />
+                    {formData.cpf.replace(/\D/g, "").length === 11 && validateCPF(formData.cpf) && (
+                      <button
+                        type="button"
+                        onClick={() => searchCPF(formData.cpf)}
+                        disabled={searchingCPF}
+                        className="mt-2 text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors disabled:opacity-50"
+                      >
+                        <Search className="h-3 w-3" />
+                        {searchingCPF ? "Buscando..." : "Buscar informações"}
+                      </button>
+                    )}
                   </div>
-                  <button
-                    onClick={() => setShowPreview(false)}
-                    className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-                  >
-                    <X className="h-5 w-5 text-white/60" />
-                  </button>
+                  <FuturisticInput
+                    label="Telefone"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      const formatted = formatPhone(e.target.value);
+                      setFormData((prev) => ({ ...prev, phone: formatted }));
+                      markDirty();
+                    }}
+                    placeholder="(00) 00000-0000"
+                    maxLength={15}
+                  />
+                  <FuturisticInput
+                    label="Data de Nascimento"
+                    type="date"
+                    value={formData.birthDate}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, birthDate: e.target.value }));
+                      markDirty();
+                    }}
+                  />
+                  {/* Foto do Perfil */}
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-white/80 mb-2">
+                      Foto do Perfil <span className="text-white/40 text-xs">(Opcional)</span>
+                    </label>
+                    <div className="flex items-start gap-4">
+                      {/* Preview */}
+                      <div className="relative">
+                        {photoPreview ? (
+                          <div className="relative group">
+                            <div className="w-24 h-24 rounded-lg border-2 border-white/20 bg-white/5 overflow-hidden">
+                              <img
+                                src={photoPreview}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={removePhoto}
+                              className="absolute -top-2 -right-2 p-1 bg-red-500/90 hover:bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-4 w-4 text-white" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="w-24 h-24 rounded-lg border-2 border-dashed border-white/20 bg-white/5 flex items-center justify-center">
+                            <User className="h-8 w-8 text-white/30" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Upload Button */}
+                      <div className="flex-1">
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handlePhotoUpload(file);
+                            }
+                          }}
+                          className="hidden"
+                        />
+                        <motion.button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploadingPhoto}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white transition-all backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {uploadingPhoto ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                              Enviando...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="h-4 w-4" />
+                              {photoPreview ? "Alterar Foto" : "Adicionar Foto"}
+                            </>
+                          )}
+                        </motion.button>
+                        <p className="mt-1 text-xs text-white/50">
+                          Formatos aceitos: JPG, PNG, GIF. Tamanho máximo: 5MB
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* DADOS DE ACESSO */}
+            <div className="mb-8 pt-8 border-t border-white/10">
+              <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
+                <Mail className="h-6 w-6 text-[hsl(var(--primary))]" />
+                Dados de Acesso
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <FuturisticInput
+                    label="Senha"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={formData.password}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, password: e.target.value }));
+                      if (errors.password) setErrors((prev) => ({ ...prev, password: "" }));
+                      markDirty();
+                    }}
+                    error={!!errors.password}
+                    errorMessage={errors.password}
+                    placeholder="Mínimo 8 caracteres"
+                  />
+                  <div className="mt-2 flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="text-white/60 hover:text-white transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    {formData.password && (
+                      <span className={`text-xs font-medium ${passwordStrength.color}`}>
+                        Força: {passwordStrength.label}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newPassword = generatePassword();
+                        setFormData((prev) => ({
+                          ...prev,
+                          password: newPassword,
+                          confirmPassword: newPassword,
+                        }));
+                        if (errors.password) setErrors((prev) => ({ ...prev, password: "", confirmPassword: "" }));
+                        notificationCenter.add({
+                          type: "success",
+                          title: "Senha gerada",
+                          message: "Uma senha segura foi gerada automaticamente",
+                        });
+                      }}
+                      className="text-xs text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8)] flex items-center gap-1 transition-colors"
+                    >
+                      <Key className="h-3 w-3" />
+                      Gerar senha
+                    </button>
+                    {formData.password && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(formData.password);
+                          notificationCenter.add({
+                            type: "success",
+                            title: "Senha copiada",
+                            message: "Senha copiada para a área de transferência",
+                          });
+                        }}
+                        className="text-xs text-white/60 hover:text-white flex items-center gap-1 transition-colors"
+                      >
+                        <Copy className="h-3 w-3" />
+                        Copiar
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <FuturisticInput
+                    label="Confirmar Senha"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, confirmPassword: e.target.value }));
+                      if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: "" }));
+                      markDirty();
+                    }}
+                    error={!!errors.confirmPassword}
+                    errorMessage={errors.confirmPassword}
+                    placeholder="Digite a senha novamente"
+                  />
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="text-white/60 hover:text-white transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <FuturisticSelect
+                  label="Status"
+                  required
+                  value={formData.status}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, status: e.target.value as typeof formData.status }));
+                    markDirty();
+                  }}
+                >
+                  <option value="pending" className="bg-[#1a1f3a]">Pendente</option>
+                  <option value="active" className="bg-[#1a1f3a]">Ativo</option>
+                  <option value="inactive" className="bg-[#1a1f3a]">Inativo</option>
+                </FuturisticSelect>
+                <div className="flex items-end gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.requirePasswordChange}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, requirePasswordChange: e.target.checked }));
+                        markDirty();
+                      }}
+                      className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
+                    />
+                    <span className="text-sm text-white/80">Requer troca de senha</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.sendWelcomeEmail}
+                      onChange={(e) => {
+                        setFormData((prev) => ({ ...prev, sendWelcomeEmail: e.target.checked }));
+                        markDirty();
+                      }}
+                      className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
+                    />
+                    <span className="text-sm text-white/80">Enviar email de boas-vindas</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* DADOS ORGANIZACIONAIS */}
+            <div className="mb-8 pt-8 border-t border-white/10">
+              <h2 className="text-2xl font-bold text-white/90 mb-6 flex items-center gap-2">
+                <Building2 className="h-6 w-6 text-[hsl(var(--primary))]" />
+                Dados Organizacionais
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FuturisticSelect
+                  label="Departamento"
+                  required
+                  value={formData.departmentId}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, departmentId: e.target.value, sectorId: "", positionId: "" }));
+                    markDirty();
+                  }}
+                  error={!!errors.departmentId}
+                  errorMessage={errors.departmentId}
+                  disabled={loadingDepartments}
+                >
+                  <option value="" className="bg-[#1a1f3a]">
+                    {loadingDepartments ? "Carregando..." : "Selecione um departamento"}
+                  </option>
+                  {departments.map((dept) => (
+                    <option key={dept.id} value={dept.id} className="bg-[#1a1f3a]">
+                      {dept.name}
+                    </option>
+                  ))}
+                </FuturisticSelect>
+                <FuturisticSelect
+                  label="Setor"
+                  required
+                  value={formData.sectorId}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, sectorId: e.target.value, positionId: "" }));
+                    markDirty();
+                  }}
+                  error={!!errors.sectorId}
+                  errorMessage={errors.sectorId}
+                  disabled={!formData.departmentId || loadingSectors}
+                >
+                  <option value="" className="bg-[#1a1f3a]">
+                    {loadingSectors ? "Carregando..." : formData.departmentId ? "Selecione um setor" : "Selecione primeiro o departamento"}
+                  </option>
+                  {sectors.map((sector) => (
+                    <option key={sector.id} value={sector.id} className="bg-[#1a1f3a]">
+                      {sector.name}
+                    </option>
+                  ))}
+                </FuturisticSelect>
+                <FuturisticSelect
+                  label="Cargo"
+                  required
+                  value={formData.positionId}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, positionId: e.target.value }));
+                    markDirty();
+                  }}
+                  error={!!errors.positionId}
+                  errorMessage={errors.positionId}
+                  disabled={!formData.sectorId || loadingPositions}
+                >
+                  <option value="" className="bg-[#1a1f3a]">
+                    {loadingPositions ? "Carregando..." : formData.sectorId ? "Selecione um cargo" : "Selecione primeiro o setor"}
+                  </option>
+                  {positions.map((position) => (
+                    <option key={position.id} value={position.id} className="bg-[#1a1f3a]">
+                      {position.name}
+                    </option>
+                  ))}
+                </FuturisticSelect>
+                <FuturisticInput
+                  label="Data de Admissão"
+                  type="date"
+                  value={formData.admissionDate}
+                  onChange={(e) => {
+                    setFormData((prev) => ({ ...prev, admissionDate: e.target.value }));
+                    markDirty();
+                  }}
+                />
+                <div className="md:col-span-2">
+                  <FuturisticTextarea
+                    label="Observações"
+                    value={formData.observations}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, observations: e.target.value }));
+                      markDirty();
+                    }}
+                    placeholder="Observações adicionais sobre o usuário..."
+                    rows={4}
+                  />
+
                 </div>
 
-                <div className="space-y-6">
-                  {/* Dados Pessoais */}
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5 text-[hsl(var(--primary))]" />
-                      Dados Pessoais
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-white/60">Nome Completo</p>
-                        <p className="text-white font-medium">{formData.displayName || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">CPF</p>
-                        <p className="text-white font-medium">{formData.cpf || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">Telefone</p>
-                        <p className="text-white font-medium flex items-center gap-1">
-                          {formData.phone ? (
-                            <>
-                              <Phone className="h-4 w-4" />
-                              {formData.phone}
-                            </>
-                          ) : (
-                            "—"
-                          )}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">Data de Nascimento</p>
-                        <p className="text-white font-medium flex items-center gap-1">
-                          {formData.birthDate ? (
-                            <>
-                              <Calendar className="h-4 w-4" />
-                              {new Date(formData.birthDate).toLocaleDateString("pt-BR")}
-                            </>
-                          ) : (
-                            "—"
-                          )}
-                        </p>
-                      </div>
-                      {formData.photoUrl && (
-                        <div className="col-span-2">
-                          <p className="text-sm text-white/60 mb-2">Foto</p>
-                          <div className="w-24 h-24 rounded-lg border-2 border-white/20 bg-white/5 overflow-hidden">
-                            <img src={formData.photoUrl} alt="Preview" className="w-full h-full object-cover" />
-                          </div>
+                {/* Upload de Currículo */}
+                <div className="md:col-span-2 mt-4 pt-4 border-t border-white/5">
+                  <FileUpload
+                    label="Documento / Currículo"
+                    description="Anexar um arquivo PDF ou DOCX (opcional)"
+                    value={resumeFile}
+                    onChange={setResumeFile}
+                    disabled={uploadingResume || creatingUser}
+                    accept={{
+                      "application/pdf": [".pdf"],
+                      "application/msword": [".doc"],
+                      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* PERMISSÕES INICIAIS (Colapsável) */}
+            <div className="mb-8 pt-8 border-t border-white/10">
+              <motion.button
+                type="button"
+                onClick={() => setPermissionsExpanded(!permissionsExpanded)}
+                className="w-full flex items-center justify-between p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <Shield className="h-6 w-6 text-[hsl(var(--primary))]" />
+                  <div className="text-left">
+                    <h2 className="text-2xl font-bold text-white/90">Permissões Iniciais</h2>
+                    <p className="text-xs text-white/60 mt-1">
+                      {formData.initialPermissions.length > 0
+                        ? `${formData.initialPermissions.length} permissão(ões) selecionada(s)`
+                        : "Opcional - Configure permissões iniciais para o usuário"}
+                    </p>
+                  </div>
+                </div>
+                {permissionsExpanded ? (
+                  <ChevronUp className="h-5 w-5 text-white/60" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-white/60" />
+                )}
+              </motion.button>
+
+              <AnimatePresence>
+                {permissionsExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="mt-4 p-4 rounded-lg border border-white/10 bg-white/5">
+                      {loadingPermissions ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--primary))]" />
+                        </div>
+                      ) : permissions.length === 0 ? (
+                        <p className="text-white/60 text-center py-4">Nenhuma permissão disponível</p>
+                      ) : (
+                        <div className="space-y-4 max-h-96 overflow-y-auto">
+                          {Object.entries(permissionsByModule).map(([module, modulePermissions]) => (
+                            <div key={module} className="space-y-2">
+                              <h3 className="text-sm font-semibold text-white/90 uppercase tracking-wide">
+                                {module}
+                              </h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4">
+                                {modulePermissions.map((permission) => (
+                                  <label
+                                    key={permission.id}
+                                    className="flex items-center gap-2 p-2 rounded hover:bg-white/5 cursor-pointer transition-colors"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={formData.initialPermissions.includes(permission.id)}
+                                      onChange={() => togglePermission(permission.id)}
+                                      className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
+                                    />
+                                    <div className="flex-1">
+                                      <span className="text-sm text-white/80">{permission.name}</span>
+                                      {permission.description && (
+                                        <p className="text-xs text-white/50">{permission.description}</p>
+                                      )}
+                                    </div>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
-                  </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-                  {/* Dados de Acesso */}
-                  <div className="border-t border-white/10 pt-6">
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                      <Mail className="h-5 w-5 text-[hsl(var(--primary))]" />
-                      Dados de Acesso
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-white/60">Email</p>
-                        <p className="text-white font-medium">{formData.email || "—"}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">Status</p>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                          {formData.status === "active" ? "Ativo" : formData.status === "pending" ? "Pendente" : "Suspenso"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+            {/* AÇÕES */}
+            <div className="flex items-center justify-between gap-4 pt-8 border-t border-white/10">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  type="button"
+                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6"
+                  onClick={() => router.push("/admin/users")}
+                >
+                  Cancelar
+                </Button>
+              </motion.div>
 
-                  {/* Dados Organizacionais */}
-                  <div className="border-t border-white/10 pt-6">
-                    <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                      <Building2 className="h-5 w-5 text-[hsl(var(--primary))]" />
-                      Dados Organizacionais
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-white/60">Departamento</p>
-                        <p className="text-white font-medium">
-                          {departments.find((d) => d.id === formData.departmentId)?.name || "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">Setor</p>
-                        <p className="text-white font-medium">
-                          {sectors.find((s) => s.id === formData.sectorId)?.name || "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">Cargo</p>
-                        <p className="text-white font-medium">
-                          {positions.find((p) => p.id === formData.positionId)?.name || "—"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-white/60">Data de Admissão</p>
-                        <p className="text-white font-medium flex items-center gap-1">
-                          {formData.admissionDate ? (
-                            <>
-                              <Calendar className="h-4 w-4" />
-                              {new Date(formData.admissionDate).toLocaleDateString("pt-BR")}
-                            </>
-                          ) : (
-                            "—"
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Permissões */}
-                  {formData.initialPermissions.length > 0 && (
-                    <div className="border-t border-white/10 pt-6">
-                      <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <Shield className="h-5 w-5 text-[hsl(var(--primary))]" />
-                        Permissões Iniciais ({formData.initialPermissions.length})
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {formData.initialPermissions.map((permId) => {
-                          const perm = permissions.find((p) => p.id === permId);
-                          return perm ? (
-                            <span
-                              key={permId}
-                              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30"
-                            >
-                              <CheckCircle2 className="h-3 w-3 mr-1" />
-                              {perm.name}
-                            </span>
-                          ) : null;
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Observações */}
-                  {formData.observations && (
-                    <div className="border-t border-white/10 pt-6">
-                      <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-[hsl(var(--primary))]" />
-                        Observações
-                      </h3>
-                      <p className="text-white/80 whitespace-pre-wrap">{formData.observations}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-white/10">
+              <div className="flex items-center gap-3">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     type="button"
-                    onClick={() => setShowPreview(false)}
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6"
+                    onClick={(e) => handleSubmit(e, true)}
+                    disabled={creatingUser}
+                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Voltar e Editar
+                    {creatingUser ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Salvar e Criar Outro
+                      </>
+                    )}
                   </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="button"
-                    onClick={() => handleSubmit(undefined, false, true)}
+                    onClick={handlePreview}
+                    disabled={creatingUser}
+                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Visualizar
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    type="submit"
                     disabled={creatingUser}
                     className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -1789,17 +1576,234 @@ export function UsersFormClient() {
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 className="h-4 w-4 mr-2" />
-                        Confirmar e Salvar
+                        <Save className="h-4 w-4 mr-2" />
+                        Salvar
                       </>
                     )}
                   </Button>
-                </div>
-              </GlassCard>
+                </motion.div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        {/* Preview Modal */}
+        <AnimatePresence>
+          {showPreview && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              onClick={() => setShowPreview(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+              >
+                <GlassCard className="p-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
+                        Preview - Novo Usuário
+                      </h2>
+                      <p className="text-sm text-white/60 mt-1">Revise os dados antes de salvar</p>
+                    </div>
+                    <button
+                      onClick={() => setShowPreview(false)}
+                      className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                    >
+                      <X className="h-5 w-5 text-white/60" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-6">
+                    {/* Dados Pessoais */}
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                        <User className="h-5 w-5 text-[hsl(var(--primary))]" />
+                        Dados Pessoais
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-white/60">Nome Completo</p>
+                          <p className="text-white font-medium">{formData.displayName || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">CPF</p>
+                          <p className="text-white font-medium">{formData.cpf || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Telefone</p>
+                          <p className="text-white font-medium flex items-center gap-1">
+                            {formData.phone ? (
+                              <>
+                                <Phone className="h-4 w-4" />
+                                {formData.phone}
+                              </>
+                            ) : (
+                              "—"
+                            )}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Data de Nascimento</p>
+                          <p className="text-white font-medium flex items-center gap-1">
+                            {formData.birthDate ? (
+                              <>
+                                <Calendar className="h-4 w-4" />
+                                {new Date(formData.birthDate).toLocaleDateString("pt-BR")}
+                              </>
+                            ) : (
+                              "—"
+                            )}
+                          </p>
+                        </div>
+                        {formData.photoUrl && (
+                          <div className="col-span-2">
+                            <p className="text-sm text-white/60 mb-2">Foto</p>
+                            <div className="w-24 h-24 rounded-lg border-2 border-white/20 bg-white/5 overflow-hidden">
+                              <img src={formData.photoUrl} alt="Preview" className="w-full h-full object-cover" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Dados de Acesso */}
+                    <div className="border-t border-white/10 pt-6">
+                      <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                        <Mail className="h-5 w-5 text-[hsl(var(--primary))]" />
+                        Dados de Acesso
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-white/60">Email</p>
+                          <p className="text-white font-medium">{formData.email || "—"}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Status</p>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                            {formData.status === "active" ? "Ativo" : formData.status === "pending" ? "Pendente" : "Suspenso"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dados Organizacionais */}
+                    <div className="border-t border-white/10 pt-6">
+                      <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                        <Building2 className="h-5 w-5 text-[hsl(var(--primary))]" />
+                        Dados Organizacionais
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-white/60">Departamento</p>
+                          <p className="text-white font-medium">
+                            {departments.find((d) => d.id === formData.departmentId)?.name || "—"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Setor</p>
+                          <p className="text-white font-medium">
+                            {sectors.find((s) => s.id === formData.sectorId)?.name || "—"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Cargo</p>
+                          <p className="text-white font-medium">
+                            {positions.find((p) => p.id === formData.positionId)?.name || "—"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white/60">Data de Admissão</p>
+                          <p className="text-white font-medium flex items-center gap-1">
+                            {formData.admissionDate ? (
+                              <>
+                                <Calendar className="h-4 w-4" />
+                                {new Date(formData.admissionDate).toLocaleDateString("pt-BR")}
+                              </>
+                            ) : (
+                              "—"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Permissões */}
+                    {formData.initialPermissions.length > 0 && (
+                      <div className="border-t border-white/10 pt-6">
+                        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                          <Shield className="h-5 w-5 text-[hsl(var(--primary))]" />
+                          Permissões Iniciais ({formData.initialPermissions.length})
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {formData.initialPermissions.map((permId) => {
+                            const perm = permissions.find((p) => p.id === permId);
+                            return perm ? (
+                              <span
+                                key={permId}
+                                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30"
+                              >
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                {perm.name}
+                              </span>
+                            ) : null;
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Observações */}
+                    {formData.observations && (
+                      <div className="border-t border-white/10 pt-6">
+                        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                          <FileText className="h-5 w-5 text-[hsl(var(--primary))]" />
+                          Observações
+                        </h3>
+                        <p className="text-white/80 whitespace-pre-wrap">{formData.observations}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-white/10">
+                    <Button
+                      type="button"
+                      onClick={() => setShowPreview(false)}
+                      className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6"
+                    >
+                      Voltar e Editar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleSubmit(undefined, false, true)}
+                      disabled={creatingUser}
+                      className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {creatingUser ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Salvando...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-2" />
+                          Confirmar e Salvar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </GlassCard>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </StandardFormPage>
+          )}
+        </AnimatePresence>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }

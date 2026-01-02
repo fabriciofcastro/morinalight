@@ -71,6 +71,11 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
+  // Sentry Middleware (Tracing e Errors)
+  // Registrar cedo para capturar contexto de requests
+  const { default: sentryPlugin } = await import("../../lib/observability/middleware");
+  await app.register(sentryPlugin);
+
   // Registrar Swagger ANTES de outras configurações para capturar todas as rotas
   if (registerDocs) {
     const { registerOpenAPIDocs } = await import("../docs/openapi");

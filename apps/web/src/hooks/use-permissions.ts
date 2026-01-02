@@ -4,15 +4,32 @@ import { useEffect, useState } from "react";
 import { getAuthHeadersWithTenant, getAuthUser } from "../lib/auth-client";
 
 // Cache de permissões em memória
-const permissionsCache = new Map<
-  string,
-  { effective: string[]; denied: string[]; timestamp: number }
->();
+export type PermissionGrant = {
+  permissionKey: string;
+  granted: boolean;
+  source?: string;
+  sourceEntityId?: string;
+};
+
+type CachedPermissions = {
+  effective: PermissionGrant[];
+  denied: string[];
+  role: string | null;
+  context?: {
+    departmentId?: string;
+    sectorId?: string;
+    positionId?: string;
+    attributes?: Record<string, any>;
+  };
+  timestamp: number;
+};
+
+const permissionsCache = new Map<string, CachedPermissions>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
-async function fetchUserPermissions(
+export async function fetchUserPermissions(
   userId: string,
-): Promise<{ effective: string[]; denied: string[] }> {
+): Promise<Omit<CachedPermissions, 'timestamp'>> {
   try {
     const response = await fetch(`/api/users/${userId}/permissions/effective`, {
       headers: {
@@ -23,38 +40,30 @@ async function fetchUserPermissions(
 
     if (!response.ok) {
       console.warn("Erro ao buscar permissões, usando cache ou permissões padrão");
-      return { effective: getDefaultPermissions(), denied: [] };
+      return { effective: [], denied: [], role: null };
     }
 
     const data = await response.json();
-    const effective = Array.isArray(data?.effective)
-      ? data.effective.map((p: { permissionKey: string } | string) => 
-          typeof p === "string" ? p : p.permissionKey
-        )
-      : [];
-    const denied = Array.isArray(data?.denied) ? data.denied : [];
-    
-    // Debug: verificar se suppliers:view está nas permissões retornadas
-    if (effective.length > 0) {
-      console.log("📋 Permissões recebidas da API:", {
-        total: effective.length,
-        hasSuppliersView: effective.includes("suppliers:view"),
-        hasSuppliersCreate: effective.includes("suppliers:create"),
-        sample: effective.slice(0, 5),
-      });
-    }
+
+    // Garantir formato correto
+    const effective: PermissionGrant[] = Array.isArray(data?.effective) ? data.effective : [];
+    const denied: string[] = Array.isArray(data?.denied) ? data.denied : [];
+    const role: string | null = data?.role || null;
+    const context = data?.context;
 
     // Atualizar cache
     permissionsCache.set(userId, {
       effective,
       denied,
+      role,
+      context,
       timestamp: Date.now(),
     });
 
-    return { effective, denied };
+    return { effective, denied, role, context };
   } catch (error) {
     console.error("Erro ao buscar permissões:", error);
-    return { effective: getDefaultPermissions(), denied: [] };
+    return { effective: [], denied: [], role: null, context: undefined };
   }
 }
 
@@ -107,70 +116,39 @@ function getDefaultPermissions(): string[] {
   ];
 }
 
+import { useAbility } from "@/lib/auth/CaslContext";
+import { parsePermissionKey } from "@/lib/auth/ability";
+
+/**
+ * @deprecated Use useAbility() from @/lib/auth/CaslContext instead.
+ * Example: const ability = useAbility(); const canView = ability.can('read', 'Product');
+ */
 export function useHasPermission(permission: string): boolean {
-  const [hasPermission, setHasPermission] = useState(true); // Default true para não bloquear UI
-  const [ready, setReady] = useState(false);
-  const user = getAuthUser();
+  const ability = useAbility();
 
-  useEffect(() => {
-    queueMicrotask(() => setReady(true));
-  }, []);
+  // Compatibilidade: se não passar permissão, retorna true (comportamento antigo)
+  if (!permission) return true;
 
-  useEffect(() => {
-    if (!ready || !user || !permission) {
-      // Se não tem permissão definida, retorna true (para itens sem permissão)
-      if (!permission) {
-        setHasPermission(true);
-      }
-      return;
-    }
+  const { action, subject } = parsePermissionKey(permission);
 
-    // Verificar cache primeiro
-    const cached = permissionsCache.get(user.userId);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      const next = cached.effective.includes(permission) && !cached.denied.includes(permission);
-      queueMicrotask(() => setHasPermission(next));
-      
-      // Debug para suppliers:view
-      if (permission === "suppliers:view") {
-        console.log("🔍 suppliers:view (cache):", {
-          cached: cached.effective.includes(permission),
-          denied: cached.denied.includes(permission),
-          hasPermission: next,
-          effectiveCount: cached.effective.length,
-        });
-      }
-      return;
-    }
+  if (!action || !subject) {
+    // Se não conseguir fazer o parse (ex: permissão customizada antiga), 
+    // retorna false por segurança
+    return false;
+  }
 
-    // Buscar permissões da API
-    fetchUserPermissions(user.userId).then(({ effective, denied }) => {
-      const hasPerm = effective.includes(permission) && !denied.includes(permission);
-      // Debug para suppliers:view
-      if (permission === "suppliers:view") {
-        console.log("🔍 suppliers:view (API):", {
-          effective,
-          denied,
-          hasPermission: hasPerm,
-          includes: effective.includes(permission),
-          denied: denied.includes(permission),
-          effectiveCount: effective.length,
-        });
-      }
-      setHasPermission(hasPerm);
-    }).catch((error) => {
-      console.error("Erro ao buscar permissões:", error);
-      // Em caso de erro, usar permissões padrão
-      const defaultPerms = getDefaultPermissions();
-      const hasPerm = defaultPerms.includes(permission);
-      setHasPermission(hasPerm);
-    });
-  }, [user, permission, ready]);
-
-  return hasPermission;
+  return ability.can(action, subject);
 }
 
+/**
+ * @deprecated This hook returns raw strings. Use useAbility() for robust checks.
+ */
 export function usePermissions(): string[] {
+  // Mantemos a implementação antiga por enquanto para não quebrar quem lista permissões,
+  // mas o ideal é migrar para usar o Ability.
+  // Como o usePermissions retorna array de strings, não tem como mapear 1:1 do ability (que é um objeto de regras).
+  // Vamos manter a lógica existente de fetch/cache mas marcar como deprecated.
+
   const [permissions, setPermissions] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const user = getAuthUser();
@@ -187,13 +165,17 @@ export function usePermissions(): string[] {
     // Verificar cache primeiro
     const cached = permissionsCache.get(user.userId);
     if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      const next = cached.effective;
+      // Map back to strings for backward compatibility
+      const next = cached.effective.filter(p => p.granted).map(p => p.permissionKey);
       queueMicrotask(() => setPermissions(next));
       return;
     }
 
     // Buscar permissões da API
-    fetchUserPermissions(user.userId).then(({ effective }) => setPermissions(effective));
+    fetchUserPermissions(user.userId).then(({ effective }) => {
+      const next = effective.filter(p => p.granted).map(p => p.permissionKey);
+      setPermissions(next);
+    });
   }, [user, ready]);
 
   return permissions;

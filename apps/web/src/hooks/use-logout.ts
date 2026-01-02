@@ -1,10 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AuthApi } from "@/lib/api/auth";
+import { authApi } from "@/lib/api/auth";
 import { notificationCenter } from "@/components/notifications/notification-center";
-
-const authApi = new AuthApi();
 
 // Configuração de timeout de inatividade (em minutos)
 const INACTIVITY_TIMEOUT = 30; // 30 minutos

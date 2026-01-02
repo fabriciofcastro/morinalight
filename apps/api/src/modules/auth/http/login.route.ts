@@ -30,11 +30,11 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
       email: (request.body as { email?: string })?.email,
       hasPassword: !!(request.body as { password?: string })?.password,
     });
-    
+
     app.log.info("=== INÍCIO DO LOGIN ===");
     try {
       app.log.info({ body: request.body, headers: request.headers }, "Recebida requisição de login");
-      
+
       let body: z.infer<typeof loginSchema>;
       try {
         body = loginSchema.parse(request.body);
@@ -46,7 +46,9 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
 
       const email = body.email.toLowerCase().trim();
       app.log.info({ email, originalEmail: body.email }, "Tentativa de login - email normalizado");
-      
+
+      const Sentry = await import("@sentry/node");
+
       // Log do DATABASE_URL para debug
       if (process.env.DATABASE_URL) {
         const dbUrl = process.env.DATABASE_URL;
@@ -63,6 +65,15 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
       if (!user) {
         console.log("🔴 [LOGIN] Usuário NÃO encontrado:", email);
         app.log.warn({ email, searchedEmail: email }, "Usuário não encontrado");
+
+        // Business Metric: User Not Found
+        Sentry.withScope((scope) => {
+          scope.setTag("auth.action", "login");
+          scope.setTag("auth.status", "failure");
+          scope.setTag("auth.reason", "user_not_found");
+          Sentry.captureMessage("Login Failure: User not found", "info");
+        });
+
         // Registrar tentativa de login com e-mail inexistente
         try {
           await deps.auditRepository.registrar({
@@ -84,8 +95,19 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
 
       app.log.info({ userId: user.userId, status: user.status }, "Usuário encontrado");
 
+      // Set user context for the rest of the flow
+      Sentry.setUser({ id: user.userId, email: user.email });
+
       if (user.status !== "active") {
         app.log.warn({ userId: user.userId }, "Tentativa de login com usuário inativo");
+
+        Sentry.withScope((scope) => {
+          scope.setTag("auth.action", "login");
+          scope.setTag("auth.status", "failure");
+          scope.setTag("auth.reason", "inactive_user");
+          Sentry.captureMessage("Login Failure: User inactive", "warning");
+        });
+
         try {
           await deps.auditRepository.registrar({
             orgId: "system",
@@ -109,10 +131,18 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
       const validPassword = await bcrypt.compare(body.password, user.passwordHash);
       console.log("🔵 [LOGIN] Senha válida?", validPassword);
       app.log.info({ userId: user.userId, validPassword }, "Resultado da verificação de senha");
-      
+
       if (!validPassword) {
         console.log("🔴 [LOGIN] Senha INVÁLIDA - retornando 401");
         app.log.warn({ userId: user.userId, email: user.email }, "Senha inválida - retornando 401");
+
+        Sentry.withScope((scope) => {
+          scope.setTag("auth.action", "login");
+          scope.setTag("auth.status", "failure");
+          scope.setTag("auth.reason", "invalid_password");
+          Sentry.captureMessage("Login Failure: Invalid password", "warning");
+        });
+
         try {
           await deps.auditRepository.registrar({
             orgId: "system",
@@ -145,6 +175,17 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
       await deps.userRepository.setLastLogin(user.userId, new Date());
 
       const defaultOrgId = organizations[0]?.organizationId ?? null;
+
+      // Metric: Login Success
+      Sentry.withScope((scope) => {
+        scope.setTag("auth.action", "login");
+        scope.setTag("auth.status", "success");
+        scope.setContext("login_data", {
+          org_count: organizations.length,
+          has_default_org: !!defaultOrgId
+        });
+        Sentry.captureMessage("Login Success", "info");
+      });
 
       // Registrar login bem-sucedido
       try {
@@ -212,11 +253,14 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
           userId: user.userId,
           email: user.email,
           displayName: user.displayName,
+          mustChangePassword: user.mustChangePassword,
         },
         organizations,
       });
     } catch (error) {
       app.log.error({ error }, "Erro inesperado no login");
+      const Sentry = await import("@sentry/node");
+      Sentry.captureException(error, { tags: { "auth.action": "login", "auth.status": "error" } });
       return reply.status(500).send({ message: "Erro interno do servidor" });
     }
   });

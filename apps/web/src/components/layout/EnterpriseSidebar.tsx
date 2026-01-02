@@ -28,7 +28,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useAbility } from "@/lib/auth/CaslContext";
+import { parsePermissionKey } from "@/lib/auth/ability";
 
 // Tipos para estrutura de departamentos
 interface Solution {
@@ -37,6 +39,7 @@ interface Solution {
   path: string;
   icon?: LucideIcon;
   description?: string;
+  permission?: string;
 }
 
 interface Department {
@@ -45,6 +48,7 @@ interface Department {
   icon: LucideIcon;
   color: string;
   solutions: Solution[];
+  permission?: string;
 }
 
 // Departamentos exemplo (virão do backend)
@@ -92,18 +96,21 @@ const DEPARTMENTS: Department[] = [
         name: "Comissões",
         path: "/commissions",
         description: "Cálculo e gestão de comissões.",
+        permission: "commissions:view",
       },
       {
         id: "clientes",
         name: "Clientes",
-        path: "/clients",
+        path: "/clientes",
         description: "Base de clientes e CRM.",
+        permission: "clients:view",
       },
       {
         id: "catalogo",
         name: "Catálogo",
         path: "/catalog",
         description: "Produtos e tabelas de preços.",
+        permission: "catalog:view",
       },
     ],
   },
@@ -170,79 +177,85 @@ const DEPARTMENTS: Department[] = [
         name: "Dados da Empresa",
         path: "/admin/company/edit",
         description: "Dados cadastrais e fiscais.",
+        permission: "settings:company:view",
       },
       {
         id: "filiais",
         name: "Filiais",
         path: "/admin/branches",
         description: "Gestão de unidades e filiais.",
+        permission: "branches:view",
       },
       {
         id: "departamentos",
         name: "Departamentos",
         path: "/admin/departments",
         description: "Estrutura de departamentos.",
+        permission: "departments:view",
       },
       {
         id: "setores",
         name: "Setores",
         path: "/admin/sectors",
         description: "Divisões e setores funcionais.",
+        permission: "sectors:view",
       },
-      { id: "cargos", name: "Cargos", path: "/admin/positions", description: "Cargos e funções." },
+      { id: "cargos", name: "Cargos", path: "/admin/positions", description: "Cargos e funções.", permission: "positions:view" },
       {
         id: "fornecedores",
         name: "Fornecedores",
         path: "/fornecedores/list",
         description: "Gestão de fornecedores e parceiros comerciais.",
+        permission: "suppliers:view",
       },
       {
         id: "usuarios",
         name: "Usuários",
         path: "/admin/users/list",
         description: "Gestão de usuários e identidade.",
+        permission: "users:view",
       },
       {
         id: "perfis",
         name: "Perfis de Acesso",
         path: "/admin/roles/list",
         description: "Controle de acesso (RBAC).",
+        permission: "roles:view",
       },
       {
         id: "permissoes",
         name: "Permissões",
         path: "/admin/permissions/list",
         description: "Permissões granulares.",
+        permission: "permissions:view",
       },
       {
         id: "matriz-permissoes",
         name: "Matriz de Permissões",
         path: "/admin/permissions/matrix",
         description: "Visão completa por usuário, com trace e ações por camada.",
+        permission: "permissions:view",
       },
       {
         id: "aprovacoes-rbac",
         name: "Aprovações RBAC",
         path: "/admin/permissions/approvals",
         description: "Fila de mudanças sensíveis (grant/deny) com workflow.",
+        permission: "permissions:view",
       },
       {
         id: "segmentos",
         name: "Segmentos",
         path: "/admin/business-segments/list",
         description: "Segmentos de negócio ativos.",
+        permission: "organization:view",
       },
       {
         id: "workflows",
         name: "Workflows",
         path: "/admin/workflow-policies/list",
         description: "Políticas de aprovação.",
-      },
-      {
-        id: "realtime-lab",
-        name: "Realtime Lab",
-        path: "/admin/realtime-lab",
-        description: "Diagnóstico avançado de mensageria, eventos e RBAC em tempo real.",
+        permission: "workflows:view",
       },
     ],
   },
@@ -261,6 +274,7 @@ type SidebarItemProps = {
   hoveredItem: string | null;
   setHoveredItem: (id: string | null) => void;
   isActive: (path: string) => boolean;
+  permission?: string;
 };
 
 function SidebarItem({
@@ -276,8 +290,19 @@ function SidebarItem({
   hoveredItem,
   setHoveredItem,
   isActive,
+  permission
 }: SidebarItemProps) {
+  const ability = useAbility();
+  const hasPermission = (() => {
+    if (!permission) return true;
+    const { action, subject } = parsePermissionKey(permission);
+    if (!action || !subject) return false;
+    return ability.can(action, subject);
+  })();
+
   const isHovered = hoveredItem === id;
+
+  if (!hasPermission) return null;
 
   const Content = (
     <div
@@ -467,51 +492,57 @@ function SidebarItem({
                     </div>
                   )}
 
-                  {dept?.solutions.map((sol) => (
-                    <Link
-                      key={sol.id}
-                      href={sol.path}
-                      className={cn(
-                        "group relative flex flex-col gap-1 border border-white/12 bg-linear-to-br from-white/7 to-white/2 px-4 py-3 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.9)] transition hover:border-white/18 hover:from-white/9 hover:to-white/3",
-                        isActive(sol.path)
-                          ? "border-l-2 border-l-[hsl(var(--primary))] shadow-[0_0_40px_rgba(55,224,246,0.14)]"
-                          : "text-white/80",
-                      )}
-                    >
-                      {/* Accent rail */}
-                      <span
+                  {dept?.solutions
+                    .filter((sol) => {
+                      if (!sol.permission) return true;
+                      const { action, subject } = parsePermissionKey(sol.permission);
+                      return action && subject ? ability.can(action, subject) : true;
+                    })
+                    .map((sol) => (
+                      <Link
+                        key={sol.id}
+                        href={sol.path}
                         className={cn(
-                          "pointer-events-none absolute left-0 top-0 h-full w-[2px] bg-transparent",
-                          isActive(sol.path) ? "bg-[hsl(var(--primary))]" : "bg-white/12",
+                          "group relative flex flex-col gap-1 border border-white/12 bg-linear-to-br from-white/7 to-white/2 px-4 py-3 shadow-[0_16px_40px_-28px_rgba(0,0,0,0.9)] transition hover:border-white/18 hover:from-white/9 hover:to-white/3",
+                          isActive(sol.path)
+                            ? "border-l-2 border-l-[hsl(var(--primary))] shadow-[0_0_40px_rgba(55,224,246,0.14)]"
+                            : "text-white/80",
                         )}
-                        aria-hidden="true"
-                      />
-                      <div className="flex items-center justify-between">
+                      >
+                        {/* Accent rail */}
                         <span
                           className={cn(
-                            "font-medium transition-colors",
-                            isActive(sol.path)
-                              ? "text-[hsl(var(--primary))]"
-                              : "text-white group-hover:text-white",
+                            "pointer-events-none absolute left-0 top-0 h-full w-[2px] bg-transparent",
+                            isActive(sol.path) ? "bg-[hsl(var(--primary))]" : "bg-white/12",
                           )}
-                        >
-                          {sol.name}
-                        </span>
-                        <ChevronRight
-                          className={cn(
-                            "h-3 w-3 transition-transform opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0",
-                            isActive(sol.path) &&
-                            "opacity-100 translate-x-0 text-[hsl(var(--primary))]",
-                          )}
+                          aria-hidden="true"
                         />
-                      </div>
-                      {sol.description && (
-                        <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors line-clamp-1">
-                          {sol.description}
-                        </span>
-                      )}
-                    </Link>
-                  ))}
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={cn(
+                              "font-medium transition-colors",
+                              isActive(sol.path)
+                                ? "text-[hsl(var(--primary))]"
+                                : "text-white group-hover:text-white",
+                            )}
+                          >
+                            {sol.name}
+                          </span>
+                          <ChevronRight
+                            className={cn(
+                              "h-3 w-3 transition-transform opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0",
+                              isActive(sol.path) &&
+                              "opacity-100 translate-x-0 text-[hsl(var(--primary))]",
+                            )}
+                          />
+                        </div>
+                        {sol.description && (
+                          <span className="text-xs text-white/40 group-hover:text-white/60 transition-colors line-clamp-1">
+                            {sol.description}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
                 </div>
               </div>
             </div>
@@ -530,6 +561,26 @@ export function EnterpriseSidebar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const ability = useAbility();
+
+  const filteredDepartments = useMemo(() => {
+    return DEPARTMENTS.filter((dept) => {
+      // Se o departamento tem uma permissão específica, verifica
+      if (dept.permission) {
+        const { action, subject } = parsePermissionKey(dept.permission);
+        if (action && subject && !ability.can(action, subject)) return false;
+      }
+
+      // Se todas as soluções internas estão ocultas, oculta o departamento também
+      const visibleSolutions = dept.solutions.filter((sol) => {
+        if (!sol.permission) return true;
+        const { action, subject } = parsePermissionKey(sol.permission);
+        return action && subject ? ability.can(action, subject) : true;
+      });
+
+      return visibleSolutions.length > 0;
+    });
+  }, [ability]);
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(`${path}/`);
 
@@ -642,7 +693,7 @@ export function EnterpriseSidebar() {
         <div className="my-2 h-px w-10 mx-auto bg-white/10" />
 
         {/* Departments */}
-        {DEPARTMENTS.map((dept) => (
+        {filteredDepartments.map((dept) => (
           <SidebarItem
             key={dept.id}
             id={dept.id}
@@ -654,6 +705,7 @@ export function EnterpriseSidebar() {
             hoveredItem={hoveredItem}
             setHoveredItem={setHoveredItem}
             isActive={isActive}
+            permission={dept.permission}
           />
         ))}
       </div>

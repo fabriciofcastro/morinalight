@@ -507,21 +507,21 @@ export function StatusCustomizadosListClient() {
             Próxima
           </Button>
         </div>
-        </div>
-  )
-}
+      )}
 
-<DeleteConfirmDialog
-  open={deleteDialogOpen}
-  onOpenChange={(open) => {
-    setDeleteDialogOpen(open);
-    if (!open) setStatusToDelete(null);
-  }}
-  onConfirm={confirmDelete}
-  itemName={statusToDelete?.nome || ""}
-  itemType="status customizado"
-  isLoading={deleteLoading}
-/>
+
+
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setStatusToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        itemName={statusToDelete?.nome || ""}
+        itemType="status customizado"
+        isLoading={deleteLoading}
+      />
     </div >
   );
 }

@@ -8,6 +8,9 @@ import { useSearchParams } from "next/navigation";
 import { AuthGlassCard } from "@/components/auth/AuthGlassCard";
 import { authEnterLeft, authEnterScale } from "@/components/auth/auth-motion";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { CertificationsBanner } from "@/components/auth/CertificationsBanner";
+import { CreatorsModule } from "@/components/auth/CreatorsModule";
+import { LegalLinks } from "@/components/auth/LegalLinks";
 import { DeveloperCredits } from "@/components/login/developer-credits";
 import { DigitalGridMap } from "@/components/login/digital-grid-map";
 import { EnergyRings } from "@/components/login/energy-rings";
@@ -134,8 +137,8 @@ function LoginPageContent() {
       {/* Futuristic Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,0),var(--auth-surface,#030712))]" />
-        <div 
-          className="absolute inset-0 bg-[linear-gradient(to_right,var(--auth-grid-line,rgba(255,255,255,0.02))_1px,transparent_1px),linear-gradient(to_bottom,var(--auth-grid-line,rgba(255,255,255,0.02))_1px,transparent_1px)] bg-[size:4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" 
+        <div
+          className="absolute inset-0 bg-[linear-gradient(to_right,var(--auth-grid-line,rgba(255,255,255,0.02))_1px,transparent_1px),linear-gradient(to_bottom,var(--auth-grid-line,rgba(255,255,255,0.02))_1px,transparent_1px)] bg-[size:4rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
           style={{ opacity: 'var(--auth-grid-opacity, 1)' }}
         />
 
@@ -502,13 +505,13 @@ function LoginPageContent() {
       </AnimatePresence>
 
       {/* Main Content Container */}
-      <div className="relative z-10 w-full max-w-[1100px] grid lg:grid-cols-2 gap-8 lg:gap-12 p-4 sm:p-6 items-center lg:items-start pb-16 lg:pb-10">
+      <div className="relative z-10 w-full max-w-[1100px] grid lg:grid-cols-2 gap-8 lg:gap-12 p-4 sm:p-6 items-center pb-16 lg:pb-10">
         {/* Left Side: Tactical Command Interface */}
         <motion.div
           variants={authEnterLeft}
           initial="hidden"
           animate="show"
-          className="hidden lg:flex flex-col justify-between h-full min-h-[min(600px,78vh)] relative pb-6"
+          className="hidden lg:flex flex-col justify-between h-full relative"
         >
           {/* Top: Brand Identity */}
           <div className="relative z-10">
@@ -572,9 +575,10 @@ function LoginPageContent() {
             </div>
           </div>
 
-          {/* Bottom: Floating System Architects Module */}
-          <div className="relative z-10 mt-auto pt-6">
-            <DeveloperCredits />
+          {/* Bottom: Certifications & Creators Modules */}
+          <div className="relative z-10 mt-auto space-y-4 pb-0">
+            <CertificationsBanner />
+            <CreatorsModule />
           </div>
         </motion.div>
 
@@ -648,27 +652,10 @@ function LoginPageContent() {
         </motion.div>
       </div>
 
-      {/* Footer with Legal Links Only */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-6 py-6 flex justify-center bg-linear-to-t from-black/80 to-transparent">
-        <div className="flex gap-6 text-[10px] font-semibold text-white/30">
-          <Link href="/lgpd" className="hover:text-white transition-colors">
-            LGPD
-          </Link>
-          <Link href="/termos" className="hover:text-white transition-colors">
-            Termos
-          </Link>
-          <Link href="/privacidade" className="hover:text-white transition-colors">
-            Privacidade
-          </Link>
-          <Link href="/cookies" className="hover:text-white transition-colors">
-            Cookies
-          </Link>
-          <Link href="/lei-representante" className="hover:text-white transition-colors">
-            Lei 4.886/65
-          </Link>
-          <Link href="/vinculo-empregaticio" className="hover:text-white transition-colors">
-            Não Vínculo
-          </Link>
+      {/* Footer with Legal Links */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-6 py-6 bg-gradient-to-t from-black/80 to-transparent">
+        <div className="max-w-[1100px] mx-auto">
+          <LegalLinks />
         </div>
       </div>
     </main>

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-12T09:41:47.630Z",
+  "timestamp": "2025-12-31T03:17:13.294Z",
   "documents": [
     {
       "path": "docs/MANIFESTO.md",
@@ -94,8 +94,8 @@
       "dominio": "geral",
       "tipo": "evento",
       "versao": "v1",
-      "content": "export type DomainEventMetadata = {\n  eventId: string;\n  orgId: string;\n  actorId: string;\n  timestamp: Date;\n};\nexport interface DomainEvent<TPayload = unknown> {\n  name: string;\n  version: string;\n  metadata: DomainEventMetadata;\n  payload: TPayload;\n}\nexport interface DomainEventBus {\n  publish<TPayload>(event: DomainEvent<TPayload>): Promise<void>;\n}\n",
-      "size": 357
+      "content": "export type DomainEventMetadata = {\n    eventId: string;\n    orgId: string;\n    actorId: string;\n    timestamp: Date;\n};\nexport interface DomainEvent<TPayload = unknown> {\n    name: string;\n    version: string;\n    metadata: DomainEventMetadata;\n    payload: TPayload;\n}\nexport interface DomainEventBus {\n    publish<TPayload>(event: DomainEvent<TPayload>): Promise<void>;\n}\n",
+      "size": 375
     },
     {
       "path": "packages/shared-kernel/src/events/domain-event.ts",

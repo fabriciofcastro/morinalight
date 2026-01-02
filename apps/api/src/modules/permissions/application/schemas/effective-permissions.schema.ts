@@ -29,6 +29,12 @@ export const resolverPermissoesEfetivasResultadoSchema = z.object({
     positions: z.array(permissionGrantSchema),
     custom: z.array(permissionGrantSchema),
   }),
+  context: z.object({
+    departmentId: z.string().optional(),
+    sectorId: z.string().optional(),
+    positionId: z.string().optional(),
+    attributes: z.record(z.any()).optional(),
+  }).optional(),
 });
 
 export type ResolverPermissoesEfetivasResultado = z.infer<

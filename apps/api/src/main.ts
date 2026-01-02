@@ -1,7 +1,11 @@
 import { env } from "./core/config/env";
 import { createServer } from "./core/server/create-server";
 
+import { initSentry } from "./lib/observability/sentry";
+
 async function bootstrap() {
+  initSentry();
+
   const server = await createServer({
     registerDocs: env.NODE_ENV !== "production", // Habilitar docs em dev/test
   });

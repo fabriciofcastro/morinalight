@@ -36,7 +36,6 @@ import { HistoryTab } from "./tabs/history-tab";
 import { GovernanceTab } from "./tabs/governance-tab";
 import { AnalyticsTab } from "./tabs/analytics-tab";
 import { LGPDConsentModal } from "./compliance/lgpd-consent-modal";
-import { LGPDConsentModal } from "./compliance/lgpd-consent-modal";
 import { SensitiveActionConfirmDialog } from "./compliance/sensitive-action-confirm-dialog";
 import { CompanyAssistantWidget } from "./intelligence/company-assistant-widget";
 

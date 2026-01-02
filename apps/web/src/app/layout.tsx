@@ -4,6 +4,8 @@ import { Inter, Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { ConnectionProviders } from "@/components/connection-providers";
 import { ThemeShell } from "@/components/theme-shell";
+import { QueryProvider } from "@/lib/query/provider";
+import { AdvancedErrorBoundary } from "@/lib/errors";
 
 import "./globals.css";
 
@@ -34,16 +36,20 @@ export default function RootLayout({
         suppressHydrationWarning
         className={cn(interSans.variable, poppinsDisplay.variable, "antialiased")}
       >
-        <ThemeProvider
-          attribute="data-theme"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-          enableColorScheme={false}
-        >
-          <ThemeShell>{children}</ThemeShell>
-          <ConnectionProviders />
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="data-theme"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+            enableColorScheme={false}
+          >
+            <AdvancedErrorBoundary module="root" autoResetAfter={5000}>
+              <ThemeShell>{children}</ThemeShell>
+              <ConnectionProviders />
+            </AdvancedErrorBoundary>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -17,6 +17,7 @@ type Notification = {
   message: string;
   timestamp: Date;
   read: boolean;
+  duration?: number; // Optional duration in milliseconds for auto-dismiss
 };
 
 type NotificationCenterProps = {

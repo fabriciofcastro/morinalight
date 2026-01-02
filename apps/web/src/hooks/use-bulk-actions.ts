@@ -26,15 +26,7 @@ export function useBulkActions(options: BulkActionOptions = {}) {
                 return { success: false };
             }
 
-            // Confirmação para ações destrutivas
-            if (action === "delete") {
-                const confirmed = window.confirm(
-                    `Tem certeza que deseja deletar ${userIds.length} usuário(s)? Esta ação não pode ser desfeita.`
-                );
-                if (!confirmed) {
-                    return { success: false };
-                }
-            }
+            // Confirmação removida do hook - deve ser tratada pela UI antes de chamar executeBulkAction
 
             setLoading(true);
             setError(null);

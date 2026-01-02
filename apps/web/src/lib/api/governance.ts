@@ -1,5 +1,5 @@
 
-import { api } from "../api-client";
+import { apiClient } from "./base";
 
 export interface ApprovalWorkflow {
     id: string;
@@ -35,44 +35,36 @@ export interface ApprovalRequest {
 
 export const governanceAPI = {
     getWorkflows: async (): Promise<ApprovalWorkflow[]> => {
-        const response = await api.get("/governance/workflows");
-        return response.data;
+        return await apiClient.get<ApprovalWorkflow[]>("/governance/workflows");
     },
 
     updateWorkflow: async (data: { module: string, fields: string[], approverRole: string }) => {
-        const response = await api.post("/governance/workflows", data);
-        return response.data;
+        return await apiClient.post<ApprovalWorkflow>("/governance/workflows", data);
     },
 
     getRequests: async (): Promise<ApprovalRequest[]> => {
-        const response = await api.get("/governance/requests");
-        return response.data;
+        return await apiClient.get<ApprovalRequest[]>("/governance/requests");
     },
 
     approveRequest: async (requestId: string) => {
-        const response = await api.post(`/governance/requests/${requestId}/approve`);
-        return response.data;
+        return await apiClient.post<ApprovalRequest>(`/governance/requests/${requestId}/approve`);
     },
 
     rejectRequest: async (requestId: string) => {
-        const response = await api.post(`/governance/requests/${requestId}/reject`);
-        return response.data;
+        return await apiClient.post<ApprovalRequest>(`/governance/requests/${requestId}/reject`);
     },
 
     // Comments
     getComments: async (requestId: string): Promise<ApprovalRequestComment[]> => {
-        const response = await api.get(`/governance/requests/${requestId}/comments`);
-        return response.data;
+        return await apiClient.get<ApprovalRequestComment[]>(`/governance/requests/${requestId}/comments`);
     },
 
     createComment: async (requestId: string, content: string) => {
-        const response = await api.post(`/governance/requests/${requestId}/comments`, { content });
-        return response.data;
+        return await apiClient.post<ApprovalRequestComment>(`/governance/requests/${requestId}/comments`, { content });
     },
 
     // Drafts
     submitRequest: async (requestId: string) => {
-        const response = await api.post(`/governance/requests/${requestId}/submit`);
-        return response.data;
+        return await apiClient.post<ApprovalRequest>(`/governance/requests/${requestId}/submit`);
     }
 };

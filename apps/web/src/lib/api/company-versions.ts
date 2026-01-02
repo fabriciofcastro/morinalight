@@ -1,5 +1,5 @@
 
-import { api } from "../api-client";
+import { apiClient } from "./base";
 import { CompanySettingsFormData } from "@/schemas/company-settings-advanced";
 
 export interface CompanyVersion {
@@ -18,17 +18,14 @@ export interface CompanyVersion {
 
 export const companyVersionsAPI = {
     getVersions: async (): Promise<CompanyVersion[]> => {
-        const response = await api.get("/company-settings/snapshots");
-        return response.data;
+        return apiClient.get<CompanyVersion[]>("/company-settings/snapshots");
     },
 
     createSnapshot: async (name?: string) => {
-        const response = await api.post("/company-settings/snapshots", { name });
-        return response.data;
+        return apiClient.post("/company-settings/snapshots", { name });
     },
 
     restoreVersion: async (versionId: string) => {
-        const response = await api.post(`/company-settings/snapshots/${versionId}/restore`);
-        return response.data;
+        return apiClient.post(`/company-settings/snapshots/${versionId}/restore`);
     }
 };

@@ -144,6 +144,82 @@ const USER_FRIENDLY_MESSAGES: Record<string, { title: string; message: string; a
     message: "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.",
     action: "Verificar Conexão",
   },
+
+  // Erros HTTP específicos
+  "HTTP_400": {
+    title: "Dados Inválidos",
+    message: "Os dados enviados estão incorretos. Verifique as informações e tente novamente.",
+    action: "Verificar Dados",
+  },
+  "HTTP_403": {
+    title: "Acesso Proibido",
+    message: "Você não tem permissão para realizar esta ação. Entre em contato com o administrador.",
+    action: "Contatar Administrador",
+  },
+  "HTTP_404": {
+    title: "Não Encontrado",
+    message: "O recurso solicitado não foi encontrado. Pode ter sido removido ou movido.",
+    action: "Voltar",
+  },
+  "HTTP_500": {
+    title: "Erro no Servidor",
+    message: "Ocorreu um problema no servidor. Tente novamente em alguns instantes.",
+    action: "Tentar Novamente",
+  },
+  "HTTP_502": {
+    title: "Servidor Indisponível",
+    message: "O servidor está temporariamente indisponível. Tente novamente em alguns minutos.",
+    action: "Tentar Mais Tarde",
+  },
+  "HTTP_503": {
+    title: "Serviço em Manutenção",
+    message: "O sistema está em manutenção. Tente novamente em alguns instantes.",
+    action: "Aguardar",
+  },
+  "HTTP_504": {
+    title: "Tempo Esgotado",
+    message: "O servidor demorou muito para responder. Tente novamente.",
+    action: "Tentar Novamente",
+  },
+
+  // Erros de autenticação específicos
+  "USER_NOT_FOUND": {
+    title: "Usuário Não Encontrado",
+    message: "Este email não está cadastrado no sistema. Verifique o email ou crie uma nova conta.",
+    action: "Verificar Email",
+  },
+  "INVALID_PASSWORD": {
+    title: "Senha Incorreta",
+    message: "A senha informada está incorreta. Tente novamente ou recupere sua senha.",
+    action: "Recuperar Senha",
+  },
+  "ACCOUNT_LOCKED": {
+    title: "Conta Bloqueada",
+    message: "Sua conta foi bloqueada por segurança. Entre em contato com o administrador.",
+    action: "Contatar Suporte",
+  },
+  "ACCOUNT_DISABLED": {
+    title: "Conta Desativada",
+    message: "Sua conta está desativada. Entre em contato com o suporte para reativá-la.",
+    action: "Contatar Suporte",
+  },
+
+  // Erros de rede
+  "ERR_NETWORK": {
+    title: "Falha de Conexão",
+    message: "Não foi possível conectar ao servidor. Verifique sua conexão com a internet.",
+    action: "Verificar Conexão",
+  },
+  "ECONNABORTED": {
+    title: "Conexão Interrompida",
+    message: "A conexão com o servidor foi interrompida. Tente novamente.",
+    action: "Tentar Novamente",
+  },
+  "GATEWAY_TIMEOUT": {
+    title: "Tempo Esgotado",
+    message: "O servidor não respondeu a tempo. Verifique sua conexão e tente novamente.",
+    action: "Tentar Novamente",
+  },
 };
 
 /**

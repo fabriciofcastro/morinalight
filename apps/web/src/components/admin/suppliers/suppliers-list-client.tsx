@@ -21,6 +21,8 @@ import { notificationCenter } from "@/components/notifications/notification-cent
 import { useAuth } from "@/hooks/use-auth";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { Can } from "@/lib/auth";
 
 const SupplierCard = ({
     supplier,
@@ -80,12 +82,16 @@ const SupplierCard = ({
                         </span>
 
                         <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white" onClick={onEdit}>
-                                <FileText className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/60 hover:text-red-400 hover:bg-red-500/10" onClick={onDelete}>
-                                <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <Can I="update" a="Supplier">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white" onClick={onEdit}>
+                                    <FileText className="w-4 h-4" />
+                                </Button>
+                            </Can>
+                            <Can I="delete" a="Supplier">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/60 hover:text-red-400 hover:bg-red-500/10" onClick={onDelete}>
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            </Can>
                         </div>
                     </div>
                 </div>
@@ -148,22 +154,26 @@ const SupplierCard = ({
                 </div>
 
                 <div className="flex gap-2 pt-4 border-t border-white/5">
-                    <Button
-                        className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
-                        variant="outline"
-                        size="sm"
-                        onClick={onEdit}
-                    >
-                        Editar
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
-                        onClick={onDelete}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <Can I="update" a="Supplier">
+                        <Button
+                            className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
+                            variant="outline"
+                            size="sm"
+                            onClick={onEdit}
+                        >
+                            Editar
+                        </Button>
+                    </Can>
+                    <Can I="delete" a="Supplier">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
+                            onClick={onDelete}
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </Can>
                 </div>
             </div>
         </motion.div>
@@ -244,102 +254,106 @@ export function SuppliersListClient() {
     }, [suppliers]);
 
     return (
-        <div className="p-8 space-y-8 min-h-screen text-white pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-blue-500">
-                        Fornecedores
-                    </h1>
-                    <p className="text-white/60 mt-1">Gestão da cadeia de suprimentos</p>
-                </div>
-                <Button
-                    onClick={() => router.push("/admin/suppliers/new")}
-                    className="bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] border border-blue-400/20"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Novo Fornecedor
-                </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex justify-between items-start relative z-10">
-                        <div>
-                            <p className="text-sm font-medium text-white/40">Total Cadastrado</p>
-                            <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
-                        </div>
-                        <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
-                            <Truck className="w-6 h-6" />
-                        </div>
+        <AllowedGuard I="read" a="Supplier" redirectTo="/admin">
+            <div className="p-8 space-y-8 min-h-screen text-white pb-20">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-blue-500">
+                            Fornecedores
+                        </h1>
+                        <p className="text-white/60 mt-1">Gestão da cadeia de suprimentos</p>
                     </div>
-                </motion.div>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por nome, documento ou e-mail..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-blue-500/50 transition-all"
-                        />
-                    </div>
-                    <div className="flex gap-2">
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white/80 focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                    <Can I="create" a="Supplier">
+                        <Button
+                            onClick={() => router.push("/admin/suppliers/new")}
+                            className="bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] border border-blue-400/20"
                         >
-                            <option value="ALL" className="bg-[#090b16]">Todos Status</option>
-                            <option value="ACTIVE" className="bg-[#090b16]">Ativos</option>
-                            <option value="INACTIVE" className="bg-[#090b16]">Inativos</option>
-                        </select>
-                        <Button variant="outline" size="icon" onClick={loadSuppliers} className="border-white/10 text-white/60 hover:text-white">
-                            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+                            <Plus className="w-4 h-4 mr-2" />
+                            Novo Fornecedor
                         </Button>
-                        <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
-                    </div>
+                    </Can>
                 </div>
 
-                {loading && suppliers.length === 0 ? (
-                    <div className="text-center py-20 text-white/40">Carregando fornecedores...</div>
-                ) : suppliers.length === 0 ? (
-                    <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum fornecedor encontrado.</div>
-                ) : (
-                    <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-3"}>
-                        {suppliers.map(supplier => (
-                            <SupplierCard
-                                key={supplier.id}
-                                supplier={supplier}
-                                viewMode={viewMode}
-                                onEdit={() => router.push(`/admin/suppliers/${supplier.id}/edit`)}
-                                onDelete={() => handleDelete(supplier.id, supplier.name)}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex justify-between items-start relative z-10">
+                            <div>
+                                <p className="text-sm font-medium text-white/40">Total Cadastrado</p>
+                                <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
+                            </div>
+                            <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
+                                <Truck className="w-6 h-6" />
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
 
-            {/* Delete Confirmation Dialog */}
-            <DeleteConfirmDialog
-                open={deleteDialogOpen}
-                onOpenChange={(open) => {
-                    setDeleteDialogOpen(open);
-                    if (!open) setSupplierToDelete(null);
-                }}
-                onConfirm={confirmDelete}
-                itemName={supplierToDelete?.name || ""}
-                itemType="fornecedor"
-                isLoading={deleteLoading}
-            />
-        </div>
+                <div className="space-y-4">
+                    <div className="flex flex-col md:flex-row gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por nome, documento ou e-mail..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-blue-500/50 transition-all"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white/80 focus:outline-none focus:border-blue-500/50 cursor-pointer"
+                            >
+                                <option value="ALL" className="bg-[#090b16]">Todos Status</option>
+                                <option value="ACTIVE" className="bg-[#090b16]">Ativos</option>
+                                <option value="INACTIVE" className="bg-[#090b16]">Inativos</option>
+                            </select>
+                            <Button variant="outline" size="icon" onClick={loadSuppliers} className="border-white/10 text-white/60 hover:text-white">
+                                <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+                            </Button>
+                            <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+                        </div>
+                    </div>
+
+                    {loading && suppliers.length === 0 ? (
+                        <div className="text-center py-20 text-white/40">Carregando fornecedores...</div>
+                    ) : suppliers.length === 0 ? (
+                        <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum fornecedor encontrado.</div>
+                    ) : (
+                        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-3"}>
+                            {suppliers.map(supplier => (
+                                <SupplierCard
+                                    key={supplier.id}
+                                    supplier={supplier}
+                                    viewMode={viewMode}
+                                    onEdit={() => router.push(`/admin/suppliers/${supplier.id}/edit`)}
+                                    onDelete={() => handleDelete(supplier.id, supplier.name)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Delete Confirmation Dialog */}
+                <DeleteConfirmDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={(open) => {
+                        setDeleteDialogOpen(open);
+                        if (!open) setSupplierToDelete(null);
+                    }}
+                    onConfirm={confirmDelete}
+                    itemName={supplierToDelete?.name || ""}
+                    itemType="fornecedor"
+                    isLoading={deleteLoading}
+                />
+            </div>
+        </AllowedGuard>
     );
 }

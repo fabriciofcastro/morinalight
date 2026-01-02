@@ -135,10 +135,20 @@ export function parseAxiosError(error: AxiosError<ApiErrorResponse>): AppError {
 
 /**
  * Parsear erro genérico
+ * 
+ * @param error - Erro a ser parseado
+ * @param autoTrack - Se true, rastreia o erro automaticamente (padrão: true)
  */
-export function parseError(error: unknown): AppError {
+export function parseError(error: unknown, autoTrack = true): AppError {
   // Já é um AppError
   if (error instanceof AppError) {
+    // Rastrear erro se habilitado
+    if (autoTrack && typeof window !== "undefined") {
+      // Importação dinâmica para evitar dependência circular
+      import("./error-tracking").then(({ errorTracking }) => {
+        errorTracking.trackError(error).catch(console.error);
+      }).catch(console.error);
+    }
     return error;
   }
 
@@ -149,12 +159,21 @@ export function parseError(error: unknown): AppError {
     "isAxiosError" in error &&
     (error as { isAxiosError: boolean }).isAxiosError
   ) {
-    return parseAxiosError(error as AxiosError<ApiErrorResponse>);
+    const appError = parseAxiosError(error as AxiosError<ApiErrorResponse>);
+
+    // Rastrear erro se habilitado
+    if (autoTrack && typeof window !== "undefined") {
+      import("./error-tracking").then(({ errorTracking }) => {
+        errorTracking.trackError(appError).catch(console.error);
+      }).catch(console.error);
+    }
+
+    return appError;
   }
 
   // Erro padrão do JavaScript
   if (error instanceof Error) {
-    return new AppError(
+    const appError = new AppError(
       ErrorCode.INTERNAL_ERROR,
       error.message,
       500,
@@ -165,14 +184,32 @@ export function parseError(error: unknown): AppError {
         },
       },
     );
+
+    // Rastrear erro se habilitado
+    if (autoTrack && typeof window !== "undefined") {
+      import("./error-tracking").then(({ errorTracking }) => {
+        errorTracking.trackError(appError).catch(console.error);
+      }).catch(console.error);
+    }
+
+    return appError;
   }
 
   // Erro desconhecido
-  return new AppError(
+  const appError = new AppError(
     ErrorCode.INTERNAL_ERROR,
     String(error) || "Erro desconhecido",
     500,
   );
+
+  // Rastrear erro se habilitado
+  if (autoTrack && typeof window !== "undefined") {
+    import("./error-tracking").then(({ errorTracking }) => {
+      errorTracking.trackError(appError).catch(console.error);
+    }).catch(console.error);
+  }
+
+  return appError;
 }
 
 /**

@@ -22,6 +22,7 @@ export function CreateUserDrawer({ open, onClose, onUserCreated }: CreateUserDra
   });
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [sendInvite, setSendInvite] = useState(true);
+  const [mustChangePassword, setMustChangePassword] = useState(true);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   if (!open) return null;
@@ -113,6 +114,7 @@ export function CreateUserDrawer({ open, onClose, onUserCreated }: CreateUserDra
           displayName: formData.displayName,
           password: formData.password,
           sendInvite,
+          mustChangePassword,
           avatarUrl: avatarPreview,
         }),
       });
@@ -131,6 +133,7 @@ export function CreateUserDrawer({ open, onClose, onUserCreated }: CreateUserDra
         });
         setAvatarPreview(null);
         setSendInvite(true);
+        setMustChangePassword(true);
         setShowConfirmation(false);
         onUserCreated();
       } else {
@@ -288,6 +291,19 @@ export function CreateUserDrawer({ open, onClose, onUserCreated }: CreateUserDra
             />
             <Label htmlFor="send-invite" className="cursor-pointer text-sm text-white/70">
               Enviar convite por email com senha temporária
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="must-change-password"
+              checked={mustChangePassword}
+              onChange={(e) => setMustChangePassword(e.target.checked)}
+              className="h-4 w-4 cursor-pointer"
+            />
+            <Label htmlFor="must-change-password" className="cursor-pointer text-sm text-white/70">
+              Exigir troca de senha no próximo login
             </Label>
           </div>
 

@@ -22,9 +22,10 @@ interface SectionShellProps {
     children: React.ReactNode;
     className?: string;
     active?: boolean;
+    title?: string;
 }
 
-export function SectionShell({ children, className, active = true }: SectionShellProps) {
+export function SectionShell({ children, className, active = true, title }: SectionShellProps) {
     return (
         <div
             className={cn(
@@ -35,6 +36,11 @@ export function SectionShell({ children, className, active = true }: SectionShel
         >
             <TechCorner position="top-left" />
             <TechCorner position="top-right" />
+            {title && (
+                <h2 className="text-xl font-semibold text-white mb-6">
+                    {title}
+                </h2>
+            )}
             {children}
         </div>
     );

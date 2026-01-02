@@ -10,6 +10,7 @@ export interface FuturisticInputProps extends React.InputHTMLAttributes<HTMLInpu
   errorMessage?: string;
   tooltip?: string;
   helperText?: string;
+  startIcon?: React.ReactNode;
 }
 
 export function FuturisticInput({
@@ -21,6 +22,7 @@ export function FuturisticInput({
   tooltip,
   helperText,
   className,
+  startIcon,
   ...props
 }: FuturisticInputProps) {
   const generatedId = useId();
@@ -56,6 +58,13 @@ export function FuturisticInput({
 
       <div className="relative">
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+
+        {startIcon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none z-10 flex items-center justify-center">
+            {startIcon}
+          </div>
+        )}
+
         <input
           id={inputId}
           {...props}
@@ -67,7 +76,7 @@ export function FuturisticInput({
             setShowTooltip(false);
             props.onBlur?.(e);
           }}
-          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 cursor-text ${className || ""}`}
+          className={`relative w-full py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 cursor-text ${startIcon ? "pl-10 pr-4" : "px-4"} ${className || ""}`}
           aria-invalid={error}
           aria-describedby={
             error && errorMessage

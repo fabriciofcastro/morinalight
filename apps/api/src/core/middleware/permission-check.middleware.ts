@@ -1,17 +1,73 @@
 /**
  * Permission Check Middleware
- * Verifica permissões antes de executar ações
+ * Verifica permissões antes de executar ações usando CASL
  */
 
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { getPrisma } from "../../infra/database/prisma.service";
 import { extractOrgId } from "../auth/rbac.guards";
-import type { ResolverPermissoesEfetivasUseCase } from "../../modules/permissions/application/use-cases/resolver-permissoes-efetivas.use-case";
+import { CaslAbilityFactory } from "../../modules/permissions/domain/factories/casl-ability.factory";
+import { ResolverPermissoesEfetivasUseCase } from "../../modules/permissions/application/use-cases/resolver-permissoes-efetivas.use-case";
+import { PrismaPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-permission.repository";
+import { PrismaOrganizationRepository } from "../../modules/organizations/infra/prisma/prisma-organization.repository";
+import { PrismaPositionPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-position-permission.repository";
+import { PrismaSectorPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-sector-permission.repository";
+import { PrismaDepartmentPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-department-permission.repository";
+import { PrismaUserPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-user-permission.repository";
+import { PrismaPositionMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position-membership.repository";
+import { PrismaDepartmentMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department-membership.repository";
+import { PrismaPositionRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position.repository";
+import { InMemoryPermissionCacheService } from "../../modules/permissions/infra/cache/in-memory-permission-cache.service";
+import { PermissionInheritanceServiceImpl } from "../../modules/permissions/infra/services/permission-inheritance.service";
+import { PrismaDepartmentRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department.repository";
+import { PrismaSectorRepository } from "../../modules/organizational-structure/infra/prisma/prisma-sector.repository";
 
-const prisma = getPrisma();
+// Instâncias globais ou lazy-loaded seriam melhores, 
+// mas para manter consistência vamos instanciar sob demanda aproveitando o cache do PrismaService
+function makeResolverPermissoesEfetivas() {
+  const permissionRepo = new PrismaPermissionRepository();
+  const orgRepo = new PrismaOrganizationRepository();
+  const posPermRepo = new PrismaPositionPermissionRepository();
+  const secPermRepo = new PrismaSectorPermissionRepository();
+  const depPermRepo = new PrismaDepartmentPermissionRepository();
+  const userPermRepo = new PrismaUserPermissionRepository();
+  const posMemRepo = new PrismaPositionMembershipRepository();
+  const depMemRepo = new PrismaDepartmentMembershipRepository();
+  const posRepo = new PrismaPositionRepository();
+
+  // Dependências de Herança
+  const depRepo = new PrismaDepartmentRepository();
+  const secRepo = new PrismaSectorRepository();
+
+  const inheritanceService = new PermissionInheritanceServiceImpl({
+    departmentRepository: depRepo,
+    sectorRepository: secRepo,
+    positionRepository: posRepo,
+    departmentPermissionRepository: depPermRepo,
+    sectorPermissionRepository: secPermRepo,
+    positionPermissionRepository: posPermRepo,
+    permissionRepository: permissionRepo
+  });
+
+  const permissionCache = new InMemoryPermissionCacheService();
+
+  return new ResolverPermissoesEfetivasUseCase({
+    permissionRepository: permissionRepo,
+    organizationRepository: orgRepo,
+    positionPermissionRepository: posPermRepo,
+    sectorPermissionRepository: secPermRepo,
+    departmentPermissionRepository: depPermRepo,
+    userPermissionRepository: userPermRepo,
+    positionMembershipRepository: posMemRepo,
+    departmentMembershipRepository: depMemRepo,
+    positionRepository: posRepo,
+    permissionCacheService: permissionCache,
+    permissionInheritanceService: inheritanceService
+  });
+}
 
 type PermissionCheckOptions = {
-  permission: string; // ID ou código da permissão
+  permission: string; // ID ou código da permissão (ex: "products:view")
   resource?: string; // Recurso específico (opcional)
   requireAll?: boolean; // Se true, requer todas as permissões (para array)
 };
@@ -28,100 +84,56 @@ export function requirePermission(options: PermissionCheckOptions) {
       });
     }
 
-    const { permission, resource, requireAll = false } = options;
+    const { permission } = options;
     const userId = request.auth?.userId;
     const orgId = extractOrgId(request);
 
     if (!userId || !orgId) {
       return reply.status(403).send({
-        message: "Permissão negada",
+        message: "Permissão negada (Contexto Inválido)",
         code: "FORBIDDEN",
       });
     }
 
     try {
-      // Buscar permissões efetivas do usuário
-      // Por enquanto, verificação simples - em produção, usar ResolverPermissoesEfetivasUseCase
-      const userPermissions = await prisma.userPermission.findMany({
-        where: {
-          userId,
-          orgId,
-          permission: {
-            id: permission,
-          },
-        },
-        include: {
-          permission: true,
-        },
-      });
+      // 1. Resolver todas as permissões efetivas do usuário (com cache)
+      const useCase = makeResolverPermissoesEfetivas();
+      const effectivePermissions = await useCase.execute({ orgId, userId });
 
-      // Verificar se usuário tem a permissão
-      const hasPermission = userPermissions.length > 0;
+      // 2. Criar Ability do CASL
+      const ability = CaslAbilityFactory.createForUser(effectivePermissions);
 
-      if (!hasPermission) {
-        // Verificar permissões herdadas (departamento, setor, cargo)
-        const departmentPermissions = await prisma.departmentPermission.findMany({
-          where: {
-            orgId,
-            permissionId: permission,
-            department: {
-              memberships: {
-                some: {
-                  userId,
-                },
-              },
-            },
-          },
+      // 3. Traduzir a permissão string (ex: "products:view") para Ação/Sujeito (ex: "read", "Product")
+      const { action, subject } = CaslAbilityFactory.parsePermissionKey(permission);
+
+      if (!action || !subject) {
+        // Se a permissão não pode ser mapeada para o sistema CASL, 
+        // caímos para uma verificação de segurança (negar por padrão ou checar a string crua se suportado)
+        // Por segurança, negamos e logamos.
+        request.log.warn(`Permissão desconhecida solicitada: ${permission}`);
+        return reply.status(403).send({
+          message: "Permissão desconhecida ou inválida",
+          code: "FORBIDDEN",
+          requiredPermission: permission,
         });
-
-        const sectorPermissions = await prisma.sectorPermission.findMany({
-          where: {
-            orgId,
-            permissionId: permission,
-            sector: {
-              memberships: {
-                some: {
-                  userId,
-                },
-              },
-            },
-          },
-        });
-
-        const positionPermissions = await prisma.positionPermission.findMany({
-          where: {
-            orgId,
-            permissionId: permission,
-            position: {
-              memberships: {
-                some: {
-                  userId,
-                },
-              },
-            },
-          },
-        });
-
-        const hasInheritedPermission =
-          departmentPermissions.length > 0 ||
-          sectorPermissions.length > 0 ||
-          positionPermissions.length > 0;
-
-        if (!hasInheritedPermission) {
-          return reply.status(403).send({
-            message: "Permissão negada",
-            code: "FORBIDDEN",
-            requiredPermission: permission,
-          });
-        }
       }
 
-      // Registrar auditoria de verificação de permissão (opcional, para debug)
-      // await prisma.organizationAuditLog.create({...});
+      // 4. Verificar autorização
+      if (ability.cannot(action, subject)) {
+        return reply.status(403).send({
+          message: "Permissão negada",
+          code: "FORBIDDEN",
+          requiredPermission: permission,
+        });
+      }
+
+      // Se passou, injetar ability no request para uso posterior nos controllers se necessário
+      // (request as any).ability = ability; 
+
     } catch (error) {
-      console.error("Erro ao verificar permissão:", error);
+      request.log.error(error, "Erro ao verificar permissão com CASL");
       return reply.status(500).send({
-        message: "Erro ao verificar permissão",
+        message: "Erro interno ao verificar permissões",
         code: "PERMISSION_CHECK_ERROR",
       });
     }
@@ -133,26 +145,44 @@ export function requirePermission(options: PermissionCheckOptions) {
  */
 export function requireAnyPermission(permissions: string[]) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
-    for (const permission of permissions) {
-      const check = requirePermission({ permission });
-      try {
-        await check(request, reply);
-        if (!reply.sent) {
-          // Se não retornou erro, usuário tem a permissão
-          return;
-        }
-      } catch {
-        // Continuar para próxima permissão
-      }
+    // Implementação otimizada: Carregar permissões UMA VEZ e checar todas
+    if (!request.auth) {
+      return reply.status(401).send({ message: "Autenticação necessária", code: "UNAUTHORIZED" });
     }
-    // Se chegou aqui, usuário não tem nenhuma permissão
-    return reply.status(403).send({
-      message: "Permissão negada",
-      code: "FORBIDDEN",
-      requiredPermissions: permissions,
-    });
+
+    const userId = request.auth?.userId;
+    const orgId = extractOrgId(request);
+
+    if (!userId || !orgId) return reply.status(403).send({ message: "Contexto inválido", code: "FORBIDDEN" });
+
+    try {
+      const useCase = makeResolverPermissoesEfetivas();
+      const effectivePermissions = await useCase.execute({ orgId, userId });
+      const ability = CaslAbilityFactory.createForUser(effectivePermissions);
+
+      let hasAny = false;
+      for (const permission of permissions) {
+        const { action, subject } = CaslAbilityFactory.parsePermissionKey(permission);
+        if (action && subject && ability.can(action, subject)) {
+          hasAny = true;
+          break;
+        }
+      }
+
+      if (!hasAny) {
+        return reply.status(403).send({
+          message: "Permissão negada",
+          code: "FORBIDDEN",
+          requiredPermissions: permissions,
+        });
+      }
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ message: "Erro de permissão", code: "INTERNAL_ERROR" });
+    }
   };
 }
+
 
 
 

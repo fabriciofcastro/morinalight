@@ -8,6 +8,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { type Permission, permissionsApi } from "@/lib/api/permissions";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Can } from "@/lib/auth";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 type FormState = {
   name: string;
@@ -116,185 +118,189 @@ export function PermissionEditClient() {
   }, [permissionId, router]);
 
   return (
-    <div className="relative min-h-screen p-6 space-y-8">
-      {/* Header Futurista */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
+    <AllowedGuard I="update" a="Permission" redirectTo="/admin/permissions">
+      <div className="relative min-h-screen p-6 space-y-8">
+        {/* Header Futurista */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
 
-        <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
-          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
+          <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
+            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
 
-          <div className="relative z-10 flex-1">
-            <div className="flex items-center gap-4 mb-3">
-              <Key className="h-8 w-8 text-[hsl(var(--primary))]" />
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                  Editar Permissão
-                </h1>
-                <p className="text-sm text-white/60 font-medium mt-1">
-                  permissionKey = <span className="font-mono text-[hsl(var(--primary))]">{code}</span>
-                </p>
+            <div className="relative z-10 flex-1">
+              <div className="flex items-center gap-4 mb-3">
+                <Key className="h-8 w-8 text-[hsl(var(--primary))]" />
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
+                    Editar Permissão
+                  </h1>
+                  <p className="text-sm text-white/60 font-medium mt-1">
+                    permissionKey = <span className="font-mono text-[hsl(var(--primary))]">{code}</span>
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Link href={`/admin/permissions/${permissionId}`}>
+            <div className="flex items-center gap-2">
+              <Link href={`/admin/permissions/${permissionId}`}>
+                <Button
+                  variant="secondary"
+                  type="button"
+                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Voltar
+                </Button>
+              </Link>
               <Button
                 variant="secondary"
                 type="button"
+                onClick={() => void load()}
                 className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
               >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Recarregar
               </Button>
-            </Link>
-            <Button
-              variant="secondary"
-              type="button"
-              onClick={() => void load()}
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Recarregar
-            </Button>
-            <Button
-              variant="secondary"
-              type="button"
-              disabled={deleteLoading}
-              onClick={handleDelete}
-              className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Deletar
-            </Button>
+              <Can I="delete" a="Permission">
+                <Button
+                  variant="secondary"
+                  type="button"
+                  disabled={deleteLoading}
+                  onClick={handleDelete}
+                  className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Deletar
+                </Button>
+              </Can>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
 
-      {/* Formulário */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 rounded-xl border border-white/10 bg-white/[0.05] backdrop-blur-sm"
-      >
-        {loading ? (
-          <div className="p-8 text-center text-white/50">Carregando…</div>
-        ) : !perm ? (
-          <div className="p-8 text-center text-white/50">Permissão não encontrada.</div>
-        ) : (
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
+        {/* Formulário */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-6 rounded-xl border border-white/10 bg-white/[0.05] backdrop-blur-sm"
+        >
+          {loading ? (
+            <div className="p-8 text-center text-white/50">Carregando…</div>
+          ) : !perm ? (
+            <div className="p-8 text-center text-white/50">Permissão não encontrada.</div>
+          ) : (
+            <form onSubmit={onSubmit} className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="group relative">
+                  <label className="block text-sm font-semibold text-white/90 mb-2">
+                    Nome <span className="text-red-400">*</span>
+                  </label>
+                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                    className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
+                    required
+                  />
+                </div>
+                <div className="group relative">
+                  <label className="block text-sm font-semibold text-white/90 mb-2">
+                    Módulo <span className="text-red-400">*</span>
+                  </label>
+                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+                  <input
+                    type="text"
+                    value={form.module}
+                    onChange={(e) => setForm((p) => ({ ...p, module: e.target.value }))}
+                    className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="group relative">
+                  <label className="block text-sm font-semibold text-white/90 mb-2">
+                    Resource <span className="text-red-400">*</span>
+                  </label>
+                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+                  <input
+                    type="text"
+                    value={form.resource}
+                    onChange={(e) => setForm((p) => ({ ...p, resource: e.target.value }))}
+                    placeholder="Ex: users"
+                    className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
+                    required
+                  />
+                </div>
+                <div className="group relative">
+                  <label className="block text-sm font-semibold text-white/90 mb-2">
+                    Action <span className="text-red-400">*</span>
+                  </label>
+                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+                  <input
+                    type="text"
+                    value={form.action}
+                    onChange={(e) => setForm((p) => ({ ...p, action: e.target.value }))}
+                    placeholder="Ex: create"
+                    className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm">
+                <p className="text-sm text-white/60 mb-1">Permission Key (gerado automaticamente):</p>
+                <p className="font-mono text-lg text-blue-400">{code}</p>
+              </div>
+
               <div className="group relative">
-                <label className="block text-sm font-semibold text-white/90 mb-2">
-                  Nome <span className="text-red-400">*</span>
-                </label>
+                <label className="block text-sm font-semibold text-white/90 mb-2">Descrição</label>
                 <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                  className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
-                  required
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                  className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all min-h-[120px]"
+                  placeholder="Descrição da permissão..."
                 />
               </div>
-              <div className="group relative">
-                <label className="block text-sm font-semibold text-white/90 mb-2">
-                  Módulo <span className="text-red-400">*</span>
-                </label>
-                <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-                <input
-                  type="text"
-                  value={form.module}
-                  onChange={(e) => setForm((p) => ({ ...p, module: e.target.value }))}
-                  className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
-                  required
-                />
+
+              <div className="flex items-center justify-between border-t border-white/10 pt-6">
+                <div className="text-xs text-white/40">
+                  ID: <span className="font-mono">{perm.id}</span>
+                </div>
+                <Button
+                  type="submit"
+                  disabled={!canSave || saving}
+                  className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white shadow-lg shadow-[hsl(var(--primary))]/25 hover:shadow-[hsl(var(--primary))]/40 transition-all"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  {saving ? "Salvando…" : "Salvar Alterações"}
+                </Button>
               </div>
-            </div>
+            </form>
+          )}
+        </motion.div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="group relative">
-                <label className="block text-sm font-semibold text-white/90 mb-2">
-                  Resource <span className="text-red-400">*</span>
-                </label>
-                <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-                <input
-                  type="text"
-                  value={form.resource}
-                  onChange={(e) => setForm((p) => ({ ...p, resource: e.target.value }))}
-                  placeholder="Ex: users"
-                  className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
-                  required
-                />
-              </div>
-              <div className="group relative">
-                <label className="block text-sm font-semibold text-white/90 mb-2">
-                  Action <span className="text-red-400">*</span>
-                </label>
-                <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-                <input
-                  type="text"
-                  value={form.action}
-                  onChange={(e) => setForm((p) => ({ ...p, action: e.target.value }))}
-                  placeholder="Ex: create"
-                  className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm">
-              <p className="text-sm text-white/60 mb-1">Permission Key (gerado automaticamente):</p>
-              <p className="font-mono text-lg text-blue-400">{code}</p>
-            </div>
-
-            <div className="group relative">
-              <label className="block text-sm font-semibold text-white/90 mb-2">Descrição</label>
-              <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all min-h-[120px]"
-                placeholder="Descrição da permissão..."
-              />
-            </div>
-
-            <div className="flex items-center justify-between border-t border-white/10 pt-6">
-              <div className="text-xs text-white/40">
-                ID: <span className="font-mono">{perm.id}</span>
-              </div>
-              <Button
-                type="submit"
-                disabled={!canSave || saving}
-                className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white shadow-lg shadow-[hsl(var(--primary))]/25 hover:shadow-[hsl(var(--primary))]/40 transition-all"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                {saving ? "Salvando…" : "Salvar Alterações"}
-              </Button>
-            </div>
-          </form>
-        )}
-      </motion.div>
-
-      {/* Delete Confirmation Dialog */}
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        onConfirm={confirmDelete}
-        itemName={perm?.name || ""}
-        itemType="permissão"
-        isLoading={deleteLoading}
-      />
-    </div>
+        {/* Delete Confirmation Dialog */}
+        <DeleteConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          onConfirm={confirmDelete}
+          itemName={perm?.name || ""}
+          itemType="permissão"
+          isLoading={deleteLoading}
+        />
+      </div>
+    </AllowedGuard>
   );
 }
 

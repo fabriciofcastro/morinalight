@@ -110,6 +110,21 @@ export function requireOrganizationAccess(
     );
 
     if (!access.hasAccess) {
+      // Security Observability: Monitorar tentativas de acesso negado
+      const Sentry = await import("@sentry/node");
+      Sentry.withScope((scope) => {
+        scope.setLevel("warning");
+        scope.setTag("security_event", "access_denied");
+        scope.setTag("violation_type", "insufficient_role");
+        scope.setContext("access_attempt", {
+          userId: request.auth?.userId,
+          orgId,
+          requiredRole,
+          actualRole: access.role
+        });
+        Sentry.captureMessage(`Access Denied: ${access.error || "Insufficient Permissions"}`);
+      });
+
       return reply.status(403).send({
         message: access.error || "Acesso negado à organização",
         code: "FORBIDDEN",

@@ -19,6 +19,7 @@ const createUserSchema = z.object({
   departmentId: z.string().optional(),
   sectorId: z.string().optional(),
   positionId: z.string().optional(),
+  mustChangePassword: z.boolean().optional(),
 });
 
 type CreateUserDeps = {
@@ -68,6 +69,7 @@ export async function registerCreateUserRoute(app: FastifyInstance, deps: Create
       admissionDate: admissionDate,
       observations: body.observations ?? null,
       avatarUrl: body.avatarUrl ?? null,
+      mustChangePassword: body.mustChangePassword,
     });
 
     return reply.status(201).send({

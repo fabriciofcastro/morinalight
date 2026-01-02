@@ -18,6 +18,8 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 import { organizationalStructureApi, Position } from "@/lib/api/organizational-structure";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { Can } from "@/lib/auth";
 
 const PositionCard = ({
   position,
@@ -76,22 +78,26 @@ const PositionCard = ({
         </div>
 
         <div className="flex gap-2 pt-4 border-t border-white/5">
-          <Button
-            className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
-            variant="outline"
-            size="sm"
-            onClick={onEdit}
-          >
-            Editar
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
-            onClick={onDelete}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          <Can I="update" a="Position">
+            <Button
+              className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+            >
+              Editar
+            </Button>
+          </Can>
+          <Can I="delete" a="Position">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
+              onClick={onDelete}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </Can>
         </div>
       </div>
     </motion.div>
@@ -162,85 +168,89 @@ export function PositionsListClient() {
   }, [positions]);
 
   return (
-    <div className="p-8 space-y-8 min-h-screen text-white pb-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-            Cargos
-          </h1>
-          <p className="text-white/60 mt-1">Gerencie as posições e hierarquias da empresa</p>
-        </div>
-        <Button
-          onClick={() => router.push("/admin/positions/new")}
-          className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] border border-emerald-400/20"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Cargo
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-2xl bg-[#09090b]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-        >
-          <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="flex justify-between items-start relative z-10">
-            <div>
-              <p className="text-sm font-medium text-white/40">Total de Cargos</p>
-              <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
-            </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
-              <Briefcase className="w-6 h-6" />
-            </div>
+    <AllowedGuard I="read" a="Position" redirectTo="/admin">
+      <div className="p-8 space-y-8 min-h-screen text-white pb-20">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+              Cargos
+            </h1>
+            <p className="text-white/60 mt-1">Gerencie as posições e hierarquias da empresa</p>
           </div>
-        </motion.div>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex gap-4 bg-[#09090b]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-            <input
-              type="text"
-              placeholder="Buscar cargo..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/50 transition-all"
-            />
-          </div>
+          <Can I="create" a="Position">
+            <Button
+              onClick={() => router.push("/admin/positions/new")}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] border border-emerald-400/20"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Novo Cargo
+            </Button>
+          </Can>
         </div>
 
-        {loading ? (
-          <div className="text-center py-20 text-white/40">Carregando cargos...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum cargo encontrado.</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filtered.map(pos => (
-              <PositionCard
-                key={pos.id}
-                position={pos}
-                onEdit={() => router.push(`/admin/positions/${pos.id}/edit`)}
-                onDelete={() => handleDelete(pos.id, pos.name)}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 rounded-2xl bg-[#09090b]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="flex justify-between items-start relative z-10">
+              <div>
+                <p className="text-sm font-medium text-white/40">Total de Cargos</p>
+                <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
+              </div>
+              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
+                <Briefcase className="w-6 h-6" />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex gap-4 bg-[#09090b]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <input
+                type="text"
+                placeholder="Buscar cargo..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/50 transition-all"
               />
-            ))}
+            </div>
           </div>
-        )}
-      </div>
 
-      <DeleteConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={(open) => {
-          setDeleteDialogOpen(open);
-          if (!open) setPositionToDelete(null);
-        }}
-        onConfirm={confirmDelete}
-        itemName={positionToDelete?.name || ""}
-        itemType="cargo"
-        isLoading={deleteLoading}
-      />
-    </div>
+          {loading ? (
+            <div className="text-center py-20 text-white/40">Carregando cargos...</div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum cargo encontrado.</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filtered.map(pos => (
+                <PositionCard
+                  key={pos.id}
+                  position={pos}
+                  onEdit={() => router.push(`/admin/positions/${pos.id}/edit`)}
+                  onDelete={() => handleDelete(pos.id, pos.name)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <DeleteConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={(open) => {
+            setDeleteDialogOpen(open);
+            if (!open) setPositionToDelete(null);
+          }}
+          onConfirm={confirmDelete}
+          itemName={positionToDelete?.name || ""}
+          itemType="cargo"
+          isLoading={deleteLoading}
+        />
+      </div>
+    </AllowedGuard>
   );
 }

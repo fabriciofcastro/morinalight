@@ -11,6 +11,7 @@ import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface DepartmentFormClientProps {
   departmentId?: string;
@@ -178,23 +179,24 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
   );
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Departamento" : "Novo Departamento"}
-      subtitle={
-        isEditing
-          ? `Atualizar informações do departamento ${department?.name}`
-          : "Cadastre um novo departamento no sistema"
-      }
-      icon={<Building2 className="h-8 w-8" />}
-      onSave={handleSubmit}
-      backUrl={isEditing && departmentId ? `/admin/departments/${departmentId}` : "/admin/departments"}
-      isValid={canSave}
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-      loading={loading}
-      onSave={handleSubmit}
-    >
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <AllowedGuard I={isEditing ? "update" : "create"} a="Department" redirectTo="/admin/departments">
+      <StandardFormPage
+        title={isEditing ? "Editar Departamento" : "Novo Departamento"}
+        subtitle={
+          isEditing
+            ? `Atualizar informações do departamento ${department?.name}`
+            : "Cadastre um novo departamento no sistema"
+        }
+        icon={<Building2 className="h-8 w-8" />}
+        onSave={handleSubmit}
+        backUrl={isEditing && departmentId ? `/admin/departments/${departmentId}` : "/admin/departments"}
+        isValid={canSave}
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+        loading={loading}
+        onSave={handleSubmit}
+      >
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <FuturisticInput
               label="Nome"
@@ -304,7 +306,8 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
             </div>
           )}
         </form>
-    </StandardFormPage>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }
 

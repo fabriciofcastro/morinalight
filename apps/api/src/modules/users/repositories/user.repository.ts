@@ -13,6 +13,7 @@ export type UserRecord = {
   birthDate?: Date | null;
   admissionDate?: Date | null;
   observations?: string | null;
+  mustChangePassword?: boolean;
 };
 
 export type CreateUserInput = {
@@ -26,7 +27,9 @@ export type CreateUserInput = {
   birthDate?: Date | null;
   admissionDate?: Date | null;
   observations?: string | null;
+  observations?: string | null;
   avatarUrl?: string | null;
+  mustChangePassword?: boolean;
 };
 
 export type UpdateUserInput = {

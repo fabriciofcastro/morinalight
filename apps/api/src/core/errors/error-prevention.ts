@@ -5,14 +5,14 @@
  */
 
 import type { AppError } from "./app-error";
-import { ErrorCode, getErrorCategory, type ErrorCode as ErrorCodeType } from "./error-codes";
+import { ErrorCodes, getErrorCategory, type ErrorCode } from "./error-codes";
 import { ErrorAnalyticsManager } from "./error-analytics";
 
 /**
  * Padrão de erro para detecção
  */
 export interface ErrorPattern {
-  code: ErrorCodeType | string;
+  code: ErrorCode | string;
   conditions: Array<{
     field: string;
     operator: "equals" | "contains" | "matches" | "greater" | "less";
@@ -158,7 +158,7 @@ export class ErrorPreventionManager {
     error: AppError,
     context: Record<string, unknown>,
   ): void {
-    const category = getErrorCategory(error.code as ErrorCodeType);
+    const category = getErrorCategory(error.code as ErrorCode);
     const key = `${error.code}:${category}`;
 
     const errors = this.errorCounts.get(key) || [];
@@ -202,7 +202,7 @@ ErrorPreventionManager.registerRule({
   enabled: true,
   triggerCount: 0,
   pattern: {
-    code: ErrorCode.RATE_LIMIT_EXCEEDED,
+    code: ErrorCodes.RATE_LIMIT_EXCEEDED,
     conditions: [],
     threshold: 5,
     timeWindow: 60000, // 1 minuto
@@ -216,7 +216,7 @@ ErrorPreventionManager.registerRule({
   enabled: true,
   triggerCount: 0,
   pattern: {
-    code: ErrorCode.DATABASE_CONNECTION_ERROR,
+    code: ErrorCodes.DATABASE_CONNECTION_ERROR,
     conditions: [],
     threshold: 3,
     timeWindow: 30000, // 30 segundos

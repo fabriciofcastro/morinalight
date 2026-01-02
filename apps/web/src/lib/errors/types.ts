@@ -5,6 +5,11 @@
  * compatíveis com o sistema de erros do backend.
  */
 
+import { ErrorCode } from "./error-codes";
+
+export { ErrorCode };
+export type { ErrorCode as ErrorCodeType } from "./error-codes";
+
 /**
  * Estrutura de erro da API
  */
@@ -22,10 +27,6 @@ export interface ApiErrorResponse {
     };
   };
 }
-
-import { ErrorCode } from "./error-codes";
-
-export { ErrorCode };
 
 /**
  * Códigos de erro conhecidos

@@ -1,3 +1,4 @@
+'use client';
 /**
  * Hooks para Tratamento de Erros
  * 
@@ -5,7 +6,8 @@
  */
 
 import { useCallback, useState, useRef, useEffect } from "react";
-import { parseError, isRetryableError, getRetryDelay, type AppError } from "./error-parser";
+import { parseError, isRetryableError, getRetryDelay } from "./error-parser";
+import { type AppError } from "./types";
 import { getUserFriendlyMessage } from "./user-messages";
 import { notificationCenter } from "@/components/notifications/notification-center";
 
@@ -17,6 +19,10 @@ interface UseErrorHandlerOptions {
    * Mostrar notificação automática
    */
   showNotification?: boolean;
+  /**
+   * Mostrar tooltip ao invés de notificação
+   */
+  showTooltip?: boolean;
   /**
    * Nível de log
    */
@@ -37,6 +43,7 @@ interface UseErrorHandlerOptions {
 export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
   const {
     showNotification = true,
+    showTooltip = false,
     logLevel = "error",
     onError,
     onRetryableError,
@@ -44,7 +51,8 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
 
   const handleError = useCallback(
     (error: unknown) => {
-      const appError = parseError(error);
+      // Parse com auto-tracking habilitado
+      const appError = parseError(error, true);
 
       // Log do erro
       console[logLevel]("Error handled:", appError);
@@ -57,8 +65,9 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
         onRetryableError?.(appError);
       }
 
-      // Mostrar notificação com mensagem amigável
-      if (showNotification) {
+      // Mostrar notificação OU tooltip (não ambos)
+      // Se showTooltip é true, o componente que chama deve gerenciar o tooltip
+      if (showNotification && !showTooltip) {
         const friendly = getUserFriendlyMessage(appError);
         notificationCenter.add({
           type: friendly.severity === "critical" ? "error" : friendly.severity,
@@ -70,7 +79,7 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}) {
 
       return appError;
     },
-    [showNotification, logLevel, onError, onRetryableError],
+    [showNotification, showTooltip, logLevel, onError, onRetryableError],
   );
 
   return { handleError };

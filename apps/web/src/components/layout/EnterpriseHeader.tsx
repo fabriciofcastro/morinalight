@@ -17,6 +17,7 @@ import { NotificationCenter } from "@/components/notifications/notification-cent
 import { LogoutDialog } from "@/components/auth/LogoutDialog";
 import { InactivityWarning } from "@/components/auth/InactivityWarning";
 import { useLogout } from "@/hooks/use-logout";
+import { Can } from "@/lib/auth";
 
 export function EnterpriseHeader() {
   const router = useRouter();
@@ -107,12 +108,14 @@ export function EnterpriseHeader() {
         </div>
 
         {/* Notifications (realtime) */}
-        <div className="group relative flex h-12 items-center justify-center border border-[color-mix(in_oklab,hsl(var(--border))_55%,transparent_45%)] bg-[color-mix(in_oklab,hsl(var(--surface))_35%,black_65%)] px-1 hover:border-[hsl(var(--primary)/0.5)] hover:bg-[color-mix(in_oklab,hsl(var(--surface))_45%,black_55%)] transition-all rounded-lg cursor-pointer">
-          <NotificationCenter maxNotifications={8} />
-          {/* Corner accents */}
-          <div className="absolute top-0 right-0 h-2 w-2 border-t border-r border-white/30 group-hover:border-[hsl(var(--primary))] transition-colors" />
-          <div className="absolute bottom-0 left-0 h-2 w-2 border-b border-l border-white/30 group-hover:border-[hsl(var(--primary))] transition-colors" />
-        </div>
+        <Can I="read" a="Notification">
+          <div className="group relative flex h-12 items-center justify-center border border-[color-mix(in_oklab,hsl(var(--border))_55%,transparent_45%)] bg-[color-mix(in_oklab,hsl(var(--surface))_35%,black_65%)] px-1 hover:border-[hsl(var(--primary)/0.5)] hover:bg-[color-mix(in_oklab,hsl(var(--surface))_45%,black_55%)] transition-all rounded-lg cursor-pointer">
+            <NotificationCenter maxNotifications={8} />
+            {/* Corner accents */}
+            <div className="absolute top-0 right-0 h-2 w-2 border-t border-r border-white/30 group-hover:border-[hsl(var(--primary))] transition-colors" />
+            <div className="absolute bottom-0 left-0 h-2 w-2 border-b border-l border-white/30 group-hover:border-[hsl(var(--primary))] transition-colors" />
+          </div>
+        </Can>
 
         {/* User Menu */}
         <div className="relative" ref={userMenuRef}>
@@ -162,16 +165,18 @@ export function EnterpriseHeader() {
                   <User className="h-4 w-4" />
                   Meu Perfil
                 </button>
-                <Link
-                  href="/settings"
-                  role="menuitem"
-                  onClick={() => setUserMenuOpen(false)}
-                  className="flex items-center gap-3 border border-transparent px-3 py-2 text-sm text-white/80 hover:border-white/15 hover:bg-white/8 hover:text-white transition-all rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:ring-offset-1 focus:ring-offset-transparent"
-                  aria-label="Ir para configurações"
-                >
-                  <SettingsIcon className="h-4 w-4" />
-                  Configurações
-                </Link>
+                <Can I="read" a="Settings">
+                  <Link
+                    href="/settings"
+                    role="menuitem"
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 border border-transparent px-3 py-2 text-sm text-white/80 hover:border-white/15 hover:bg-white/8 hover:text-white transition-all rounded-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:ring-offset-1 focus:ring-offset-transparent"
+                    aria-label="Ir para configurações"
+                  >
+                    <SettingsIcon className="h-4 w-4" />
+                    Configurações
+                  </Link>
+                </Can>
                 <div className="my-2 h-px bg-white/10" />
                 <button
                   type="button"

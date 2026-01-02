@@ -57,8 +57,6 @@ export function GeneralTab({ formData, setFormData, errors }: GeneralTabProps) {
         }
     }, [setFormData]);
 
-}, [setFormData]);
-
 const handleDataExtracted = (extracted: any) => {
     // Simple merge for POC
     setFormData((prev: any) => ({

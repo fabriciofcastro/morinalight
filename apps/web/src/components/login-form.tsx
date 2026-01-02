@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Loader2, ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -18,16 +18,27 @@ const loginSchema = z.object({
   password: z
     .string({ required_error: "A senha precisa de pelo menos 8 caracteres." })
     .min(8, "A senha precisa de pelo menos 8 caracteres."),
-  remember: z.boolean().optional().default(false),
+  remember: z.boolean(),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
-type LoginFormProps = {
-  onAuthenticate?: (payload: LoginFormData) => Promise<void>;
+type LoginNotice = {
+  message: string;
+  attempts?: number;
+  status?: number;
+  category?: string;
+  origin?: string;
+  code?: string;
 };
 
-export function LoginForm({ onAuthenticate }: LoginFormProps) {
+type LoginFormProps = {
+  onAuthenticate?: (payload: LoginFormData) => Promise<void>;
+  onNotice?: (notice: LoginNotice) => void;
+  onDismissNotice?: () => void;
+};
+
+export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFormProps) {
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState<string | null>(null);
@@ -57,7 +68,7 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
   const isEmailValid = email && !errors.email && email.includes("@");
   const isPasswordValid = password && !errors.password && password.length >= 8;
 
-  async function submit(data: LoginFormData) {
+  const submit: SubmitHandler<LoginFormData> = async (data) => {
     setStatus("idle");
     setMessage(null);
 
@@ -117,7 +128,31 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
         }, 1500);
       } catch (error) {
         setStatus("error");
-        setMessage(error instanceof Error ? error.message : "Erro inesperado. Tente novamente.");
+
+        let errorMessage = "Erro inesperado. Tente novamente.";
+
+        if (error instanceof Error) {
+          // Tratamento específico para erros de conexão (fetch failure)
+          if (error.message === "Failed to fetch" || error.message.includes("NetworkError")) {
+            errorMessage = "Erro de Conexão: Não foi possível contatar o servidor. Verifique se a API está rodando.";
+            console.error("Login Connection Error:", error);
+          } else {
+            errorMessage = error.message;
+          }
+        }
+
+        if (onNotice) {
+          onNotice({
+            message: errorMessage,
+            category: error instanceof Error && (error.message === "Failed to fetch" || error.message.includes("NetworkError")) ? "NETWORK_ERROR" : "AUTH_ERROR",
+            code: error instanceof Error && (error.message === "Failed to fetch" || error.message.includes("NetworkError")) ? "ERR_CONNECTION_REFUSED" : "ERR_INVALID_CREDENTIALS",
+            origin: "CLIENT_LOGIN_FORM",
+            status: 0,
+            attempts: 1 // TODO: Track attempts
+          });
+        }
+
+        setMessage(errorMessage);
       }
     });
   }
@@ -165,12 +200,10 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
                   ? "border-[hsl(var(--primary)_/_0.5)] bg-[hsla(var(--surface) / 0.95)] backdrop-blur-sm shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
                   : "border-[hsl(var(--border))] bg-[hsla(var(--surface) / 0.8)]",
                 errors.email &&
-                  "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
+                "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
                 !errors.email && isEmailValid && "border-[hsl(var(--success)_/_0.5)]",
               )}
-              {...register("email", {
-                onChange: (e) => setEmailValue(e.target.value),
-              })}
+              {...register("email")}
               onFocus={() => setFocusedField("email")}
               onBlur={() => setFocusedField(null)}
               aria-invalid={Boolean(errors.email)}
@@ -253,12 +286,10 @@ export function LoginForm({ onAuthenticate }: LoginFormProps) {
                   ? "border-[hsl(var(--primary)_/_0.5)] bg-[hsla(var(--surface) / 0.95)] backdrop-blur-sm shadow-[0_0_20px_hsl(var(--primary)_/_0.15)]"
                   : "border-[hsl(var(--border))] bg-[hsla(var(--surface) / 0.8)]",
                 errors.password &&
-                  "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
+                "border-[hsl(var(--danger))] focus:ring-2 focus:ring-[hsl(var(--danger)_/_0.35))]",
                 !errors.password && isPasswordValid && "border-[hsl(var(--success)_/_0.5)]",
               )}
-              {...register("password", {
-                onChange: (e) => setPasswordValue(e.target.value),
-              })}
+              {...register("password")}
               onFocus={() => setFocusedField("password")}
               onBlur={() => setFocusedField(null)}
               aria-invalid={Boolean(errors.password)}

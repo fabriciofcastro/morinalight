@@ -11,6 +11,7 @@ import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface SectorFormClientProps {
   sectorId?: string;
@@ -72,7 +73,7 @@ export function SectorFormClient({ sectorId }: SectorFormClientProps) {
         if (sectorId) {
           const sec = await organizationalStructureApi.getSector(sectorId);
           setSector(sec);
-              setForm({
+          setForm({
             name: sec.name,
             code: sec.code,
             type: sec.type,
@@ -163,32 +164,33 @@ export function SectorFormClient({ sectorId }: SectorFormClientProps) {
 
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Setor" : "Novo Setor"}
-      subtitle={
-        isEditing
-          ? `Atualizar informações do setor ${sector?.name}`
-          : "Cadastre um novo setor no sistema"
-      }
-      icon={<Layers className="h-8 w-8 text-[hsl(var(--primary))]" />}
-      onSave={onSubmit}
-      backUrl={isEditing && sectorId ? `/admin/sectors/${sectorId}` : "/admin/sectors"}
-      isValid={canSave}
-      loading={loading}
-      loadingMessage="Carregando dados do setor..."
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-    >
-      <form onSubmit={onSubmit} className="space-y-6">
+    <AllowedGuard I={isEditing ? "update" : "create"} a="Sector" redirectTo="/admin/sectors">
+      <StandardFormPage
+        title={isEditing ? "Editar Setor" : "Novo Setor"}
+        subtitle={
+          isEditing
+            ? `Atualizar informações do setor ${sector?.name}`
+            : "Cadastre um novo setor no sistema"
+        }
+        icon={<Layers className="h-8 w-8 text-[hsl(var(--primary))]" />}
+        onSave={onSubmit}
+        backUrl={isEditing && sectorId ? `/admin/sectors/${sectorId}` : "/admin/sectors"}
+        isValid={canSave}
+        loading={loading}
+        loadingMessage="Carregando dados do setor..."
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+      >
+        <form onSubmit={onSubmit} className="space-y-6">
           <FuturisticSelect
             label="Departamento"
             required
             value={form.departmentId}
-              onChange={(e) => {
-                setForm((p) => ({ ...p, departmentId: e.target.value, parentId: "" }));
-                if (errors.departmentId) setErrors((e) => ({ ...e, departmentId: "" }));
-                markDirty();
-              }}
+            onChange={(e) => {
+              setForm((p) => ({ ...p, departmentId: e.target.value, parentId: "" }));
+              if (errors.departmentId) setErrors((e) => ({ ...e, departmentId: "" }));
+              markDirty();
+            }}
             error={!!errors.departmentId}
             errorMessage={errors.departmentId}
           >
@@ -303,15 +305,16 @@ export function SectorFormClient({ sectorId }: SectorFormClientProps) {
             </label>
           </div>
 
-        <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
-          {isEditing && sector && (
-            <>
-              ID: <span className="font-mono">{sector.id}</span>
-            </>
-          )}
-        </div>
-      </form>
-    </StandardFormPage>
+          <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
+            {isEditing && sector && (
+              <>
+                ID: <span className="font-mono">{sector.id}</span>
+              </>
+            )}
+          </div>
+        </form>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }
 

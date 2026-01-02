@@ -3,53 +3,63 @@
 import { cn } from "@morina/ui";
 import { Plus, Users, Package, Building2, FileText } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAbility } from "@/lib/auth/CaslContext";
+import { parsePermissionKey } from "@/lib/auth/ability";
 
 interface SidebarQuickCreateProps {
     isExpanded?: boolean;
 }
 
 export function SidebarQuickCreate({ isExpanded = true }: SidebarQuickCreateProps) {
-    const pathname = usePathname();
+    const ability = useAbility();
 
     // Ação contextual baseada na página atual
     const getQuickCreateAction = () => {
-        if (pathname.includes("/clientes") || pathname.includes("/customers"))
+        const canCreateUser = ability.can('create', 'User');
+        const canCreateClient = ability.can('create', 'Client');
+        const canCreateProduct = ability.can('create', 'Product');
+        const canCreateSupplier = ability.can('create', 'Supplier');
+        const canCreateTechnicalSheet = ability.can('create', 'TechnicalSheet');
+
+        if ((pathname.includes("/clientes") || pathname.includes("/customers")) && canCreateClient)
             return {
                 label: "Novo Cliente",
                 href: "/clientes/new",
                 icon: Users,
             };
-        if (pathname.includes("/products") || pathname.includes("/produtos"))
+        if ((pathname.includes("/products") || pathname.includes("/produtos")) && canCreateProduct)
             return {
                 label: "Novo Produto",
                 href: "/products/new",
                 icon: Package,
             };
-        if (pathname.includes("/fornecedores"))
+        if (pathname.includes("/fornecedores") && canCreateSupplier)
             return {
                 label: "Novo Fornecedor",
                 href: "/fornecedores/new",
                 icon: Building2,
             };
-        if (pathname.includes("/fichas-custo"))
+        if (pathname.includes("/fichas-custo") && canCreateTechnicalSheet)
             return {
                 label: "Nova Ficha",
                 href: "/fichas-custo/new",
                 icon: FileText,
             };
-        if (pathname.includes("/admin/users"))
+        if (pathname.includes("/admin/users") && canCreateUser)
             return {
                 label: "Novo Usuário",
                 href: "/admin/users/new",
                 icon: Users,
             };
-        return { label: "Criar Novo", href: "#", icon: Plus };
+
+        // Se nenhuma ação contextual é permitida, ou não há contexto, retorna null ou uma ação genérica protegida
+        return null;
     };
 
     const action = getQuickCreateAction();
-    const Icon = action.icon;
+    if (!action || !isExpanded) return null;
 
-    if (!isExpanded) return null;
+    const Icon = action.icon;
 
     return (
         <div className="px-3 pb-3">

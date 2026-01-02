@@ -1,21 +1,22 @@
 import type { ProdutoRepository } from "@morina/catalogo-domain";
 type Dependencies = {
-  produtoRepository: ProdutoRepository;
+    produtoRepository: ProdutoRepository;
 };
 export declare class ObterProdutoUseCase {
-  private readonly deps;
-  constructor(deps: Dependencies);
-  execute(rawInput: unknown): Promise<{
-    status: "ativo" | "rascunho" | "aguardando_aprovacao" | "inativo";
-    orgId: string;
-    criadoEm: Date;
-    atualizadoEm: Date;
-    nome: string;
-    criadoPor: string;
-    atualizadoPor: string;
-    produtoId: string;
-    descricao?: string | null | undefined;
-    sku?: string | null | undefined;
-    categoryId?: string | null | undefined;
-  }>;
+    private readonly deps;
+    constructor(deps: Dependencies);
+    execute(rawInput: unknown): Promise<{
+        status: "ativo" | "rascunho" | "aguardando_aprovacao" | "inativo";
+        orgId: string;
+        criadoPor: string;
+        nome: string;
+        produtoId: string;
+        atualizadoPor: string;
+        criadoEm: Date;
+        atualizadoEm: Date;
+        sku?: string | null | undefined;
+        categoryId?: string | null | undefined;
+        descricao?: string | null | undefined;
+    }>;
 }
+export {};

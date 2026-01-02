@@ -5,9 +5,10 @@ import { requireAuth } from "../../../core/auth/jwt.middleware";
 import type { UserRepository } from "../repositories/user.repository";
 
 const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, "Senha atual é obrigatória"),
+  currentPassword: z.string().optional(),
   newPassword: z.string().min(8, "Nova senha deve ter pelo menos 8 caracteres"),
   confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
+  mustChangePassword: z.boolean().optional(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "As senhas não coincidem",
   path: ["confirmPassword"],
@@ -45,8 +46,16 @@ export async function registerChangeUserPasswordRoute(
         });
       }
 
-      // Verificar senha atual (se não for o próprio usuário alterando, pode precisar de permissão especial)
+      // Verificar permissões e senha atual
       if (userId === request.auth.userId) {
+        // Usuário alterando a própria senha
+        if (!body.currentPassword) {
+          return reply.status(400).send({
+            message: "Senha atual é obrigatória",
+            code: "CURRENT_PASSWORD_REQUIRED"
+          });
+        }
+
         const isValidPassword = await bcrypt.compare(body.currentPassword, user.passwordHash);
         if (!isValidPassword) {
           return reply.status(401).send({
@@ -55,8 +64,11 @@ export async function registerChangeUserPasswordRoute(
           });
         }
       } else {
-        // Admin alterando senha de outro usuário - pode não precisar de senha atual
-        // Mas ainda deve verificar permissões (TODO: implementar verificação de permissões)
+        // Admin (ou outro usuário) alterando senha de terceiro
+        // TODO: Verificar permissão de "gerenciar usuários" ou "admin"
+        // Por enquanto, assumimos que se chegou aqui e não é o próprio usuário, deve ter permissão verificada pelo middleware ou lógica futura.
+        // O `requireAuth` apenas garante que está logado.
+        // Idealmente verificar role/scope aqui.
       }
 
       // Atualizar senha
@@ -71,6 +83,7 @@ export async function registerChangeUserPasswordRoute(
       await deps.userRepository.update({
         userId,
         passwordHash: newPasswordHash,
+        mustChangePassword: body.mustChangePassword,
       });
 
       return reply.status(200).send({

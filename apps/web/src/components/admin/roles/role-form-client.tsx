@@ -10,6 +10,7 @@ import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface RoleFormClientProps {
   roleId?: string;
@@ -140,23 +141,24 @@ export function RoleFormClient({ roleId }: RoleFormClientProps) {
   );
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Perfil" : "Novo Perfil"}
-      subtitle={
-        isEditing
-          ? `Atualizar informações do perfil ${role?.name}`
-          : "Cadastre um novo perfil de acesso no sistema"
-      }
-      icon={<Shield className="h-8 w-8 text-[hsl(var(--primary))]" />}
-      onSave={onSubmit}
-      backUrl={isEditing && roleId ? `/admin/roles/${roleId}` : "/admin/roles"}
-      isValid={canSave}
-      loading={loading}
-      loadingMessage="Carregando dados do perfil..."
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-    >
-      <form onSubmit={onSubmit} className="space-y-6">
+    <AllowedGuard I={isEditing ? "update" : "create"} a="Role" redirectTo="/admin/roles">
+      <StandardFormPage
+        title={isEditing ? "Editar Perfil" : "Novo Perfil"}
+        subtitle={
+          isEditing
+            ? `Atualizar informações do perfil ${role?.name}`
+            : "Cadastre um novo perfil de acesso no sistema"
+        }
+        icon={<Shield className="h-8 w-8 text-[hsl(var(--primary))]" />}
+        onSave={onSubmit}
+        backUrl={isEditing && roleId ? `/admin/roles/${roleId}` : "/admin/roles"}
+        isValid={canSave}
+        loading={loading}
+        loadingMessage="Carregando dados do perfil..."
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+      >
+        <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <FuturisticInput
               label="Nome do Perfil"
@@ -227,15 +229,16 @@ export function RoleFormClient({ roleId }: RoleFormClientProps) {
             </label>
           </div>
 
-        <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
-          {isEditing && role && (
-            <>
-              ID: <span className="font-mono">{role.id}</span>
-            </>
-          )}
-        </div>
-      </form>
-    </StandardFormPage>
+          <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
+            {isEditing && role && (
+              <>
+                ID: <span className="font-mono">{role.id}</span>
+              </>
+            )}
+          </div>
+        </form>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }
 

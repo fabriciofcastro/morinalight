@@ -1,31 +1,49 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3030;
-
+/**
+ * Playwright E2E Test Configuration
+ */
 export default defineConfig({
-  testDir: "./tests/e2e",
-  timeout: 60_000,
-  expect: {
-    timeout: 5_000,
-  },
+  testDir: "./e2e",
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: "html",
+
   use: {
-    baseURL: `http://127.0.0.1:${PORT}`,
+    baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    video: "retain-on-failure",
   },
-  reporter: process.env.CI ? "github" : "list",
+
   projects: [
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+    },
+    // Mobile
+    {
+      name: "Mobile Chrome",
+      use: { ...devices["Pixel 5"] },
+    },
+    {
+      name: "Mobile Safari",
+      use: { ...devices["iPhone 12"] },
+    },
   ],
+
   webServer: {
-    command: `pnpm next dev --port ${PORT} --hostname 127.0.0.1`,
-    cwd: __dirname,
-    url: `http://127.0.0.1:${PORT}`,
-    timeout: 60_000,
+    command: "pnpm dev",
+    url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
   },
 });

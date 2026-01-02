@@ -22,6 +22,8 @@ import { notificationCenter } from "@/components/notifications/notification-cent
 import { FuturisticSelect } from "@/components/ui/futuristic-ui";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { Can } from "@/lib/auth";
 
 const ClientCard = ({
     client,
@@ -77,12 +79,16 @@ const ClientCard = ({
                         </span>
 
                         <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white" onClick={onEdit}>
-                                <Users className="w-4 h-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/60 hover:text-red-400 hover:bg-red-500/10" onClick={onDelete}>
-                                <Trash2 className="w-4 h-4" />
-                            </Button>
+                            <Can I="update" a="Client">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-white/40 hover:text-white" onClick={onEdit}>
+                                    <Users className="w-4 h-4" />
+                                </Button>
+                            </Can>
+                            <Can I="delete" a="Client">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400/60 hover:text-red-400 hover:bg-red-500/10" onClick={onDelete}>
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                            </Can>
                         </div>
                     </div>
                 </div>
@@ -161,22 +167,26 @@ const ClientCard = ({
                 </div>
 
                 <div className="flex gap-2 pt-2 border-t border-white/5">
-                    <Button
-                        className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
-                        variant="outline"
-                        size="sm"
-                        onClick={onEdit}
-                    >
-                        Editar
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
-                        onClick={onDelete}
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <Can I="update" a="Client">
+                        <Button
+                            className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/10"
+                            variant="outline"
+                            size="sm"
+                            onClick={onEdit}
+                        >
+                            Editar
+                        </Button>
+                    </Can>
+                    <Can I="delete" a="Client">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="w-9 h-9 text-red-400/60 hover:text-red-400 hover:bg-red-500/10"
+                            onClick={onDelete}
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </Button>
+                    </Can>
                 </div>
             </div>
         </motion.div>
@@ -254,140 +264,144 @@ export function ClientsListClient() {
     }, [clients]);
 
     return (
-        <div className="p-8 space-y-8 min-h-screen text-white pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-200 to-cyan-500">
-                        Clientes
-                    </h1>
-                    <p className="text-white/60 mt-1">Gestão de relacionamento e vendas</p>
-                </div>
-                <Button
-                    onClick={() => router.push("/admin/clients/new")}
-                    className="bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] border border-cyan-400/20"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Novo Cliente
-                </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex justify-between items-start relative z-10">
-                        <div>
-                            <p className="text-sm font-medium text-white/40">Total da Base</p>
-                            <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
-                        </div>
-                        <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
-                            <Users className="w-6 h-6" />
-                        </div>
+        <AllowedGuard I="read" a="Client" redirectTo="/admin">
+            <div className="p-8 space-y-8 min-h-screen text-white pb-20">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-200 to-cyan-500">
+                            Clientes
+                        </h1>
+                        <p className="text-white/60 mt-1">Gestão de relacionamento e vendas</p>
                     </div>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex justify-between items-start relative z-10">
-                        <div>
-                            <p className="text-sm font-medium text-white/40">Ativos</p>
-                            <h3 className="text-3xl font-bold text-emerald-400 mt-1">{stats.active}</h3>
-                        </div>
-                        <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
-                            <Zap className="w-6 h-6" />
-                        </div>
-                    </div>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex justify-between items-start relative z-10">
-                        <div>
-                            <p className="text-sm font-medium text-white/40">Leads / Potenciais</p>
-                            <h3 className="text-3xl font-bold text-amber-400 mt-1">
-                                {stats.leads}
-                            </h3>
-                        </div>
-                        <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400">
-                            <User className="w-6 h-6" />
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por nome, documento ou cidade..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-cyan-500/50 transition-all"
-                        />
-                    </div>
-                    <div className="flex gap-2">
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white/80 focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+                    <Can I="create" a="Client">
+                        <Button
+                            onClick={() => router.push("/admin/clients/new")}
+                            className="bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] border border-cyan-400/20"
                         >
-                            <option value="ALL" className="bg-[#090b16]">Todos Status</option>
-                            <option value="ACTIVE" className="bg-[#090b16]">Ativos</option>
-                            <option value="LEAD" className="bg-[#090b16]">Leads</option>
-                            <option value="INACTIVE" className="bg-[#090b16]">Inativos</option>
-                        </select>
-                        <Button variant="outline" size="icon" onClick={loadClients} className="border-white/10 text-white/60 hover:text-white">
-                            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+                            <Plus className="w-4 h-4 mr-2" />
+                            Novo Cliente
                         </Button>
-                        <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
-                    </div>
+                    </Can>
                 </div>
 
-                {loading && clients.length === 0 ? (
-                    <div className="text-center py-20 text-white/40">Carregando clientes...</div>
-                ) : clients.length === 0 ? (
-                    <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum cliente encontrado.</div>
-                ) : (
-                    <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-3"}>
-                        {clients.map(client => (
-                            <ClientCard
-                                key={client.id}
-                                client={client}
-                                viewMode={viewMode}
-                                onEdit={() => router.push(`/admin/clients/${client.id}/edit`)}
-                                onDelete={() => handleDelete(client.id, client.name)}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex justify-between items-start relative z-10">
+                            <div>
+                                <p className="text-sm font-medium text-white/40">Total da Base</p>
+                                <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
+                            </div>
+                            <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
+                                <Users className="w-6 h-6" />
+                            </div>
+                        </div>
+                    </motion.div>
 
-            <DeleteConfirmDialog
-                open={deleteDialogOpen}
-                onOpenChange={(open) => {
-                    setDeleteDialogOpen(open);
-                    if (!open) setClientToDelete(null);
-                }}
-                onConfirm={confirmDelete}
-                itemName={clientToDelete?.name || ""}
-                itemType="cliente"
-                isLoading={deleteLoading}
-            />
-        </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex justify-between items-start relative z-10">
+                            <div>
+                                <p className="text-sm font-medium text-white/40">Ativos</p>
+                                <h3 className="text-3xl font-bold text-emerald-400 mt-1">{stats.active}</h3>
+                            </div>
+                            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
+                                <Zap className="w-6 h-6" />
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex justify-between items-start relative z-10">
+                            <div>
+                                <p className="text-sm font-medium text-white/40">Leads / Potenciais</p>
+                                <h3 className="text-3xl font-bold text-amber-400 mt-1">
+                                    {stats.leads}
+                                </h3>
+                            </div>
+                            <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400">
+                                <User className="w-6 h-6" />
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex flex-col md:flex-row gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                            <input
+                                type="text"
+                                placeholder="Buscar por nome, documento ou cidade..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-cyan-500/50 transition-all"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white/80 focus:outline-none focus:border-cyan-500/50 cursor-pointer"
+                            >
+                                <option value="ALL" className="bg-[#090b16]">Todos Status</option>
+                                <option value="ACTIVE" className="bg-[#090b16]">Ativos</option>
+                                <option value="LEAD" className="bg-[#090b16]">Leads</option>
+                                <option value="INACTIVE" className="bg-[#090b16]">Inativos</option>
+                            </select>
+                            <Button variant="outline" size="icon" onClick={loadClients} className="border-white/10 text-white/60 hover:text-white">
+                                <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+                            </Button>
+                            <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+                        </div>
+                    </div>
+
+                    {loading && clients.length === 0 ? (
+                        <div className="text-center py-20 text-white/40">Carregando clientes...</div>
+                    ) : clients.length === 0 ? (
+                        <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum cliente encontrado.</div>
+                    ) : (
+                        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-3"}>
+                            {clients.map(client => (
+                                <ClientCard
+                                    key={client.id}
+                                    client={client}
+                                    viewMode={viewMode}
+                                    onEdit={() => router.push(`/admin/clients/${client.id}/edit`)}
+                                    onDelete={() => handleDelete(client.id, client.name)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <DeleteConfirmDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={(open) => {
+                        setDeleteDialogOpen(open);
+                        if (!open) setClientToDelete(null);
+                    }}
+                    onConfirm={confirmDelete}
+                    itemName={clientToDelete?.name || ""}
+                    itemType="cliente"
+                    isLoading={deleteLoading}
+                />
+            </div>
+        </AllowedGuard>
     );
 }

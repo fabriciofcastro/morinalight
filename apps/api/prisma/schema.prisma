@@ -239,6 +239,11 @@ model Organization {
   // Analytics
   systemMetrics     SystemMetric[]
   usageLogs         UsageLog[]
+
+  // Advanced Security
+  securityPolicies  SecurityPolicy[]
+  timeWindows       TimeWindow[]
+  acls              AccessControlList[]
 }
 
 model User {
@@ -302,10 +307,31 @@ model User {
   approvalRequests ApprovalRequest[]
   approvalRequestComments ApprovalRequestComment[]
   createdCompanyVersions CompanySettingsVersion[]
+  
+  // Security
+  mustChangePassword Boolean @default(false)
+  tokenVersion       Int     @default(1) // Para revogação de sessões (Kill Switch)
+  passwordResetTokens PasswordResetToken[]
+
+  // Advanced Security
+  acls               AccessControlList[]
 
   @@index([branchId])
   @@index([positionId])
   @@index([cpf])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model OrganizationMembership {
@@ -1556,6 +1582,9 @@ model Role {
   organization Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
   permissions  RolePermission[]
   users        UserRole[]
+  
+  // Advanced Security
+  acls         AccessControlList[]
 
   @@unique([orgId, code])
   @@index([orgId, active])
@@ -2644,3 +2673,83 @@ model UsageLog {
   @@index([orgId, createdAt])
   @@index([action, resource])
 }
+
+// PBAC: Policy-Based Access Control
+model SecurityPolicy {
+  id             String       @id @default(uuid())
+  orgId          String
+  name           String       @db.VarChar(255)
+  description    String?      @db.Text
+  effect         String       @db.VarChar(10) // ALLOW, DENY
+  action         String       @db.VarChar(100) // manage, read, etc. (CSV or JSON array)
+  subject        String       @db.VarChar(100) // all, User, etc.
+  conditions     Json?        // Complex conditions DSL
+  priority       Int          @default(0)
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, active])
+}
+
+// TBAC: Time-Based Access Control
+model TimeWindow {
+  id             String       @id @default(uuid())
+  orgId          String
+  name           String       @db.VarChar(255)
+  startTime      String       @db.VarChar(5) // "08:00"
+  endTime        String       @db.VarChar(5) // "18:00"
+  daysOfWeek     Int[]        // [1, 2, 3, 4, 5]
+  timezone       String?      @default("UTC")
+  active         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, active])
+}
+
+// ACL: Access Control List (Instance-based)
+model AccessControlList {
+  id             String       @id @default(uuid())
+  orgId          String
+  userId         String?
+  roleId         String?
+  subject        String       @db.VarChar(100) // Document, User, etc.
+  subjectId      String       @db.VarChar(128) // ID of the specific resource
+  action         String       @db.VarChar(100) // manage, read, etc.
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role           Role?         @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  @@index([orgId, subject, subjectId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+// Decision Audit Trail: Captures why an access was allowed or denied
+model AccessDecisionLog {
+    id          String   @id @default(uuid())
+    orgId       String
+    userId      String?
+    action      String   @db.VarChar(50)
+    subject     String   @db.VarChar(50)
+    resourceId  String?  @db.VarChar(128)
+    effect      String   @db.VarChar(10) // ALLOW, DENY
+    reason      String?  @db.Text
+    context     Json?    // Snapshot of environment at decision time
+    createdAt   DateTime @default(now())
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+    @@index([orgId, createdAt])
+    @@index([userId, createdAt])
+}
+
+

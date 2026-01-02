@@ -7,7 +7,8 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useHasPermission } from "@/hooks/use-permissions";
+import { useAbility } from "@/lib/auth/CaslContext";
+import { parsePermissionKey } from "@/lib/auth/ability";
 import { SidebarCoachAI } from "./sidebar-coach-ai";
 import { SidebarQuickCreate } from "./sidebar-quick-create";
 
@@ -124,7 +125,13 @@ function NavItemComponent({
   expandedItems,
   onToggleExpand,
 }: NavItemComponentProps) {
-  const hasPermission = useHasPermission(item.permission || "");
+  const ability = useAbility();
+  const hasPermission = (() => {
+    if (!item.permission) return true;
+    const { action, subject } = parsePermissionKey(item.permission);
+    if (!action || !subject) return false;
+    return ability.can(action, subject);
+  })();
   const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
   const isExpanded = expandedItems.has(item.href);
   const hasChildren = item.children && item.children.length > 0;
@@ -204,7 +211,13 @@ function ChildNavItem({
   expandedItems?: Set<string>;
   onToggleExpand?: (href: string) => void;
 }) {
-  const hasPermission = useHasPermission(item.permission || "");
+  const ability = useAbility();
+  const hasPermission = (() => {
+    if (!item.permission) return true;
+    const { action, subject } = parsePermissionKey(item.permission);
+    if (!action || !subject) return false;
+    return ability.can(action, subject);
+  })();
   const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
   const hasChildren = item.children && item.children.length > 0;
   const isExpanded = expandedItems?.has(item.href) ?? false;

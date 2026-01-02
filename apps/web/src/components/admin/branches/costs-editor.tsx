@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DollarSign, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
-import { Futuristic Input } from "@/components/ui/futuristic-input";
+import { FuturisticInput } from "@/components/ui/futuristic-input";
 import {
     BarChart,
     Bar,

@@ -1,0 +1,17 @@
+// vitest.config.ts
+import { defineConfig } from "file:///home/fabricio/projects/morinalight/node_modules/.pnpm/vitest@2.1.9_@types+node@20.19.24_happy-dom@16.8.1_lightningcss@1.30.2_terser@5.44.1/node_modules/vitest/dist/config.js";
+var vitest_config_default = defineConfig({
+  test: {
+    environment: "node",
+    reporters: "default",
+    coverage: {
+      enabled: false
+    },
+    restoreMocks: true,
+    clearMocks: true
+  }
+});
+export {
+  vitest_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZXN0LmNvbmZpZy50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiY29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2Rpcm5hbWUgPSBcIi9ob21lL2ZhYnJpY2lvL3Byb2plY3RzL21vcmluYWxpZ2h0L2FwcHMvcmVhbHRpbWVcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfZmlsZW5hbWUgPSBcIi9ob21lL2ZhYnJpY2lvL3Byb2plY3RzL21vcmluYWxpZ2h0L2FwcHMvcmVhbHRpbWUvdml0ZXN0LmNvbmZpZy50c1wiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9pbXBvcnRfbWV0YV91cmwgPSBcImZpbGU6Ly8vaG9tZS9mYWJyaWNpby9wcm9qZWN0cy9tb3JpbmFsaWdodC9hcHBzL3JlYWx0aW1lL3ZpdGVzdC5jb25maWcudHNcIjtpbXBvcnQgeyBkZWZpbmVDb25maWcgfSBmcm9tIFwidml0ZXN0L2NvbmZpZ1wiO1xuXG5leHBvcnQgZGVmYXVsdCBkZWZpbmVDb25maWcoe1xuICB0ZXN0OiB7XG4gICAgZW52aXJvbm1lbnQ6IFwibm9kZVwiLFxuICAgIHJlcG9ydGVyczogXCJkZWZhdWx0XCIsXG4gICAgY292ZXJhZ2U6IHtcbiAgICAgIGVuYWJsZWQ6IGZhbHNlLFxuICAgIH0sXG4gICAgcmVzdG9yZU1vY2tzOiB0cnVlLFxuICAgIGNsZWFyTW9ja3M6IHRydWUsXG4gIH0sXG59KTtcbiJdLAogICJtYXBwaW5ncyI6ICI7QUFBeVUsU0FBUyxvQkFBb0I7QUFFdFcsSUFBTyx3QkFBUSxhQUFhO0FBQUEsRUFDMUIsTUFBTTtBQUFBLElBQ0osYUFBYTtBQUFBLElBQ2IsV0FBVztBQUFBLElBQ1gsVUFBVTtBQUFBLE1BQ1IsU0FBUztBQUFBLElBQ1g7QUFBQSxJQUNBLGNBQWM7QUFBQSxJQUNkLFlBQVk7QUFBQSxFQUNkO0FBQ0YsQ0FBQzsiLAogICJuYW1lcyI6IFtdCn0K

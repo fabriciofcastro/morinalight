@@ -29,7 +29,7 @@ type Dependencies = {
 };
 
 export class ResolverPermissoesEfetivasUseCase {
-  constructor(private readonly deps: Dependencies) {}
+  constructor(private readonly deps: Dependencies) { }
 
   async execute(rawInput: unknown) {
     const input = resolverPermissoesEfetivasInputSchema.parse(rawInput);
@@ -357,6 +357,12 @@ export class ResolverPermissoesEfetivasUseCase {
           source: "custom",
           sourceEntityId: g.sourceEntityId,
         })),
+      },
+      context: {
+        departmentId: departmentGrants[0]?.sourceEntityId,
+        sectorId: sectorGrants[0]?.sourceEntityId,
+        positionId: positionGrants[0]?.sourceEntityId,
+        attributes: {}, // TODO: Mapear atributos adicionais do usuário se necessário
       },
     });
 

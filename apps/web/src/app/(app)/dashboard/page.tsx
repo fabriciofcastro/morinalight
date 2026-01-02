@@ -13,6 +13,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { JarvisAssistantPanel } from "@/components/dashboard/JarvisAssistantPanel";
+import { FuturisticAreaChart } from "@/components/charts/FuturisticAreaChart";
+import { FuturisticBarChart } from "@/components/charts/FuturisticBarChart";
+import { FuturisticPieChart } from "@/components/charts/FuturisticPieChart";
 
 // Stat Card Component
 function StatCard({
@@ -176,79 +179,98 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Quick Actions */}
-        <div>
-          <h2 className="mb-4 text-lg font-semibold text-white">Ações Rápidas</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-            <QuickAction
-              title="Nova Comissão"
-              description="Registrar comissão de venda"
-              icon={DollarSign}
-              href="/commissions/new"
-              color="from-emerald-500 to-teal-500"
-            />
-            <QuickAction
-              title="Adicionar Cliente"
-              description="Cadastrar novo cliente"
-              icon={Users}
-              href="/clients/new"
-              color="from-blue-500 to-cyan-500"
-            />
-            <QuickAction
-              title="Novo Produto"
-              description="Adicionar ao catálogo"
-              icon={Package}
-              href="/catalog/new"
-              color="from-purple-500 to-pink-500"
-            />
+        {/* Charts Section - Row 1 */}
+        <div className="grid gap-6 lg:grid-cols-3 h-[400px]">
+          <div className="lg:col-span-2 h-full">
+            <FuturisticAreaChart />
+          </div>
+          <div className="h-full">
+            <FuturisticPieChart />
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div>
-          <h2 className="mb-4 text-lg font-semibold text-white">Atividade Recente</h2>
-          <div className="rounded-none border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden">
-            <div className="divide-y divide-white/10">
-              {[
-                {
-                  action: "Comissão aprovada",
-                  user: "João Silva",
-                  time: "Há 5 minutos",
-                  color: "text-emerald-400",
-                },
-                {
-                  action: "Cliente adicionado",
-                  user: "Maria Santos",
-                  time: "Há 1 hora",
-                  color: "text-blue-400",
-                },
-                {
-                  action: "Produto atualizado",
-                  user: "Pedro Costa",
-                  time: "Há 2 horas",
-                  color: "text-purple-400",
-                },
-                {
-                  action: "Relatório gerado",
-                  user: "Ana Lima",
-                  time: "Há 3 horas",
-                  color: "text-orange-400",
-                },
-              ].map((activity) => (
-                <div
-                  key={`${activity.action}-${activity.user}-${activity.time}`}
-                  className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`h-2 w-2 ${activity.color}`} />
-                    <div>
-                      <p className="text-sm font-medium text-white">{activity.action}</p>
-                      <p className="text-xs text-white/50">por {activity.user}</p>
+        {/* Charts Section - Row 2 */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="h-[400px]">
+            <FuturisticBarChart />
+          </div>
+
+          <div className="grid gap-6">
+            {/* Quick Actions */}
+            <div>
+              <h2 className="mb-4 text-lg font-semibold text-white">Ações Rápidas</h2>
+              <div className="grid gap-4 sm:grid-cols-2 auto-rows-fr">
+                <QuickAction
+                  title="Nova Comissão"
+                  description="Registrar comissão"
+                  icon={DollarSign}
+                  href="/commissions/new"
+                  color="from-emerald-500 to-teal-500"
+                />
+                <QuickAction
+                  title="Adicionar Cliente"
+                  description="Novo cadastro"
+                  icon={Users}
+                  href="/clients/new"
+                  color="from-blue-500 to-cyan-500"
+                />
+                <QuickAction
+                  title="Novo Produto"
+                  description="Adicionar item"
+                  icon={Package}
+                  href="/catalog/new"
+                  color="from-purple-500 to-pink-500"
+                />
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div>
+              <h2 className="mb-4 text-lg font-semibold text-white">Atividade Recente</h2>
+              <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden p-2">
+                <div className="divide-y divide-white/10">
+                  {[
+                    {
+                      action: "Comissão aprovada",
+                      user: "João Silva",
+                      time: "Há 5 minutos",
+                      color: "text-emerald-400",
+                    },
+                    {
+                      action: "Cliente adicionado",
+                      user: "Maria Santos",
+                      time: "Há 1 hora",
+                      color: "text-blue-400",
+                    },
+                    {
+                      action: "Produto atualizado",
+                      user: "Pedro Costa",
+                      time: "Há 2 horas",
+                      color: "text-purple-400",
+                    },
+                    {
+                      action: "Relatório gerado",
+                      user: "Ana Lima",
+                      time: "Há 3 horas",
+                      color: "text-orange-400",
+                    },
+                  ].map((activity) => (
+                    <div
+                      key={`${activity.action}-${activity.user}-${activity.time}`}
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-white/5 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`h-2 w-2 rounded-full shadow-[0_0_10px_currentColor] ${activity.color}`} />
+                        <div>
+                          <p className="text-sm font-medium text-white">{activity.action}</p>
+                          <p className="text-xs text-white/50">por {activity.user}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-white/40">{activity.time}</span>
                     </div>
-                  </div>
-                  <span className="text-xs text-white/40">{activity.time}</span>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>

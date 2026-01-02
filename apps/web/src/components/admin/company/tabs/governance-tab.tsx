@@ -100,7 +100,6 @@ export function GovernanceTab() {
                 <Loader2 className="w-8 h-8 animate-spin text-white/20" />
             </div>
         );
-        );
     }
 
     return (

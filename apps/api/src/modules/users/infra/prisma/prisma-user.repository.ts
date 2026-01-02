@@ -52,6 +52,8 @@ export class PrismaUserRepository implements UserRepository {
         birthDate: input.birthDate ?? null,
         admissionDate: input.admissionDate ?? null,
         observations: input.observations ?? null,
+        observations: input.observations ?? null,
+        mustChangePassword: input.mustChangePassword ?? false,
       },
     });
     return mapUser(user);
@@ -118,6 +120,7 @@ function mapUser(user: {
   birthDate: Date | null;
   admissionDate: Date | null;
   observations: string | null;
+  mustChangePassword?: boolean;
 }): UserRecord {
   if (!user.passwordHash) {
     throw new Error("User passwordHash is required");
@@ -137,5 +140,6 @@ function mapUser(user: {
     birthDate: user.birthDate ?? undefined,
     admissionDate: user.admissionDate ?? undefined,
     observations: user.observations ?? undefined,
+    mustChangePassword: user.mustChangePassword ?? false,
   };
 }

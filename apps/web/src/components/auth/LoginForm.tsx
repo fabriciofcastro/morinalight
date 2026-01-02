@@ -89,7 +89,9 @@ export function LoginForm({
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Usar window.location.href para garantir redirecionamento completo
-      if (response.organizations.length > 1) {
+      if (response.user.mustChangePassword) {
+        window.location.href = "/auth/force-change";
+      } else if (response.organizations.length > 1) {
         window.location.href = "/select-organization";
       } else {
         window.location.href = "/dashboard";
@@ -103,6 +105,21 @@ export function LoginForm({
       setLoginAttempts((prev) => prev + 1);
       const nextAttempts = loginAttempts + 1;
 
+      // Rastrear erro para analytics
+      if (typeof window !== "undefined") {
+        import("@/lib/errors/error-tracking").then(({ errorTracking }) => {
+          import("@/lib/errors").then(({ parseError }) => {
+            const appError = parseError(err, false); // Não auto-track pois vamos fazer manualmente
+            errorTracking.trackError(appError, {
+              component: "LoginForm",
+              email: trimmedEmail,
+              attempts: nextAttempts,
+              errorCode: error.response?.data?.code || error.code,
+            }).catch(console.error);
+          }).catch(console.error);
+        }).catch(console.error);
+      }
+
       // Tratamento específico de erros
       const status = error.response?.status;
       const errorData = error.response?.data;
@@ -110,9 +127,16 @@ export function LoginForm({
       const errorCode = errorData?.code;
 
       // Erro de rede/conexão
-      if (error.code === "ERR_NETWORK" || error.message === "Network Error") {
+      // Erro de rede/conexão
+      if (
+        error.code === "ERR_NETWORK" ||
+        error.message === "Network Error" ||
+        error.message === "Failed to fetch" ||
+        error.message?.includes("NetworkError") ||
+        error.message?.includes("Connection refused")
+      ) {
         emitNotice({
-          message: "🔌 Falha de Conexão: Verifique sua internet e tente novamente.",
+          message: "🔌 Falha de Conexão: Não foi possível contatar o servidor. Verifique se a API está rodando.",
           attempts: nextAttempts,
           status: 0,
           category: "NETWORK",
@@ -499,7 +523,7 @@ export function LoginForm({
           className={cn(
             "w-full h-14 font-bold text-sm tracking-[0.2em] uppercase transition-all duration-300 relative overflow-hidden group border border-transparent",
             termsAccepted && !isLoading
-              ? "bg-[hsl(var(--primary))] text-black hover:bg-[hsl(var(--primary)/0.9)] shadow-[0_0_20px_hsl(var(--primary)/0.3)]"
+              ? "bg-[hsl(var(--primary))] text-black hover:bg-[hsl(var(--primary)/0.9)] shadow-[0_0_20px_hsl(var(--primary)/0.3)] cursor-pointer"
               : "bg-white/5 text-white/20 border-white/10 cursor-not-allowed",
           )}
           disabled={isLoading || !termsAccepted || loginAttempts >= 5}

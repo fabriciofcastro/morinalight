@@ -1,4 +1,9 @@
-import { apiClient } from './base';
+/**
+ * Products API - Migrated to Factory Pattern
+ */
+
+import { createTypedApiClient } from "./factory";
+import { apiClient } from "./base";
 
 export interface Product {
     id: string;
@@ -9,7 +14,7 @@ export interface Product {
     categoryId: string;
     brand?: string;
     unit: string;
-    status: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+    status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
     // Pricing
     costPrice: number;
@@ -41,7 +46,7 @@ export interface CreateProductInput {
     categoryId: string;
     brand?: string;
     unit: string;
-    status?: 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+    status?: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     costPrice: number;
     sellingPrice: number;
     minStock?: number;
@@ -64,58 +69,69 @@ export interface ListProductsQuery {
     onlyLowStock?: boolean;
 }
 
-export interface ListProductsResponse {
-    items: Product[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-}
+// Usar factory pattern
+const baseProductsApi = createTypedApiClient<Product>("/products");
 
+// Estender com métodos customizados
 export const productsApi = {
-    list: async (orgId: string, query?: ListProductsQuery): Promise<ListProductsResponse> => {
-        const params = new URLSearchParams();
-        if (query?.page) params.append('page', query.page.toString());
-        if (query?.limit) params.append('limit', query.limit.toString());
-        if (query?.search) params.append('search', query.search);
-        if (query?.categoryId) params.append('categoryId', query.categoryId);
-        if (query?.status) params.append('status', query.status);
-        if (query?.minPrice) params.append('minPrice', query.minPrice.toString());
-        if (query?.maxPrice) params.append('maxPrice', query.maxPrice.toString());
-        if (query?.onlyLowStock) params.append('onlyLowStock', 'true');
+    ...baseProductsApi,
 
-        return apiClient.get<ListProductsResponse>(`/products?${params.toString()}`, {
-            headers: { 'x-org-id': orgId }
+    // Override list para suportar query params customizados
+    list: async (params?: ListProductsQuery) => {
+        return baseProductsApi.list(params);
+    },
+
+    // Métodos customizados
+    updateStock: async (
+        id: string,
+        quantity: number,
+        type: "IN" | "OUT",
+        reason?: string,
+    ): Promise<Product> => {
+        return apiClient.post<Product>(`/products/${id}/stock`, {
+            quantity,
+            type,
+            reason,
         });
     },
 
-    getById: async (orgId: string, id: string): Promise<Product> => {
-        return apiClient.get<Product>(`/products/${id}`, {
-            headers: { 'x-org-id': orgId }
+    getLowStock: async (params?: { limit?: number }): Promise<Product[]> => {
+        return apiClient.get<Product[]>("/products/low-stock", { params });
+    },
+
+    bulkUpdatePrices: async (
+        updates: Array<{ id: string; costPrice?: number; sellingPrice?: number }>,
+    ): Promise<void> => {
+        return apiClient.post<void>("/products/bulk-update-prices", { updates });
+    },
+
+    bulkUpdateStatus: async (
+        productIds: string[],
+        status: "ACTIVE" | "INACTIVE" | "ARCHIVED",
+    ): Promise<void> => {
+        return apiClient.post<void>("/products/bulk-update-status", {
+            productIds,
+            status,
         });
     },
 
-    create: async (orgId: string, data: CreateProductInput): Promise<Product> => {
-        return apiClient.post<Product>('/products', data, {
-            headers: { 'x-org-id': orgId }
+    exportToExcel: async (params?: ListProductsQuery): Promise<Blob> => {
+        return apiClient.get<Blob>("/products/export", {
+            params,
+            responseType: "blob",
         });
     },
 
-    update: async (orgId: string, id: string, data: UpdateProductInput): Promise<Product> => {
-        return apiClient.put<Product>(`/products/${id}`, data, {
-            headers: { 'x-org-id': orgId }
-        });
-    },
+    importFromExcel: async (file: File): Promise<{ success: number; errors: string[] }> => {
+        const formData = new FormData();
+        formData.append("file", file);
 
-    delete: async (orgId: string, id: string): Promise<void> => {
-        return apiClient.delete(`/products/${id}`, {
-            headers: { 'x-org-id': orgId }
-        });
+        return apiClient.post<{ success: number; errors: string[] }>(
+            "/products/import",
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+            },
+        );
     },
-
-    updateStock: async (orgId: string, id: string, quantity: number, type: 'IN' | 'OUT', reason?: string): Promise<Product> => {
-        return apiClient.post<Product>(`/products/${id}/stock`, { quantity, type, reason }, {
-            headers: { 'x-org-id': orgId }
-        });
-    }
 };

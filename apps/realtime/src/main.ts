@@ -1,7 +1,11 @@
 import { env } from "./config/env";
 import { createServer } from "./server/create-server";
 
+import { initSentry } from "./observability/sentry";
+
 async function bootstrap() {
+  initSentry();
+
   const server = await createServer();
 
   try {

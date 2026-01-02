@@ -50,6 +50,7 @@ import { usersApi } from "@/lib/api/users";
 import { PhotoUpload } from "./photo-upload";
 import { QRCodeBadge } from "./qr-code-badge";
 import { ViewModeToggle, type ViewMode } from "@/components/ui/view-mode-toggle";
+import { Can } from "@/lib/auth";
 
 
 type StatusFilter = "all" | "active" | "inactive" | "suspended" | "pending";
@@ -241,9 +242,11 @@ export function UsersListClient() {
 
           <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
 
-          <Button onClick={() => router.push("/admin/users/new")} className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white gap-2">
-            <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Novo</span>
-          </Button>
+          <Can I="create" a="User">
+            <Button onClick={() => router.push("/admin/users/new")} className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white gap-2">
+              <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Novo</span>
+            </Button>
+          </Can>
         </div>
       </div>
 
@@ -329,16 +332,22 @@ function UserCard({ user, viewMode, isSelected, onSelect, onView, onEdit, onRese
         <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onView(); }}>
           <Eye className="mr-2 h-4 w-4" /> Detalhes
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(); }}>
-          <Edit className="mr-2 h-4 w-4" /> Editar
-        </DropdownMenuItem>
+        <Can I="update" a="User">
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+            <Edit className="mr-2 h-4 w-4" /> Editar
+          </DropdownMenuItem>
+        </Can>
         <DropdownMenuSeparator className="bg-white/10" />
-        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onResetPassword(); }}>
-          <Lock className="mr-2 h-4 w-4" /> Resetar Senha
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onToggle2FA(); }}>
-          <Smartphone className="mr-2 h-4 w-4" /> {user.has2FA ? "Desativar 2FA" : "Ativar 2FA"}
-        </DropdownMenuItem>
+        <Can I="update" a="User">
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onResetPassword(); }}>
+            <Lock className="mr-2 h-4 w-4" /> Resetar Senha
+          </DropdownMenuItem>
+        </Can>
+        <Can I="update" a="User">
+          <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onToggle2FA(); }}>
+            <Smartphone className="mr-2 h-4 w-4" /> {user.has2FA ? "Desativar 2FA" : "Ativar 2FA"}
+          </DropdownMenuItem>
+        </Can>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -374,16 +383,18 @@ function UserCard({ user, viewMode, isSelected, onSelect, onView, onEdit, onRese
           </div>
           <div className="flex items-center justify-end gap-2">
             <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button size="icon" variant="ghost" className="h-8 w-8 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Editar Rápido</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Can I="update" a="User">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-white/50 hover:text-white" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Editar Rápido</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </Can>
             </div>
             <Actions />
           </div>
@@ -510,14 +521,18 @@ function UserDrawer({ user, onClose, onResetPassword, onEdit }: any) {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 {/* Quick Actions for Info */}
                 <div className="grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white h-auto py-3 flex flex-col gap-2" onClick={onEdit}>
-                    <Edit className="h-5 w-5 opacity-70" />
-                    <span className="text-xs">Editar Dados</span>
-                  </Button>
-                  <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white h-auto py-3 flex flex-col gap-2" onClick={onResetPassword}>
-                    <Lock className="h-5 w-5 opacity-70" />
-                    <span className="text-xs">Resetar Senha</span>
-                  </Button>
+                  <Can I="update" a="User">
+                    <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white h-auto py-3 flex flex-col gap-2" onClick={onEdit}>
+                      <Edit className="h-5 w-5 opacity-70" />
+                      <span className="text-xs">Editar Dados</span>
+                    </Button>
+                  </Can>
+                  <Can I="update" a="User">
+                    <Button variant="outline" className="border-white/10 hover:bg-white/5 text-white h-auto py-3 flex flex-col gap-2" onClick={onResetPassword}>
+                      <Lock className="h-5 w-5 opacity-70" />
+                      <span className="text-xs">Resetar Senha</span>
+                    </Button>
+                  </Can>
                 </div>
 
                 <div className="space-y-4">
