@@ -184,8 +184,7 @@ export function rateLimitMiddleware(options: {
         }
 
         return null;
-} catch (redisError) { // Fallback para in-memory se Redis falhar
-        logger.warn("Redis rate limiter failed, using in-memory fallback", { error: redisError });
+} catch (redisError) { // Fallback para in-memory se Redis falhar logger.warn("Redis rate limiter failed, using in-memory fallback", { error: redisError });
     }
 
     // Fallback: In-memory rate limiting
