@@ -5,12 +5,14 @@
 ### 1. Iniciar os Serviços
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd apps/api
 pnpm dev
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd apps/web
 pnpm dev
@@ -36,6 +38,7 @@ Senha: Admin@123
 ## 🔧 Verificação Rápida
 
 Execute o script de teste:
+
 ```bash
 ./scripts/test-login.sh
 ```
@@ -61,6 +64,7 @@ Execute o script de teste:
 ## 🐛 Troubleshooting
 
 ### Backend não responde
+
 ```bash
 # Verificar se está rodando
 curl http://localhost:3001/health
@@ -70,6 +74,7 @@ cd apps/api && pnpm dev
 ```
 
 ### Frontend não carrega
+
 ```bash
 # Verificar se está rodando
 curl http://localhost:3000
@@ -79,6 +84,7 @@ cd apps/web && pnpm dev
 ```
 
 ### Erro "Cannot find module"
+
 ```bash
 # Reinstalar dependências
 cd apps/web
@@ -86,19 +92,23 @@ pnpm install
 ```
 
 ### Erro de CORS
+
 O backend já está configurado para aceitar requisições do frontend.
 Verifique se as URLs estão corretas:
+
 - Backend: `http://localhost:3001`
 - Frontend: `http://localhost:3000`
 
 ## 📝 Variáveis de Ambiente
 
 ### Frontend (`apps/web/.env.local`)
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ### Backend (`apps/api/.env`)
+
 ```env
 JWT_SECRET=your-secret-key
 DATABASE_URL=postgresql://...
@@ -122,16 +132,19 @@ DATABASE_URL=postgresql://...
 ## 🎨 Componentes do Login
 
 ### LoginForm
+
 - `apps/web/src/components/auth/LoginForm.tsx`
 - Formulário com validação
 - Integração com API
 
 ### LoginPage
+
 - `apps/web/src/app/(auth)/login/page.tsx`
 - Layout two-column
 - Branding e features
 
 ### API Client
+
 - `apps/web/src/lib/api/auth.ts`
 - Métodos: login, register, logout
 - Gerenciamento de token

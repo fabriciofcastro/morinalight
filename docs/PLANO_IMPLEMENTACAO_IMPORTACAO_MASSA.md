@@ -1,6 +1,7 @@
 # 📥 Plano de Implementação - Importação em Massa de Fornecedores
 
 ## 🎯 Objetivo
+
 Implementar sistema completo de importação em massa de fornecedores via CSV/Excel com validação, preview e processamento assíncrono.
 
 ---
@@ -8,6 +9,7 @@ Implementar sistema completo de importação em massa de fornecedores via CSV/Ex
 ## 📋 Funcionalidades
 
 ### 1. Upload e Validação
+
 - [ ] Upload de arquivo (drag & drop + botão)
 - [ ] Suporte a CSV, XLSX, XLS
 - [ ] Validação de formato
@@ -15,12 +17,14 @@ Implementar sistema completo de importação em massa de fornecedores via CSV/Ex
 - [ ] Validação de encoding (UTF-8)
 
 ### 2. Mapeamento de Colunas
+
 - [ ] Auto-detecção de colunas
 - [ ] Mapeamento manual (se necessário)
 - [ ] Preview do mapeamento
 - [ ] Validação de campos obrigatórios
 
 ### 3. Preview e Validação
+
 - [ ] Preview dos dados antes de importar
 - [ ] Validação linha por linha
 - [ ] Indicadores visuais (sucesso, erro, aviso)
@@ -28,12 +32,14 @@ Implementar sistema completo de importação em massa de fornecedores via CSV/Ex
 - [ ] Filtros no preview (apenas erros, apenas válidos)
 
 ### 4. Processamento
+
 - [ ] Processamento assíncrono (background job)
 - [ ] Barra de progresso
 - [ ] Notificação ao concluir
 - [ ] Relatório detalhado de importação
 
 ### 5. Tratamento de Erros
+
 - [ ] Validação de CNPJ
 - [ ] Validação de email
 - [ ] Validação de telefone
@@ -47,6 +53,7 @@ Implementar sistema completo de importação em massa de fornecedores via CSV/Ex
 ### Backend
 
 #### 1. Endpoint de Upload
+
 ```
 POST /api/suppliers/import/upload
 - Recebe arquivo multipart/form-data
@@ -56,6 +63,7 @@ POST /api/suppliers/import/upload
 ```
 
 #### 2. Endpoint de Validação
+
 ```
 POST /api/suppliers/import/validate
 - Recebe jobId
@@ -65,6 +73,7 @@ POST /api/suppliers/import/validate
 ```
 
 #### 3. Endpoint de Importação
+
 ```
 POST /api/suppliers/import/execute
 - Recebe jobId e confirmação
@@ -73,6 +82,7 @@ POST /api/suppliers/import/execute
 ```
 
 #### 4. Endpoint de Status
+
 ```
 GET /api/suppliers/import/status/:jobId
 - Retorna status do job
@@ -83,23 +93,27 @@ GET /api/suppliers/import/status/:jobId
 ### Frontend
 
 #### 1. Componente de Upload
+
 - Drag & drop zone
 - Botão de seleção
 - Preview do arquivo selecionado
 - Validação visual
 
 #### 2. Componente de Mapeamento
+
 - Tabela de colunas detectadas
 - Dropdown para mapear campos
 - Preview do mapeamento
 
 #### 3. Componente de Preview
+
 - Tabela com dados
 - Indicadores de validação
 - Filtros e busca
 - Contadores
 
 #### 4. Componente de Progresso
+
 - Barra de progresso
 - Status atual
 - Log de atividades
@@ -110,6 +124,7 @@ GET /api/suppliers/import/status/:jobId
 ## 📦 Estrutura de Arquivos
 
 ### Backend
+
 ```
 apps/api/src/modules/suppliers/
 ├── http/
@@ -125,6 +140,7 @@ apps/api/src/modules/suppliers/
 ```
 
 ### Frontend
+
 ```
 apps/web/src/app/(app)/fornecedores/
 ├── import/
@@ -144,23 +160,25 @@ apps/web/src/app/(app)/fornecedores/
 ## 🔧 Dependências
 
 ### Backend
+
 ```json
 {
-  "papaparse": "^5.4.1",           // Parser CSV
-  "xlsx": "^0.18.5",               // Parser Excel
-  "multer": "^1.4.5-lts.1",        // Upload de arquivos
-  "bull": "^4.11.0",                // Queue de jobs
-  "ioredis": "^5.3.0"               // Redis para queue
+  "papaparse": "^5.4.1", // Parser CSV
+  "xlsx": "^0.18.5", // Parser Excel
+  "multer": "^1.4.5-lts.1", // Upload de arquivos
+  "bull": "^4.11.0", // Queue de jobs
+  "ioredis": "^5.3.0" // Redis para queue
 }
 ```
 
 ### Frontend
+
 ```json
 {
-  "react-dropzone": "^14.2.3",      // Drag & drop
-  "papaparse": "^5.4.1",           // Parser CSV (client)
-  "xlsx": "^0.18.5",               // Parser Excel (client)
-  "react-hot-toast": "^2.4.1"      // Notificações
+  "react-dropzone": "^14.2.3", // Drag & drop
+  "papaparse": "^5.4.1", // Parser CSV (client)
+  "xlsx": "^0.18.5", // Parser Excel (client)
+  "react-hot-toast": "^2.4.1" // Notificações
 }
 ```
 
@@ -169,12 +187,14 @@ apps/web/src/app/(app)/fornecedores/
 ## 📝 Schema de Dados
 
 ### Template CSV/Excel
+
 ```csv
 nome,cnpj,email,telefone,endereco,cidade,estado,cep,website,ramo_atividade,tipo_fornecedor,prazo_pagamento,condicao_pagamento,limite_credito
 Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 123,São Paulo,SP,01234567,https://exemplo.com,Textil,Fornecedor,30,Dinheiro,10000.00
 ```
 
 ### Campos Suportados
+
 - **Obrigatórios**: nome, cnpj (ou document)
 - **Opcionais**: email, telefone, endereco, cidade, estado, cep, website, ramo_atividade, tipo_fornecedor, prazo_pagamento, condicao_pagamento, limite_credito, contato_principal, cargo_contato, notas
 
@@ -183,6 +203,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 ## 🚀 Fluxo de Implementação
 
 ### Fase 1: Backend Básico
+
 1. Criar endpoint de upload
 2. Implementar parser CSV
 3. Implementar parser Excel
@@ -190,6 +211,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 5. Testes unitários
 
 ### Fase 2: Frontend Básico
+
 1. Criar página de importação
 2. Componente de upload
 3. Componente de preview
@@ -197,6 +219,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 5. Testes de integração
 
 ### Fase 3: Validações Avançadas
+
 1. Validação de CNPJ (ReceitaWS)
 2. Validação de email
 3. Validação de telefone
@@ -204,6 +227,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 5. Mensagens de erro claras
 
 ### Fase 4: Processamento Assíncrono
+
 1. Configurar queue (Bull/Redis)
 2. Criar job de processamento
 3. Endpoint de status
@@ -211,6 +235,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 5. Relatório de importação
 
 ### Fase 5: Melhorias
+
 1. Mapeamento automático inteligente
 2. Correções sugeridas
 3. Importação parcial (ignorar erros)
@@ -222,6 +247,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 ## 🧪 Casos de Teste
 
 ### Upload
+
 - [ ] Upload de CSV válido
 - [ ] Upload de Excel válido
 - [ ] Upload de arquivo inválido (erro)
@@ -229,6 +255,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 - [ ] Upload sem arquivo (erro)
 
 ### Validação
+
 - [ ] Validação de CNPJ válido
 - [ ] Validação de CNPJ inválido
 - [ ] Validação de email válido
@@ -237,6 +264,7 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 - [ ] Campos obrigatórios faltando
 
 ### Importação
+
 - [ ] Importação de 10 fornecedores válidos
 - [ ] Importação de 100 fornecedores válidos
 - [ ] Importação com alguns erros (parcial)
@@ -248,11 +276,13 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 ## 📊 Métricas
 
 ### Performance
+
 - Tempo de parsing (objetivo: < 1s para 1000 linhas)
 - Tempo de validação (objetivo: < 5s para 1000 linhas)
 - Tempo de importação (objetivo: < 30s para 1000 fornecedores)
 
 ### Qualidade
+
 - Taxa de sucesso de importação (objetivo: > 95%)
 - Precisão de detecção de duplicatas (objetivo: > 90%)
 - Taxa de validação automática (objetivo: > 80%)
@@ -284,12 +314,3 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
 **Status**: Planejamento
 **Prioridade**: Alta
 **Estimativa**: 2-3 semanas
-
-
-
-
-
-
-
-
-

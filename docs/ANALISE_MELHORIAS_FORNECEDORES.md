@@ -15,11 +15,13 @@
 **Localização:** `apps/api/src/modules/suppliers/infra/prisma/prisma-supplier.repository.ts:216`
 
 **Problema:**
+
 ```typescript
 dadosSnapshot: this.supplierToJson(estadoAnterior), // ❌ ERRADO - está salvando o estado ANTIGO
 ```
 
 **Correção Necessária:**
+
 ```typescript
 dadosSnapshot: this.supplierToJson(supplier), // ✅ CORRETO - deve salvar o estado NOVO
 ```
@@ -33,16 +35,19 @@ dadosSnapshot: this.supplierToJson(supplier), // ✅ CORRETO - deve salvar o est
 **Localização:** `apps/web/src/app/(app)/fornecedores/[id]/fornecedor-detail-client.tsx:1328`
 
 **Problema:**
+
 ```typescript
 const arquivoUrl = URL.createObjectURL(arquivoSelecionado); // ❌ URL temporária que não persiste
 ```
 
-**Impacto:** 
+**Impacto:**
+
 - URLs criadas são temporárias e não funcionam após reload
 - Arquivos não são realmente armazenados
 - Sistema não funciona em produção
 
 **Solução Necessária:**
+
 - Implementar upload real para storage (S3, Cloudinary, etc)
 - Criar endpoint multipart/form-data no backend
 - Processar arquivo no servidor antes de salvar
@@ -54,12 +59,14 @@ const arquivoUrl = URL.createObjectURL(arquivoSelecionado); // ❌ URL temporár
 **Localização:** `apps/web/src/app/(app)/fornecedores/[id]/fornecedor-detail-client.tsx:1321`
 
 **Problemas:**
+
 - ❌ Não valida tamanho máximo do arquivo
 - ❌ Não valida tipo de arquivo permitido
 - ❌ Não valida extensão do arquivo
 - ❌ Não mostra progresso de upload
 
 **Correção Necessária:**
+
 ```typescript
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf', ...];
@@ -83,6 +90,7 @@ if (!ALLOWED_TYPES.includes(arquivoSelecionado.type)) {
 **Problema:** Uso de `console.error` em vários lugares que deveriam usar sistema de logging adequado.
 
 **Arquivos Afetados:**
+
 - `apps/api/src/modules/suppliers/infra/prisma/prisma-supplier.repository.ts` (5 ocorrências)
 - `apps/web/src/app/(app)/fornecedores/**/*.tsx` (múltiplos)
 
@@ -94,16 +102,18 @@ if (!ALLOWED_TYPES.includes(arquivoSelecionado.type)) {
 
 **Localização:** `apps/web/src/app/(app)/fornecedores/list/fornecedores-list-client.tsx`
 
-**Problema:** 
+**Problema:**
+
 - Ações em lote não tratam erros parciais
 - Se um fornecedor falhar, todos falham
 - Não mostra quais fornecedores foram processados com sucesso
 
 **Melhoria Sugerida:**
+
 ```typescript
 const resultados = await Promise.allSettled(/* ... */);
-const sucessos = resultados.filter(r => r.status === 'fulfilled').length;
-const falhas = resultados.filter(r => r.status === 'rejected').length;
+const sucessos = resultados.filter((r) => r.status === "fulfilled").length;
+const falhas = resultados.filter((r) => r.status === "rejected").length;
 ```
 
 ---
@@ -121,6 +131,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ### 7. ⚠️ **Falta Loading State em Operações**
 
 **Problemas:**
+
 - Exportação não mostra loading
 - Ações em lote não mostram progresso
 - Upload de documentos não mostra progresso
@@ -132,6 +143,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ### 8. ⚠️ **Falta Confirmação em Ações Destrutivas**
 
 **Problemas:**
+
 - Mudança de status em lote não pede confirmação
 - Exportação em lote não mostra preview
 - Algumas ações críticas não têm confirmação
@@ -147,6 +159,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Permitir importar múltiplos fornecedores de uma vez via arquivo CSV/Excel.
 
 **Implementação:**
+
 - Endpoint `POST /suppliers/import`
 - Validação de formato
 - Preview antes de importar
@@ -162,6 +175,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Sistema de tags para categorizar fornecedores (ex: "Eletrônicos", "Têxtil", "Premium", etc).
 
 **Implementação:**
+
 - Campo `tags: string[]` no modelo
 - Filtro por tags na listagem
 - Autocomplete de tags
@@ -176,6 +190,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Sistema de avaliação de fornecedores com notas e comentários.
 
 **Implementação:**
+
 - Modelo `AvaliacaoSupplier`
 - Nota de 1 a 5 estrelas
 - Comentários
@@ -191,6 +206,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Rastreamento de histórico de preços por insumo/fornecedor.
 
 **Implementação:**
+
 - Modelo `HistoricoPreco`
 - Gráfico de evolução de preços
 - Comparação entre fornecedores
@@ -205,6 +221,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Sistema de alertas para eventos importantes.
 
 **Alertas Sugeridos:**
+
 - Vencimento de documentos (CNPJ, alvará, etc)
 - Fornecedor inativo há muito tempo
 - Variação significativa de preços
@@ -220,6 +237,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Busca inteligente que encontra fornecedores mesmo com pequenos erros de digitação.
 
 **Implementação:**
+
 - Usar biblioteca como Fuse.js ou implementar Levenshtein distance
 - Sugestões de fornecedores similares
 - "Você quis dizer...?"
@@ -233,6 +251,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Ao cadastrar novo fornecedor, sugerir fornecedores similares para evitar duplicatas.
 
 **Implementação:**
+
 - Comparação de nome, documento, endereço
 - Modal de confirmação: "Fornecedor similar encontrado. Deseja usar o existente?"
 
@@ -245,6 +264,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Dashboard com métricas e gráficos sobre fornecedores.
 
 **Métricas:**
+
 - Total de fornecedores por status
 - Fornecedores mais utilizados
 - Valor total por fornecedor
@@ -260,6 +280,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Gerar QR Code para compartilhar fornecedor rapidamente.
 
 **Implementação:**
+
 - Biblioteca qrcode
 - QR Code na página de detalhes
 - Link direto para fornecedor
@@ -274,6 +295,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Botão para abrir WhatsApp com fornecedor pré-configurado.
 
 **Implementação:**
+
 - Link `https://wa.me/5511999999999?text=...`
 - Mensagem pré-formatada
 - Validação de número de telefone
@@ -287,6 +309,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Sistema de relatórios customizáveis.
 
 **Relatórios Sugeridos:**
+
 - Fornecedores por cidade/estado
 - Fornecedores por tipo de insumo
 - Análise de performance de fornecedores
@@ -300,6 +323,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ### 20. 💡 **Recurso: Exportação Melhorada**
 
 **Melhorias:**
+
 - Exportação com filtros aplicados
 - Exportação de múltiplos formatos simultaneamente
 - Agendamento de exportações
@@ -315,6 +339,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Visualizar relacionamentos entre fornecedores, fichas de custo e insumos.
 
 **Implementação:**
+
 - Gráfico de rede
 - Fornecedores mais conectados
 - Análise de dependência
@@ -328,6 +353,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Descrição:** Timeline visual de todas as compras do fornecedor.
 
 **Implementação:**
+
 - Timeline interativa
 - Filtros por período
 - Agrupamento por mês/ano
@@ -351,7 +377,8 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 
 **Problema:** Empty states são muito básicos.
 
-**Solução:** 
+**Solução:**
+
 - Ilustrações
 - Mensagens mais amigáveis
 - Ações sugeridas
@@ -364,6 +391,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 **Problema:** Algumas ações não têm feedback visual claro.
 
 **Solução:**
+
 - Animações de sucesso
 - Toasts mais informativos
 - Progress indicators
@@ -374,6 +402,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ### 26. 💡 **Melhoria: Atalhos de Teclado**
 
 **Sugestões:**
+
 - `Ctrl/Cmd + K` - Busca rápida
 - `Ctrl/Cmd + N` - Novo fornecedor
 - `Esc` - Fechar modais
@@ -412,11 +441,13 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ### 30. ⚡ **Otimização de Queries**
 
 **Problemas:**
+
 - Algumas queries podem estar fazendo N+1
 - Falta de índices em alguns campos
 - Queries não otimizadas
 
 **Solução:**
+
 - Revisar queries do Prisma
 - Adicionar índices necessários
 - Usar `include` adequadamente
@@ -428,7 +459,8 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 
 **Problema:** Estatísticas são calculadas a cada requisição.
 
-**Solução:** 
+**Solução:**
+
 - Cache de estatísticas (Redis)
 - Invalidação inteligente
 - Atualização incremental
@@ -446,17 +478,20 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ## 📊 PRIORIZAÇÃO
 
 ### 🔴 **CRÍTICO (Fazer Imediatamente)**
+
 1. Corrigir versionamento (salvar estado novo, não anterior)
 2. Implementar upload real de documentos
 3. Adicionar validação de upload
 
 ### 🟠 **ALTA (Fazer em Breve)**
+
 4. Importação em massa
 5. Histórico de preços
 6. Tratamento de erros em lote
 7. Sistema de logging adequado
 
 ### 🟡 **MÉDIA (Fazer Quando Possível)**
+
 8. Tags/Categorias
 9. Avaliações
 10. Alertas e notificações
@@ -465,6 +500,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 13. Sugestões de similares
 
 ### 🟢 **BAIXA (Nice to Have)**
+
 14. Busca fuzzy
 15. QR Code
 16. Integração WhatsApp
@@ -476,6 +512,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 ## 📝 CHECKLIST DE CORREÇÕES
 
 ### Correções Críticas
+
 - [ ] Corrigir versionamento (linha 216 do repository)
 - [ ] Implementar upload real de documentos
 - [ ] Adicionar validação de tamanho de arquivo
@@ -483,6 +520,7 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 - [ ] Adicionar progresso de upload
 
 ### Melhorias de Código
+
 - [ ] Substituir console.error por sistema de logging
 - [ ] Adicionar debounce em filtros avançados
 - [ ] Melhorar tratamento de erros em lote
@@ -490,12 +528,14 @@ const falhas = resultados.filter(r => r.status === 'rejected').length;
 - [ ] Adicionar confirmações em ações destrutivas
 
 ### Melhorias de Performance
+
 - [ ] Otimizar queries do Prisma
 - [ ] Adicionar cache de estatísticas
 - [ ] Implementar lazy loading de tabs
 - [ ] Revisar índices do banco
 
 ### Melhorias de Segurança
+
 - [ ] Revisar validação de permissões
 - [ ] Implementar rate limiting
 - [ ] Revisar sanitização de inputs
@@ -516,6 +556,4 @@ Além disso, há várias **oportunidades de melhoria** que podem tornar o módul
 
 ---
 
-*Documento gerado automaticamente - Análise completa do módulo de Fornecedores*
-
-
+_Documento gerado automaticamente - Análise completa do módulo de Fornecedores_

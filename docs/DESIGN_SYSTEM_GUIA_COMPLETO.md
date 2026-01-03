@@ -58,7 +58,10 @@
 import { Button, Input, GlassCard } from "@morina/ui";
 
 // Componentes Futuristas (apps/web)
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-input";
+import {
+  FuturisticInput,
+  FuturisticSelect,
+} from "@/components/ui/futuristic-input";
 
 // Templates
 import { StandardFormPage } from "@/components/templates";
@@ -69,16 +72,16 @@ import { useAutoSave } from "@/hooks/useAutoSave";
 
 ```typescript
 // Cores semânticas
-className="bg-[hsl(var(--primary))] text-white"
-className="text-[hsl(var(--text-1))]"
-className="border-[hsl(var(--border))]"
+className = "bg-[hsl(var(--primary))] text-white";
+className = "text-[hsl(var(--text-1))]";
+className = "border-[hsl(var(--border))]";
 
 // Espaçamento
-className="p-4" // 16px (escala 8px)
-className="gap-6" // 24px
+className = "p-4"; // 16px (escala 8px)
+className = "gap-6"; // 24px
 
 // Tipografia
-className="text-sm font-semibold"
+className = "text-sm font-semibold";
 ```
 
 ### 3. Criar Formulário Padronizado
@@ -151,27 +154,32 @@ Ao criar uma nova tela, verificar:
 ## 🎯 Componentes Disponíveis
 
 ### Formulários
+
 - `FuturisticInput` - Input com estados de validação
 - `FuturisticSelect` - Select estilizado
 - `FuturisticTextarea` - Textarea estilizado
 - `FormField` - Wrapper com label/error
 
 ### Layout
+
 - `StandardFormPage` - Template completo de formulário
 - `GlassCard` - Card com glass morphism
 - `PageBackground` - Background padrão
 
 ### Feedback
+
 - `Alert` - Mensagens de feedback
 - `Badge` - Badges de status
 - `Tooltip` - Tooltips informativos
 
 ### Navegação
+
 - `TreeView` - Árvore de navegação
 - `DropdownMenu` - Menu dropdown
 - `Popover` - Popover contextual
 
 ### Dados
+
 - `DataTable` - Tabela com paginação/ordenação
 
 ---
@@ -211,6 +219,7 @@ const toggleTheme = () => {
 ## ⚠️ Gaps Identificados
 
 ### Prioridade Alta
+
 - [ ] Storybook para documentação visual
 - [ ] Componente Calendar/DatePicker
 - [ ] Componente Autocomplete
@@ -218,6 +227,7 @@ const toggleTheme = () => {
 - [ ] Skeleton Loaders padronizados
 
 ### Prioridade Média
+
 - [ ] Guia de animações
 - [ ] Padrões de layout (grids)
 - [ ] Empty States padronizados
@@ -228,32 +238,29 @@ const toggleTheme = () => {
 ## 🎨 Paleta de Cores
 
 ### Cores Semânticas
+
 ```css
---primary: hsl(210, 100%, 60%)    /* Azul */
---success: hsl(158, 72%, 55%)     /* Verde */
---warning: hsl(45, 100%, 60%)     /* Amarelo */
---danger: hsl(0, 82%, 60%)        /* Vermelho */
---secondary: hsl(270, 95%, 65%)   /* Roxo */
---accent: hsl(160, 90%, 55%)       /* Ciano */
+--primary: hsl(210, 100%, 60%) /* Azul */ --success: hsl(158, 72%, 55%)
+  /* Verde */ --warning: hsl(45, 100%, 60%) /* Amarelo */
+  --danger: hsl(0, 82%, 60%) /* Vermelho */ --secondary: hsl(270, 95%, 65%)
+  /* Roxo */ --accent: hsl(160, 90%, 55%) /* Ciano */;
 ```
 
 ### Superfícies
+
 ```css
---bg: hsl(222, 28%, 10%)          /* Fundo */
---surface: hsl(222, 22%, 14%)     /* Cards */
---elevated: hsl(222, 20%, 18%)   /* Popovers */
---border: hsl(0, 0%, 100% / 0.06) /* Bordas */
+--bg: hsl(222, 28%, 10%) /* Fundo */ --surface: hsl(222, 22%, 14%) /* Cards */
+  --elevated: hsl(222, 20%, 18%) /* Popovers */
+  --border: hsl(0, 0%, 100% / 0.06) /* Bordas */;
 ```
 
 ### Texto
+
 ```css
---text-1: hsl(0, 0%, 95%)         /* Primário */
---text-2: hsl(0, 0%, 75%)         /* Secundário */
---text-3: hsl(0, 0%, 55%)         /* Muted */
+--text-1: hsl(0, 0%, 95%) /* Primário */ --text-2: hsl(0, 0%, 75%)
+  /* Secundário */ --text-3: hsl(0, 0%, 55%) /* Muted */;
 ```
 
 ---
 
 **Última atualização:** 2025-01-19
-
-

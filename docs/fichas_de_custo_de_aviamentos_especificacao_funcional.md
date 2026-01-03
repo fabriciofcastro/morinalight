@@ -28,6 +28,7 @@ O sistema substitui definitivamente o papel e o Excel, tornando-se a **fonte ún
 Representa uma ficha completa, equivalente à ficha física assinada.
 
 **Campos essenciais**
+
 - ID único (sequencial, imutável)
 - Referência da peça
 - Nome / código da peça
@@ -48,6 +49,7 @@ Representa uma ficha completa, equivalente à ficha física assinada.
 Item que compõe o custo da peça piloto.
 
 **Campos**
+
 - Descrição do insumo
 - Tipo (aviamento, serviço, terceirização, etc.)
 - Fornecedor
@@ -89,6 +91,7 @@ O status substitui a assinatura física.
 - **REPROVADA** → Retorna para ajustes
 
 ### Regras
+
 - Apenas gerência pode aprovar/reprovar
 - Ficha aprovada torna-se imutável
 - Reprovação exige justificativa obrigatória
@@ -126,6 +129,7 @@ Cada evento gera um registro:
 - Reprovação
 
 **Log contém**
+
 - Data/hora
 - Usuário (com departamento, setor e cargo)
 - Ação
@@ -146,6 +150,7 @@ Seguindo a arquitetura DDD do MORINA, o sistema deve publicar os seguintes event
 - `BoletoPagoFicha` - Dispara quando um boleto é marcado como pago
 
 **Consumidores potenciais dos eventos**:
+
 - Módulo de Financeiro (atualização de contas a pagar)
 - Módulo de Compras (previsão de necessidade de insumos)
 - Dashboard Executivo (atualização de métricas)
@@ -171,7 +176,6 @@ Seguindo a arquitetura DDD do MORINA, o sistema deve publicar os seguintes event
 - Não podem ser apagadas
 
 ---
-
 
 ## 8. Interface — Campos e Inputs
 
@@ -216,6 +220,7 @@ Permitir que o setor financeiro consulte valores aprovados e realize o pagamento
 Cada ficha pode conter **um ou mais boletos anexados**, vinculados aos insumos ou ao fornecedor.
 
 **Campos do Boleto**
+
 - Arquivo (PDF / imagem)
 - Fornecedor
 - Valor do boleto
@@ -253,7 +258,6 @@ Cada ficha pode conter **um ou mais boletos anexados**, vinculados aos insumos o
 - Status de pagamento
 
 ---
-
 
 ## 11. Arquitetura Recomendada
 
@@ -381,8 +385,7 @@ Empresa (Organization)
 - **Departamento**: "Aviamentos e Insumos"
   - Responsável pelo gerenciamento geral de aviamentos e insumos
   - Outros setores dentro deste departamento: Controle de Entradas, Conferência, Requisição, Baixa por OP, Auditoria de Perdas
-  
-- **Setor**: "Fichas de Custo" 
+- **Setor**: "Fichas de Custo"
   - Setor específico responsável pelo cadastro, controle e aprovação de fichas de custo
   - Vinculado ao Departamento "Aviamentos e Insumos"
   - Pode ter múltiplos cargos (Positions) associados
@@ -395,6 +398,7 @@ Empresa (Organization)
 ### 21.3 Dependências de Módulos
 
 O módulo de Fichas de Custo depende de:
+
 - Estrutura Organizacional completa (Department, Sector, Position)
 - Sistema de Usuários e RBAC
 - Central de Notificações

@@ -1,4 +1,5 @@
 # PLANO DE REESTRUTURAÇÃO COMPLETA
+
 ## Morina ERP - Sistema Organizacional e Design System
 
 ---
@@ -18,12 +19,14 @@ Empresa (Organization - já existe)
 ### 1.2 Modelo de Dados (Prisma Schema)
 
 **Remover:**
+
 - ❌ OrganizationalUnit
 - ❌ Team (equivalente errado)
 - ❌ UnitMembership
 - ❌ TeamMembership
 
 **Manter/Criar:**
+
 - ✅ Organization (já existe)
 - ✅ Department (manter, ajustar)
 - ✅ Subdepartment (NOVO)
@@ -85,18 +88,21 @@ Position (Cargo)
 #### 2.2.1 Paleta de Cores Moderna
 
 **Primary (Ação Principal)**
+
 - Base: `hsl(227, 100%, 58%)` (azul vibrante)
 - Hover: `hsl(227, 100%, 52%)`
 - Active: `hsl(227, 100%, 48%)`
 - Disabled: `hsl(227, 30%, 65%)`
 
 **Semantic Colors**
+
 - Success: `hsl(158, 72%, 48%)` (verde)
 - Warning: `hsl(45, 100%, 55%)` (amarelo)
 - Danger: `hsl(0, 82%, 58%)` (vermelho)
 - Info: `hsl(200, 95%, 58%)` (ciano)
 
 **Surface Colors**
+
 - Background: `hsl(222, 28%, 10%)`
 - Surface: `hsl(222, 22%, 14%)`
 - Elevated: `hsl(222, 20%, 18%)`
@@ -106,10 +112,12 @@ Position (Cargo)
 #### 2.2.2 Tipografia
 
 **Font Stack**
+
 - Display: `'DM Sans', 'Inter', system-ui`
 - Body: `'Inter', system-ui`
 
 **Escala Tipográfica**
+
 - xs: 12px / 18px (0.75rem)
 - sm: 14px / 20px (0.875rem)
 - base: 16px / 24px (1rem)
@@ -120,6 +128,7 @@ Position (Cargo)
 - 4xl: 36px / 44px (2.25rem)
 
 **Pesos**
+
 - Regular: 400
 - Medium: 500
 - Semibold: 600
@@ -171,7 +180,7 @@ inner: inset 0 2px 4px hsl(0 0% 0% / 0.10)
 background: hsl(222 22% 14% / 0.85)
 backdrop-filter: blur(20px) saturate(180%)
 border: 1px solid hsl(0 0% 100% / 0.10)
-box-shadow: 
+box-shadow:
   0 8px 32px hsl(0 0% 0% / 0.20),
   inset 0 1px 0 hsl(0 0% 100% / 0.15)
 ```
@@ -183,40 +192,47 @@ box-shadow:
 ### 3.1 Componentes Base
 
 #### Button
+
 - Variants: primary, secondary, ghost, danger
 - Sizes: sm, md, lg
 - States: default, hover, active, disabled, loading
 - Icon support (left/right)
 
 #### Input
+
 - Variants: default, error, success
 - Sizes: sm, md, lg
 - States: default, focus, disabled
 - Label, hint, error message
 
 #### Card
+
 - Glass morphism
 - With/without header
 - With/without footer
 - Hover effects
 
 #### Badge
+
 - Variants: default, success, warning, danger, info
 - Sizes: sm, md
 
 #### Modal/Dialog
+
 - Backdrop blur
 - Smooth animations
 - Focus trap
 - Keyboard navigation
 
 #### Table
+
 - Striped rows
 - Hover effects
 - Sortable headers
 - Responsive
 
 #### Form Components
+
 - FormField (wrapper)
 - FormInput
 - FormSelect
@@ -228,6 +244,7 @@ box-shadow:
 ### 3.2 Componentes Complexos
 
 #### DataTable
+
 - Sorting
 - Filtering
 - Pagination
@@ -235,12 +252,14 @@ box-shadow:
 - Actions column
 
 #### TreeView (para estrutura organizacional)
+
 - Expand/collapse
 - Drag & drop (opcional)
 - Selection
 - Context menu
 
 #### Dashboard Cards
+
 - Metric cards
 - Chart cards
 - Action cards
@@ -317,24 +336,28 @@ Footer
 #### Por Página
 
 **Dashboard**
+
 - [ ] Métricas reais da API
 - [ ] Gráficos interativos
 - [ ] Atividades recentes
 - [ ] Quick actions destacadas
 
 **Clientes**
+
 - [ ] Filtros avançados
 - [ ] Busca em tempo real
 - [ ] Exportação de dados
 - [ ] Visualização em cards/grid
 
 **Produtos**
+
 - [ ] Preview de imagens
 - [ ] Categorias visuais
 - [ ] Estoque em tempo real
 - [ ] Filtros por status
 
 **Estrutura Organizacional**
+
 - [ ] Tree view visual
 - [ ] Drag & drop (opcional)
 - [ ] Filtros por nível
@@ -345,6 +368,7 @@ Footer
 ## 6. PLANO DE IMPLEMENTAÇÃO
 
 ### Fase 1: Schema e Backend (PRIORITÁRIO)
+
 - [ ] Atualizar Prisma schema
 - [ ] Criar migrations
 - [ ] Atualizar repositórios
@@ -352,23 +376,27 @@ Footer
 - [ ] Atualizar rotas HTTP
 
 ### Fase 2: Design System Base
+
 - [ ] Criar/atualizar design tokens
 - [ ] Criar componentes base
 - [ ] Criar utilitários de estilo
 - [ ] Documentação de componentes
 
 ### Fase 3: Componentes Complexos
+
 - [ ] DataTable
 - [ ] TreeView
 - [ ] Form components
 - [ ] Dashboard cards
 
 ### Fase 4: Páginas
+
 - [ ] Dashboard
 - [ ] Estrutura Organizacional
 - [ ] Demais páginas (em ordem de prioridade)
 
 ### Fase 5: Testes e Refinamentos
+
 - [ ] Testes visuais
 - [ ] Testes de usabilidade
 - [ ] Ajustes finais
@@ -379,18 +407,21 @@ Footer
 ## 7. CRITÉRIOS DE QUALIDADE
 
 ### Design
+
 - ✅ Consistência visual em 100% das páginas
 - ✅ Design tokens usados corretamente
 - ✅ Responsividade em todos os breakpoints
 - ✅ Acessibilidade (WCAG 2.1 AA)
 
 ### Código
+
 - ✅ TypeScript strict mode
 - ✅ Componentes reutilizáveis
 - ✅ Código limpo e documentado
 - ✅ Performance otimizada
 
 ### UX
+
 - ✅ Feedback visual em todas as ações
 - ✅ Estados de loading claros
 - ✅ Mensagens de erro úteis
@@ -410,5 +441,3 @@ Footer
 
 **Última atualização**: 2024-12-19
 **Status**: Em planejamento → Pronto para implementação
-
-

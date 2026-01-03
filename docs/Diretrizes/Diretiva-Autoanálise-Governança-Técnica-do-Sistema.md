@@ -10,7 +10,7 @@
 ## 1. Princípio Fundamental (Lei Máxima do Sistema)
 
 **O sistema existente é a fonte da verdade.**
-Nada é criado assumindo ausência. Tudo parte do pressuposto de que *algo já existe*.
+Nada é criado assumindo ausência. Tudo parte do pressuposto de que _algo já existe_.
 
 > **Regra de ouro:** antes de criar, provar que não existe. Antes de alterar, provar impacto. Antes de remover, provar irrelevância.
 
@@ -44,15 +44,15 @@ Implementar
 
 **Perguntas obrigatórias:**
 
-* Isso já existe? (buscar no código)
-* Existe algo semelhante? (buscar por funcionalidade similar)
-* Existe uma abstração genérica que cobre esse caso? (verificar padrões)
+- Isso já existe? (buscar no código)
+- Existe algo semelhante? (buscar por funcionalidade similar)
+- Existe uma abstração genérica que cobre esse caso? (verificar padrões)
 
 **Ações baseadas na resposta:**
 
-* **Se existe:** Usar, estender ou adaptar o existente
-* **Se existe similar:** Avaliar se pode generalizar
-* **Se não existe:** Prosseguir com criação
+- **Se existe:** Usar, estender ou adaptar o existente
+- **Se existe similar:** Avaliar se pode generalizar
+- **Se não existe:** Prosseguir com criação
 
 > **Regra de ouro:** Se existir algo similar: **extender > adaptar > configurar**. Nunca duplicar.
 
@@ -73,15 +73,15 @@ Análise de Existência:
 
 **Perguntas obrigatórias:**
 
-* Em qual módulo isso pertence? (consultar Matriz Capacidade × Contexto × Módulo)
-* Esse módulo é dono dessa responsabilidade? (verificar limites do contexto)
-* Estou violando limites de contexto? (consultar Mapa de Contextos)
+- Em qual módulo isso pertence? (consultar Matriz Capacidade × Contexto × Módulo)
+- Esse módulo é dono dessa responsabilidade? (verificar limites do contexto)
+- Estou violando limites de contexto? (consultar Mapa de Contextos)
 
 **Validação:**
 
-* Consultar **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**
-* Consultar **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)**
-* Verificar se a responsabilidade está no módulo correto
+- Consultar **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**
+- Consultar **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)**
+- Verificar se a responsabilidade está no módulo correto
 
 > **Regra crítica:** Responsabilidade fora do módulo correto é falha arquitetural. Corrigir antes de implementar.
 
@@ -103,11 +103,11 @@ Análise de Localização:
 
 **Responder explicitamente (documentar respostas):**
 
-* Que módulos podem ser impactados? (listar todos)
-* Que fluxos de negócio podem quebrar? (mapear dependências)
-* Que eventos serão afetados? (listar eventos publicados/consumidos)
-* Há contratos públicos envolvidos? (API, eventos, filas)
-* Há testes que precisam ser atualizados? (cobertura de impacto)
+- Que módulos podem ser impactados? (listar todos)
+- Que fluxos de negócio podem quebrar? (mapear dependências)
+- Que eventos serão afetados? (listar eventos publicados/consumidos)
+- Há contratos públicos envolvidos? (API, eventos, filas)
+- Há testes que precisam ser atualizados? (cobertura de impacto)
 
 **Checklist de Impacto:**
 
@@ -130,20 +130,20 @@ Análise de Impacto:
    - organization-domain (dono)
    - security (usa Department para acesso)
    - notifications (notifica mudanças)
-   
+
 2. Fluxos que podem quebrar:
    - Criação de departamento
    - Validação de hierarquia
    - Controle de acesso baseado em departamento
-   
+
 3. Eventos afetados:
    - DepartmentCreated
    - DepartmentUpdated
-   
+
 4. Contratos públicos:
    - GET /api/organization/departments
    - POST /api/organization/departments
-   
+
 5. Decisão: Criar versão nova da API, manter compatibilidade
 ```
 
@@ -156,34 +156,39 @@ O sistema **evolui por camadas**, nunca por ruptura. **Evolução gradual e cont
 ### Ordem correta (Estratégia de Migração):
 
 #### Fase 1: Preparação
+
 1. **Criar nova versão (paralela)**
-   * Nova implementação ao lado da antiga
-   * Não remover código antigo ainda
-   * Manter compatibilidade
+   - Nova implementação ao lado da antiga
+   - Não remover código antigo ainda
+   - Manter compatibilidade
 
 #### Fase 2: Transição
+
 2. **Redirecionar gradualmente uso**
-   * Migrar consumidores um por um
-   * Usar feature flags quando possível
-   * Monitorar cada migração
+   - Migrar consumidores um por um
+   - Usar feature flags quando possível
+   - Monitorar cada migração
 
 #### Fase 3: Validação
+
 3. **Monitorar comportamento**
-   * Métricas de performance
-   * Logs de erro
-   * Feedback dos usuários
+   - Métricas de performance
+   - Logs de erro
+   - Feedback dos usuários
 
 #### Fase 4: Deprecação
+
 4. **Deprecar explicitamente**
-   * Marcar código antigo como deprecated
-   * Documentar data de remoção
-   * Avisar consumidores
+   - Marcar código antigo como deprecated
+   - Documentar data de remoção
+   - Avisar consumidores
 
 #### Fase 5: Remoção
+
 5. **Remover apenas após validação**
-   * Todos os consumidores migrados
-   * Período de deprecação respeitado
-   * Testes confirmando estabilidade
+   - Todos os consumidores migrados
+   - Período de deprecação respeitado
+   - Testes confirmando estabilidade
 
 ### Exemplo de Evolução:
 
@@ -194,7 +199,7 @@ class DepartmentServiceV2 {
 }
 
 // Fase 2: Feature flag
-const useV2 = featureFlags.isEnabled('department-service-v2');
+const useV2 = featureFlags.isEnabled("department-service-v2");
 const service = useV2 ? new DepartmentServiceV2() : new DepartmentService();
 
 // Fase 3: Monitoramento
@@ -223,41 +228,41 @@ class DepartmentService {
 
 **Regras absolutas:**
 
-* **Nenhuma função sem uso**
-  * Se não é usada, não deve existir
-  * Remover código morto regularmente
-  * Usar ferramentas de análise estática
+- **Nenhuma função sem uso**
+  - Se não é usada, não deve existir
+  - Remover código morto regularmente
+  - Usar ferramentas de análise estática
 
-* **Nenhum componente sem Storybook** (quando aplicável)
-  * Componentes reutilizáveis devem ter Storybook
-  * Documentação visual do componente
-  * Exemplos de uso
+- **Nenhum componente sem Storybook** (quando aplicável)
+  - Componentes reutilizáveis devem ter Storybook
+  - Documentação visual do componente
+  - Exemplos de uso
 
-* **Nenhum endpoint sem caso de uso**
-  * Todo endpoint deve ter caso de uso correspondente
-  * Endpoint sem caso de uso = código morto
-  * Validar antes de criar
+- **Nenhum endpoint sem caso de uso**
+  - Todo endpoint deve ter caso de uso correspondente
+  - Endpoint sem caso de uso = código morto
+  - Validar antes de criar
 
 ### 4.2 Proibição de Lógica Espalhada
 
 **Regras de negócio NÃO vivem em:**
 
-* ❌ **Controllers** (apenas orquestração)
-* ❌ **Hooks** (apenas lógica de apresentação)
-* ❌ **Componentes visuais** (apenas renderização)
-* ❌ **Services de aplicação** (apenas coordenação)
+- ❌ **Controllers** (apenas orquestração)
+- ❌ **Hooks** (apenas lógica de apresentação)
+- ❌ **Componentes visuais** (apenas renderização)
+- ❌ **Services de aplicação** (apenas coordenação)
 
 **Regras de negócio VIVEM em:**
 
-* ✅ **Domain** (entidades, value objects, domain services)
-* ✅ **Use Cases** (orquestração de regras de domínio)
-* ✅ **Domain Events** (fatos de negócio)
+- ✅ **Domain** (entidades, value objects, domain services)
+- ✅ **Use Cases** (orquestração de regras de domínio)
+- ✅ **Domain Events** (fatos de negócio)
 
 ### Exemplo de Violação (ERRADO):
 
 ```typescript
 // ❌ ERRADO: Lógica de negócio no controller
-@Controller('/departments')
+@Controller("/departments")
 class DepartmentController {
   @Post()
   async create(@Body() data: CreateDepartmentDto) {
@@ -265,7 +270,7 @@ class DepartmentController {
     if (data.parentId) {
       const parent = await this.repo.findById(data.parentId);
       if (parent.level >= 3) {
-        throw new Error('Cannot create subdepartment beyond level 3');
+        throw new Error("Cannot create subdepartment beyond level 3");
       }
     }
     return this.repo.save(data);
@@ -281,14 +286,14 @@ class Department extends Entity {
   static create(data: CreateDepartmentData, parent?: Department): Department {
     // Regra de negócio no domínio
     if (parent && parent.level >= 3) {
-      throw new DomainError('Cannot create subdepartment beyond level 3');
+      throw new DomainError("Cannot create subdepartment beyond level 3");
     }
     return new Department(data);
   }
 }
 
 // ✅ CORRETO: Controller apenas orquestra
-@Controller('/departments')
+@Controller("/departments")
 class DepartmentController {
   @Post()
   async create(@Body() data: CreateDepartmentDto) {
@@ -309,14 +314,14 @@ class DepartmentController {
 
 ### Classificação obrigatória:
 
-* Atômico (UI pura)
-* Composto (combinação)
-* Container (regra + dados)
+- Atômico (UI pura)
+- Composto (combinação)
+- Container (regra + dados)
 
 Nenhuma tela cria lógica nova sem antes verificar:
 
-* Existe hook reutilizável?
-* Existe componente base?
+- Existe hook reutilizável?
+- Existe componente base?
 
 ---
 
@@ -324,8 +329,8 @@ Nenhuma tela cria lógica nova sem antes verificar:
 
 ### 6.1 Contratos são imutáveis
 
-* API pública não quebra
-* Eventos não mudam payload
+- API pública não quebra
+- Eventos não mudam payload
 
 Nova necessidade = **nova versão**.
 
@@ -333,9 +338,9 @@ Nova necessidade = **nova versão**.
 
 ### 6.2 Eventos
 
-* Evento representa fato ocorrido
-* Evento não contém lógica
-* Evento não é reutilizado para outro significado
+- Evento representa fato ocorrido
+- Evento não contém lógica
+- Evento não é reutilizado para outro significado
 
 ---
 
@@ -343,9 +348,9 @@ Nova necessidade = **nova versão**.
 
 Toda ação relevante deve gerar:
 
-* Evento de auditoria
-* Log estruturado
-* Contexto organizacional (empresa, unidade, usuário)
+- Evento de auditoria
+- Log estruturado
+- Contexto organizacional (empresa, unidade, usuário)
 
 > Sem auditoria, a feature é considerada incompleta.
 
@@ -355,15 +360,15 @@ Toda ação relevante deve gerar:
 
 ### O que documentar:
 
-* Decisões arquiteturais (ADR)
-* Regras de negócio
-* Contratos
-* Limites de contexto
+- Decisões arquiteturais (ADR)
+- Regras de negócio
+- Contratos
+- Limites de contexto
 
 ### O que NÃO documentar:
 
-* Passo a passo trivial
-* Código autoexplicativo
+- Passo a passo trivial
+- Código autoexplicativo
 
 ### 8.1 Template de ADR (Architecture Decision Record)
 
@@ -378,34 +383,42 @@ Toda decisão arquitetural relevante deve ser documentada como ADR:
 **Tags:** [contexto, capacidade, módulo]
 
 ## Contexto
+
 [Qual situação levou a esta decisão? Qual problema estamos resolvendo?]
 
 ## Decisão
+
 [Qual decisão foi tomada?]
 
 ## Consequências
 
 ### Positivas
+
 - Consequência positiva 1
 - Consequência positiva 2
 
 ### Negativas
+
 - Consequência negativa 1 (e como mitigar)
 
 ### Impactos
+
 - **Capacidades afetadas:** [lista]
 - **Contextos afetados:** [lista]
 - **Módulos afetados:** [lista]
 
 ## Alternativas Consideradas
+
 1. **Alternativa 1**: [por que foi rejeitada]
 2. **Alternativa 2**: [por que foi rejeitada]
 
 ## Notas
+
 [Observações adicionais, referências, etc.]
 ```
 
 **Quando criar ADR:**
+
 - Mudanças estruturais significativas
 - Violação de regras arquiteturais (com justificativa)
 - Decisões que afetam múltiplos módulos
@@ -423,26 +436,31 @@ Quando for necessário violar uma regra, documentar assim:
 **Decisores:** Tech Lead, Arquiteto
 
 ## Contexto
-Necessitamos acesso direto entre Security e Organization para 
-validação de permissões em tempo real. A solução por eventos 
+
+Necessitamos acesso direto entre Security e Organization para
+validação de permissões em tempo real. A solução por eventos
 adicionaria latência inaceitável.
 
 ## Decisão
-Criar contrato explícito `IOrganizationQueryService` que Security 
+
+Criar contrato explícito `IOrganizationQueryService` que Security
 pode usar. Este contrato será versionado e mantido estável.
 
 ## Consequências
+
 - **Positivas:** Latência reduzida, implementação mais simples
 - **Negativas:** Acoplamento entre contextos (mitigado por contrato estável)
 
 ## Plano de Migração
+
 - Fase 1: Implementar contrato (atual)
 - Fase 2: Migrar para eventos assíncronos (Q2 2024)
 - Fase 3: Remover contrato direto (Q3 2024)
 
 ## Violação de Regra
-Esta decisão viola a regra de "Nenhum contexto acessa diretamente 
-o banco de outro" do Mapa de Contextos. Justificativa: necessidade 
+
+Esta decisão viola a regra de "Nenhum contexto acessa diretamente
+o banco de outro" do Mapa de Contextos. Justificativa: necessidade
 temporária de performance, com plano de migração definido.
 ```
 
@@ -452,9 +470,9 @@ temporária de performance, com plano de migração definido.
 
 ### Diretrizes obrigatórias:
 
-* Autorização baseada em contexto organizacional
-* Nenhuma verificação apenas no frontend
-* Nenhum acesso implícito
+- Autorização baseada em contexto organizacional
+- Nenhuma verificação apenas no frontend
+- Nenhum acesso implícito
 
 > Segurança é transversal, não feature.
 
@@ -464,15 +482,15 @@ temporária de performance, com plano de migração definido.
 
 O sistema deve:
 
-* Crescer por módulos
-* Escalar por eventos
-* Isolar falhas
+- Crescer por módulos
+- Escalar por eventos
+- Isolar falhas
 
 ### Princípios:
 
-* Baixo acoplamento
-* Alta coesão
-* Dependência sempre aponta para o núcleo
+- Baixo acoplamento
+- Alta coesão
+- Dependência sempre aponta para o núcleo
 
 ---
 
@@ -494,9 +512,9 @@ Antes de aplicar as diretrizes de governança, é necessário conhecer o sistema
 
 Este documento se relaciona diretamente com:
 
-* **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)**: Define O QUE implementar
-* **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**: Define ONDE implementar
-* **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)**: Define LIMITES ao implementar
+- **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)**: Define O QUE implementar
+- **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**: Define ONDE implementar
+- **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)**: Define LIMITES ao implementar
 
 ### Fluxo Completo de Implementação:
 
@@ -523,9 +541,9 @@ Este documento se relaciona diretamente com:
 
 Este documento e os relacionados devem ser revisados:
 
-* **Mensalmente**: Revisar matriz e validar atualizações
-* **Trimestralmente**: Revisar mapa de capacidades e contextos
-* **Semestralmente**: Revisão arquitetural completa
+- **Mensalmente**: Revisar matriz e validar atualizações
+- **Trimestralmente**: Revisar mapa de capacidades e contextos
+- **Semestralmente**: Revisão arquitetural completa
 
 ### 12.1 Checklist de Revisão Mensal
 

@@ -1,0 +1,86 @@
+# MorinaLight Security - Deployment Checklist
+
+## ✅ COMPLETED AUTOMATICALLY
+
+[✓] Environment file created (.env)
+[✓] All dependencies installed
+[✓] Security tests passing (24/24)
+[✓] Production build verified
+[✓] Deployment artifacts created
+
+## 📋 MANUAL STEPS REQUIRED
+
+### Pre-Deployment
+[ ] Configure optional services (Resend, Upstash) in .env
+[ ] Test email notifications (if configured)
+[ ] Test Redis connection (if configured)
+
+### Database
+[ ] Create database backup (use backup-database.sh)
+[ ] Verify backup file exists and has content
+[ ] Test restore on staging database
+[ ] Store backup in secure location
+
+### Encryption Migration (Staging First!)
+[ ] Run dry-run: npx tsx src/scripts/encrypt-existing-data.ts --dry-run --all
+[ ] Review output carefully
+[ ] Run on staging: npx tsx src/scripts/encrypt-existing-data.ts --all
+[ ] Verify encrypted data in staging
+[ ] Test application with encrypted data
+
+### Deployment
+[ ] Deploy to production environment
+[ ] Verify deployment successful
+[ ] Access security dashboard: /admin/security
+[ ] Test block/unblock functionality
+
+### Production Encryption Migration
+[ ] CRITICAL: Verify database backup exists
+[ ] Run dry-run on production
+[ ] Review output
+[ ] Run actual migration
+[ ] Monitor progress
+[ ] Verify completion
+
+### Monitoring Setup
+[ ] Set up cron jobs (see CRON_JOBS.sh)
+[ ] Test cron jobs execute successfully
+[ ] Start log monitor: nohup npx tsx src/scripts/log-monitor.ts --follow &
+[ ] Set up log rotation
+
+### Verification
+[ ] Create test security alert
+[ ] Verify email notification (if configured)
+[ ] Block/unblock test user
+[ ] Block/unblock test IP
+[ ] Test rate limiting
+[ ] Run full test suite
+[ ] Check for console errors
+[ ] Review security logs
+
+### Documentation
+[ ] Share SECURITY_GUIDE.md with team
+[ ] Share SECURITY_SETUP.md with ops team
+[ ] Document incident response procedures
+[ ] Train admins on security dashboard
+
+### Post-Deployment (First Week)
+[ ] Monitor security alerts daily
+[ ] Review blocked users/IPs daily
+[ ] Check email notification quota
+[ ] Monitor Redis usage (if configured)
+[ ] Review application logs
+
+### Ongoing Maintenance
+[ ] Weekly: Export and review blocks
+[ ] Monthly: Review email quota
+[ ] Quarterly: Rotate encryption keys
+[ ] Quarterly: Review documentation
+
+## 🎯 SUCCESS CRITERIA
+
+All items above must be completed for production deployment.
+
+Deployment Date: _______________
+Deployed By: _______________
+Environment: _______________

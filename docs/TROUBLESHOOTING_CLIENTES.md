@@ -5,6 +5,7 @@
 ### Possíveis Causas e Soluções
 
 #### 1. Servidor não reiniciado
+
 ```bash
 # Parar o servidor (Ctrl+C)
 # Reiniciar o servidor de desenvolvimento
@@ -14,11 +15,13 @@ yarn dev
 ```
 
 #### 2. Cache do navegador
+
 - Limpar cache do navegador (Ctrl+Shift+Delete)
 - Fazer hard refresh (Ctrl+Shift+R ou Cmd+Shift+R)
 - Testar em aba anônima/privada
 
 #### 3. Erros de compilação
+
 ```bash
 # Verificar erros de TypeScript
 npm run type-check
@@ -32,6 +35,7 @@ yarn lint
 ```
 
 #### 4. Dependências não instaladas
+
 ```bash
 # Instalar dependências
 npm install
@@ -43,21 +47,25 @@ npm list framer-motion
 ```
 
 #### 5. Verificar console do navegador
+
 - Abrir DevTools (F12)
 - Verificar aba Console para erros
 - Verificar aba Network para requisições falhando
 
 #### 6. Verificar rota
+
 - Acessar: `http://localhost:3000/clientes`
 - Verificar se a rota está correta no navegador
 
 #### 7. Verificar se componente está sendo importado
+
 ```typescript
 // apps/web/src/app/(app)/clientes/page.tsx
 import { ClientesClient } from "./clientes-client";
 ```
 
 #### 8. Verificar se background está configurado
+
 ```typescript
 // apps/web/src/components/page-background.tsx
 {variant === "clientes" && <ClientesAnimatedBackground />}
@@ -80,6 +88,7 @@ import { ClientesClient } from "./clientes-client";
 ## 🐛 Debug Rápido
 
 ### 1. Verificar se componente renderiza
+
 Adicionar um console.log no início do componente:
 
 ```typescript
@@ -90,6 +99,7 @@ export function ClientesClient() {
 ```
 
 ### 2. Verificar se dados estão chegando
+
 Adicionar log na função loadClientes:
 
 ```typescript
@@ -101,6 +111,7 @@ const loadClientes = useCallback(async () => {
 ```
 
 ### 3. Verificar se background está funcionando
+
 Verificar se o componente de background está sendo renderizado:
 
 ```typescript
@@ -132,6 +143,7 @@ npm --version
 ## 🔍 Verificações Adicionais
 
 ### Verificar estrutura de arquivos
+
 ```
 apps/web/src/app/(app)/clientes/
 ├── page.tsx
@@ -144,6 +156,7 @@ apps/web/src/components/
 ```
 
 ### Verificar imports
+
 - `framer-motion` está instalado?
 - `lucide-react` está instalado?
 - `@morina/ui` está disponível?
@@ -166,10 +179,9 @@ Se nada funcionar, tente:
 ## 📞 Próximos Passos
 
 Se o problema persistir:
+
 1. Verificar logs do servidor
 2. Verificar console do navegador
 3. Verificar Network tab
 4. Verificar se há erros de TypeScript
 5. Verificar se há erros de lint
-
-

@@ -13,7 +13,7 @@ Remoção Completa do Frontend Atual
 
 Este plano envolve a remoção completa de todas as páginas e componentes do sistema atual em /apps/web/src/app, exceto o Design System em /packages/ui. Isso significa:
 
-Todas as páginas em (app)/* serão removidas
+Todas as páginas em (app)/\* serão removidas
 Todas as rotas de API client serão removidas
 Hooks e utilitários específicos do sistema serão removidos
 Apenas o login será mantido temporariamente como referência
@@ -87,72 +87,73 @@ Interfaces Conversacionais
 Integração com modelos de linguagem natural
 Consultas mais intuitivas
 Módulos do Backend Identificados
-1. Auth (/auth)
-POST /auth/login - Login com email/senha
-POST /auth/register - Registro de novo usuário
-Retorna: token JWT, dados do usuário, organizações
-2. Users (/users)
-GET /users - Listar usuários
-POST /users - Criar usuário
-PUT /users/:id - Atualizar usuário
-DELETE /users/:id - Deletar usuário
-3. Organizations (/organizations)
-GET /organizations - Listar organizações do usuário
-GET /organizations/:id/members - Listar membros
-POST /organizations/:id/invites - Convidar membros
-GET /organizations/:id/invites - Listar convites
-4. Organizational Structure (/organizational-structure)
-Departments: CRUD de departamentos + membros
-Sectors: CRUD de setores + membros
-Positions: CRUD de cargos + membros
-Teams: CRUD de times + membros
-Organizational Units: CRUD de unidades organizacionais + membros
-5. Permissions (/permissions)
-GET /permissions/user/:userId - Permissões do usuário
-GET /permissions/audit - Log de auditoria
-Templates de permissões por cargo/setor/departamento
-6. Clients (/clientes)
-GET /clientes - Listar clientes
-GET /representantes - Listar representantes
-GET /comissoes - Listar comissões
-Sistema de comissões com workflow complexo
-7. Suppliers (/suppliers)
-GET /suppliers - Listar fornecedores
-CRUD de fornecedores
-8. Catalog (/catalogo)
-GET /catalogo/products - Listar produtos
-GET /catalogo/categories - Listar categorias
-GET /catalogo/variants - Listar variantes
-GET /catalogo/audit - Auditoria de alterações
-9. Preficha (/preficha)
-GET /preficha - Listar pré-fichas
-POST /preficha - Criar pré-ficha
-POST /preficha/:id/encaminhar - Encaminhar
-POST /preficha/:id/aprovar - Aprovar
-POST /preficha/:id/rejeitar - Rejeitar
-POST /preficha/:id/comentarios - Adicionar comentário
-10. Notifications (/notifications)
-GET /notifications - Listar notificações
-Sistema de notificações em tempo real via WebSocket
-11. Company Settings (/company-settings)
-Configurações da empresa
-Proposed Changes
-Phase 1: Cleanup & Foundation
-[DELETE] Páginas do Sistema Atual
-Remove all current system pages except login (kept as reference):
 
-apps/web/src/app/(app)/* - All authenticated pages
+1. Auth (/auth)
+   POST /auth/login - Login com email/senha
+   POST /auth/register - Registro de novo usuário
+   Retorna: token JWT, dados do usuário, organizações
+2. Users (/users)
+   GET /users - Listar usuários
+   POST /users - Criar usuário
+   PUT /users/:id - Atualizar usuário
+   DELETE /users/:id - Deletar usuário
+3. Organizations (/organizations)
+   GET /organizations - Listar organizações do usuário
+   GET /organizations/:id/members - Listar membros
+   POST /organizations/:id/invites - Convidar membros
+   GET /organizations/:id/invites - Listar convites
+4. Organizational Structure (/organizational-structure)
+   Departments: CRUD de departamentos + membros
+   Sectors: CRUD de setores + membros
+   Positions: CRUD de cargos + membros
+   Teams: CRUD de times + membros
+   Organizational Units: CRUD de unidades organizacionais + membros
+5. Permissions (/permissions)
+   GET /permissions/user/:userId - Permissões do usuário
+   GET /permissions/audit - Log de auditoria
+   Templates de permissões por cargo/setor/departamento
+6. Clients (/clientes)
+   GET /clientes - Listar clientes
+   GET /representantes - Listar representantes
+   GET /comissoes - Listar comissões
+   Sistema de comissões com workflow complexo
+7. Suppliers (/suppliers)
+   GET /suppliers - Listar fornecedores
+   CRUD de fornecedores
+8. Catalog (/catalogo)
+   GET /catalogo/products - Listar produtos
+   GET /catalogo/categories - Listar categorias
+   GET /catalogo/variants - Listar variantes
+   GET /catalogo/audit - Auditoria de alterações
+9. Preficha (/preficha)
+   GET /preficha - Listar pré-fichas
+   POST /preficha - Criar pré-ficha
+   POST /preficha/:id/encaminhar - Encaminhar
+   POST /preficha/:id/aprovar - Aprovar
+   POST /preficha/:id/rejeitar - Rejeitar
+   POST /preficha/:id/comentarios - Adicionar comentário
+10. Notifications (/notifications)
+    GET /notifications - Listar notificações
+    Sistema de notificações em tempo real via WebSocket
+11. Company Settings (/company-settings)
+    Configurações da empresa
+    Proposed Changes
+    Phase 1: Cleanup & Foundation
+    [DELETE] Páginas do Sistema Atual
+    Remove all current system pages except login (kept as reference):
+
+apps/web/src/app/(app)/\* - All authenticated pages
 Keep: apps/web/src/app/login/page.tsx (temporary reference)
 [DELETE] API Client Routes
 Remove all current API integration code:
 
-apps/web/src/app/api/* - All API routes
+apps/web/src/app/api/\* - All API routes
 [DELETE] Hooks e Utilitários Específicos
 Remove system-specific hooks that won't be reused:
 
 apps/web/src/hooks/use-offline-sync.ts
 Other system-specific hooks (to be identified)
-[NEW] 
+[NEW]
 base-structure.md
 Document the new frontend architecture:
 
@@ -161,7 +162,7 @@ Routing strategy
 State management approach
 API integration patterns
 Phase 2: Authentication & Onboarding
-[NEW] 
+[NEW]
 login-page.tsx
 Modern login page following 2024 best practices:
 
@@ -173,7 +174,7 @@ Prepared for SSO integration (placeholder)
 Prepared for passwordless (placeholder)
 Loading states and feedback
 Responsive mobile-first design
-[NEW] 
+[NEW]
 register-page.tsx
 Registration flow:
 
@@ -181,14 +182,14 @@ Minimal required fields
 Instant validation
 Terms acceptance (linking to business rules)
 Organization creation or join flow
-[NEW] 
+[NEW]
 organization-selector.tsx
 Organization selection after login (if user has multiple):
 
 Card-based layout
 Recent organizations first
 Search/filter capability
-[NEW] 
+[NEW]
 auth-api-client.ts
 API client for authentication:
 
@@ -197,7 +198,7 @@ Token management
 Organization selection
 Error handling
 Phase 3: Dashboard Foundation
-[NEW] 
+[NEW]
 dashboard-layout.tsx
 Main authenticated layout:
 
@@ -207,7 +208,7 @@ User menu with organization switcher
 Notification bell
 Real-time connection status
 Breadcrumbs
-[NEW] 
+[NEW]
 dashboard-page.tsx
 Main dashboard with role-based widgets:
 
@@ -216,7 +217,7 @@ Customizable widgets
 Quick actions
 Recent activity feed
 KPIs based on user role
-[NEW] 
+[NEW]
 dashboard-widgets
 Reusable dashboard widgets:
 
@@ -227,57 +228,57 @@ NotificationWidget.tsx - Notifications preview
 ChartWidget.tsx - Data visualization
 Phase 4: Core Modules
 Module: Users
-[NEW] 
+[NEW]
 users-list-page.tsx
 Table with search, filter, sort
 Pagination
 Bulk actions
 Create user button
-[NEW] 
+[NEW]
 user-form-dialog.tsx
 Create/edit user modal
 Form validation
 Role assignment
-[NEW] 
+[NEW]
 users-api-client.ts
 CRUD operations
 List with filters
 Module: Organizational Structure
-[NEW] 
+[NEW]
 org-structure-page.tsx
 Tabbed interface: Departments, Sectors, Positions, Teams, Units
 Tree/hierarchy visualization
 Drag-and-drop reorganization (future)
-[NEW] 
+[NEW]
 department-management.tsx
 CRUD for departments
 Member assignment
 Hierarchy display
-[NEW] 
+[NEW]
 structure-api-client.ts
 All organizational structure endpoints
 Module: Permissions
-[NEW] 
+[NEW]
 permissions-page.tsx
 Permission templates
 User permission assignment
 Audit log viewer
-[NEW] 
+[NEW]
 permissions-api-client.ts
 Permission management
 Audit log retrieval
 Module: Clients & Representatives
-[NEW] 
+[NEW]
 clients-page.tsx
 Client list with advanced filters
 Representative assignment
 Commission tracking
-[NEW] 
+[NEW]
 representatives-page.tsx
 Representative list
 Commission dashboard
 Performance metrics
-[NEW] 
+[NEW]
 commissions-page.tsx
 Commission workflow management
 Status tracking (Aguardando, Em análise, Aprovada, Contestada, Cancelada, Paga)
@@ -285,60 +286,60 @@ Contest system with chat
 Approval/rejection flow
 Monthly cycle enforcement (RN-CICLO-01, RN-CICLO-02)
 Exception release by manager (RN-CICLO-04)
-[NEW] 
+[NEW]
 commission-detail-page.tsx
 Full commission details
 Document viewer
 Chat/contest interface
 Timeline of events
 Audit trail
-[NEW] 
+[NEW]
 clients-api-client.ts
 Clients, representatives, commissions CRUD
 Module: Catalog
-[NEW] 
+[NEW]
 catalog-page.tsx
 Product grid/list view toggle
 Category navigation
 Search and filters
 Variant management
-[NEW] 
+[NEW]
 product-detail-page.tsx
 Product details
 Variant selector
 Audit history
-[NEW] 
+[NEW]
 catalog-api-client.ts
 Products, categories, variants, audit
 Module: Preficha (Pre-registration)
-[NEW] 
+[NEW]
 preficha-page.tsx
 Preficha list with status filters
 Create new preficha
 Workflow tracking
-[NEW] 
+[NEW]
 preficha-detail-page.tsx
 Full preficha details
 Workflow actions (encaminhar, aprovar, rejeitar)
 Comments section
 Audit trail
-[NEW] 
+[NEW]
 preficha-api-client.ts
 Preficha CRUD and workflow
 Module: Notifications
-[NEW] 
+[NEW]
 notifications-panel.tsx
 Slide-out panel
 Real-time updates via WebSocket
 Mark as read
 Filter by type
-[NEW] 
+[NEW]
 notifications-api-client.ts
 Notifications list
 Mark as read
 WebSocket connection
 Phase 5: Shared Components & Utilities
-[NEW] 
+[NEW]
 data-table.tsx
 Reusable data table component:
 
@@ -346,20 +347,20 @@ Sorting, filtering, pagination
 Column configuration
 Bulk actions
 Export functionality
-[NEW] 
+[NEW]
 page-header.tsx
 Consistent page header:
 
 Title, description
 Action buttons
 Breadcrumbs integration
-[NEW] 
+[NEW]
 empty-state.tsx
 Empty state component:
 
 Icon, title, description
 Call-to-action button
-[NEW] 
+[NEW]
 api-client-base.ts
 Base API client:
 
@@ -368,7 +369,7 @@ Token injection
 Organization header injection
 Error handling
 Request/response interceptors
-[NEW] 
+[NEW]
 use-api-query.ts
 React Query wrapper:
 
@@ -376,7 +377,7 @@ Standardized data fetching
 Loading, error states
 Caching strategy
 Phase 6: Design System Integration
-[MODIFY] 
+[MODIFY]
 globals.css
 Ensure consistent use of Design System tokens:
 
@@ -465,13 +466,19 @@ Verify consistent use of colors, typography, spacing
 Verify corporate, professional aesthetic
 Verify no ad-hoc styling outside Design System
 Backend Integration Verification
+
 # Ensure backend is running
+
 cd apps/api
 pnpm dev
+
 # In another terminal, run frontend
+
 cd apps/web
 pnpm dev
+
 # Test all API endpoints are reachable
+
 curl http://localhost:3000/api/health
 Verify all frontend API calls successfully reach backend
 Verify authentication works end-to-end

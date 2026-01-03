@@ -158,13 +158,16 @@ throw new NotFoundError("User", userId);
 ```typescript
 import { asyncHandler } from "@/core/errors";
 
-app.get("/users/:id", asyncHandler(async (request, reply) => {
-  const user = await userRepository.findById(request.params.id);
-  if (!user) {
-    throw new NotFoundError("User", request.params.id);
-  }
-  return user;
-}));
+app.get(
+  "/users/:id",
+  asyncHandler(async (request, reply) => {
+    const user = await userRepository.findById(request.params.id);
+    if (!user) {
+      throw new NotFoundError("User", request.params.id);
+    }
+    return user;
+  }),
+);
 ```
 
 ### Frontend
@@ -190,7 +193,7 @@ import { useErrorHandler, useAsyncError } from "@/lib/errors";
 
 function MyComponent() {
   const { handleError } = useErrorHandler();
-  
+
   const { execute, error, loading } = useAsyncError(
     async () => {
       const response = await api.get("/users");
@@ -288,12 +291,3 @@ Esses IDs são incluídos nos headers HTTP:
 - [Documentação do Fastify - Error Handling](https://www.fastify.io/docs/latest/Reference/Errors/)
 - [React Error Boundaries](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)
 - [Prometheus Metrics](https://prometheus.io/docs/concepts/metric_types/)
-
-
-
-
-
-
-
-
-

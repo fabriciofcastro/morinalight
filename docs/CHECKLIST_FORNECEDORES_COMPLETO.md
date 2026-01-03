@@ -11,6 +11,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 1.1 Página de Visualização Detalhada (`/fornecedores/[id]/page.tsx`)
 
 #### Estrutura Base
+
 - [ ] Criar `apps/web/src/app/(app)/fornecedores/[id]/page.tsx`
 - [ ] Criar `apps/web/src/app/(app)/fornecedores/[id]/fornecedor-detail-client.tsx`
 - [ ] Implementar layout com PageBackground
@@ -19,6 +20,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Implementar error boundaries
 
 #### Header Futurista
+
 - [ ] Ícone Building2 com animação
 - [ ] Título com nome do fornecedor
 - [ ] Subtítulo com status e última atualização
@@ -29,6 +31,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Background com gradiente animado
 
 #### Seção: Informações Básicas
+
 - [ ] Card "Dados Cadastrais"
   - [ ] Nome/Razão Social
   - [ ] CPF/CNPJ formatado
@@ -50,6 +53,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Observações (expandível)
 
 #### Seção: Estatísticas e Métricas
+
 - [ ] Card "Estatísticas de Uso"
   - [ ] Total de fichas de custo
   - [ ] Total de insumos fornecidos
@@ -69,6 +73,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Histórico de pagamentos (últimos 5)
 
 #### Seção: Relacionamentos
+
 - [ ] Tab "Fichas de Custo"
   - [ ] Lista de fichas que usam o fornecedor
   - [ ] Filtros (data, status, valor)
@@ -89,6 +94,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Exportação
 
 #### Seção: Histórico e Auditoria
+
 - [ ] Tab "Timeline de Alterações"
   - [ ] Lista cronológica de alterações
   - [ ] Quem alterou, quando, o que mudou
@@ -108,6 +114,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Categorização
 
 #### Seção: Notas e Interações
+
 - [ ] Card "Notas Internas"
   - [ ] Lista de notas
   - [ ] Adicionar nova nota
@@ -121,6 +128,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Calendário integrado
 
 #### Funcionalidades Avançadas
+
 - [ ] Compartilhar fornecedor (link)
 - [ ] Exportar dados (PDF/Excel)
 - [ ] Imprimir
@@ -135,6 +143,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 1.2 Página de Edição (`/fornecedores/[id]/edit/page.tsx`)
 
 #### Estrutura Base
+
 - [ ] Criar `apps/web/src/app/(app)/fornecedores/[id]/edit/page.tsx`
 - [ ] Criar `apps/web/src/app/(app)/fornecedores/[id]/edit/fornecedor-edit-client.tsx`
 - [ ] Implementar layout com PageBackground
@@ -143,6 +152,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Validação em tempo real
 
 #### Formulário Completo
+
 - [ ] Seção "Dados Básicos" (igual ao new, mas pré-preenchido)
 - [ ] Seção "Endereço" (com busca CEP)
 - [ ] Seção "Informações Comerciais"
@@ -162,6 +172,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Histórico de avaliações
 
 #### Funcionalidades Especiais
+
 - [ ] Modo de comparação (antes/depois)
 - [ ] Preview de alterações
 - [ ] Salvar como rascunho
@@ -171,6 +182,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Auto-save (salvar automaticamente)
 
 #### Botões de Ação
+
 - [ ] Salvar (com loading)
 - [ ] Salvar e Continuar Editando
 - [ ] Cancelar (com confirmação se houver alterações)
@@ -183,6 +195,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 1.3 Melhorias na Listagem (`/fornecedores/list`)
 
 #### Paginação e Performance
+
 - [ ] Implementar paginação server-side
 - [ ] Lazy loading de imagens
 - [ ] Virtual scrolling (para muitos itens)
@@ -191,12 +204,14 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Loading skeleton
 
 #### Ordenação Avançada
+
 - [ ] Ordenar por: nome, data criação, status, avaliação
 - [ ] Ordenação múltipla (colunas)
 - [ ] Indicadores visuais de ordenação
 - [ ] Salvar preferências de ordenação
 
 #### Filtros Avançados
+
 - [ ] Filtro por tipo de fornecedor
 - [ ] Filtro por ramo de atividade
 - [ ] Filtro por estado/cidade
@@ -208,6 +223,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Resetar filtros
 
 #### Ações em Lote
+
 - [ ] Seleção múltipla (checkbox)
 - [ ] Selecionar todos
 - [ ] Ativar/Desativar selecionados
@@ -217,6 +233,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Mover para categoria
 
 #### Visualizações
+
 - [ ] Grid view (melhorado)
 - [ ] List view (melhorado)
 - [ ] Table view (nova)
@@ -225,6 +242,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Salvar preferência de visualização
 
 #### Exportação
+
 - [ ] Exportar para Excel
 - [ ] Exportar para CSV
 - [ ] Exportar para PDF
@@ -239,6 +257,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 2.1 Schema Prisma - Novos Models
 
 #### AuditoriaSupplier
+
 - [ ] Criar model `AuditoriaSupplier`
 - [ ] Campos: id, supplierId, orgId, acao, campo, estadoAnterior, estadoNovo
 - [ ] Campos: actorId, ipAddress, userAgent, justificativa, metadata
@@ -246,6 +265,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Índices: supplierId, orgId, actorId, acao, createdAt
 
 #### VersaoSupplier
+
 - [ ] Criar model `VersaoSupplier`
 - [ ] Campos: id, supplierId, versao, dadosSnapshot (JSON)
 - [ ] Campos: criadoPor, motivoAlteracao, createdAt
@@ -254,6 +274,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Unique constraint: supplierId + versao
 
 #### DocumentoSupplier
+
 - [ ] Criar model `DocumentoSupplier`
 - [ ] Campos: id, supplierId, tipo, nomeArquivo, arquivoUrl, arquivoStorageKey
 - [ ] Campos: tamanhoBytes, mimeType, descricao, anexadoPor, createdAt
@@ -261,6 +282,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Índices: supplierId, tipo, createdAt
 
 #### SupplierContact
+
 - [ ] Criar model `SupplierContact`
 - [ ] Campos: id, supplierId, name, email, phone, cargo
 - [ ] Campos: isPrincipal, notes, createdAt, updatedAt
@@ -268,6 +290,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Índices: supplierId, isPrincipal
 
 #### Campos Adicionais no Supplier
+
 - [ ] website (String?)
 - [ ] contatoPrincipal (String?)
 - [ ] cargoContato (String?)
@@ -285,6 +308,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 2.2 Repositories
 
 #### AuditoriaSupplierRepository
+
 - [ ] Interface `AuditoriaSupplierRepository`
 - [ ] Método `create(auditoria)`
 - [ ] Método `findBySupplierId(supplierId, filters)`
@@ -294,6 +318,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes unitários
 
 #### VersaoSupplierRepository
+
 - [ ] Interface `VersaoSupplierRepository`
 - [ ] Método `create(versao)`
 - [ ] Método `findBySupplierId(supplierId)`
@@ -304,6 +329,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes unitários
 
 #### DocumentoSupplierRepository
+
 - [ ] Interface `DocumentoSupplierRepository`
 - [ ] Método `create(documento)`
 - [ ] Método `findBySupplierId(supplierId)`
@@ -313,6 +339,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes unitários
 
 #### SupplierContactRepository
+
 - [ ] Interface `SupplierContactRepository`
 - [ ] Método `create(contact)`
 - [ ] Método `findBySupplierId(supplierId)`
@@ -325,6 +352,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 2.3 Use Cases
 
 #### CriarFornecedorUseCase
+
 - [ ] Validar dados de entrada
 - [ ] Verificar duplicatas (CNPJ/CPF)
 - [ ] Criar fornecedor
@@ -337,6 +365,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes de integração
 
 #### AtualizarFornecedorUseCase
+
 - [ ] Buscar fornecedor existente
 - [ ] Validar permissões
 - [ ] Comparar alterações
@@ -350,6 +379,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes de integração
 
 #### ListarFornecedoresUseCase
+
 - [ ] Validar filtros
 - [ ] Aplicar paginação
 - [ ] Aplicar ordenação
@@ -360,6 +390,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes unitários
 
 #### BuscarFornecedorPorIdUseCase
+
 - [ ] Buscar fornecedor
 - [ ] Buscar relacionamentos (fichas, boletos)
 - [ ] Buscar estatísticas
@@ -369,6 +400,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes unitários
 
 #### DeletarFornecedorUseCase
+
 - [ ] Buscar fornecedor
 - [ ] Validar permissões
 - [ ] Verificar relacionamentos
@@ -379,6 +411,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes unitários
 
 #### RestaurarVersaoUseCase
+
 - [ ] Buscar versão
 - [ ] Validar permissões
 - [ ] Criar nova versão (backup atual)
@@ -392,6 +425,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 3: INTEGRAÇÕES EXTERNAS
 
 ### 3.1 API ViaCEP
+
 - [ ] Criar serviço `ViaCepService`
 - [ ] Método `buscarEndereco(cep)`
 - [ ] Validação de CEP
@@ -404,6 +438,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes
 
 ### 3.2 API ReceitaWS/BrasilAPI (CNPJ)
+
 - [ ] Criar serviço `CnpjService`
 - [ ] Método `buscarDadosCnpj(cnpj)`
 - [ ] Validação de CNPJ
@@ -418,6 +453,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes
 
 ### 3.3 Google Maps Integration
+
 - [ ] Integrar Google Maps API
 - [ ] Mostrar localização no mapa
 - [ ] Calcular distâncias
@@ -430,6 +466,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 4: TEMPO REAL E NOTIFICAÇÕES
 
 ### 4.1 Eventos de Domínio
+
 - [ ] Evento `Supplier.Created.v1`
 - [ ] Evento `Supplier.Updated.v1`
 - [ ] Evento `Supplier.Deleted.v1`
@@ -440,6 +477,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Testes
 
 ### 4.2 Notificações em Tempo Real
+
 - [ ] Notificar criação de fornecedor
 - [ ] Notificar alterações importantes
 - [ ] Notificar mudança de status
@@ -450,6 +488,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Preferências de notificação
 
 ### 4.3 Atualização em Tempo Real na UI
+
 - [ ] Atualizar lista automaticamente
 - [ ] Atualizar página de detalhes
 - [ ] Indicador de "novo" fornecedor
@@ -463,6 +502,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 5.1 Dashboard de Fornecedores (`/fornecedores/dashboard`)
 
 #### Estatísticas Gerais
+
 - [ ] Card "Total de Fornecedores"
   - [ ] Contador animado
   - [ ] Variação percentual
@@ -481,6 +521,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Distribuição de avaliações
 
 #### Gráficos Principais
+
 - [ ] Gráfico "Evolução de Cadastros"
   - [ ] Linha temporal
   - [ ] Filtros por período
@@ -504,6 +545,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Legenda interativa
 
 #### Tabelas de Dados
+
 - [ ] Tabela "Fornecedores Recentes"
   - [ ] Últimos 10 cadastrados
   - [ ] Colunas: nome, data, status
@@ -518,6 +560,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
   - [ ] Link para detalhes
 
 #### Filtros e Períodos
+
 - [ ] Filtro por período (últimos 7/30/90 dias, custom)
 - [ ] Filtro por status
 - [ ] Filtro por tipo
@@ -527,6 +570,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Salvar filtros favoritos
 
 #### Exportação
+
 - [ ] Exportar dashboard como PDF
 - [ ] Exportar gráficos como imagem
 - [ ] Exportar dados como Excel
@@ -538,6 +582,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ### 5.2 Analytics Avançados
 
 #### Análise de Performance
+
 - [ ] Tempo médio de resposta
 - [ ] Taxa de aprovação
 - [ ] Índice de satisfação
@@ -546,6 +591,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Previsões (ML)
 
 #### Análise Financeira
+
 - [ ] Evolução de compras
 - [ ] Análise de custos
 - [ ] ROI por fornecedor
@@ -553,6 +599,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Alertas de limite
 
 #### Análise de Relacionamentos
+
 - [ ] Rede de fornecedores
 - [ ] Fornecedores relacionados
 - [ ] Cadeia de suprimentos
@@ -563,6 +610,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 6: RECURSOS AVANÇADOS E IA/ML
 
 ### 6.1 Sistema de Avaliação
+
 - [ ] Componente de estrelas (1-5)
 - [ ] Comentários de avaliação
 - [ ] Histórico de avaliações
@@ -572,6 +620,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Exportação
 
 ### 6.2 Sistema de Tags e Categorização
+
 - [ ] Criar/Editar/Deletar tags
 - [ ] Cores personalizadas
 - [ ] Autocomplete
@@ -581,6 +630,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Gerenciamento de tags
 
 ### 6.3 Sistema de Notas e Lembretes
+
 - [ ] Criar notas
 - [ ] Editar/Deletar notas
 - [ ] Criar lembretes
@@ -590,6 +640,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Exportação
 
 ### 6.4 Upload e Gestão de Documentos
+
 - [ ] Upload de múltiplos arquivos
 - [ ] Drag & drop
 - [ ] Preview de documentos
@@ -601,6 +652,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Versionamento de documentos
 
 ### 6.5 Múltiplos Contatos
+
 - [ ] Adicionar contatos
 - [ ] Editar contatos
 - [ ] Deletar contatos
@@ -610,6 +662,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Exportar contatos
 
 ### 6.6 Histórico de Preços
+
 - [ ] Rastrear preços por insumo
 - [ ] Gráfico de evolução
 - [ ] Comparação entre fornecedores
@@ -618,6 +671,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Análise de tendências
 
 ### 6.7 Sugestões Inteligentes (IA/ML)
+
 - [ ] Sugerir tags baseado em histórico
 - [ ] Detectar duplicatas
 - [ ] Sugerir merge de fornecedores
@@ -627,6 +681,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Recomendações personalizadas
 
 ### 6.8 Validação de Duplicatas
+
 - [ ] Verificar CNPJ/CPF duplicado
 - [ ] Verificar nome similar
 - [ ] Sugerir merge
@@ -635,6 +690,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Histórico de merges
 
 ### 6.9 Soft Delete e Restauração
+
 - [ ] Marcar como deletado (deletedAt)
 - [ ] Filtrar deletados na listagem
 - [ ] Página de fornecedores deletados
@@ -647,6 +703,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 7: PERFORMANCE E OTIMIZAÇÃO
 
 ### 7.1 Cache
+
 - [ ] Cache de listagem (Redis)
 - [ ] Cache de detalhes (Redis)
 - [ ] Cache de estatísticas
@@ -655,6 +712,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Cache warming
 
 ### 7.2 Paginação e Lazy Loading
+
 - [ ] Paginação server-side
 - [ ] Infinite scroll (opcional)
 - [ ] Virtual scrolling
@@ -663,6 +721,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Lazy loading de componentes
 
 ### 7.3 Otimizações de Banco
+
 - [ ] Índices otimizados
 - [ ] Queries otimizadas
 - [ ] Connection pooling
@@ -670,6 +729,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Particionamento (se necessário)
 
 ### 7.4 Otimizações Frontend
+
 - [ ] Memoização de componentes
 - [ ] useMemo/useCallback
 - [ ] Debounce em buscas
@@ -682,6 +742,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 8: SEGURANÇA E VALIDAÇÕES
 
 ### 8.1 Validações Backend
+
 - [ ] Validar todos os campos
 - [ ] Validar CNPJ/CPF
 - [ ] Validar email
@@ -692,6 +753,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Sanitização de inputs
 
 ### 8.2 Segurança
+
 - [ ] Autenticação obrigatória
 - [ ] Autorização por permissões
 - [ ] Validação de orgId
@@ -701,6 +763,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Auditoria de acessos
 
 ### 8.3 Validações Frontend
+
 - [ ] Validação em tempo real
 - [ ] Mensagens de erro claras
 - [ ] Validação antes de submit
@@ -712,6 +775,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 9: ACESSIBILIDADE E UX
 
 ### 9.1 Acessibilidade
+
 - [ ] ARIA labels
 - [ ] Navegação por teclado
 - [ ] Foco visível
@@ -721,6 +785,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Tamanho de fonte ajustável
 
 ### 9.2 UX Avançada
+
 - [ ] Loading states elegantes
 - [ ] Skeleton loaders
 - [ ] Transições suaves
@@ -731,6 +796,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Tours guiados (opcional)
 
 ### 9.3 Responsividade
+
 - [ ] Mobile first
 - [ ] Tablet optimization
 - [ ] Desktop optimization
@@ -743,6 +809,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 10: TESTES E QUALIDADE
 
 ### 10.1 Testes Unitários
+
 - [ ] Testes de repositories
 - [ ] Testes de use cases
 - [ ] Testes de componentes
@@ -750,12 +817,14 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Cobertura mínima 80%
 
 ### 10.2 Testes de Integração
+
 - [ ] Testes de rotas API
 - [ ] Testes de fluxos completos
 - [ ] Testes de integrações externas
 - [ ] Testes de eventos
 
 ### 10.3 Testes E2E
+
 - [ ] Criar fornecedor
 - [ ] Editar fornecedor
 - [ ] Deletar fornecedor
@@ -765,6 +834,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Upload de documentos
 
 ### 10.4 Qualidade de Código
+
 - [ ] ESLint sem erros
 - [ ] TypeScript strict mode
 - [ ] Prettier formatado
@@ -777,6 +847,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 11: DOCUMENTAÇÃO
 
 ### 11.1 Documentação Técnica
+
 - [ ] README do módulo
 - [ ] Documentação de APIs
 - [ ] Documentação de componentes
@@ -784,6 +855,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Guias de desenvolvimento
 
 ### 11.2 Documentação de Usuário
+
 - [ ] Guia de uso
 - [ ] Tutoriais
 - [ ] FAQs
@@ -795,6 +867,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## ✅ FASE 12: RECURSOS "INSANOS" (EXTRA)
 
 ### 12.1 Gamificação
+
 - [ ] Badges por ações
 - [ ] Pontos por uso
 - [ ] Rankings
@@ -802,6 +875,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Leaderboard
 
 ### 12.2 Automações
+
 - [ ] Workflows automáticos
 - [ ] Regras de negócio
 - [ ] Ações condicionais
@@ -809,6 +883,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Integrações com Zapier/Make
 
 ### 12.3 Colaboração
+
 - [ ] Comentários em fornecedores
 - [ ] @mentions
 - [ ] Compartilhamento
@@ -816,6 +891,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Histórico de colaboração
 
 ### 12.4 Internacionalização
+
 - [ ] i18n (português, inglês, espanhol)
 - [ ] Formatação de moedas
 - [ ] Formatação de datas
@@ -823,6 +899,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] RTL support (se necessário)
 
 ### 12.5 Exportação Avançada
+
 - [ ] Templates personalizados
 - [ ] Agendamento de relatórios
 - [ ] Envio automático por email
@@ -830,6 +907,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Integração com Dropbox
 
 ### 12.6 Importação
+
 - [ ] Importar de Excel/CSV
 - [ ] Validação na importação
 - [ ] Preview antes de importar
@@ -838,6 +916,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Rollback em caso de erro
 
 ### 12.7 API Pública
+
 - [ ] REST API completa
 - [ ] GraphQL API (opcional)
 - [ ] Documentação Swagger/OpenAPI
@@ -846,6 +925,7 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 - [ ] Webhooks
 
 ### 12.8 Mobile App (Futuro)
+
 - [ ] App React Native
 - [ ] Sincronização offline
 - [ ] Notificações push
@@ -857,18 +937,21 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 ## 📊 RESUMO DE PRIORIDADES
 
 ### 🔴 CRÍTICO (Fazer Primeiro)
+
 1. Páginas de visualização e edição
 2. Integração ViaCEP
 3. Paginação
 4. Auditoria básica
 
 ### 🟡 IMPORTANTE (Próxima Sprint)
+
 1. Versionamento
 2. Upload de documentos
 3. Relacionamentos (fichas de custo)
 4. Dashboard básico
 
 ### 🟢 MELHORIAS (Futuro)
+
 1. Analytics avançados
 2. IA/ML
 3. Tempo real
@@ -889,4 +972,3 @@ Criar o sistema de fornecedores mais completo, avançado e sofisticado possível
 
 **Última atualização**: 2025-01-27
 **Status**: Checklist completo para sistema de fornecedores de nível enterprise
-

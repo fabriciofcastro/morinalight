@@ -29,6 +29,7 @@ API (Pino) → stdout (JSON) → Promtail → Loki → Grafana
 - Loga requisições e respostas automaticamente
 
 **Uso:**
+
 ```typescript
 // O middleware é aplicado automaticamente em todas as rotas
 // Os logs incluem automaticamente:
@@ -52,19 +53,24 @@ Funções utilitárias para logging contextualizado:
 - `logAccess(logger, resource, action, granted, reason, context)`: Log de controle de acesso
 
 **Exemplo de uso:**
+
 ```typescript
-import { getContextualLogger, logError, logBusinessOperation } from "@/core/logging";
+import {
+  getContextualLogger,
+  logError,
+  logBusinessOperation,
+} from "@/core/logging";
 
 // Em uma rota
 export async function someRoute(request: FastifyRequest, reply: FastifyReply) {
   const logger = getContextualLogger(request);
-  
+
   try {
     // Operação de negócio
     logBusinessOperation(logger, "user_management", "user", userId, "created", {
       email: user.email,
     });
-    
+
     // Log normal com contexto
     logger.info({ customField: "value" }, "Operação realizada");
   } catch (error) {
@@ -113,36 +119,43 @@ Todos os logs incluem automaticamente:
 ### Queries LogQL
 
 **Buscar por requestId:**
+
 ```logql
 {service="api"} |= "requestId=abc-123"
 ```
 
 **Buscar por userId:**
+
 ```logql
 {service="api"} | json | userId="user-123"
 ```
 
 **Buscar por orgId:**
+
 ```logql
 {service="api"} | json | orgId="org-456"
 ```
 
 **Buscar erros:**
+
 ```logql
 {service="api"} | json | level="error"
 ```
 
 **Buscar por tipo de log:**
+
 ```logql
 {service="api"} | json | type="business_operation"
 ```
 
 **Buscar requisições lentas (>1s):**
+
 ```logql
 {service="api"} | json | duration > 1000
 ```
 
 **Buscar por método HTTP:**
+
 ```logql
 {service="api"} | json | method="POST"
 ```
@@ -155,6 +168,7 @@ docker-compose -f docker-compose.observability.yml up -d
 ```
 
 Serviços disponíveis:
+
 - **Loki**: http://localhost:3100
 - **Grafana**: http://localhost:3001 (admin/admin)
 - **Prometheus**: http://localhost:9090
@@ -180,6 +194,7 @@ Serviços disponíveis:
 ## Exemplos de Uso
 
 ### Log de criação de usuário
+
 ```typescript
 logBusinessOperation(
   request.log,
@@ -190,25 +205,20 @@ logBusinessOperation(
   {
     email: user.email,
     role: user.role,
-  }
+  },
 );
 ```
 
 ### Log de acesso negado
+
 ```typescript
-logAccess(
-  request.log,
-  "users",
-  "delete",
-  false,
-  "Insufficient permissions",
-  {
-    targetUserId: targetUser.id,
-  }
-);
+logAccess(request.log, "users", "delete", false, "Insufficient permissions", {
+  targetUserId: targetUser.id,
+});
 ```
 
 ### Log de erro com contexto
+
 ```typescript
 try {
   await someOperation();
@@ -241,11 +251,3 @@ try {
 - Logs são assíncronos e não bloqueiam requisições
 - Em produção, considere usar níveis de log apropriados (info ou warn)
 - Logs muito verbosos podem impactar performance do Loki
-
-
-
-
-
-
-
-

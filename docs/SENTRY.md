@@ -25,14 +25,16 @@ Para que o monitoramento funcione corretamente, é necessário configurar as var
 ### Criar Projetos no Sentry
 
 Crie 2 projetos separados no painel do Sentry para melhor organização:
+
 1. `morina-web` (Plataforma: **JavaScript / Next.js**)
 2. `morina-api` (Plataforma: **Node.js**)
 
 ### 🔑 Configuração de DSNs
 
-Adicione as DSNs (Data Source Names) correspondentes nos arquivos `.env` de cada app. Você pode encontrar esses valores nas configurações de cada projeto no painel do Sentry (*Settings > Client Keys (DSN)*).
+Adicione as DSNs (Data Source Names) correspondentes nos arquivos `.env` de cada app. Você pode encontrar esses valores nas configurações de cada projeto no painel do Sentry (_Settings > Client Keys (DSN)_).
 
 #### Web Frontend (`apps/web/.env`)
+
 ```env
 # DSN Público para o Front-end
 NEXT_PUBLIC_SENTRY_DSN=https://xxx@yyy.ingest.sentry.io/111
@@ -43,6 +45,7 @@ SENTRY_AUTH_TOKEN=seu_token_aqui
 ```
 
 #### API Backend (`apps/api/.env`)
+
 ```env
 # DSN Privado para o Back-end
 SENTRY_DSN=https://xxx@yyy.ingest.sentry.io/222
@@ -70,11 +73,12 @@ export function MeuComponente() {
       // Captura manual com contexto extra
       trackError(err, { component: "MeuComponente", action: "save" });
     }
-  }
+  };
 }
 ```
 
 #### User Feedback
+
 Se a aplicação quebrar completamente (Crash), o `GlobalError` ou `AdvancedErrorBoundary` mostrará uma interface amigável com um botão **"Reportar Problema"**. Isso abre um widget do Sentry para o usuário descrever o que aconteceu.
 
 ### Backend (API)
@@ -82,16 +86,20 @@ Se a aplicação quebrar completamente (Crash), o `GlobalError` ou `AdvancedErro
 A captura de erros é automática para rotas HTTP (Fastify) e queries de banco de dados (Prisma).
 
 #### Database Insights (Prisma)
+
 O serviço do Prisma (`prisma.service.ts`) foi estendido para monitorar performance:
+
 - **Queries > 500ms**: Geram um evento de `WARNING` no Sentry ("Slow DB Query").
 - **Queries > 50ms**: Adicionam um `Breadcrumb` ao contexto (não geram alerta, apenas rastro).
 
 #### Middleware
+
 O middleware `sentry-plugin` intercepta erros não tratados e os envia ao Sentry com contexto do usuário (ID, Email, Role) extraído do JWT.
 
 ## 🔐 Privacidade e LGPD
 
 O sistema foi configurado (`sentry-utils.ts`) para limpar dados sensíveis antes de enviar ao Sentry:
+
 - **Headers**: Authorization, Cookie, etc. removidos.
 - **Campos**: password, token, cpf, credit_card, secret ofuscados.
 - **PII**: IPs e User Agents podem ser mascarados nas configurações do projeto no Sentry.
@@ -99,6 +107,7 @@ O sistema foi configurado (`sentry-utils.ts`) para limpar dados sensíveis antes
 ## 📊 CI/CD e Releases
 
 O workflow `.github/workflows/sentry-release.yml` roda automaticamente no push para `main` ou `develop`:
+
 1. Cria uma **Release** no Sentry (ex: `web@0.1.0-sha`).
 2. Faz upload dos **Source Maps** (essencial para ver stack traces legíveis de código minificado).
 3. Associa os **Commits** da release (para saber quem quebrou o quê).

@@ -3,6 +3,7 @@
 ## ✅ O QUE ESTÁ FUNCIONANDO
 
 ### 1. Estrutura Base
+
 - ✅ Schema do banco (`Supplier` model) completo
 - ✅ Repository pattern implementado
 - ✅ API REST completa (CRUD)
@@ -10,6 +11,7 @@
 - ✅ Integração com sidebar
 
 ### 2. Formulário de Cadastro (`/fornecedores/new`)
+
 - ✅ Campos básicos (nome, email, telefone, documento)
 - ✅ Endereço completo (rua, cidade, estado, CEP)
 - ✅ Validações (CPF/CNPJ, email, CEP)
@@ -20,6 +22,7 @@
 - ✅ Preenchimento via URL (integração com fichas-custo)
 
 ### 3. Listagem (`/fornecedores/list`)
+
 - ✅ Visualização em grid e lista
 - ✅ Busca por nome, email, documento, telefone
 - ✅ Filtros por status
@@ -33,6 +36,7 @@
 ## ❌ O QUE ESTÁ FALTANDO (CRÍTICO)
 
 ### 1. Páginas de Visualização e Edição
+
 - ❌ **Página de Visualização Detalhada** (`/fornecedores/[id]/page.tsx`)
   - Ver todos os dados do fornecedor
   - Histórico de alterações
@@ -45,6 +49,7 @@
   - Histórico de alterações visível
 
 ### 2. Funcionalidades de Auditoria
+
 - ❌ **Auditoria de Alterações**
   - Model `AuditoriaSupplier` no schema
   - Log de todas as alterações
@@ -58,6 +63,7 @@
   - Comparar versões
 
 ### 3. Relacionamentos e Integrações
+
 - ❌ **Relacionamento com Fichas de Custo**
   - Listar todas as fichas que usam o fornecedor
   - Estatísticas (quantas fichas, valor total, etc.)
@@ -73,6 +79,7 @@
 ## 🔧 MELHORIAS NECESSÁRIAS
 
 ### 1. Integrações Externas
+
 - ⚠️ **API de Consulta CNPJ** (atualmente apenas simulado)
   - Integrar com ReceitaWS, BrasilAPI, ou similar
   - Preenchimento automático de dados
@@ -84,10 +91,11 @@
   - Validação de CEP
 
 ### 2. Campos Adicionais no Schema
+
 ```prisma
 model Supplier {
   // ... campos existentes ...
-  
+
   // NOVOS CAMPOS SUGERIDOS:
   website          String?  @db.VarChar(255)
   contatoPrincipal String?  @db.VarChar(255) // Nome do contato
@@ -100,7 +108,7 @@ model Supplier {
   avaliacao        Decimal? @db.Decimal(3, 2) // 0.00 a 5.00
   dataUltimaCompra DateTime?
   totalCompras     Decimal? @db.Decimal(15, 2)
-  
+
   // Relacionamentos
   fichasCusto      InsumoFichaCusto[] // Já existe via fornecedorId
   boletos          BoletoFichaCusto[] // Já existe via fornecedorId
@@ -108,6 +116,7 @@ model Supplier {
 ```
 
 ### 3. Funcionalidades Avançadas
+
 - ⚠️ **Upload de Documentos**
   - Contratos
   - Certificados
@@ -130,6 +139,7 @@ model Supplier {
   - Filtros na exportação
 
 ### 4. Melhorias na Listagem
+
 - ⚠️ **Paginação**
   - Atualmente carrega todos os fornecedores
   - Implementar paginação server-side
@@ -144,6 +154,7 @@ model Supplier {
   - Deletar múltiplos (com confirmação)
 
 ### 5. Validações e Segurança
+
 - ⚠️ **Validação de Duplicatas**
   - Verificar CNPJ/CPF duplicado
   - Sugerir merge se encontrar similar
@@ -158,6 +169,7 @@ model Supplier {
 ## 🚀 RECURSOS A EXPANDIR
 
 ### 1. Dashboard de Fornecedores
+
 - 📊 **Estatísticas Gerais**
   - Total de fornecedores
   - Distribuição por status
@@ -170,6 +182,7 @@ model Supplier {
   - Top 10 fornecedores
 
 ### 2. Gestão de Contatos
+
 - 👥 **Múltiplos Contatos por Fornecedor**
   ```prisma
   model SupplierContact {
@@ -183,14 +196,15 @@ model Supplier {
     notes       String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-    
+
     supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-    
+
     @@index([supplierId])
   }
   ```
 
 ### 3. Histórico de Preços
+
 - 💰 **Rastreamento de Preços**
   - Preço por insumo
   - Histórico de variações
@@ -198,12 +212,14 @@ model Supplier {
   - Comparação entre fornecedores
 
 ### 4. Notas e Comentários
+
 - 📝 **Sistema de Notas Internas**
   - Notas por fornecedor
   - Histórico de interações
   - Lembretes e tarefas
 
 ### 5. Integração com Módulos Existentes
+
 - 🔗 **Fichas de Custo**
   - Já parcialmente implementado
   - Melhorar visualização de relacionamento
@@ -218,6 +234,7 @@ model Supplier {
 ## 📋 COMPARAÇÃO COM FICHAS-CUSTO
 
 ### O que Fichas-Custo tem que Fornecedores não tem:
+
 1. ✅ **Versionamento** (`VersaoFichaCusto`)
 2. ✅ **Auditoria Completa** (`AuditoriaFichaCusto`)
 3. ✅ **Documentos Anexados** (`DocumentoFichaCusto`)
@@ -225,6 +242,7 @@ model Supplier {
 5. ✅ **Status com Workflow** (pendente, aprovado, etc.)
 
 ### O que Fornecedores precisa ter (similar):
+
 1. ❌ **Versionamento** - Implementar `VersaoSupplier`
 2. ❌ **Auditoria** - Implementar `AuditoriaSupplier`
 3. ❌ **Documentos** - Implementar `DocumentoSupplier`
@@ -236,18 +254,21 @@ model Supplier {
 ## 🎯 PRIORIDADES DE IMPLEMENTAÇÃO
 
 ### FASE 1 - CRÍTICO (Fazer Agora)
+
 1. ✅ Página de Visualização Detalhada (`/fornecedores/[id]`)
 2. ✅ Página de Edição (`/fornecedores/[id]/edit`)
 3. ✅ Integração com API de CEP (ViaCEP)
 4. ✅ Paginação na listagem
 
 ### FASE 2 - IMPORTANTE (Próxima Sprint)
+
 1. ⚠️ Auditoria de Alterações (`AuditoriaSupplier`)
 2. ⚠️ Versionamento (`VersaoSupplier`)
 3. ⚠️ Upload de Documentos
 4. ⚠️ Relacionamento com Fichas de Custo (visualização)
 
 ### FASE 3 - MELHORIAS (Futuro)
+
 1. 📊 Dashboard de Fornecedores
 2. 👥 Múltiplos Contatos
 3. 💰 Histórico de Preços
@@ -260,23 +281,27 @@ model Supplier {
 ## 📝 CHECKLIST DE IMPLEMENTAÇÃO
 
 ### Páginas Frontend
+
 - [ ] `/fornecedores/[id]/page.tsx` - Visualização detalhada
 - [ ] `/fornecedores/[id]/edit/page.tsx` - Edição
 - [ ] Componente `FornecedorDetailClient`
 - [ ] Componente `FornecedorEditClient`
 
 ### Backend - Schema
+
 - [ ] Model `AuditoriaSupplier`
 - [ ] Model `VersaoSupplier`
 - [ ] Model `DocumentoSupplier`
 - [ ] Model `SupplierContact` (opcional - Fase 3)
 
 ### Backend - Repositories
+
 - [ ] `AuditoriaSupplierRepository`
 - [ ] `VersaoSupplierRepository`
 - [ ] `DocumentoSupplierRepository`
 
 ### Backend - Use Cases
+
 - [ ] `CriarFornecedorUseCase` (com auditoria)
 - [ ] `AtualizarFornecedorUseCase` (com versionamento)
 - [ ] `ListarFornecedoresUseCase` (com paginação)
@@ -284,10 +309,12 @@ model Supplier {
 - [ ] `DeletarFornecedorUseCase` (soft delete)
 
 ### Integrações
+
 - [ ] Integração ViaCEP para busca de endereço
 - [ ] Integração ReceitaWS/BrasilAPI para CNPJ (opcional)
 
 ### Testes
+
 - [ ] Testes unitários dos use cases
 - [ ] Testes de integração das rotas
 - [ ] Testes E2E das páginas
@@ -297,6 +324,7 @@ model Supplier {
 ## 🔍 OBSERVAÇÕES TÉCNICAS
 
 ### Pontos de Atenção
+
 1. **Performance**: Listagem atual carrega todos os fornecedores. Implementar paginação.
 2. **Cache**: Considerar cache de permissões e dados de fornecedores.
 3. **Validações**: Reforçar validações no backend (não confiar apenas no frontend).
@@ -304,6 +332,7 @@ model Supplier {
 5. **Consistência**: Manter padrão visual e arquitetural com outros módulos.
 
 ### Boas Práticas Aplicadas
+
 - ✅ DDD (Domain-Driven Design)
 - ✅ Repository Pattern
 - ✅ Validação com Zod
@@ -327,8 +356,3 @@ model Supplier {
 
 **Última atualização**: 2025-01-27
 **Status**: Sistema funcional, mas precisa de expansão para produção completa
-
-
-
-
-

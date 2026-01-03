@@ -1,0 +1,21 @@
+{
+    "name": "@morina/organizational-structure-domain",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/src/index.js",
+    "types": "dist/src/index.d.ts",
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc --noEmit -p tsconfig.json",
+        "test": "vitest --run"
+    },
+    "devDependencies": {
+        "tslib": "^2.8.1",
+        "typescript": "^5.9.3",
+        "vitest": "^2.1.4"
+    },
+    "dependencies": {
+        "zod": "^3.23.8"
+    }
+}

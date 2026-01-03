@@ -1,0 +1,1291 @@
+apps/web/src/__tests__/utils.tsx(19,17): error TS2353: Object literal may only specify known properties, and 'cacheTime' does not exist in type 'OmitKeyof<QueryObserverOptions<unknown, Error, unknown, unknown, readonly unknown[], never>, "suspense" | "queryKey", "strictly">'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(373,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(384,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(389,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(394,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(406,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(416,14): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(506,14): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(553,14): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(557,26): error TS2322: Type '{ nome: string; arquivo?: File | null | undefined; url?: string | undefined; }' is not assignable to type 'string | number | readonly string[] | undefined'.
+apps/web/src/app/(app)/profile/tabs/profile-tab.tsx(585,35): error TS2345: Argument of type '(prev: { displayName: string; socialName: string; email: string; phone: string; bio: string; fullName: string; cpf: string; rg: string; birthDate: string; gender: string; maritalStatus: string; nationality: string; ... 17 more ...; otherNetworks: string; }) => { ...; }' is not assignable to parameter of type 'SetStateAction<{ displayName: string; socialName: string; email: string; phone: string; bio: string; fullName: string; cpf: string; rg: string; birthDate: string; gender: string; maritalStatus: string; nationality: string; ... 17 more ...; otherNetworks: string; }>'.
+  Type '(prev: { displayName: string; socialName: string; email: string; phone: string; bio: string; fullName: string; cpf: string; rg: string; birthDate: string; gender: string; maritalStatus: string; nationality: string; ... 17 more ...; otherNetworks: string; }) => { ...; }' is not assignable to type '(prevState: { displayName: string; socialName: string; email: string; phone: string; bio: string; fullName: string; cpf: string; rg: string; birthDate: string; gender: string; maritalStatus: string; nationality: string; ... 17 more ...; otherNetworks: string; }) => { ...; }'.
+    Call signature return types '{ certifications: (string | { nome: string; arquivo?: File | null | undefined; url?: string | undefined; })[]; displayName: string; socialName: string; email: string; phone: string; bio: string; ... 23 more ...; otherNetworks: string; }' and '{ displayName: string; socialName: string; email: string; phone: string; bio: string; fullName: string; cpf: string; rg: string; birthDate: string; gender: string; maritalStatus: string; nationality: string; ... 17 more ...; otherNetworks: string; }' are incompatible.
+      The types of 'certifications' are incompatible between these types.
+        Type '(string | { nome: string; arquivo?: File | null | undefined; url?: string | undefined; })[]' is not assignable to type '{ nome: string; arquivo?: File | null | undefined; url?: string | undefined; }[]'.
+          Type 'string | { nome: string; arquivo?: File | null | undefined; url?: string | undefined; }' is not assignable to type '{ nome: string; arquivo?: File | null | undefined; url?: string | undefined; }'.
+            Type 'string' is not assignable to type '{ nome: string; arquivo?: File | null | undefined; url?: string | undefined; }'.
+apps/web/src/app/(app)/profile/tabs/security-tab.tsx(734,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/representantes/representantes-client.tsx(89,7): error TS2353: Object literal may only specify known properties, and 'sortable' does not exist in type 'Column<Representante>'.
+apps/web/src/app/(app)/representantes/representantes-client.tsx(123,7): error TS2353: Object literal may only specify known properties, and 'sortable' does not exist in type 'Column<Representante>'.
+apps/web/src/app/(app)/representantes/representantes-client.tsx(175,7): error TS2353: Object literal may only specify known properties, and 'sortable' does not exist in type 'Column<Representante>'.
+apps/web/src/app/(app)/representantes/representantes-client.tsx(328,11): error TS2322: Type '{ data: Representante[]; columns: Column<Representante>[]; title: string; description: string; loading: boolean; searchPlaceholder: string; onAdd: () => void; onRowClick: (rep: Representante) => void; }' is not assignable to type 'IntrinsicAttributes & DataGridMasterpieceProps<Representante>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & DataGridMasterpieceProps<Representante>'.
+apps/web/src/app/(app)/settings/notifications/history/notification-history-client.tsx(191,9): error TS2304: Cannot find name 'mimeType'.
+apps/web/src/app/(app)/settings/notifications/history/notification-history-client.tsx(196,9): error TS2304: Cannot find name 'mimeType'.
+apps/web/src/app/(app)/settings/notifications/preferences/notification-preferences-client.tsx(160,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; className: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(287,42): error TS2345: Argument of type '() => DepartmentNode[] | ({ subdepartments: SubdepartmentNode[] | undefined; sectors: ({ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; } | null)[] | undefined; id: string; name: string; code: string; status: "ativo" | "inativo" | "...' is not assignable to parameter of type '() => DepartmentNode[]'.
+  Type 'DepartmentNode[] | ({ subdepartments: SubdepartmentNode[] | undefined; sectors: ({ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; } | null)[] | undefined; id: string; name: string; code: string; status: "ativo" | ... 1 more ... | "a...' is not assignable to type 'DepartmentNode[]'.
+    Type '({ subdepartments: SubdepartmentNode[] | undefined; sectors: ({ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; } | null)[] | undefined; id: string; name: string; code: string; status: "ativo" | ... 1 more ... | "arquivado"; } | null...' is not assignable to type 'DepartmentNode[]'.
+      Type '{ subdepartments: SubdepartmentNode[] | undefined; sectors: ({ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; } | null)[] | undefined; id: string; name: string; code: string; status: "ativo" | ... 1 more ... | "arquivado"; } | null' is not assignable to type 'DepartmentNode'.
+        Type 'null' is not assignable to type 'DepartmentNode'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(405,20): error TS18048: 'd.sectors' is possibly 'undefined'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(411,20): error TS18048: 'd.sectors' is possibly 'undefined'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(457,33): error TS2677: A type predicate's type must be assignable to its parameter's type.
+  Type 'SectorNode' is not assignable to type '{ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; }'.
+    Types of property 'positions' are incompatible.
+      Type 'PositionNode[] | undefined' is not assignable to type 'PositionNode[]'.
+        Type 'undefined' is not assignable to type 'PositionNode[]'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(463,31): error TS2304: Cannot find name 'SubdepartmentNode'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(473,29): error TS2677: A type predicate's type must be assignable to its parameter's type.
+  Type 'SectorNode' is not assignable to type '{ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; }'.
+    Types of property 'positions' are incompatible.
+      Type 'PositionNode[] | undefined' is not assignable to type 'PositionNode[]'.
+        Type 'undefined' is not assignable to type 'PositionNode[]'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(483,25): error TS2677: A type predicate's type must be assignable to its parameter's type.
+  Type 'DepartmentNode' is not assignable to type '{ subdepartments: SubdepartmentNode[] | undefined; sectors: ({ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; } | null)[] | undefined; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; }'.
+    Property 'subdepartments' is optional in type 'DepartmentNode' but required in type '{ subdepartments: SubdepartmentNode[] | undefined; sectors: ({ positions: PositionNode[]; id: string; name: string; code: string; status: "ativo" | "inativo" | "arquivado"; departmentId: string; } | null)[] | undefined; id: string; name: string; code: string; status: "ativo" | ... 1 more ... | "arquivado"; }'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(509,35): error TS2339: Property 'json' does not exist on type 'Response | { ok: boolean; }'.
+  Property 'json' does not exist on type '{ ok: boolean; }'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(1622,51): error TS2345: Argument of type '{ type: "department" | "subdepartment" | "sector" | "position"; id: string; data: SectorNode | SubdepartmentNode | DepartmentNode | PositionNode; }' is not assignable to parameter of type '{ type: "department" | "sector" | "position"; id: string; data: SectorNode | DepartmentNode | PositionNode; }'.
+  Types of property 'type' are incompatible.
+    Type '"department" | "subdepartment" | "sector" | "position"' is not assignable to type '"department" | "sector" | "position"'.
+      Type '"subdepartment"' is not assignable to type '"department" | "sector" | "position"'. Did you mean '"department"'?
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(2088,19): error TS2322: Type '{ id: string; departmentId: string; orgId: string; name: string; code: string; description: string | null; type: "CORE"; filialId: null; parentId: string | null; active: boolean; createdAt: string; updatedAt: string; }[]' is not assignable to type 'Department[]'.
+  Type '{ id: string; departmentId: string; orgId: string; name: string; code: string; description: string | null; type: "CORE"; filialId: null; parentId: string | null; active: boolean; createdAt: string; updatedAt: string; }' is not assignable to type 'Department'.
+    Types of property 'description' are incompatible.
+      Type 'string | null' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(2102,19): error TS2322: Type '{ id: string; subdepartmentId: string; orgId: string; departmentId: string; name: string; code: string; description: string | null; status: "ativo" | "inativo" | "arquivado"; createdAt: string; updatedAt: string; }[]' is not assignable to type 'Subdepartment[]'.
+  Property 'ordem' is missing in type '{ id: string; subdepartmentId: string; orgId: string; departmentId: string; name: string; code: string; description: string | null; status: "ativo" | "inativo" | "arquivado"; createdAt: string; updatedAt: string; }' but required in type 'Subdepartment'.
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(2114,19): error TS2322: Type '{ id: string; orgId: string; departmentId: string; subdepartmentId: string | null | undefined; name: string; code: string; description: string | null; status: "ativo" | "inativo" | "arquivado"; createdAt: string; updatedAt: string; }[]' is not assignable to type 'Sector[]'.
+  Type '{ id: string; orgId: string; departmentId: string; subdepartmentId: string | null | undefined; name: string; code: string; description: string | null; status: "ativo" | "inativo" | "arquivado"; createdAt: string; updatedAt: string; }' is missing the following properties from type 'Sector': type, active
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(2126,19): error TS2322: Type '{ id: string; orgId: string; sectorId: string; name: string; code: string; description: string | null; responsabilidades: string | null; requisitos: string | null; salarioMin: number | null; salarioMax: number | null; status: "ativo" | ... 1 more ... | "arquivado"; createdAt: string; updatedAt: string; }[]' is not assignable to type 'Position[]'.
+  Type '{ id: string; orgId: string; sectorId: string; name: string; code: string; description: string | null; responsabilidades: string | null; requisitos: string | null; salarioMin: number | null; salarioMax: number | null; status: "ativo" | ... 1 more ... | "arquivado"; createdAt: string; updatedAt: string; }' is missing the following properties from type 'Position': seniority, active
+apps/web/src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(2448,14): error TS2304: Cannot find name 'OrganogramView'.
+apps/web/src/app/(app)/settings/permissions/AuditLogPanel.tsx(266,42): error TS2345: Argument of type '(prev: AuditLogFilters) => { entityType: string | undefined; search?: string | undefined; entityId?: string | undefined; userId?: string | undefined; action?: "granted" | "denied" | "removed" | undefined; dataInicio?: string | undefined; dataFim?: string | undefined; }' is not assignable to parameter of type 'SetStateAction<AuditLogFilters>'.
+  Type '(prev: AuditLogFilters) => { entityType: string | undefined; search?: string | undefined; entityId?: string | undefined; userId?: string | undefined; action?: "granted" | "denied" | "removed" | undefined; dataInicio?: string | undefined; dataFim?: string | undefined; }' is not assignable to type '(prevState: AuditLogFilters) => AuditLogFilters'.
+    Call signature return types '{ entityType: string | undefined; search?: string | undefined; entityId?: string | undefined; userId?: string | undefined; action?: "granted" | "denied" | "removed" | undefined; dataInicio?: string | undefined; dataFim?: string | undefined; }' and 'AuditLogFilters' are incompatible.
+      The types of 'entityType' are incompatible between these types.
+        Type 'string | undefined' is not assignable to type '"user" | "department" | "sector" | "position" | undefined'.
+          Type 'string' is not assignable to type '"user" | "department" | "sector" | "position" | undefined'.
+apps/web/src/app/(app)/settings/permissions/AuditLogPanel.tsx(289,42): error TS2345: Argument of type '(prev: AuditLogFilters) => { action: string | undefined; search?: string | undefined; entityType?: "user" | "department" | "sector" | "position" | undefined; entityId?: string | undefined; userId?: string | undefined; dataInicio?: string | undefined; dataFim?: string | undefined; }' is not assignable to parameter of type 'SetStateAction<AuditLogFilters>'.
+  Type '(prev: AuditLogFilters) => { action: string | undefined; search?: string | undefined; entityType?: "user" | "department" | "sector" | "position" | undefined; entityId?: string | undefined; userId?: string | undefined; dataInicio?: string | undefined; dataFim?: string | undefined; }' is not assignable to type '(prevState: AuditLogFilters) => AuditLogFilters'.
+    Call signature return types '{ action: string | undefined; search?: string | undefined; entityType?: "user" | "department" | "sector" | "position" | undefined; entityId?: string | undefined; userId?: string | undefined; dataInicio?: string | undefined; dataFim?: string | undefined; }' and 'AuditLogFilters' are incompatible.
+      The types of 'action' are incompatible between these types.
+        Type 'string | undefined' is not assignable to type '"granted" | "denied" | "removed" | undefined'.
+          Type 'string' is not assignable to type '"granted" | "denied" | "removed" | undefined'.
+apps/web/src/app/(app)/settings/permissions/AuditLogPanel.tsx(452,61): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/app/(app)/settings/profiles/profiles-client.tsx(480,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/team/page.tsx(24,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/app/(app)/settings/team/page.tsx(40,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/app/(app)/settings/team/page.tsx(56,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/(app)/settings/team/page.tsx(57,38): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/(app)/settings/team/page.tsx(67,21): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/(app)/settings/team/page.tsx(68,22): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/(app)/settings/team/team-client.tsx(126,47): error TS2339: Property 'updatedAt' does not exist on type 'OrganizationMember'.
+apps/web/src/app/(app)/settings/users/user-activity-tab.tsx(56,9): error TS2451: Cannot redeclare block-scoped variable 'filteredActivities'.
+apps/web/src/app/(app)/settings/users/user-activity-tab.tsx(181,9): error TS2451: Cannot redeclare block-scoped variable 'filteredActivities'.
+apps/web/src/app/(app)/settings/users/user-details-panel.tsx(83,12): error TS2304: Cannot find name 'UserOrganizationTab'.
+apps/web/src/app/(app)/settings/users/user-details-panel.tsx(87,12): error TS2304: Cannot find name 'UserPermissionsTab'.
+apps/web/src/app/(app)/settings/users/user-details-panel.tsx(90,39): error TS2304: Cannot find name 'UserActivityTab'.
+apps/web/src/app/(app)/settings/users/user-details-panel.tsx(92,36): error TS2304: Cannot find name 'UserAuditTab'.
+apps/web/src/app/(app)/settings/users/user-permissions-tab.tsx(496,38): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+apps/web/src/app/(app)/settings/users/user-permissions-tab.tsx(572,33): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(299,14): error TS7053: Element implicitly has an 'any' type because expression of type '"Content-Type"' can't be used to index type 'HeadersInit'.
+  Property 'Content-Type' does not exist on type 'HeadersInit'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(631,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(835,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(911,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(950,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(989,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1028,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1105,20): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1404,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1466,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1504,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1579,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1759,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1786,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1813,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1854,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/user-profile-tab.tsx(1960,18): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/app/(app)/settings/users/users-client.tsx(818,34): error TS7053: Element implicitly has an 'any' type because expression of type '"Content-Type"' can't be used to index type 'HeadersInit'.
+  Property 'Content-Type' does not exist on type 'HeadersInit'.
+apps/web/src/app/(auth)/select-organization/page.tsx(39,13): error TS2339: Property 'setCurrentOrganization' does not exist on type '{ login: (data: LoginRequest) => Promise<LoginResponse>; register: (data: RegisterRequest) => Promise<LoginResponse>; ... 7 more ...; checkAuth: () => Promise<...>; }'.
+apps/web/src/app/api/_lib/auth-headers.ts(17,13): error TS2339: Property 'Authorization' does not exist on type 'HeadersInit'.
+  Property 'Authorization' does not exist on type 'Headers'.
+apps/web/src/app/api/_lib/auth-headers.ts(21,5): error TS7053: Element implicitly has an 'any' type because expression of type '"x-org-id"' can't be used to index type 'HeadersInit'.
+  Property 'x-org-id' does not exist on type 'HeadersInit'.
+apps/web/src/app/api/audit/access-denied/route.ts(27,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/app/api/branches/[branchId]/members/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/branches/[branchId]/members/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/branches/[branchId]/members/route.ts(57,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/branches/[branchId]/members/route.ts(90,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/comissoes/[id]/assinar/route.ts(10,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/comissoes/[id]/pagar/route.ts(12,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/comissoes/route.ts(15,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/company-settings/route.ts(50,47): error TS2345: Argument of type '{ logoUrl: string | null; primaryColor: string | null; secondaryColor: string | null; themeMode: string | null; videoLink: string | null; }' is not assignable to parameter of type 'Partial<{ logoUrl?: string | undefined; primaryColor?: string | undefined; secondaryColor?: string | undefined; themeMode?: "auto" | "light" | "dark" | undefined; videoLink?: string | undefined; }>'.
+  Types of property 'logoUrl' are incompatible.
+    Type 'string | null' is not assignable to type 'string | undefined'.
+      Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/app/api/company-settings/route.ts(105,28): error TS2345: Argument of type '{ logoUrl?: string | undefined; primaryColor?: string | undefined; secondaryColor?: string | undefined; themeMode?: "auto" | "light" | "dark" | undefined; videoLink?: string | undefined; }' is not assignable to parameter of type '{ logoUrl: string | null; primaryColor: string | null; secondaryColor: string | null; themeMode: string | null; videoLink: string | null; }'.
+  Types of property 'logoUrl' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string | null'.
+      Type 'undefined' is not assignable to type 'string | null'.
+apps/web/src/app/api/company-settings/route.ts(172,28): error TS2345: Argument of type '{ logoUrl?: string | undefined; primaryColor?: string | undefined; secondaryColor?: string | undefined; themeMode?: "auto" | "light" | "dark" | undefined; videoLink?: string | undefined; }' is not assignable to parameter of type '{ logoUrl: string | null; primaryColor: string | null; secondaryColor: string | null; themeMode: string | null; videoLink: string | null; }'.
+  Types of property 'logoUrl' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string | null'.
+      Type 'undefined' is not assignable to type 'string | null'.
+apps/web/src/app/api/company-settings/route.ts(184,46): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(187,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(191,40): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(194,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(198,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(199,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(227,51): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(230,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(234,45): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(237,21): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/company-settings/route.ts(241,19): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/app/api/departments/[departmentId]/members/[userId]/route.ts(15,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/members/[userId]/route.ts(41,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/members/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/members/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/members/route.ts(57,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/members/route.ts(90,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/permissions/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/permissions/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/departments/[departmentId]/permissions/route.ts(62,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/lgpd/delete/route.ts(18,66): error TS2339: Property 'canDeleteData' does not exist on type 'DataDeletionService'.
+apps/web/src/app/api/lgpd/delete/route.ts(31,59): error TS2339: Property 'requestDeletion' does not exist on type 'DataDeletionService'.
+apps/web/src/app/api/organizational-units/[unitId]/members/[userId]/route.ts(15,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/organizational-units/[unitId]/members/[userId]/route.ts(41,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/organizational-units/[unitId]/members/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/organizational-units/[unitId]/members/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/organizational-units/[unitId]/route.ts(12,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/organizational-units/[unitId]/route.ts(32,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/organizations/[orgId]/invites/[inviteId]/route.ts(32,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'undefined'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'undefined'.
+apps/web/src/app/api/organizations/[orgId]/invites/route.ts(50,5): error TS2322: Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+  Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/app/api/organizations/[orgId]/invites/route.ts(74,5): error TS2322: Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+  Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/app/api/organizations/[orgId]/members/[userId]/route.ts(64,5): error TS2322: Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+  Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/app/api/organizations/[orgId]/members/[userId]/route.ts(81,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'undefined'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; catch<TResult = never>(onrejected?: ((reason: any) => TResult | Promis...' is not assignable to type 'undefined'.
+apps/web/src/app/api/organizations/[orgId]/members/route.ts(50,5): error TS2322: Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+  Type '{ then<TResult1 = HeadersInit, TResult2 = never>(onfulfilled?: ((value: HeadersInit) => TResult1 | PromiseLike<TResult1>) | null | undefined, onrejected?: ((reason: any) => TResult2 | PromiseLike<...>) | ... 1 more ... | undefined): Promise<...>; ... 4 more ...; "x-user-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/app/api/permissions/templates/[templateId]/apply/route.ts(17,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/members/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/members/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/members/route.ts(57,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/members/route.ts(90,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/permissions/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/permissions/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/positions/[positionId]/permissions/route.ts(62,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/pre-fichas-tecnicas/upload-foto/route.ts(3,34): error TS2307: Cannot find module '../../../_lib/auth-headers' or its corresponding type declarations.
+apps/web/src/app/api/profile/avatar/route.ts(39,12): error TS7053: Element implicitly has an 'any' type because expression of type '"Content-Type"' can't be used to index type 'HeadersInit'.
+  Property 'Content-Type' does not exist on type 'HeadersInit'.
+apps/web/src/app/api/roles/[roleId]/permissions/route.ts(9,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/roles/[roleId]/permissions/route.ts(30,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/roles/[roleId]/permissions/route.ts(62,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/security/alerts/[id]/acknowledge/route.ts(34,33): error TS2304: Cannot find name 'user'.
+apps/web/src/app/api/users/[userId]/documents/upload/route.ts(47,12): error TS7053: Element implicitly has an 'any' type because expression of type '"Content-Type"' can't be used to index type 'HeadersInit'.
+  Property 'Content-Type' does not exist on type 'HeadersInit'.
+apps/web/src/app/api/users/[userId]/permissions/check/route.ts(18,7): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/api/users/[userId]/permissions/route.ts(17,5): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type 'Promise<HeadersInit>' is not assignable to type 'HeadersInit | undefined'.
+      Type 'Promise<HeadersInit>' is not assignable to type 'Record<string, string>'.
+        Index signature for type 'string' is missing in type 'Promise<HeadersInit>'.
+apps/web/src/app/auth/reset-password/page.tsx(11,16): error TS2724: '"lucide-react"' has no exported member named 'key'. Did you mean 'Key'?
+apps/web/src/app/auth/reset-password/page.tsx(122,21): error TS2322: Type 'string | undefined' is not assignable to type 'boolean | undefined'.
+  Type 'string' is not assignable to type 'boolean | undefined'.
+apps/web/src/app/certifications/pci-dss/page.tsx(217,40): error TS2304: Cannot find name 'Clock'.
+apps/web/src/app/layout.tsx(48,50): error TS2322: Type '{ children: Element[]; module: string; autoResetAfter: number; }' is not assignable to type 'IntrinsicAttributes & IntrinsicClassAttributes<AdvancedErrorBoundary> & Readonly<AdvancedErrorBoundaryProps>'.
+  Property 'autoResetAfter' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<AdvancedErrorBoundary> & Readonly<AdvancedErrorBoundaryProps>'.
+apps/web/src/app/lazy-routes.example.tsx(14,18): error TS2307: Cannot find module '@/components/admin/dashboard' or its corresponding type declarations.
+apps/web/src/app/lazy-routes.example.tsx(29,18): error TS2307: Cannot find module '@/components/reports/reports-page' or its corresponding type declarations.
+apps/web/src/app/lazy-routes.example.tsx(44,18): error TS2307: Cannot find module '@/components/admin/users/user-management' or its corresponding type declarations.
+apps/web/src/app/lazy-routes.example.tsx(59,18): error TS2307: Cannot find module '@/components/products/products-page' or its corresponding type declarations.
+apps/web/src/app/lazy-routes.example.tsx(74,18): error TS2307: Cannot find module '@/components/settings/settings-page' or its corresponding type declarations.
+apps/web/src/app/page.spec.tsx(7,13): error TS2786: 'Home' cannot be used as a JSX component.
+  Its type '() => void' is not a valid JSX element type.
+    Type '() => void' is not assignable to type '(props: any) => ReactNode | Promise<ReactNode>'.
+      Type 'void' is not assignable to type 'ReactNode | Promise<ReactNode>'.
+apps/web/src/components/admin/access/approvals/approval-form.tsx(162,77): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/access/approvals/approval-form.tsx(163,33): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/access/approvals/approval-form.tsx(169,77): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/access/approvals/approval-form.tsx(170,33): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/access/permissions/permission-form.tsx(149,89): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/access/permissions/permission-form.tsx(150,45): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/access/roles/role-form.tsx(133,81): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/access/roles/role-form.tsx(134,37): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/branches/branch-form-client.tsx(193,5): error TS2304: Cannot find name 'loadBranch'.
+apps/web/src/components/admin/branches/branch-form-client.tsx(394,86): error TS2345: Argument of type 'DuplicateOptions' is not assignable to parameter of type '{ name: string; code: string; copyDocuments?: boolean | undefined; copyBusinessHours?: boolean | undefined; maintainHierarchy?: boolean | undefined; }'.
+  Type 'DuplicateOptions' is missing the following properties from type '{ name: string; code: string; copyDocuments?: boolean | undefined; copyBusinessHours?: boolean | undefined; maintainHierarchy?: boolean | undefined; }': name, code
+apps/web/src/components/admin/branches/branch-form.tsx(22,42): error TS2305: Module '"@/lib/api/organizations"' has no exported member 'CreateOrganizationDto'.
+apps/web/src/components/admin/branches/branch-form.tsx(22,65): error TS2305: Module '"@/lib/api/organizations"' has no exported member 'UpdateOrganizationDto'.
+apps/web/src/components/admin/branches/branch-form.tsx(76,49): error TS2339: Property 'findOne' does not exist on type 'OrganizationsApi'.
+apps/web/src/components/admin/branches/branch-form.tsx(205,40): error TS2339: Property 'create' does not exist on type 'OrganizationsApi'.
+apps/web/src/components/admin/branches/branch-form.tsx(208,40): error TS2339: Property 'update' does not exist on type 'OrganizationsApi'.
+apps/web/src/components/admin/branches/branch-hierarchy-tree.tsx(74,38): error TS18048: 'branch.children' is possibly 'undefined'.
+apps/web/src/components/admin/branches/branch-hierarchy-tree.tsx(74,68): error TS18048: 'branch.children' is possibly 'undefined'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(55,22): error TS2551: Property 'isActive' does not exist on type 'Organization'. Did you mean 'active'?
+apps/web/src/components/admin/branches/branches-list-client.tsx(63,28): error TS2551: Property 'isActive' does not exist on type 'Organization'. Did you mean 'active'?
+apps/web/src/components/admin/branches/branches-list-client.tsx(67,30): error TS2551: Property 'isActive' does not exist on type 'Organization'. Did you mean 'active'?
+apps/web/src/components/admin/branches/branches-list-client.tsx(74,33): error TS2339: Property 'code' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(78,32): error TS2551: Property 'isActive' does not exist on type 'Organization'. Did you mean 'active'?
+apps/web/src/components/admin/branches/branches-list-client.tsx(82,33): error TS2551: Property 'isActive' does not exist on type 'Organization'. Did you mean 'active'?
+apps/web/src/components/admin/branches/branches-list-client.tsx(98,25): error TS2339: Property 'city' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(101,35): error TS2339: Property 'city' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(101,56): error TS2339: Property 'state' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(166,47): error TS2339: Property 'findAll' does not exist on type 'OrganizationsApi'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(193,30): error TS2339: Property 'remove' does not exist on type 'OrganizationsApi'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(216,11): error TS2339: Property 'code' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(291,44): error TS2551: Property 'isActive' does not exist on type 'Organization'. Did you mean 'active'?
+apps/web/src/components/admin/branches/branches-list-client.tsx(333,30): error TS2339: Property 'id' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(335,70): error TS2339: Property 'id' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/branches-list-client.tsx(336,54): error TS2339: Property 'id' does not exist on type 'Organization'.
+apps/web/src/components/admin/branches/capacity-editor.tsx(159,22): error TS2304: Cannot find name 'Futuristic'.
+apps/web/src/components/admin/branches/capacity-editor.tsx(163,36): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/web/src/components/admin/branches/costs-editor.tsx(153,37): error TS2322: Type '(value: number) => string' is not assignable to type 'Formatter<number, NameType>'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+apps/web/src/components/admin/branches/costs-editor.tsx(174,37): error TS2322: Type '(value: number) => string' is not assignable to type 'Formatter<number, NameType>'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+apps/web/src/components/admin/branches/documents-tab.tsx(7,36): error TS2307: Cannot find module '@/lib/notification-center' or its corresponding type declarations.
+apps/web/src/components/admin/clients/client-form.tsx(97,58): error TS2345: Argument of type 'CreateClientInput' is not assignable to parameter of type 'UpdateClientInput'.
+  Property 'id' is missing in type 'CreateClientInput' but required in type 'UpdateClientInput'.
+apps/web/src/components/admin/clients/client-form.tsx(246,33): error TS2322: Type '{ label: string; value: "ACTIVE" | "INACTIVE" | "LEAD" | "BLOCKED"; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/clients/client-form.tsx(262,37): error TS2322: Type '{ multiline: true; rows: number; label: string; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+  Property 'multiline' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'. Did you mean 'multiple'?
+apps/web/src/components/admin/clients/clients-list-client.tsx(370,65): error TS2322: Type 'Dispatch<SetStateAction<"list" | "grid">>' is not assignable to type '(mode: ViewMode) => void'.
+  Types of parameters 'value' and 'mode' are incompatible.
+    Type 'ViewMode' is not assignable to type 'SetStateAction<"list" | "grid">'.
+      Type '"table"' is not assignable to type 'SetStateAction<"list" | "grid">'.
+apps/web/src/components/admin/company/AdvancedLogoUpload.tsx(393,9): error TS2322: Type '{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>>; onConfirm: () => void; title: string; description: string; confirmLabel: string; variant: "warning"; }' is not assignable to type 'IntrinsicAttributes & ConfirmDialogProps'.
+  Property 'confirmLabel' does not exist on type 'IntrinsicAttributes & ConfirmDialogProps'.
+apps/web/src/components/admin/company/DigitalCertificateUpload.tsx(424,9): error TS2322: Type '{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>>; onConfirm: () => void; title: string; description: string; confirmLabel: string; variant: "danger"; }' is not assignable to type 'IntrinsicAttributes & ConfirmDialogProps'.
+  Property 'confirmLabel' does not exist on type 'IntrinsicAttributes & ConfirmDialogProps'.
+apps/web/src/components/admin/company/ThemeExportImport.tsx(203,9): error TS2322: Type '{ open: boolean; onOpenChange: (open: boolean) => void; onConfirm: () => void; title: string; description: string; confirmLabel: string; variant: "warning"; }' is not assignable to type 'IntrinsicAttributes & ConfirmDialogProps'.
+  Property 'confirmLabel' does not exist on type 'IntrinsicAttributes & ConfirmDialogProps'.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(144,26): error TS2304: Cannot find name 'FuturisticSelect'.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(147,40): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(163,27): error TS2304: Cannot find name 'FuturisticSelect'.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(171,26): error TS2304: Cannot find name 'FuturisticSelect'.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(174,40): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(190,27): error TS2304: Cannot find name 'FuturisticSelect'.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(192,26): error TS2304: Cannot find name 'FuturisticSelect'.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(195,40): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/web/src/components/admin/company/tabs/branding-tab.tsx(211,27): error TS2304: Cannot find name 'FuturisticSelect'.
+apps/web/src/components/admin/company/tabs/certificate-tab.tsx(37,34): error TS2304: Cannot find name 'AlertTriangle'.
+apps/web/src/components/admin/company/tabs/fiscal-tab.tsx(89,25): error TS2322: Type '{ label: string; placeholder: string; value: any; onChange: (e: ChangeEvent<HTMLInputElement>) => void; helperText: string | undefined; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+  Property 'helperText' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+apps/web/src/components/admin/company/tabs/fiscal-tab.tsx(104,25): error TS2322: Type '{ label: string; placeholder: string; value: any; onChange: (e: ChangeEvent<HTMLInputElement>) => void; helperText: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+  Property 'helperText' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+apps/web/src/components/admin/company/tabs/history-tab.tsx(172,17): error TS2322: Type '{ open: boolean; onOpenChange: (open: boolean) => false | void; onConfirm: () => Promise<void>; title: string; description: string; }' is not assignable to type 'IntrinsicAttributes & SensitiveActionConfirmDialogProps'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & SensitiveActionConfirmDialogProps'.
+apps/web/src/components/admin/company/tabs/integrations-tab.tsx(112,29): error TS18046: 'result' is of type 'unknown'.
+apps/web/src/components/admin/departments/department-detail-client.tsx(32,74): error TS2554: Expected 1 arguments, but got 2.
+apps/web/src/components/admin/departments/department-detail-client.tsx(52,25): error TS2339: Property 'manager' does not exist on type 'Department | { id: string; name: string; code: string; branchId: string; costCenter: string; managerId: string; manager: { name: string; }; active: boolean; }'.
+  Property 'manager' does not exist on type 'Department'.
+apps/web/src/components/admin/notifications/notification-rule-form.tsx(147,77): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/notifications/notification-rule-form.tsx(148,33): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/notifications/notification-rule-form.tsx(157,84): error TS2352: Conversion of type 'ChangeEvent<HTMLSelectElement>' to type 'RuleScope' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+apps/web/src/components/admin/notifications/notification-rule-form.tsx(158,33): error TS2322: Type '{ label: string; value: RuleScope; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/positions/position-form-client.tsx(122,24): error TS18048: 'form.description' is possibly 'undefined'.
+apps/web/src/components/admin/positions/position-form-client.tsx(123,30): error TS18048: 'form.responsabilidades' is possibly 'undefined'.
+apps/web/src/components/admin/positions/position-form-client.tsx(124,23): error TS18048: 'form.requisitos' is possibly 'undefined'.
+apps/web/src/components/admin/positions/position-form.tsx(146,77): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/positions/position-form.tsx(147,33): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/products/product-form.tsx(65,48): error TS2339: Property 'getById' does not exist on type '{ list: (params?: ListProductsQuery | undefined) => Promise<Product[]>; updateStock: (id: string, quantity: number, type: "IN" | "OUT", reason?: string | undefined) => Promise<...>; ... 11 more ...; deleteMany(ids: string[], config?: AxiosRequestConfig<...> | undefined): Promise<...>; }'.
+apps/web/src/components/admin/products/product-form.tsx(97,42): error TS2559: Type 'string' has no properties in common with type 'Partial<Product>'.
+apps/web/src/components/admin/products/product-form.tsx(100,49): error TS2559: Type 'string' has no properties in common with type 'Partial<Product>'.
+apps/web/src/components/admin/products/product-form.tsx(190,33): error TS2322: Type '{ multiline: true; rows: number; label: string; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+  Property 'multiline' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'. Did you mean 'multiple'?
+apps/web/src/components/admin/products/product-form.tsx(271,33): error TS2322: Type '{ label: string; value: "ACTIVE" | "INACTIVE" | "ARCHIVED"; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/products/products-list-client.tsx(230,55): error TS2554: Expected 0-1 arguments, but got 2.
+apps/web/src/components/admin/products/products-list-client.tsx(231,29): error TS2339: Property 'items' does not exist on type 'Product[]'.
+apps/web/src/components/admin/products/products-list-client.tsx(257,45): error TS2559: Type 'string' has no properties in common with type 'AxiosRequestConfig<any>'.
+apps/web/src/components/admin/products/products-list-client.tsx(381,65): error TS2322: Type 'Dispatch<SetStateAction<"list" | "grid">>' is not assignable to type '(mode: ViewMode) => void'.
+  Types of parameters 'value' and 'mode' are incompatible.
+    Type 'ViewMode' is not assignable to type 'SetStateAction<"list" | "grid">'.
+      Type '"table"' is not assignable to type 'SetStateAction<"list" | "grid">'.
+apps/web/src/components/admin/roles/role-form-client.tsx(104,24): error TS18048: 'form.description' is possibly 'undefined'.
+apps/web/src/components/admin/sectors/sector-form-client.tsx(126,24): error TS18048: 'form.description' is possibly 'undefined'.
+apps/web/src/components/admin/sectors/sector-form.tsx(147,77): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/sectors/sector-form.tsx(148,33): error TS2322: Type '{ value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/security/acl-list.tsx(15,5): error TS2305: Module '"@/components/ui/futuristic"' has no exported member 'Badge'.
+apps/web/src/components/admin/security/acl-list.tsx(35,25): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(19,5): error TS2305: Module '"@/components/ui/futuristic"' has no exported member 'GlassTabs'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(20,5): error TS2305: Module '"@/components/ui/futuristic"' has no exported member 'StandardPageLayout'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(47,13): error TS2353: Object literal may only specify known properties, and 'orgId' does not exist in type 'SecurityPolicy'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(62,13): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'TimeWindow'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(109,70): error TS2339: Property 'id' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(120,83): error TS2339: Property 'id' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(125,102): error TS2339: Property 'active' does not exist on type 'SecurityPolicy'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(126,80): error TS2339: Property 'id' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(126,113): error TS2339: Property 'active' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(135,25): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(188,77): error TS7006: Parameter 'id' implicitly has an 'any' type.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(247,18): error TS2304: Cannot find name 'Badge'.
+apps/web/src/components/admin/security/advanced-security-manager.tsx(247,100): error TS2304: Cannot find name 'Badge'.
+apps/web/src/components/admin/security/policy-form.tsx(140,29): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/policy-list.tsx(14,5): error TS2305: Module '"@/components/ui/futuristic"' has no exported member 'Badge'.
+apps/web/src/components/admin/security/policy-list.tsx(35,25): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/policy-list.tsx(47,105): error TS2339: Property 'active' does not exist on type 'SecurityPolicy'.
+apps/web/src/components/admin/security/policy-list.tsx(84,69): error TS2339: Property 'active' does not exist on type 'SecurityPolicy'.
+apps/web/src/components/admin/security/policy-simulator.tsx(17,5): error TS2305: Module '"@/components/ui/futuristic"' has no exported member 'Badge'.
+apps/web/src/components/admin/security/policy-simulator.tsx(88,29): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/security-dashboard.tsx(181,62): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(192,62): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(204,30): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(216,62): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(253,60): error TS2322: Type '"default" | "secondary" | "destructive"' is not assignable to type '"default" | "secondary" | "outline" | null | undefined'.
+  Type '"destructive"' is not assignable to type '"default" | "secondary" | "outline" | null | undefined'.
+apps/web/src/components/admin/security/security-dashboard.tsx(312,34): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(318,37): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(325,60): error TS2322: Type '"destructive"' is not assignable to type '"default" | "secondary" | "outline" | null | undefined'.
+apps/web/src/components/admin/security/security-dashboard.tsx(373,38): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/security-dashboard.tsx(375,52): error TS2322: Type '"default" | "secondary" | "destructive"' is not assignable to type '"default" | "secondary" | "outline" | null | undefined'.
+  Type '"destructive"' is not assignable to type '"default" | "secondary" | "outline" | null | undefined'.
+apps/web/src/components/admin/security/security-dashboard.tsx(391,38): error TS18047: 'stats' is possibly 'null'.
+apps/web/src/components/admin/security/time-window-form.tsx(37,9): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'Partial<TimeWindow> | (() => Partial<TimeWindow>)'.
+apps/web/src/components/admin/security/time-window-form.tsx(37,28): error TS2339: Property 'name' does not exist on type 'Partial<TimeWindow>'.
+apps/web/src/components/admin/security/time-window-form.tsx(68,43): error TS2339: Property 'id' does not exist on type 'Partial<TimeWindow>'.
+apps/web/src/components/admin/security/time-window-form.tsx(86,49): error TS2339: Property 'name' does not exist on type 'Partial<TimeWindow>'.
+apps/web/src/components/admin/security/time-window-form.tsx(87,77): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'SetStateAction<Partial<TimeWindow>>'.
+apps/web/src/components/admin/security/time-window-form.tsx(161,29): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/time-window-list.tsx(14,5): error TS2305: Module '"@/components/ui/futuristic"' has no exported member 'Badge'.
+apps/web/src/components/admin/security/time-window-list.tsx(37,25): error TS2322: Type '"primary"' is not assignable to type '"link" | "default" | "secondary" | "ghost" | "outline" | "destructive" | null | undefined'.
+apps/web/src/components/admin/security/time-window-list.tsx(48,33): error TS2339: Property 'id' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/time-window-list.tsx(49,122): error TS2339: Property 'active' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/time-window-list.tsx(58,45): error TS2339: Property 'name' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/time-window-list.tsx(71,120): error TS2339: Property 'id' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/time-window-list.tsx(72,73): error TS2339: Property 'active' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/security/time-window-list.tsx(98,152): error TS2339: Property 'id' does not exist on type 'TimeWindow'.
+apps/web/src/components/admin/subdepartments/subdepartment-form-client.tsx(77,40): error TS2339: Property 'filter' does not exist on type '{ itens: Subdepartment[]; proximoCursor?: string | null | undefined; }'.
+apps/web/src/components/admin/subdepartments/subdepartment-form-client.tsx(77,48): error TS7006: Parameter 's' implicitly has an 'any' type.
+apps/web/src/components/admin/subdepartments/subdepartment-form-client.tsx(127,60): error TS2345: Argument of type 'UpdateSubdepartmentInput' is not assignable to parameter of type 'UpdateSubdepartmentInput & { orgId: string; }'.
+  Property 'orgId' is missing in type 'UpdateSubdepartmentInput' but required in type '{ orgId: string; }'.
+apps/web/src/components/admin/suppliers/supplier-form.tsx(169,81): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/suppliers/supplier-form.tsx(170,37): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/suppliers/supplier-form.tsx(191,81): error TS2322: Type 'ChangeEvent<HTMLSelectElement>' is not assignable to type 'string'.
+apps/web/src/components/admin/suppliers/supplier-form.tsx(192,37): error TS2322: Type '{ label: string; value: string; onChange: (val: ChangeEvent<HTMLSelectElement>) => void; options: { value: string; label: string; }[]; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+  Property 'options' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; children: ReactNode; } & SelectHTMLAttributes<...>'.
+apps/web/src/components/admin/suppliers/supplier-form.tsx(337,29): error TS2322: Type '{ multiline: true; rows: number; label: string; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; placeholder: string; }' is not assignable to type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'.
+  Property 'multiline' does not exist on type 'IntrinsicAttributes & { label: string; required?: boolean | undefined; id?: string | undefined; error?: boolean | undefined; errorMessage?: string | undefined; icon?: any; } & InputHTMLAttributes<...>'. Did you mean 'multiple'?
+apps/web/src/components/admin/suppliers/suppliers-list-client.tsx(21,25): error TS2307: Cannot find module '@/hooks/use-auth' or its corresponding type declarations.
+apps/web/src/components/admin/suppliers/suppliers-list-client.tsx(321,65): error TS2322: Type 'Dispatch<SetStateAction<"list" | "grid">>' is not assignable to type '(mode: ViewMode) => void'.
+  Types of parameters 'value' and 'mode' are incompatible.
+    Type 'ViewMode' is not assignable to type 'SetStateAction<"list" | "grid">'.
+      Type '"table"' is not assignable to type 'SetStateAction<"list" | "grid">'.
+apps/web/src/components/admin/users/user-sessions-client.tsx(257,9): error TS2322: Type '{ open: boolean; onOpenChange: (open: boolean) => void; onConfirm: () => Promise<void>; title: string; description: string; confirmLabel: string; variant: "warning"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmDialogProps'.
+  Property 'confirmLabel' does not exist on type 'IntrinsicAttributes & ConfirmDialogProps'.
+apps/web/src/components/admin/users/user-sessions-client.tsx(268,9): error TS2322: Type '{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>>; onConfirm: () => Promise<void>; title: string; description: string; confirmLabel: string; variant: "danger"; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ConfirmDialogProps'.
+  Property 'confirmLabel' does not exist on type 'IntrinsicAttributes & ConfirmDialogProps'.
+apps/web/src/components/admin/users/users-edit-client.tsx(96,22): error TS2345: Argument of type 'Position[]' is not assignable to parameter of type 'SetStateAction<{ id: string; name: string; sectorId: string; }[]>'.
+  Type 'Position[]' is not assignable to type '{ id: string; name: string; sectorId: string; }[]'.
+    Property 'sectorId' is missing in type 'Position' but required in type '{ id: string; name: string; sectorId: string; }'.
+apps/web/src/components/admin/users/users-edit-client.tsx(403,16): error TS2304: Cannot find name 'PhotoUpload'.
+apps/web/src/components/admin/users/users-edit-client.tsx(404,36): error TS2339: Property 'photoUrl' does not exist on type 'User'.
+apps/web/src/components/admin/users/users-edit-client.tsx(406,33): error TS7006: Parameter 'file' implicitly has an 'any' type.
+apps/web/src/components/admin/users/users-edit-client.tsx(420,17): error TS2322: Type '{ user: { name: string; department: string; position: string; branch: string; userId: string; email: string; displayName: string; status: "pending" | "active" | "suspended" | "inactive"; createdAt: string; ... 13 more ...; has2FA?: boolean | undefined; }; }' is not assignable to type 'IntrinsicAttributes & QRCodeBadgeProps'.
+  Property 'user' does not exist on type 'IntrinsicAttributes & QRCodeBadgeProps'.
+apps/web/src/components/admin/users/users-form-client.tsx(142,60): error TS2304: Cannot find name 'UserFormData'.
+apps/web/src/components/admin/users/users-import-client.tsx(71,15): error TS18047: 'result' is possibly 'null'.
+apps/web/src/components/admin/users/users-import-client.tsx(73,21): error TS18047: 'result' is possibly 'null'.
+apps/web/src/components/admin/users/users-import-client.tsx(73,74): error TS18047: 'result' is possibly 'null'.
+apps/web/src/components/admin/users/users-import-client.tsx(73,99): error TS18047: 'result' is possibly 'null'.
+apps/web/src/components/admin/users/users-list-client.tsx(254,23): error TS2322: Type 'ViewMode' is not assignable to type '"list" | "form" | "grid" | "detail" | undefined'.
+  Type '"table"' is not assignable to type '"list" | "form" | "grid" | "detail" | undefined'.
+apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx(119,42): error TS2448: Block-scoped variable 'markClean' used before its declaration.
+apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx(119,42): error TS2454: Variable 'markClean' is used before being assigned.
+apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx(119,53): error TS2448: Block-scoped variable 'markDirty' used before its declaration.
+apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx(119,53): error TS2454: Variable 'markDirty' is used before being assigned.
+apps/web/src/components/analytics/analytics-dashboard-client.tsx(260,45): error TS2322: Type 'InventoryInsight[]' is not assignable to type 'ChartDataInput[]'.
+  Type 'InventoryInsight' is not assignable to type 'ChartDataInput'.
+    Index signature for type 'string' is missing in type 'InventoryInsight'.
+apps/web/src/components/analytics/analytics-dashboard-client.tsx(266,55): error TS2339: Property 'category' does not exist on type 'PieLabelRenderProps'.
+apps/web/src/components/analytics/analytics-dashboard-client.tsx(266,95): error TS18048: 'percent' is possibly 'undefined'.
+apps/web/src/components/analytics/analytics-dashboard-client.tsx(320,45): error TS2322: Type 'CustomerSegment[]' is not assignable to type 'ChartDataInput[]'.
+  Type 'CustomerSegment' is not assignable to type 'ChartDataInput'.
+    Index signature for type 'string' is missing in type 'CustomerSegment'.
+apps/web/src/components/analytics/analytics-dashboard-client.tsx(326,55): error TS2339: Property 'segment' does not exist on type 'PieLabelRenderProps'.
+apps/web/src/components/analytics/analytics-dashboard-client.tsx(326,64): error TS2339: Property 'count' does not exist on type 'PieLabelRenderProps'.
+apps/web/src/components/auth/RegisterForm.tsx(55,17): error TS18048: 'response.organizations' is possibly 'undefined'.
+apps/web/src/components/auth/mfa-settings-panel.tsx(12,10): error TS2305: Module '"./mfa-setup"' has no exported member 'MFASetupModal'.
+apps/web/src/components/auth/mfa-verification-input.tsx(79,21): error TS2322: Type '(el: HTMLInputElement | null) => HTMLInputElement | null' is not assignable to type 'Ref<HTMLInputElement> | undefined'.
+  Type '(el: HTMLInputElement | null) => HTMLInputElement | null' is not assignable to type '(instance: HTMLInputElement | null) => void | (() => VoidOrUndefinedOnly)'.
+    Type 'HTMLInputElement | null' is not assignable to type 'void | (() => VoidOrUndefinedOnly)'.
+      Type 'null' is not assignable to type 'void | (() => VoidOrUndefinedOnly)'.
+apps/web/src/components/blueprint/animated-glyph.tsx(120,7): error TS2322: Type 'boolean | null' is not assignable to type 'boolean'.
+  Type 'null' is not assignable to type 'boolean'.
+apps/web/src/components/blueprint/hero-backdrop.tsx(89,24): error TS2322: Type 'boolean | null' is not assignable to type 'boolean'.
+  Type 'null' is not assignable to type 'boolean'.
+apps/web/src/components/blueprint/hero-backdrop.tsx(90,21): error TS2322: Type 'boolean | null' is not assignable to type 'boolean'.
+  Type 'null' is not assignable to type 'boolean'.
+apps/web/src/components/blueprint/hero-backdrop.tsx(91,26): error TS2322: Type 'boolean | null' is not assignable to type 'boolean'.
+  Type 'null' is not assignable to type 'boolean'.
+apps/web/src/components/clientes/draft-history-modal.tsx(314,20): error TS2304: Cannot find name 'ComparisonView'.
+apps/web/src/components/connection-status-indicator.tsx(14,17): error TS2323: Cannot redeclare exported variable 'ConnectionStatusIndicator'.
+apps/web/src/components/connection-status-indicator.tsx(117,10): error TS2323: Cannot redeclare exported variable 'ConnectionStatusIndicator'.
+apps/web/src/components/connection-status-indicator.tsx(117,10): error TS2484: Export declaration conflicts with exported declaration of 'ConnectionStatusIndicator'.
+apps/web/src/components/dashboard/executive-dashboard-client.tsx(74,31): error TS2345: Argument of type 'RecentActivity[] | { id: string; type: string; title: string; description: string; timestamp: string; }[]' is not assignable to parameter of type 'SetStateAction<RecentActivity[]>'.
+  Type '{ id: string; type: string; title: string; description: string; timestamp: string; }[]' is not assignable to type 'SetStateAction<RecentActivity[]>'.
+    Type '{ id: string; type: string; title: string; description: string; timestamp: string; }[]' is not assignable to type 'RecentActivity[]'.
+      Type '{ id: string; type: string; title: string; description: string; timestamp: string; }' is not assignable to type 'RecentActivity'.
+        Types of property 'type' are incompatible.
+          Type 'string' is not assignable to type '"notification" | "order" | "stock" | "customer"'.
+apps/web/src/components/errors/ElegantErrorExamples.tsx(125,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/ElegantErrorExamples.tsx(144,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/ElegantErrorExamples.tsx(203,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/ElegantErrorExamples.tsx(212,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/ErrorExample.tsx(35,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/ErrorExample.tsx(138,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/ErrorExample.tsx(181,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/errors/FormFieldWithError.tsx(54,7): error TS2322: Type 'unknown' is not assignable to type 'ReactNode'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(29,18): error TS2322: Type '{ children: Element; action: "update"; resource: "users"; }' is not assignable to type 'IntrinsicAttributes & BoundCanProps<ClientAppAbility>'.
+  Property 'action' does not exist on type 'IntrinsicAttributes & BoundCanProps<ClientAppAbility>'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(33,18): error TS2322: Type '{ children: Element; action: "delete"; resource: "users"; }' is not assignable to type 'IntrinsicAttributes & BoundCanProps<ClientAppAbility>'.
+  Property 'action' does not exist on type 'IntrinsicAttributes & BoundCanProps<ClientAppAbility>'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(88,10): error TS2300: Duplicate identifier 'userRepository'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(88,26): error TS2300: Duplicate identifier 'productRepository'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(242,55): error TS2339: Property 'requestDeletion' does not exist on type 'DataDeletionService'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(249,62): error TS2339: Property 'canDeleteData' does not exist on type 'DataDeletionService'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(258,24): error TS2305: Module '"@/lib/audit/audit-service"' has no exported member 'Auditable'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(263,24): error TS2339: Property 'logSuccess' does not exist on type 'AuditService'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(274,24): error TS2339: Property 'logDataAccess' does not exist on type 'AuditService'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(282,24): error TS2339: Property 'logDataChange' does not exist on type 'AuditService'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(292,39): error TS2339: Property 'generateComplianceReport' does not exist on type 'AuditService'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(364,18): error TS2307: Cannot find module '@/components/heavy' or its corresponding type declarations.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(431,13): error TS2353: Object literal may only specify known properties, and 'password' does not exist in type 'Partial<User>'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(446,32): error TS2339: Property 'userId' does not exist on type 'User'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(447,27): error TS2339: Property 'displayName' does not exist on type 'User'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(448,62): error TS2339: Property 'userId' does not exist on type 'User'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(469,10): error TS2300: Duplicate identifier 'userRepository'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(469,26): error TS2300: Duplicate identifier 'productRepository'.
+apps/web/src/components/examples/all-patterns-usage.example.tsx(469,45): error TS2724: '"@/lib/repositories"' has no exported member named 'orderRepository'. Did you mean 'UserRepository'?
+apps/web/src/components/examples/performance-examples.tsx(25,18): error TS2307: Cannot find module '@/components/admin/dashboard' or its corresponding type declarations.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(34,42): error TS2339: Property 'message' does not exist on type 'never'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(39,32): error TS2339: Property 'id' does not exist on type 'never'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(39,42): error TS2339: Property 'name' does not exist on type 'never'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(55,32): error TS2339: Property 'userId' does not exist on type 'User'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(55,46): error TS2339: Property 'displayName' does not exist on type 'User'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(73,17): error TS2561: Object literal may only specify known properties, but 'categoryId' does not exist in type 'Partial<Product>'. Did you mean to write 'category'?
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(98,24): error TS2339: Property 'items' does not exist on type 'Product[]'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(98,35): error TS7006: Parameter 'product' implicitly has an 'any' type.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(126,24): error TS2339: Property 'displayName' does not exist on type 'User'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(150,24): error TS2339: Property 'items' does not exist on type 'Product[]'.
+apps/web/src/components/examples/tanstack-query-migration.example.tsx(150,35): error TS7006: Parameter 'product' implicitly has an 'any' type.
+apps/web/src/components/examples/users-list-example.tsx(10,18): error TS2305: Module '"@morina/ui"' has no exported member 'Card'.
+apps/web/src/components/examples/users-list-example.tsx(121,37): error TS2322: Type '"destructive"' is not assignable to type '"default" | "success" | "secondary" | "ghost" | "outline" | "danger" | null | undefined'.
+apps/web/src/components/fichas-custo/SupplierSearchField.tsx(48,20): error TS2345: Argument of type 'ListSuppliersResponse' is not assignable to parameter of type 'SetStateAction<Supplier[]>'.
+apps/web/src/components/layout/DashboardLayout.tsx(142,44): error TS2339: Property 'displayName' does not exist on type 'Promise<{ id: string; email: string; displayName: string; role: string; mustChangePassword?: boolean | undefined; }>'.
+apps/web/src/components/layout/DashboardLayout.tsx(146,48): error TS2339: Property 'displayName' does not exist on type 'Promise<{ id: string; email: string; displayName: string; role: string; mustChangePassword?: boolean | undefined; }>'.
+apps/web/src/components/layout/DashboardLayout.tsx(148,93): error TS2339: Property 'email' does not exist on type 'Promise<{ id: string; email: string; displayName: string; role: string; mustChangePassword?: boolean | undefined; }>'.
+apps/web/src/components/layout/PageBackground.tsx(75,16): error TS2367: This comparison appears to be unintentional because the types '"flow" | "nodes" | "terminal" | "fichas-custo" | "jarvis" | "circuit" | "vault" | "realtime" | "forge" | "structure"' and '"none"' have no overlap.
+apps/web/src/components/login-form.spec.tsx(22,36): error TS2558: Expected 0-1 type arguments, but got 2.
+apps/web/src/components/login-form.spec.tsx(25,34): error TS2352: Conversion of type 'Mock<[]>' to type '(payload: { password: string; email: string; remember: boolean; }) => Promise<void>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of parameters 'args' and 'payload' are incompatible.
+    Type '[payload: { password: string; email: string; remember: boolean; }]' is not comparable to type 'never'.
+apps/web/src/components/maps/InteractiveMap.tsx(30,34): error TS2503: Cannot find namespace 'google'.
+apps/web/src/components/maps/InteractiveMap.tsx(31,40): error TS2503: Cannot find namespace 'google'.
+apps/web/src/components/maps/InteractiveMap.tsx(34,44): error TS2503: Cannot find namespace 'google'.
+apps/web/src/components/maps/InteractiveMap.tsx(82,44): error TS2448: Block-scoped variable 'geocodeAddress' used before its declaration.
+apps/web/src/components/maps/InteractiveMap.tsx(82,44): error TS2454: Variable 'geocodeAddress' is used before being assigned.
+apps/web/src/components/notifications/realtime-notifications-provider.tsx(60,35): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string | null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string | null>'.
+apps/web/src/components/notifications/realtime-notifications-provider.tsx(64,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string | null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string | null>'.
+apps/web/src/components/organizational-structure/ImportExportPanel.tsx(140,12): error TS2741: Property 'htmlFor' is missing in type '{ children: string; className: string; }' but required in type 'LabelProps'.
+apps/web/src/components/organizational-structure/ImportExportPanel.tsx(165,12): error TS2741: Property 'htmlFor' is missing in type '{ children: string; className: string; }' but required in type 'LabelProps'.
+apps/web/src/components/organizational-structure/OrganizationalToolbar.tsx(63,11): error TS2322: Type '"outline" | "destructive"' is not assignable to type '"default" | "success" | "secondary" | "ghost" | "outline" | "danger" | null | undefined'.
+  Type '"destructive"' is not assignable to type '"default" | "success" | "secondary" | "ghost" | "outline" | "danger" | null | undefined'.
+apps/web/src/components/organizational-structure/OrganogramView.tsx(78,13): error TS7022: 'deptY' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+apps/web/src/components/organizational-structure/OrganogramView.tsx(78,21): error TS2448: Block-scoped variable 'currentY' used before its declaration.
+apps/web/src/components/organizational-structure/OrganogramView.tsx(87,11): error TS7022: 'currentY' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+apps/web/src/components/organizational-structure/OrganogramView.tsx(438,78): error TS2304: Cannot find name 'deptId'.
+apps/web/src/components/organizational-structure/members-manager.tsx(76,7): error TS2448: Block-scoped variable 'loadMembers' used before its declaration.
+apps/web/src/components/organizational-structure/members-manager.tsx(76,7): error TS2454: Variable 'loadMembers' is used before being assigned.
+apps/web/src/components/permissions/realtime-permissions-provider.tsx(68,16): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string | null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string | null>'.
+apps/web/src/components/permissions/realtime-permissions-provider.tsx(69,17): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'SetStateAction<string | null>'.
+  Type 'undefined' is not assignable to type 'SetStateAction<string | null>'.
+apps/web/src/components/playbook/playbook-cta.tsx(91,37): error TS2322: Type '{ label: string; type: "email"; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; required: true; placeholder: string; icon: Element; }' is not assignable to type 'IntrinsicAttributes & FuturisticInputProps'.
+  Property 'icon' does not exist on type 'IntrinsicAttributes & FuturisticInputProps'.
+apps/web/src/components/playbook/playbook-cta.tsx(101,37): error TS2322: Type '{ label: string; type: "text"; value: string; onChange: (e: ChangeEvent<HTMLInputElement>) => void; required: true; placeholder: string; icon: Element; }' is not assignable to type 'IntrinsicAttributes & FuturisticInputProps'.
+  Property 'icon' does not exist on type 'IntrinsicAttributes & FuturisticInputProps'.
+apps/web/src/components/playbook/playbook-hero.tsx(51,52): error TS2554: Expected 1 arguments, but got 3.
+apps/web/src/components/playbook/playbook-hero.tsx(56,29): error TS2339: Property 'stop' does not exist on type 'Element'.
+apps/web/src/components/playbook/playbook-tech-stack.tsx(117,33): error TS2322: Type '{ hidden: { opacity: number; scale: number; y: number; }; visible: { opacity: number; scale: number; y: number; transition: { type: string; stiffness: number; damping: number; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ opacity: number; scale: number; y: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; scale: number; y: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; scale: number; y: number; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+apps/web/src/components/settings/SettingsLayout.tsx(51,11): error TS2552: Cannot find name 'notificationCenter'. Did you mean 'Notification'?
+apps/web/src/components/settings/SettingsLayout.tsx(57,11): error TS2552: Cannot find name 'notificationCenter'. Did you mean 'Notification'?
+apps/web/src/components/settings/SettingsLayout.tsx(167,16): error TS2304: Cannot find name 'AnimatePresence'.
+apps/web/src/components/settings/SettingsLayout.tsx(175,22): error TS2304: Cannot find name 'Loader2'.
+apps/web/src/components/settings/SettingsLayout.tsx(186,22): error TS2304: Cannot find name 'CheckCircle2'.
+apps/web/src/components/settings/SettingsLayout.tsx(192,17): error TS2304: Cannot find name 'AnimatePresence'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(121,25): error TS2304: Cannot find name 'setSelectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(122,25): error TS2304: Cannot find name 'setMapOpen'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(132,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(151,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(159,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(164,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(172,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(177,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(182,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(187,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(226,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(245,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(250,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(255,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(260,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(265,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(270,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(275,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(314,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(332,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(336,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(340,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(344,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(348,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(352,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(356,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(391,25): error TS2304: Cannot find name 'setSelectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(392,25): error TS2304: Cannot find name 'setMapOpen'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(409,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(427,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(431,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(435,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(439,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(443,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(447,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(451,22): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(469,8): error TS2304: Cannot find name 'mapOpen'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(469,19): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(473,20): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(474,27): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(475,23): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(476,28): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(477,23): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(478,23): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(479,23): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(480,21): error TS2304: Cannot find name 'selectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(483,15): error TS2304: Cannot find name 'setMapOpen'.
+apps/web/src/components/settings/tabs/CompanyAddressesTab.tsx(484,15): error TS2304: Cannot find name 'setSelectedAddressForMap'.
+apps/web/src/components/settings/tabs/CompanyContactsTab.tsx(85,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyDocumentsTab.tsx(183,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyDocumentsTab.tsx(202,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyFiscalTab.tsx(181,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/settings/tabs/CompanyGeneralTab.tsx(253,16): error TS2741: Property 'htmlFor' is missing in type '{ children: string; }' but required in type 'LabelProps'.
+apps/web/src/components/ui/accessible-button.test.tsx(4,41): error TS2307: Cannot find module 'vitest-axe' or its corresponding type declarations.
+apps/web/src/components/ui/accessible-button.test.tsx(14,25): error TS2339: Property 'toHaveNoViolations' does not exist on type 'Assertion<any>'.
+apps/web/src/components/ui/accessible-button.test.tsx(24,25): error TS2339: Property 'toHaveNoViolations' does not exist on type 'Assertion<any>'.
+apps/web/src/components/ui/animated-tech-corners.tsx(76,17): error TS2322: Type '{ glow: { filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'glow' is incompatible with index signature.
+    Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(85,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(96,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(105,17): error TS2322: Type '{ glow: { filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'glow' is incompatible with index signature.
+    Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(115,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(125,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(134,17): error TS2322: Type '{ glow: { filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'glow' is incompatible with index signature.
+    Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(144,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(154,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(163,17): error TS2322: Type '{ glow: { filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'glow' is incompatible with index signature.
+    Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ filter: string[]; transition: { duration: number; repeat: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; repeat: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(173,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/animated-tech-corners.tsx(183,21): error TS2322: Type '{ hidden: { pathLength: number; opacity: number; }; visible: { pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'Variant'.
+      Type '{ pathLength: number; opacity: number; transition: { pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }; }' is not assignable to type 'TargetAndTransition'.
+        Types of property 'transition' are incompatible.
+          Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'Transition<any> | undefined'.
+            Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+              Type '{ pathLength: { duration: number; ease: string; }; opacity: { duration: number; }; }' is not assignable to type 'SVGPathTransitions'.
+                The types of 'pathLength.ease' are incompatible between these types.
+                  Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+apps/web/src/components/ui/audit-log-modal.tsx(7,36): error TS2307: Cannot find module '@/lib/notification-center' or its corresponding type declarations.
+apps/web/src/components/ui/audit-timeline.tsx(85,40): error TS18048: 'entry.changes' is possibly 'undefined'.
+apps/web/src/components/ui/audit-timeline.tsx(85,70): error TS18048: 'entry.changes' is possibly 'undefined'.
+apps/web/src/components/ui/confirm-dialog.tsx(112,30): error TS2604: JSX element type 'Icon' does not have any construct or call signatures.
+apps/web/src/components/ui/confirm-dialog.tsx(112,30): error TS2786: 'Icon' cannot be used as a JSX component.
+  Its type 'string | number | bigint | true | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<...> | ForwardRefExoticComponent<...>' is not a valid JSX element type.
+    Type 'number' is not assignable to type 'ElementType'.
+apps/web/src/components/ui/confirm-dialog.tsx(177,13): error TS2322: Type 'Element' is not assignable to type 'string'.
+apps/web/src/components/ui/map-picker.tsx(23,33): error TS2503: Cannot find namespace 'google'.
+apps/web/src/components/ui/map-picker.tsx(24,30): error TS2503: Cannot find namespace 'google'.
+apps/web/src/components/ui/map-picker.tsx(79,46): error TS2503: Cannot find namespace 'google'.
+apps/web/src/components/ui/map-picker.tsx(105,34): error TS2304: Cannot find name 'google'.
+apps/web/src/components/ui/map-picker.tsx(122,44): error TS2304: Cannot find name 'google'.
+apps/web/src/hooks/queries/use-auth.ts(106,9): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(options: DefinedInitialDataOptions<unknown, Error, unknown, string[]>, queryClient?: QueryClient | undefined): DefinedUseQueryResult<unknown, Error>', gave the following error.
+    Object literal may only specify known properties, and 'onSuccess' does not exist in type 'DefinedInitialDataOptions<unknown, Error, unknown, string[]>'.
+  Overload 2 of 3, '(options: UndefinedInitialDataOptions<RefreshTokenResponse, Error, RefreshTokenResponse, string[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Object literal may only specify known properties, and 'onSuccess' does not exist in type 'UndefinedInitialDataOptions<RefreshTokenResponse, Error, RefreshTokenResponse, string[]>'.
+  Overload 3 of 3, '(options: UseQueryOptions<RefreshTokenResponse, Error, RefreshTokenResponse, string[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Object literal may only specify known properties, and 'onSuccess' does not exist in type 'UseQueryOptions<RefreshTokenResponse, Error, RefreshTokenResponse, string[]>'.
+apps/web/src/hooks/queries/use-auth.ts(106,21): error TS7006: Parameter 'data' implicitly has an 'any' type.
+apps/web/src/hooks/queries/use-users.test.tsx(12,26): error TS2307: Cannot find module '../utils' or its corresponding type declarations.
+apps/web/src/hooks/use-audit-timeline.ts(116,11): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | Request | URL, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ "x-org-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ "x-org-id": string | undefined; }' is not assignable to type 'undefined'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Type '{ "x-org-id": string | undefined; }' is not assignable to type 'HeadersInit | undefined'.
+      Type '{ "x-org-id": string | undefined; }' is not assignable to type 'undefined'.
+apps/web/src/hooks/use-audit-timeline.ts(194,7): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/hooks/use-audit-timeline.ts(195,7): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+apps/web/src/hooks/use-logout.ts(29,28): error TS2554: Expected 0 arguments, but got 1.
+apps/web/src/hooks/use-offline-sync.ts(5,31): error TS2459: Module '"@/lib/offline-sync"' declares 'SyncProgress' locally, but it is not exported.
+apps/web/src/hooks/use-smart-suggestions.ts(105,49): error TS2339: Property 'includes' does not exist on type '{}'.
+apps/web/src/hooks/use-suppliers.ts(984,3): error TS2304: Cannot find name 'useEffect'.
+apps/web/src/hooks/use-user.ts(88,13): error TS7022: 'response' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+apps/web/src/hooks/use-user.ts(91,30): error TS2448: Block-scoped variable 'data' used before its declaration.
+apps/web/src/hooks/use-user.ts(99,13): error TS7022: 'data' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+apps/web/src/hooks/use-user.ts(122,13): error TS7022: 'response' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+apps/web/src/hooks/use-user.ts(125,30): error TS2448: Block-scoped variable 'data' used before its declaration.
+apps/web/src/hooks/use-user.ts(133,13): error TS7022: 'data' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+apps/web/src/lib/api/audit-log.ts(1,27): error TS2307: Cannot find module './client' or its corresponding type declarations.
+apps/web/src/lib/api/base.ts(122,16): error TS2663: Cannot find name 'retryManager'. Did you mean the instance member 'this.retryManager'?
+apps/web/src/lib/api/base.ts(144,23): error TS7006: Parameter 'attempt' implicitly has an 'any' type.
+apps/web/src/lib/api/base.ts(144,32): error TS7006: Parameter 'delay' implicitly has an 'any' type.
+apps/web/src/lib/api/base.ts(174,16): error TS2663: Cannot find name 'retryManager'. Did you mean the instance member 'this.retryManager'?
+apps/web/src/lib/api/branch-documents.ts(1,27): error TS2307: Cannot find module './client' or its corresponding type declarations.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(170,19): error TS2339: Property 'data' does not exist on type '{ itens: PreFichaTecnica[]; total: number; pagina: number; tamanhoPagina: number; totalPaginas: number; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(177,19): error TS2339: Property 'data' does not exist on type 'PreFichaTecnica'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(188,19): error TS2339: Property 'data' does not exist on type 'PreFichaTecnica'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(198,19): error TS2339: Property 'data' does not exist on type '{ id: string; status: StatusPreFichaTecnica; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(210,19): error TS2339: Property 'data' does not exist on type '{ id: string; status: StatusPreFichaTecnica; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(223,19): error TS2339: Property 'data' does not exist on type '{ id: string; status: StatusPreFichaTecnica; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(235,19): error TS2339: Property 'data' does not exist on type '{ id: string; status: StatusPreFichaTecnica; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(271,19): error TS2339: Property 'data' does not exist on type '{ itens: VersaoPreFichaTecnica[]; total: number; pagina: number; tamanhoPagina: number; totalPaginas: number; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(283,19): error TS2339: Property 'data' does not exist on type '{ id: string; versao: number; status: StatusPreFichaTecnica; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(300,19): error TS2339: Property 'data' does not exist on type '{ id: string; checklist: any; }'.
+apps/web/src/lib/api/pre-fichas-tecnicas.ts(344,19): error TS2339: Property 'data' does not exist on type 'ComparacaoVersoes'.
+apps/web/src/lib/api/suppliers-import.ts(81,21): error TS2339: Property 'data' does not exist on type '{ success: boolean; preview: ImportPreview; }'.
+apps/web/src/lib/api/suppliers-import.ts(98,21): error TS2339: Property 'data' does not exist on type '{ success: boolean; result: ImportResult; }'.
+apps/web/src/lib/api/suppliers-import.ts(109,28): error TS18046: 'response' is of type 'unknown'.
+apps/web/src/lib/auth/ability-helpers.ts(57,41): error TS2345: Argument of type '{ ownerId: string; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/auth/ability-helpers.ts(75,41): error TS2345: Argument of type 'Record<string, any>' is not assignable to parameter of type 'string'.
+apps/web/src/lib/auth/ability-helpers.ts(103,17): error TS2339: Property 'departmentId' does not exist on type '{ id: string; email: string; displayName: string; role: string; mustChangePassword?: boolean | undefined; }'.
+apps/web/src/lib/auth/index.tsx(46,10): error TS2305: Module '"./abac"' has no exported member 'ABACPolicy'.
+apps/web/src/lib/auth/index.tsx(47,10): error TS2305: Module '"./abac"' has no exported member 'ABACCondition'.
+apps/web/src/lib/auth/index.tsx(48,10): error TS2305: Module '"./abac"' has no exported member 'ABACContext'.
+apps/web/src/lib/auth/password-reset.ts(40,32): error TS2339: Property 'logFailure' does not exist on type 'AuditService'.
+apps/web/src/lib/auth/password-reset.ts(55,13): error TS2353: Object literal may only specify known properties, and 'userEmail' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/auth/password-reset.ts(125,32): error TS2339: Property 'logFailure' does not exist on type 'AuditService'.
+apps/web/src/lib/auth/password-reset.ts(153,28): error TS2339: Property 'logSuccess' does not exist on type 'AuditService'.
+apps/web/src/lib/auth/session-manager.ts(72,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/auth/session-manager.ts(88,34): error TS2339: Property 'active' does not exist on type 'never'.
+apps/web/src/lib/auth/session-manager.ts(94,35): error TS2339: Property 'lastActivityAt' does not exist on type 'never'.
+apps/web/src/lib/auth/session-manager.ts(102,21): error TS2339: Property 'expiresAt' does not exist on type 'never'.
+apps/web/src/lib/auth/session-manager.ts(147,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/auth/session-manager.ts(172,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/auth/session-manager.ts(230,17): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/component-architecture/atomic-design-guide.tsx(124,15): error TS2304: Cannot find name 'authApi'.
+apps/web/src/lib/component-architecture/atomic-design-guide.tsx(166,32): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/web/src/lib/component-architecture/atomic-design-guide.tsx(174,32): error TS7006: Parameter 'e' implicitly has an 'any' type.
+apps/web/src/lib/component-architecture/atomic-design-guide.tsx(216,49): error TS2307: Cannot find module '../hooks' or its corresponding type declarations.
+apps/web/src/lib/component-architecture/atomic-design-guide.tsx(217,23): error TS2307: Cannot find module '@/components/atoms/input' or its corresponding type declarations.
+apps/web/src/lib/component-architecture/hooks.tsx(230,23): error TS2554: Expected 1 arguments, but got 0.
+apps/web/src/lib/errors/error-documentation.ts(151,50): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+apps/web/src/lib/errors/error-prediction.ts(104,48): error TS2339: Property 'timestamp' does not exist on type 'AppError'.
+apps/web/src/lib/events/event-handlers.ts(30,24): error TS2339: Property 'logSuccess' does not exist on type 'AuditService'.
+apps/web/src/lib/events/event-handlers.ts(64,9): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/google-maps.ts(25,56): error TS2304: Cannot find name 'google'.
+apps/web/src/lib/google-maps.ts(27,25): error TS2339: Property 'load' does not exist on type 'Loader'.
+apps/web/src/lib/lgpd/data-portability.ts(66,32): error TS2339: Property 'logDataExport' does not exist on type 'AuditService'.
+apps/web/src/lib/lgpd/data-portability.ts(70,32): error TS2339: Property 'logFailure' does not exist on type 'AuditService'.
+apps/web/src/lib/lgpd/index.tsx(17,10): error TS2305: Module '"./data-deletion"' has no exported member 'DataDeletionRequest'.
+apps/web/src/lib/middleware/security-middleware.ts(71,22): error TS2339: Property 'blockedUntil' does not exist on type 'User'.
+apps/web/src/lib/middleware/security-middleware.ts(71,52): error TS2339: Property 'blockedUntil' does not exist on type 'User'.
+apps/web/src/lib/middleware/security-middleware.ts(74,40): error TS2339: Property 'blockedUntil' does not exist on type 'User'.
+apps/web/src/lib/middleware/security-middleware.ts(80,44): error TS2339: Property 'blockedUntil' does not exist on type 'User'.
+apps/web/src/lib/observability/index.tsx(23,5): error TS2305: Module '"./sentry-config"' has no exported member 'beforeSendTransaction'.
+apps/web/src/lib/observability/index.tsx(24,5): error TS2305: Module '"./sentry-config"' has no exported member 'getCustomTags'.
+apps/web/src/lib/observability/index.tsx(25,10): error TS2724: '"./sentry-config"' has no exported member named 'SentryConfig'. Did you mean 'getSentryConfig'?
+apps/web/src/lib/observability/monitoring-hooks.ts(18,26): error TS2339: Property 'end' does not exist on type 'never'.
+apps/web/src/lib/organizational-structure/export.ts(54,39): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/export.ts(54,88): error TS2339: Property 'status' does not exist on type 'Department'.
+apps/web/src/lib/organizational-structure/export.ts(60,77): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/export.ts(62,34): error TS2339: Property 'id' does not exist on type 'Subdepartment'.
+apps/web/src/lib/organizational-structure/export.ts(68,76): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/export.ts(70,18): error TS2339: Property 'id' does not exist on type 'Subdepartment'.
+apps/web/src/lib/organizational-structure/export.ts(70,32): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/export.ts(70,81): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/export.ts(73,68): error TS2339: Property 'status' does not exist on type 'Sector'.
+apps/web/src/lib/organizational-structure/export.ts(79,58): error TS2339: Property 'sectorId' does not exist on type 'Position'.
+apps/web/src/lib/organizational-structure/export.ts(81,49): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/export.ts(84,18): error TS2339: Property 'id' does not exist on type 'Subdepartment'.
+apps/web/src/lib/organizational-structure/export.ts(84,33): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/export.ts(84,83): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/export.ts(87,76): error TS2339: Property 'status' does not exist on type 'Position'.
+apps/web/src/lib/organizational-structure/import-csv.ts(114,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(116,9): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(117,9): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(130,29): error TS2345: Argument of type '{ orgId: string; departmentId: string; name: string; code: string; description: string | null; status: "ativo" | "inativo" | "arquivado"; }' is not assignable to parameter of type 'Omit<Subdepartment, "id" | "createdAt" | "updatedAt" | "subdepartmentId">'.
+  Property 'ordem' is missing in type '{ orgId: string; departmentId: string; name: string; code: string; description: string | null; status: "ativo" | "inativo" | "arquivado"; }' but required in type 'Omit<Subdepartment, "id" | "createdAt" | "updatedAt" | "subdepartmentId">'.
+apps/web/src/lib/organizational-structure/import-csv.ts(158,11): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(177,11): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(178,11): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(179,11): error TS2322: Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(180,11): error TS2322: Type 'null' is not assignable to type 'number | undefined'.
+apps/web/src/lib/organizational-structure/import-csv.ts(181,11): error TS2322: Type 'null' is not assignable to type 'number | undefined'.
+apps/web/src/lib/organizational-structure/import.ts(107,49): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(116,48): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(118,26): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(121,16): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(123,20): error TS2339: Property 'id' does not exist on type 'Subdepartment'.
+apps/web/src/lib/organizational-structure/import.ts(123,34): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(123,83): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(126,92): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(132,64): error TS2339: Property 'sectorId' does not exist on type 'Position'.
+apps/web/src/lib/organizational-structure/import.ts(134,84): error TS2339: Property 'sectorId' does not exist on type 'Position'.
+apps/web/src/lib/organizational-structure/import.ts(200,11): error TS2561: Object literal may only specify known properties, but 'departmentId' does not exist in type 'UpdateDepartmentInput'. Did you mean to write 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(200,49): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(201,11): error TS2783: 'orgId' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(233,30): error TS2339: Property 'find' does not exist on type '{ itens: Subdepartment[]; proximoCursor?: string | null | undefined; }'.
+apps/web/src/lib/organizational-structure/import.ts(233,36): error TS7006: Parameter 'sd' implicitly has an 'any' type.
+apps/web/src/lib/organizational-structure/import.ts(249,121): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(263,62): error TS2345: Argument of type '{ subdepartmentId: string; orgId: string; departmentId: string; name: string; code: string; description?: string | null; parentId?: string | null; status: "ativo" | "inativo" | "arquivado"; ordem: number; createdAt: string; updatedAt: string; }' is not assignable to parameter of type 'UpdateSubdepartmentInput & { orgId: string; }'.
+  Type '{ subdepartmentId: string; orgId: string; departmentId: string; name: string; code: string; description?: string | null; parentId?: string | null; status: "ativo" | "inativo" | "arquivado"; ordem: number; createdAt: string; updatedAt: string; }' is not assignable to type 'UpdateSubdepartmentInput'.
+    Types of property 'description' are incompatible.
+      Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+        Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import.ts(264,11): error TS2783: 'subdepartmentId' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(265,11): error TS2783: 'orgId' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(266,11): error TS2783: 'departmentId' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(266,41): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(273,41): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(276,11): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+apps/web/src/lib/organizational-structure/import.ts(312,120): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(326,18): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(329,32): error TS2339: Property 'find' does not exist on type '{ itens: Subdepartment[]; proximoCursor?: string | null | undefined; }'.
+apps/web/src/lib/organizational-structure/import.ts(329,38): error TS7006: Parameter 'sd' implicitly has an 'any' type.
+apps/web/src/lib/organizational-structure/import.ts(329,96): error TS2339: Property 'id' does not exist on type 'Subdepartment'.
+apps/web/src/lib/organizational-structure/import.ts(329,110): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(329,160): error TS2551: Property 'subdepartmentId' does not exist on type 'Sector'. Did you mean 'departmentId'?
+apps/web/src/lib/organizational-structure/import.ts(336,11): error TS2783: 'id' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(337,11): error TS2353: Object literal may only specify known properties, and 'orgId' does not exist in type 'UpdateSectorInput'.
+apps/web/src/lib/organizational-structure/import.ts(338,11): error TS2783: 'departmentId' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(338,41): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(345,11): error TS2353: Object literal may only specify known properties, and 'orgId' does not exist in type 'CreateSectorInput'.
+apps/web/src/lib/organizational-structure/import.ts(346,41): error TS2551: Property 'departmentId' does not exist on type 'Department'. Did you mean 'parentId'?
+apps/web/src/lib/organizational-structure/import.ts(351,26): error TS2339: Property 'status' does not exist on type 'Sector'.
+apps/web/src/lib/organizational-structure/import.ts(386,99): error TS2339: Property 'sectorId' does not exist on type 'Position'.
+apps/web/src/lib/organizational-structure/import.ts(401,11): error TS2783: 'id' is specified more than once, so this usage will be overwritten.
+apps/web/src/lib/organizational-structure/import.ts(402,11): error TS2353: Object literal may only specify known properties, and 'orgId' does not exist in type 'UpdatePositionInput'.
+apps/web/src/lib/organizational-structure/import.ts(409,11): error TS2353: Object literal may only specify known properties, and 'orgId' does not exist in type 'CreatePositionInput'.
+apps/web/src/lib/patterns/__tests__/integration.test.ts(32,40): error TS2307: Cannot find module '../services/product-template-service' or its corresponding type declarations.
+apps/web/src/lib/patterns/__tests__/integration.test.ts(33,31): error TS2307: Cannot find module '../patterns/prototype-pattern' or its corresponding type declarations.
+apps/web/src/lib/performance/memoization.tsx(169,33): error TS2554: Expected 1 arguments, but got 0.
+apps/web/src/lib/performance/virtual-scroll.tsx(124,9): error TS2322: Type 'RefObject<HTMLDivElement | null>' is not assignable to type 'RefObject<HTMLDivElement>'.
+  Type 'HTMLDivElement | null' is not assignable to type 'HTMLDivElement'.
+    Type 'null' is not assignable to type 'HTMLDivElement'.
+apps/web/src/lib/query/client.ts(28,13): error TS2322: Type '"if-stale"' is not assignable to type 'boolean | "always" | ((query: Query<unknown, Error, unknown, readonly unknown[]>) => boolean | "always") | undefined'.
+apps/web/src/lib/repositories/product-repository.ts(36,15): error TS2353: Object literal may only specify known properties, and 'ttl' does not exist in type 'CacheOptions'.
+apps/web/src/lib/repositories/product-repository.ts(48,15): error TS2353: Object literal may only specify known properties, and 'ttl' does not exist in type 'CacheOptions'.
+apps/web/src/lib/repositories/product-repository.ts(108,23): error TS2345: Argument of type '{ keys: string[]; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/repositories/product-repository.ts(154,23): error TS2345: Argument of type '{ keys: string[]; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/repositories/product-repository.ts(175,23): error TS2345: Argument of type '{ keys: string[]; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/repositories/user-repository.ts(28,15): error TS2353: Object literal may only specify known properties, and 'ttl' does not exist in type 'CacheOptions'.
+apps/web/src/lib/repositories/user-repository.ts(35,15): error TS2353: Object literal may only specify known properties, and 'ttl' does not exist in type 'CacheOptions'.
+apps/web/src/lib/repositories/user-repository.ts(55,23): error TS2345: Argument of type '{ keys: string[]; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/repositories/user-repository.ts(62,23): error TS2345: Argument of type '{ keys: string[]; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/repositories/user-repository.ts(69,23): error TS2345: Argument of type '{ keys: string[]; }' is not assignable to parameter of type 'string'.
+apps/web/src/lib/security/api-keys.ts(81,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/security/api-keys.ts(126,21): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/security/api-keys.ts(139,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/security/api-keys.ts(159,13): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/security/index.ts(39,33): error TS2307: Cannot find module '../middleware' or its corresponding type declarations.
+apps/web/src/lib/security/ip-whitelist.ts(141,17): error TS2353: Object literal may only specify known properties, and 'success' does not exist in type 'AuditLogEntry'.
+apps/web/src/lib/security/utils.ts(97,13): error TS2862: Type 'T' is generic and can only be indexed for reading.
+apps/web/src/lib/utils/confetti.ts(62,5): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/confetti.ts(72,7): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/confetti.ts(73,7): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/confetti.ts(74,7): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/confetti.ts(75,7): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/confetti.ts(76,7): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/confetti.ts(77,7): error TS18047: 'ctx' is possibly 'null'.
+apps/web/src/lib/utils/export-fichas-custo.ts(40,22): error TS2339: Property 'dataAbertura' does not exist on type 'FichaCusto'.
+apps/web/src/lib/utils/export-fichas-custo.ts(41,22): error TS2339: Property 'dataCorte' does not exist on type 'FichaCusto'.
+apps/web/src/lib/utils/export-fichas-custo.ts(95,11): error TS2339: Property 'dataAbertura' does not exist on type 'FichaCusto'.
+apps/web/src/lib/utils/export-fichas-custo.ts(95,41): error TS2339: Property 'dataAbertura' does not exist on type 'FichaCusto'.
+apps/web/src/lib/utils/export-fichas-custo.ts(96,11): error TS2339: Property 'dataCorte' does not exist on type 'FichaCusto'.
+apps/web/src/lib/utils/export-fichas-custo.ts(96,38): error TS2339: Property 'dataCorte' does not exist on type 'FichaCusto'.
+apps/web/src/lib/utils/export-fichas-custo.ts(296,32): error TS2339: Property 'dataAbertura' does not exist on type 'FichaCusto'.
+apps/web/src/lib/validators/brazilian.test.ts(124,21): error TS2339: Property 'score' does not exist on type '{ strength: number; valid: boolean; errors: string[]; requirements: { minLength: boolean; hasUpperCase: boolean; hasLowerCase: boolean; hasNumber: boolean; hasSpecialChar: boolean; }; }'.
+apps/web/src/lib/validators/brazilian.test.ts(137,21): error TS2339: Property 'feedback' does not exist on type '{ strength: number; valid: boolean; errors: string[]; requirements: { minLength: boolean; hasUpperCase: boolean; hasLowerCase: boolean; hasNumber: boolean; hasSpecialChar: boolean; }; }'.
+apps/web/src/lib/validators/brazilian.test.ts(138,35): error TS2339: Property 'feedback' does not exist on type '{ strength: number; valid: boolean; errors: string[]; requirements: { minLength: boolean; hasUpperCase: boolean; hasLowerCase: boolean; hasNumber: boolean; hasSpecialChar: boolean; }; }'.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'formatCep'. Consider explicitly re-exporting to resolve the ambiguity.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'formatCnpj'. Consider explicitly re-exporting to resolve the ambiguity.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'formatPhone'. Consider explicitly re-exporting to resolve the ambiguity.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'validateCep'. Consider explicitly re-exporting to resolve the ambiguity.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'validateCnpj'. Consider explicitly re-exporting to resolve the ambiguity.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'validateEmail'. Consider explicitly re-exporting to resolve the ambiguity.
+apps/web/src/lib/validators/index.ts(8,1): error TS2308: Module "./brazilian" has already exported a member named 'validatePhone'. Consider explicitly re-exporting to resolve the ambiguity.
+packages/ui/src/components/form-field.tsx(55,16): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+packages/ui/src/hooks/use-keyboard-navigation.ts(108,16): error TS2352: Conversion of type '(event: KeyboardEvent) => void' to type 'KeyboardEventHandler<Element>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of parameters 'event' and 'event' are incompatible.
+    Type 'KeyboardEvent<Element>' is missing the following properties from type 'KeyboardEvent': isComposing, initKeyboardEvent, DOM_KEY_LOCATION_STANDARD, DOM_KEY_LOCATION_LEFT, and 14 more.

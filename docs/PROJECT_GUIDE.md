@@ -5,6 +5,7 @@
 **Morina** é um sistema enterprise de gestão de comissões e auditoria em tempo real, desenvolvido com arquitetura moderna e design premium.
 
 ### Stack Tecnológica
+
 - **Frontend:** Next.js 14 (App Router), React, TypeScript, Tailwind CSS
 - **Backend:** Fastify, Prisma ORM
 - **Banco de Dados:** PostgreSQL
@@ -44,6 +45,7 @@ morina2/
 ## 🔐 Fluxo de Autenticação
 
 ### 1. Login
+
 ```
 Usuario → /login → LoginForm
          ↓
@@ -59,11 +61,13 @@ Usuario → /login → LoginForm
 ```
 
 ### 2. Rotas Protegidas
+
 - **Middleware:** `proxy.ts` verifica token em todas as rotas
 - **Rotas Públicas:** Definidas em `publicRoutes[]`
 - **Sem Token:** Redirect para `/login?redirect=<url>`
 
 ### 3. Rotas Públicas Atuais
+
 ```typescript
 const publicRoutes = [
   "/login",
@@ -81,11 +85,13 @@ const publicRoutes = [
 ## 🚀 Como Rodar Localmente
 
 ### Pré-requisitos
+
 - Node.js 18+
 - Docker & Docker Compose
 - pnpm 8+
 
 ### 1. Clonar e Instalar
+
 ```bash
 git clone <repo>
 cd morina2
@@ -93,6 +99,7 @@ pnpm install
 ```
 
 ### 2. Configurar Ambiente
+
 ```bash
 # Copiar .env.example para .env
 cp .env.example .env
@@ -102,6 +109,7 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/morina"
 ```
 
 ### 3. Iniciar Banco de Dados
+
 ```bash
 # Iniciar PostgreSQL + Redis
 docker-compose up -d
@@ -111,6 +119,7 @@ sleep 10
 ```
 
 ### 4. Rodar Migrations
+
 ```bash
 # Aplicar schema
 cd apps/api
@@ -121,6 +130,7 @@ pnpm prisma db seed
 ```
 
 ### 5. Iniciar Serviços
+
 ```bash
 # Terminal 1: Backend
 cd apps/api
@@ -134,6 +144,7 @@ pnpm dev
 ```
 
 ### 6. Acessar Sistema
+
 ```
 URL: http://localhost:3000/login
 
@@ -147,15 +158,15 @@ Senha: Admin@123
 ## 🎨 Design System
 
 ### Cores Principais
+
 ```css
---primary: hsl(210, 100%, 50%)    /* Neon Blue */
---secondary: hsl(280, 100%, 50%)  /* Purple */
---success: hsl(142, 71%, 45%)     /* Emerald */
---warning: hsl(38, 92%, 50%)      /* Amber */
---error: hsl(0, 72%, 51%)         /* Red */
+--primary: hsl(210, 100%, 50%) /* Neon Blue */ --secondary: hsl(280, 100%, 50%)
+  /* Purple */ --success: hsl(142, 71%, 45%) /* Emerald */
+  --warning: hsl(38, 92%, 50%) /* Amber */ --error: hsl(0, 72%, 51%) /* Red */;
 ```
 
 ### Tipografia
+
 - **Fonte:** Sans-serif (Inter)
 - **Tamanhos:**
   - Headings: 2xl, xl, lg
@@ -164,6 +175,7 @@ Senha: Admin@123
   - Small: [10px]
 
 ### Componentes
+
 - Localizados em: `packages/ui/src/components/`
 - Exportados via: `packages/ui/src/index.ts`
 - Uso: `import { Button } from '@morina/ui'`
@@ -173,6 +185,7 @@ Senha: Admin@123
 ## 🐛 Troubleshooting
 
 ### Login não funciona
+
 ```bash
 # 1. Verificar backend
 curl http://localhost:3333/health
@@ -191,6 +204,7 @@ pnpm prisma studio
 ```
 
 ### Páginas legais redirecionam para login
+
 ```typescript
 // Verificar proxy.ts
 // Adicionar rota em publicRoutes[]
@@ -201,6 +215,7 @@ const publicRoutes = [
 ```
 
 ### Erro de módulo não encontrado
+
 ```bash
 # Limpar cache e reinstalar
 rm -rf node_modules .next
@@ -208,6 +223,7 @@ pnpm install
 ```
 
 ### Banco de dados não conecta
+
 ```bash
 # Reiniciar containers
 docker-compose down
@@ -262,11 +278,13 @@ pnpm lint             # Verificar código
 ## 📚 Recursos Adicionais
 
 ### Documentação
+
 - `/docs/GETTING_STARTED.md` - Guia inicial
 - `/docs/COMPLETE_SUMMARY.md` - Resumo de melhorias
 - `/docs/LOGIN_UX_FIXES.md` - Correções de UX
 
 ### Páginas Especiais
+
 - `/login` - Autenticação
 - `/dashboard` - Painel principal
 - `/lgpd` - Política LGPD

@@ -5,6 +5,7 @@
 ## ✅ Completed Features
 
 ### 1. Authentication & Legal Compliance
+
 - ✅ Login page with futuristic design
 - ✅ Password strength indicator
 - ✅ Terms acceptance checkbox (required to login)
@@ -22,18 +23,21 @@
 - ✅ Organization selection page
 
 ### 2. Dashboard & Layout
+
 - ✅ Main dashboard with stats cards
 - ✅ Responsive sidebar navigation
 - ✅ User menu with logout
 - ✅ Quick actions panel
 
 ### 3. Core Modules
+
 - ✅ Users management page
 - ✅ Clients management page
 - ✅ Commissions page with status badges
 - ✅ Catalog/Products page with grid/list toggle
 
 ### 4. API Integration
+
 - ✅ Base API client with axios
 - ✅ Automatic JWT token injection
 - ✅ Organization ID header injection (`x-organization-id`)
@@ -41,6 +45,7 @@
 - ✅ **FIXED:** API base URL now points to port 3333 (backend port)
 
 ## 🎨 Design System
+
 - ✅ Custom `@morina/ui` package
 - ✅ Components: Button, Input, Label, Alert, Checkbox, GlassCard
 - ✅ Futuristic/cyberpunk aesthetic
@@ -51,6 +56,7 @@
 ## 🔧 Recent Fixes
 
 ### API Port Configuration (2025-11-26)
+
 **Problem:** Frontend was trying to connect to `localhost:3001` but backend runs on `localhost:3333`
 
 **Solution:** Updated `apps/web/src/lib/api/base.ts` to use port 3333 as default
@@ -98,6 +104,7 @@ packages/
 ## 🚀 Running the Application
 
 ### Backend (API)
+
 ```bash
 cd apps/api
 pnpm dev
@@ -105,6 +112,7 @@ pnpm dev
 ```
 
 ### Frontend (Web)
+
 ```bash
 cd apps/web
 pnpm dev
@@ -112,17 +120,21 @@ pnpm dev
 ```
 
 ### Access Points
+
 - **Login:** http://localhost:3000/login
 - **Dashboard:** http://localhost:3000/dashboard (requires auth)
 - **Legal Pages:** http://localhost:3000/termos, /lgpd, etc.
 
 ## 🔐 Test Credentials
+
 Check `docs/LOGIN_GUIDE.md` for test credentials and authentication flow details.
 
 ## ⚠️ Known Issues
+
 None currently - API port configuration has been fixed.
 
 ## 📝 Next Steps (If Needed)
+
 1. Connect dashboard stats to real API data
 2. Implement CRUD operations for users/clients/products
 3. Add real-time commission calculations

@@ -20,6 +20,7 @@ Criar um sistema de mensageria corporativa interno que:
 ### 1.2 Benefícios
 
 **Para a Empresa:**
+
 - Controle total sobre dados e comunicações
 - Compliance com LGPD e regulamentações
 - Auditoria completa de todas as mensagens
@@ -27,6 +28,7 @@ Criar um sistema de mensageria corporativa interno que:
 - Redução de custos (sem dependência de serviços externos)
 
 **Para os Usuários:**
+
 - Interface moderna e intuitiva
 - Notificações em tempo real
 - Busca avançada de mensagens
@@ -100,6 +102,7 @@ Criar um sistema de mensageria corporativa interno que:
 ### 2.2 Componentes Principais
 
 #### **A. Messaging Service (Backend API)**
+
 - **Tecnologia:** Fastify + TypeScript
 - **Responsabilidades:**
   - CRUD de mensagens
@@ -109,6 +112,7 @@ Criar um sistema de mensageria corporativa interno que:
   - Autenticação e autorização
 
 #### **B. Realtime Gateway (WebSocket Server)**
+
 - **Tecnologia:** Fastify + `@fastify/websocket`
 - **Responsabilidades:**
   - Conexões WebSocket persistentes
@@ -118,16 +122,19 @@ Criar um sistema de mensageria corporativa interno que:
   - Read receipts
 
 #### **C. Redis Cluster**
+
 - **Streams:** Fila de mensagens para processamento assíncrono
 - **Pub/Sub:** Eventos em tempo real (novas mensagens, status, etc.)
 - **Cache:** Sessões, presença, rate limiting
 
 #### **D. PostgreSQL Cluster**
+
 - **Dados persistentes:** Mensagens, canais, usuários, configurações
 - **Replicação:** Read replicas para escalabilidade
 - **Particionamento:** Por organização (multi-tenant)
 
 #### **E. Object Storage**
+
 - **S3/MinIO:** Arquivos, imagens, documentos
 - **CDN:** Distribuição global de conteúdo estático
 
@@ -144,40 +151,40 @@ model Message {
   orgId         String
   channelId     String
   threadId      String? // null = mensagem principal
-  
+
   // Conteúdo
   content       String   @db.Text
   type          MessageType @default(TEXT)
   metadata      Json?    // Reações, menções, etc.
-  
+
   // Autor
   authorId      String
   author        User     @relation("MessageAuthor", fields: [authorId], references: [id])
-  
+
   // Status
   edited        Boolean  @default(false)
   editedAt      DateTime?
   deleted       Boolean  @default(false)
   deletedAt     DateTime?
-  
+
   // Anexos
   attachments   MessageAttachment[]
-  
+
   // Threads
   replies       Message[] @relation("MessageThread")
   parentMessage  Message?  @relation("MessageThread", fields: [threadId], references: [id])
-  
+
   // Engajamento
   reactions     MessageReaction[]
   readReceipts  ReadReceipt[]
-  
+
   // Timestamps
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  
+
   // Índices
   channel       Channel  @relation(fields: [channelId], references: [id])
-  
+
   @@index([orgId, channelId, createdAt])
   @@index([orgId, threadId])
   @@index([authorId])
@@ -202,27 +209,27 @@ model Channel {
   name          String
   description   String?
   type          ChannelType @default(DIRECT)
-  
+
   // Configurações
   isPrivate     Boolean  @default(false)
   isArchived    Boolean  @default(false)
-  
+
   // Membros
   members       ChannelMember[]
   messages      Message[]
-  
+
   // Permissões
   permissions   ChannelPermission[]
-  
+
   // Timestamps
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   archivedAt   DateTime?
-  
+
   // Criador
   createdBy     String
   creator       User     @relation("ChannelCreator", fields: [createdBy], references: [id])
-  
+
   @@index([orgId, type])
   @@index([orgId, isArchived])
 }
@@ -240,19 +247,19 @@ model ChannelMember {
   channelId     String
   userId        String
   orgId         String
-  
+
   // Status
   role          ChannelRole @default(MEMBER)
   joinedAt      DateTime @default(now())
   lastReadAt    DateTime?
   mutedUntil    DateTime?
-  
+
   // Notificações
   notifications NotificationPreference
-  
+
   channel       Channel  @relation(fields: [channelId], references: [id])
   user          User     @relation(fields: [userId], references: [id])
-  
+
   @@unique([channelId, userId])
   @@index([userId, orgId])
 }
@@ -269,7 +276,7 @@ model MessageAttachment {
   id            String   @id @default(uuid())
   messageId     String
   orgId         String
-  
+
   // Arquivo
   fileName      String
   fileType      String
@@ -277,14 +284,14 @@ model MessageAttachment {
   mimeType      String
   storageKey    String   // S3/MinIO key
   storageUrl    String   // URL pública (CDN)
-  
+
   // Metadados
   width         Int?     // Para imagens
   height        Int?     // Para imagens
   duration      Int?     // Para áudio/vídeo (segundos)
-  
+
   message       Message  @relation(fields: [messageId], references: [id])
-  
+
   @@index([messageId])
   @@index([orgId])
 }
@@ -296,12 +303,12 @@ model MessageReaction {
   userId        String
   orgId         String
   emoji         String   // Unicode ou emoji ID
-  
+
   message       Message  @relation(fields: [messageId], references: [id])
   user          User     @relation(fields: [userId], references: [id])
-  
+
   createdAt     DateTime @default(now())
-  
+
   @@unique([messageId, userId, emoji])
   @@index([messageId])
 }
@@ -313,10 +320,10 @@ model ReadReceipt {
   userId        String
   orgId         String
   readAt        DateTime @default(now())
-  
+
   message       Message  @relation(fields: [messageId], references: [id])
   user          User     @relation(fields: [userId], references: [id])
-  
+
   @@unique([messageId, userId])
   @@index([userId, orgId])
 }
@@ -326,13 +333,13 @@ model UserPresence {
   id            String   @id @default(uuid())
   userId        String
   orgId         String
-  
+
   status        PresenceStatus @default(OFFLINE)
   lastSeen      DateTime @default(now())
   customStatus  String?
-  
+
   user          User     @relation(fields: [userId], references: [id])
-  
+
   @@unique([userId, orgId])
   @@index([orgId, status])
 }
@@ -379,6 +386,7 @@ Message
 ### 4.1 Mensagens
 
 #### **Tipos de Mensagem:**
+
 - ✅ **Texto** - Mensagens simples
 - ✅ **Imagem** - Upload e preview
 - ✅ **Vídeo** - Upload e player
@@ -389,6 +397,7 @@ Message
 - ✅ **Poll** - Enquetes (futuro)
 
 #### **Recursos:**
+
 - ✅ **Edição** - Editar mensagens enviadas
 - ✅ **Exclusão** - Deletar mensagens (soft delete)
 - ✅ **Formatação** - Markdown, emojis, menções
@@ -400,12 +409,14 @@ Message
 ### 4.2 Canais e Grupos
 
 #### **Tipos:**
+
 - ✅ **Direto (1-1)** - Chat privado entre dois usuários
 - ✅ **Grupo** - Até 50 membros, privado
 - ✅ **Canal** - Público, ilimitado de membros
 - ✅ **Thread** - Discussão dentro de uma mensagem
 
 #### **Recursos:**
+
 - ✅ **Criação** - Criar canais públicos/privados
 - ✅ **Convites** - Adicionar membros
 - ✅ **Permissões** - Controle granular de acesso
@@ -416,12 +427,14 @@ Message
 ### 4.3 Notificações
 
 #### **Tipos:**
+
 - ✅ **Push** - Notificações do navegador
 - ✅ **Email** - Resumo diário (opcional)
 - ✅ **In-app** - Badge de não lidas
 - ✅ **Sonora** - Sons personalizados (já implementado)
 
 #### **Preferências:**
+
 - ✅ **Por canal** - Configurar notificações por canal
 - ✅ **Horários** - Não perturbe (DND)
 - ✅ **Mencionar** - Alertas quando mencionado
@@ -430,6 +443,7 @@ Message
 ### 4.4 Busca e Indexação
 
 #### **Busca:**
+
 - ✅ **Mensagens** - Buscar por conteúdo
 - ✅ **Arquivos** - Buscar por nome/tipo
 - ✅ **Pessoas** - Buscar usuários
@@ -437,6 +451,7 @@ Message
 - ✅ **Filtros** - Por data, autor, tipo, canal
 
 #### **Indexação:**
+
 - ✅ **Elasticsearch** - Índice de busca full-text
 - ✅ **Real-time** - Atualização em tempo real
 - ✅ **Sugestões** - Autocomplete inteligente
@@ -444,6 +459,7 @@ Message
 ### 4.5 Compartilhamento de Arquivos
 
 #### **Recursos:**
+
 - ✅ **Upload** - Drag & drop, seleção múltipla
 - ✅ **Preview** - Visualização de imagens/PDFs
 - ✅ **Download** - Download de arquivos
@@ -451,6 +467,7 @@ Message
 - ✅ **Vírus Scan** - Verificação de malware (futuro)
 
 #### **Tipos Suportados:**
+
 - Imagens (JPG, PNG, GIF, WebP)
 - Documentos (PDF, DOC, DOCX, XLS, XLSX)
 - Vídeos (MP4, WebM)
@@ -460,12 +477,14 @@ Message
 ### 4.6 Presence e Status
 
 #### **Status:**
+
 - ✅ **Online** - Usuário ativo
 - ✅ **Ausente** - Inativo há X minutos
 - ✅ **Ocupado** - Não perturbe
 - ✅ **Offline** - Desconectado
 
 #### **Recursos:**
+
 - ✅ **Last Seen** - Última vez online
 - ✅ **Status Customizado** - Mensagem personalizada
 - ✅ **Indicadores** - Typing, recording, etc.
@@ -591,23 +610,23 @@ apps/
 
 ```typescript
 // Mensagens do Cliente → Servidor
-type ClientMessage = 
-  | { type: 'subscribe', channelId: string }
-  | { type: 'unsubscribe', channelId: string }
-  | { type: 'typing_start', channelId: string }
-  | { type: 'typing_stop', channelId: string }
-  | { type: 'presence_update', status: PresenceStatus }
-  | { type: 'read_receipt', messageId: string };
+type ClientMessage =
+  | { type: "subscribe"; channelId: string }
+  | { type: "unsubscribe"; channelId: string }
+  | { type: "typing_start"; channelId: string }
+  | { type: "typing_stop"; channelId: string }
+  | { type: "presence_update"; status: PresenceStatus }
+  | { type: "read_receipt"; messageId: string };
 
 // Mensagens do Servidor → Cliente
 type ServerMessage =
-  | { type: 'message', payload: Message }
-  | { type: 'message_edited', messageId: string, content: string }
-  | { type: 'message_deleted', messageId: string }
-  | { type: 'typing', channelId: string, userId: string, userName: string }
-  | { type: 'presence', userId: string, status: PresenceStatus }
-  | { type: 'read_receipt', messageId: string, userId: string }
-  | { type: 'error', code: string, message: string };
+  | { type: "message"; payload: Message }
+  | { type: "message_edited"; messageId: string; content: string }
+  | { type: "message_deleted"; messageId: string }
+  | { type: "typing"; channelId: string; userId: string; userName: string }
+  | { type: "presence"; userId: string; status: PresenceStatus }
+  | { type: "read_receipt"; messageId: string; userId: string }
+  | { type: "error"; code: string; message: string };
 ```
 
 ### 5.3 Fluxo de Envio de Mensagem
@@ -651,28 +670,33 @@ type ServerMessage =
 ### 6.1 Criptografia
 
 #### **Em Trânsito:**
+
 - ✅ **TLS 1.3** - Todas as conexões HTTPS/WSS
 - ✅ **Certificate Pinning** - Mobile apps
 - ✅ **Perfect Forward Secrecy** - Chaves temporárias
 
 #### **Em Repouso:**
+
 - ✅ **Criptografia de Banco** - PostgreSQL com encryption at rest
 - ✅ **Criptografia de Arquivos** - S3 com server-side encryption
 - ✅ **Criptografia de Chaves** - KMS para gerenciamento
 
 #### **End-to-End (Futuro):**
+
 - ⏳ **E2EE** - Criptografia ponta a ponta para mensagens privadas
 - ⏳ **Signal Protocol** - Protocolo de criptografia
 
 ### 6.2 Autenticação e Autorização
 
 #### **Autenticação:**
+
 - ✅ **JWT** - Tokens com expiração curta (15 min)
 - ✅ **Refresh Tokens** - Renovação automática
 - ✅ **Multi-factor** - 2FA/MFA (futuro)
 - ✅ **SSO** - Single Sign-On (futuro)
 
 #### **Autorização:**
+
 - ✅ **RBAC** - Controle baseado em roles
 - ✅ **Permissões Granulares** - Por canal, por ação
 - ✅ **Auditoria** - Log de todas as ações
@@ -680,6 +704,7 @@ type ServerMessage =
 ### 6.3 LGPD e Compliance
 
 #### **Requisitos:**
+
 - ✅ **Consentimento** - Termo de uso de mensageria
 - ✅ **Retenção** - Política de retenção de mensagens
 - ✅ **Exclusão** - Direito ao esquecimento
@@ -687,6 +712,7 @@ type ServerMessage =
 - ✅ **Transparência** - Acesso a dados pessoais
 
 #### **Implementação:**
+
 - ✅ **Audit Log** - Todas as ações registradas
 - ✅ **Data Retention** - Exclusão automática após X dias
 - ✅ **Export API** - Endpoint para exportar dados
@@ -695,12 +721,14 @@ type ServerMessage =
 ### 6.4 Rate Limiting
 
 #### **Limites:**
+
 - ✅ **Mensagens** - 100/min por usuário
 - ✅ **Uploads** - 10/min por usuário
 - ✅ **Busca** - 30/min por usuário
 - ✅ **WebSocket** - 1000 mensagens/min por conexão
 
 #### **Implementação:**
+
 - ✅ **Redis** - Contador distribuído
 - ✅ **Sliding Window** - Janela deslizante
 - ✅ **IP-based** - Limite por IP (anti-spam)
@@ -712,17 +740,20 @@ type ServerMessage =
 ### 7.1 Otimizações
 
 #### **Banco de Dados:**
+
 - ✅ **Índices** - Otimizados para queries frequentes
 - ✅ **Particionamento** - Por organização (multi-tenant)
 - ✅ **Read Replicas** - Escalar leituras
 - ✅ **Connection Pooling** - PgBouncer
 
 #### **Cache:**
+
 - ✅ **Redis** - Cache de mensagens recentes
 - ✅ **CDN** - Arquivos estáticos
 - ✅ **Browser Cache** - Assets do frontend
 
 #### **Message Queue:**
+
 - ✅ **Redis Streams** - Fila de mensagens
 - ✅ **Workers** - Processamento assíncrono
 - ✅ **Backpressure** - Controle de fluxo
@@ -730,12 +761,14 @@ type ServerMessage =
 ### 7.2 Escalabilidade Horizontal
 
 #### **Estratégia:**
+
 - ✅ **Stateless Services** - Sem estado no servidor
 - ✅ **Load Balancer** - Distribuição de carga
 - ✅ **Sharding** - Particionamento por orgId
 - ✅ **Microserviços** - Serviços independentes
 
 #### **Métricas:**
+
 - ✅ **Throughput** - 10.000 mensagens/segundo
 - ✅ **Latência** - < 100ms (p95)
 - ✅ **Concurrent Users** - 100.000+ simultâneos
@@ -799,6 +832,7 @@ components/
 ### 8.3 Recursos de UX
 
 #### **Interatividade:**
+
 - ✅ **Typing Indicators** - "João está digitando..."
 - ✅ **Read Receipts** - "✓✓ Lido"
 - ✅ **Presence** - Status online/offline
@@ -806,6 +840,7 @@ components/
 - ✅ **Keyboard Shortcuts** - Atalhos de teclado
 
 #### **Acessibilidade:**
+
 - ✅ **ARIA Labels** - Screen readers
 - ✅ **Keyboard Navigation** - Navegação por teclado
 - ✅ **High Contrast** - Modo alto contraste
@@ -845,6 +880,7 @@ apps/
 ```
 
 #### **Recursos:**
+
 - ✅ **Push Notifications** - FCM/APNS
 - ✅ **Background Sync** - Sincronização em background
 - ✅ **Offline Mode** - Mensagens offline
@@ -854,6 +890,7 @@ apps/
 ### 9.2 Progressive Web App (PWA)
 
 #### **Recursos:**
+
 - ✅ **Service Worker** - Cache e offline
 - ✅ **Web Push** - Notificações push
 - ✅ **Install Prompt** - Instalar como app
@@ -866,6 +903,7 @@ apps/
 ### 10.1 Integrações Internas
 
 #### **MORINA:**
+
 - ✅ **Notificações** - Sistema de notificações existente
 - ✅ **Usuários** - Autenticação e permissões
 - ✅ **Organizações** - Multi-tenant
@@ -875,6 +913,7 @@ apps/
 ### 10.2 Integrações Externas (Futuro)
 
 #### **Planejadas:**
+
 - ⏳ **Email** - Enviar/receber emails
 - ⏳ **Calendário** - Agendar reuniões
 - ⏳ **Videoconferência** - WebRTC
@@ -888,6 +927,7 @@ apps/
 ### 11.1 Métricas
 
 #### **Prometheus:**
+
 - ✅ `messages_sent_total` - Total de mensagens enviadas
 - ✅ `messages_received_total` - Total de mensagens recebidas
 - ✅ `websocket_connections` - Conexões WebSocket ativas
@@ -898,6 +938,7 @@ apps/
 ### 11.2 Logs
 
 #### **Estruturados (JSON):**
+
 - ✅ **Aplicação** - Logs de debug/error
 - ✅ **Acesso** - Logs de requisições HTTP
 - ✅ **WebSocket** - Logs de conexões
@@ -906,6 +947,7 @@ apps/
 ### 11.3 Alertas
 
 #### **Críticos:**
+
 - ✅ **Downtime** - Serviço offline
 - ✅ **High Latency** - Latência > 1s
 - ✅ **Error Rate** - Taxa de erro > 1%
@@ -968,6 +1010,7 @@ apps/
 ### 13.1 Infraestrutura (Mensal)
 
 **Desenvolvimento:**
+
 - Servidores: ~R$ 500-1.000/mês
 - Redis: ~R$ 200-500/mês
 - PostgreSQL: ~R$ 300-800/mês
@@ -990,17 +1033,17 @@ apps/
 
 ## 14. Comparação com Soluções Existentes
 
-| Recurso | MORINA | Slack | Teams | WhatsApp |
-|---------|--------|-------|-------|----------|
-| **Custo** | Baixo | Alto | Alto | Gratuito* |
-| **Controle de Dados** | ✅ Total | ❌ | ❌ | ❌ |
-| **LGPD** | ✅ | ⚠️ | ⚠️ | ❌ |
-| **Integração** | ✅ Total | ⚠️ | ⚠️ | ❌ |
-| **Auditoria** | ✅ Completa | ⚠️ | ⚠️ | ❌ |
-| **Customização** | ✅ Total | ❌ | ❌ | ❌ |
-| **Escalabilidade** | ✅ | ✅ | ✅ | ✅ |
+| Recurso               | MORINA      | Slack | Teams | WhatsApp   |
+| --------------------- | ----------- | ----- | ----- | ---------- |
+| **Custo**             | Baixo       | Alto  | Alto  | Gratuito\* |
+| **Controle de Dados** | ✅ Total    | ❌    | ❌    | ❌         |
+| **LGPD**              | ✅          | ⚠️    | ⚠️    | ❌         |
+| **Integração**        | ✅ Total    | ⚠️    | ⚠️    | ❌         |
+| **Auditoria**         | ✅ Completa | ⚠️    | ⚠️    | ❌         |
+| **Customização**      | ✅ Total    | ❌    | ❌    | ❌         |
+| **Escalabilidade**    | ✅          | ✅    | ✅    | ✅         |
 
-*WhatsApp Business API é pago
+\*WhatsApp Business API é pago
 
 ---
 
@@ -1015,6 +1058,7 @@ Este sistema de mensageria corporativa oferece:
 - ✅ **Custo-Benefício** - Redução de custos a longo prazo
 
 **Próximos Passos:**
+
 1. Validar requisitos com stakeholders
 2. Criar ADR (Architecture Decision Record)
 3. Iniciar Fase 1 (MVP)
@@ -1027,4 +1071,3 @@ Este sistema de mensageria corporativa oferece:
 **Versão:** 1.0.0  
 **Status:** Documentação para implementação futura  
 **Prioridade:** Alta (substituição de WhatsApp)
-

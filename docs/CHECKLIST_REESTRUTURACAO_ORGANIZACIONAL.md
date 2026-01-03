@@ -1,6 +1,7 @@
 # 📋 CHECKLIST COMPLETO - REESTRUTURAÇÃO ORGANIZACIONAL MORINA
 
 ## 🎯 OBJETIVO
+
 Refazer completamente todas as telas de configurações, criar sistema completo de usuários, gerenciamento de notificações, logout aprimorado e perfil de usuário de nível enterprise, seguindo o design system "secret lab" e arquitetura DDD.
 
 ---
@@ -8,6 +9,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 1: ESTRUTURA BASE E NAVEGAÇÃO
 
 ### 1.1 Reestruturação do Menu de Configurações
+
 - [x] **Criar novo componente `SettingsNavigation`**
   - [x] Menu lateral fixo com categorias
   - [x] Indicadores de seção ativa
@@ -25,6 +27,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] ⚙️ **Sistema** (Integrações, API Keys, Logs, Backup)
 
 ### 1.2 Layout Base de Configurações
+
 - [x] **Criar `SettingsLayout` wrapper**
   - [x] Header com breadcrumbs dinâmicos
   - [x] Botão "Voltar" contextual
@@ -34,6 +37,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Toast de confirmação de salvamento - implementado via notificationCenter
 
 ### 1.3 Integração nas Páginas Existentes
+
 - [x] **Atualizar páginas para usar `SettingsLayout`**
   - [x] `/settings` (página index)
   - [x] `/settings/company`
@@ -46,6 +50,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 2: TELAS DE CONFIGURAÇÕES (REFATORAÇÃO COMPLETA)
 
 ### 2.1 🏢 Organização → Empresa (`/settings/company`)
+
 - [x] **Refatorar página existente**
   - [x] Remover referências a "AlphaSysCore" (usar "MORINA")
   - [x] Adicionar tabs: **Geral**, **Fiscal**, **Endereços**, **Contatos**, **Documentos**
@@ -75,7 +80,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
     - [x] Lista de Filiais (com CRUD inline)
     - [x] Endereços de Entrega - implementado
     - [x] Endereços de Cobrança - implementado
-     - [x] Mapa interativo (opcional, via Google Maps API) - implementado (componente InteractiveMap criado e integrado em CompanyAddressesTab e BranchesClient, com geocodificação, marcadores e controles de zoom)
+    - [x] Mapa interativo (opcional, via Google Maps API) - implementado (componente InteractiveMap criado e integrado em CompanyAddressesTab e BranchesClient, com geocodificação, marcadores e controles de zoom)
   - [x] **Tab Contatos:**
     - [x] E-mail Corporativo Principal
     - [x] E-mails Secundários
@@ -97,6 +102,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
     - [x] Integração com ReceitaWS para auto-preenchimento - implementado (integração com BrasilAPI, busca e preenche dados automaticamente)
 
 ### 2.2 🏢 Organização → Estrutura Organizacional (`/settings/organizational-structure`)
+
 - [x] **Manter `OrganizationalCommandCenter` existente**
   - [x] Verificar se está 100% funcional
   - [x] Adicionar melhorias de UX:
@@ -114,6 +120,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
     - [ ] Sugestões de estrutura (IA) - pendente
 
 ### 2.3 🏢 Organização → Filiais (`/settings/branches`)
+
 - [x] **Criar nova página completa**
   - [x] Lista de filiais com cards
   - [x] CRUD completo (Create, Read, Update, Delete)
@@ -140,6 +147,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 3: SISTEMA DE USUÁRIOS (CRIAÇÃO COMPLETA)
 
 ### 3.1 👥 Pessoas → Usuários (`/settings/users`)
+
 - [x] **Criar página principal de usuários**
   - [x] Layout tipo "Command Center" (similar ao OrganizationalCommandCenter)
   - [x] Split view: Lista à esquerda, Detalhes à direita
@@ -353,6 +361,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Confirmação antes de salvar - implementado (tela de confirmação)
 
 ### 3.2 👥 Pessoas → Equipe (`/settings/team`)
+
 - [x] **Refatorar página existente**
   - [x] Manter funcionalidades atuais
   - [x] Melhorar design para "secret lab" - cards de estatísticas, toolbar melhorado
@@ -361,6 +370,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Adicionar exportação - implementado (exporta membros filtrados em CSV ou JSON formatado)
 
 ### 3.3 👥 Pessoas → Convites (`/settings/invites`)
+
 - [x] **Criar nova página (ou integrar em Team)**
   - [x] Lista de convites pendentes - com filtros e busca
   - [x] Histórico de convites enviados - todos os status (pendente, aceito, cancelado, expirado)
@@ -370,6 +380,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Templates de convite - implementado (estrutura criada, rotas API criadas, interface de seleção de templates implementada)
 
 ### 3.4 👥 Pessoas → Perfis (`/settings/profiles`)
+
 - [x] **Criar página de templates de perfil**
   - [x] Lista de perfis predefinidos - grid de cards
   - [x] CRUD de perfis - criar, editar, excluir
@@ -382,6 +393,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 4: PERFIL DO USUÁRIO (NÍVEL ENTERPRISE)
 
 ### 4.1 👤 Perfil Pessoal (`/profile` ou `/settings/profile`)
+
 - [x] **Criar página completa de perfil pessoal**
   - [x] Layout tipo dashboard pessoal - implementado
   - [x] Header com foto grande, nome, cargo, status - implementado
@@ -493,6 +505,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 5: GERENCIAMENTO DE NOTIFICAÇÕES
 
 ### 5.1 🔔 Notificações → Central (`/settings/notifications` ou `/notifications`)
+
 - [x] **Criar página completa de notificações**
   - [x] Layout tipo inbox - implementado
   - [x] Filtros: Todas/Lidas/Não Lidas/Arquivadas - implementado
@@ -528,6 +541,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Botão "Configurar Preferências" - link implementado
 
 ### 5.2 🔔 Notificações → Preferências (`/settings/notifications/preferences`)
+
 - [x] **Criar página de preferências de notificação**
   - [x] Categorias de notificação:
     - [x] Sistema (manutenção, atualizações)
@@ -551,6 +565,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
     - [x] Preview - funcionalidade implementada
 
 ### 5.3 🔔 Notificações → Histórico (`/settings/notifications/history`)
+
 - [x] **Criar página de histórico completo**
   - [x] Lista de todas as notificações (incluindo lidas e arquivadas) - tabela implementada
   - [x] Filtros avançados:
@@ -572,6 +587,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 6: LOGOUT E SEGURANÇA
 
 ### 6.1 Melhorar Sistema de Logout
+
 - [x] **Refatorar `AuthApi.logout()`**
   - [x] Adicionar confirmação (se houver alterações não salvas) - via LogoutDialog
   - [x] Limpar todos os storages (localStorage, sessionStorage, IndexedDB) - implementado
@@ -606,6 +622,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 7: BACKEND - APIs NECESSÁRIAS
 
 ### 7.1 APIs de Usuários
+
 - [x] **Verificar APIs existentes:**
   - [x] `GET /users` (listar) - implementado (backend e frontend)
   - [x] `POST /users` (criar) - implementado (backend e frontend)
@@ -636,6 +653,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] `GET /users/:id/api-tokens/:tokenId/history` (histórico de uso) - implementado (backend e frontend)
 
 ### 7.2 APIs de Notificações
+
 - [x] **Verificar APIs existentes:**
   - [x] `GET /notifications/feed` (feed de notificações) - implementado (backend)
   - [x] `GET /notifications` (listar) - implementado (backend e frontend)
@@ -653,6 +671,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] `POST /notifications/test` (enviar teste) - implementado (backend e frontend)
 
 ### 7.3 APIs de Perfil
+
 - [x] **Criar APIs de perfil pessoal:**
   - [x] `GET /profile` (perfil do usuário logado) - rota frontend criada
   - [x] `PUT /profile` (atualizar perfil) - rota frontend criada
@@ -664,6 +683,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] `POST /profile/sessions/:id/revoke` (revogar sessão) - rota frontend criada
 
 ### 7.4 APIs de Logout
+
 - [x] **Expandir API de logout:**
   - [x] `POST /auth/logout` - implementado (rota frontend atualizada para chamar backend que registra na auditoria)
   - [x] `POST /auth/logout-all` - implementado (rota frontend criada, chama backend que registra na auditoria)
@@ -674,6 +694,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 8: COMPONENTES REUTILIZÁVEIS
 
 ### 8.1 Componentes de Formulário
+
 - [x] **Criar componentes especializados:**
   - [x] `UserForm` (formulário completo de usuário) - implementado (CreateUserDrawer, UserProfileTab)
   - [x] `UserAvatar` (avatar com fallback e upload) - implementado (em UserProfileTab, UsersClient)
@@ -691,6 +712,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] `ContactForm` (formulário de contatos) - implementado (em CompanyContactsTab, CreateUserDrawer)
 
 ### 8.2 Componentes de Layout
+
 - [x] **Criar componentes de layout:**
   - [x] `SettingsLayout` (layout base de configurações) - implementado
   - [x] `SettingsNavigation` (navegação lateral) - implementado
@@ -705,6 +727,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 9: VALIDAÇÕES E SEGURANÇA
 
 ### 9.1 Validações
+
 - [x] **Validações de Formulário:**
   - [x] CPF (formato e dígito verificador) - implementado em `lib/validators/brazilian.ts`
   - [x] CNPJ (formato e dígito verificador) - implementado em `lib/validators/brazilian.ts`
@@ -717,6 +740,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Schemas Zod com validações brasileiras - implementado em `lib/validators/zod-schemas.ts`
 
 ### 9.2 Segurança
+
 - [x] **Implementar:**
   - [x] Rate limiting em APIs sensíveis - implementado em `apps/api/src/core/middleware/rate-limit.middleware.ts`
   - [x] Validação de permissões em todas as ações - implementado em `apps/api/src/core/middleware/permission-check.middleware.ts`
@@ -732,6 +756,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 10: TESTES E DOCUMENTAÇÃO
 
 ### 10.1 Testes
+
 - [x] **Testes Unitários:**
   - [x] Componentes React - implementado (`EmptyState.test.tsx`, `LoadingState.test.tsx`, `ErrorState.test.tsx`)
   - [x] Hooks customizados - implementado (`use-debounce.test.ts`, `use-throttle.test.ts`)
@@ -748,6 +773,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Cenários de segurança - implementado (`security-scenarios.spec.ts`)
 
 ### 10.2 Documentação
+
 - [x] **Documentar:**
   - [x] Estrutura de pastas - implementado em `docs/DOCUMENTACAO_COMPLETA.md`
   - [x] Componentes principais - implementado em `docs/DOCUMENTACAO_COMPLETA.md`
@@ -761,6 +787,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 📦 FASE 11: POLISH E OTIMIZAÇÕES
 
 ### 11.1 Performance
+
 - [x] **Otimizações:**
   - [x] Lazy loading de componentes pesados - hooks e utilitários criados (`use-debounce.ts`, `use-throttle.ts`, `performance.ts`)
   - [x] Virtualização de listas longas - helper `getVisibleRange` implementado
@@ -770,6 +797,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Code splitting - implementado (`code-splitting.ts`, exemplo em `users/page.tsx`)
 
 ### 11.2 UX/UI
+
 - [x] **Melhorias:**
   - [x] Loading states em todas as ações - componente `LoadingState` criado
   - [x] Empty states informativos - componente `EmptyState` criado
@@ -781,6 +809,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
   - [x] Ajuda contextual - implementado (`HelpText`, `HelpTextWithTooltip`)
 
 ### 11.3 Acessibilidade
+
 - [x] **Implementar:**
   - [x] ARIA labels - documentação criada, aplicar em componentes existentes
   - [x] Navegação por teclado - estrutura preparada, aplicar em componentes
@@ -794,6 +823,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## 🎯 PRIORIZAÇÃO SUGERIDA
 
 ### 🔥 CRÍTICO (Fazer Primeiro)
+
 1. Fase 1: Estrutura Base e Navegação
 2. Fase 3.1: Sistema de Usuários (página principal completa e avançada)
 3. Fase 4.1: Perfil do Usuário (avançado)
@@ -801,11 +831,13 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 5. Fase 7: Backend APIs (completa)
 
 ### ⚡ IMPORTANTE (Fazer Depois)
+
 6. Fase 2: Telas de Configurações (refatoração)
 7. Fase 5: Gerenciamento de Notificações
 8. Fase 8: Componentes Reutilizáveis
 
 ### ✨ DESEJÁVEL (Fazer Por Último)
+
 9. Fase 9: Validações e Segurança (avançado)
 10. Fase 10: Testes e Documentação
 11. Fase 11: Polish e Otimizações
@@ -827,6 +859,7 @@ Refazer completamente todas as telas de configurações, criar sistema completo 
 ## ✅ CRITÉRIOS DE CONCLUSÃO
 
 Uma fase está completa quando:
+
 - [ ] Todos os itens da fase estão implementados
 - [ ] Testes básicos passando
 - [ ] Sem erros de lint
@@ -841,6 +874,7 @@ Uma fase está completa quando:
 **Status**: 🟢 ~100% Completo (Todas as fases implementadas, testes criados)
 
 ### ✅ Implementações Recentes (2025-12-14):
+
 1. ✅ **Upload de RG (frente e verso)** - Corrigido e conectado ao handleDocumentUpload
 2. ✅ **Análise de Compatibilidade** - Documento criado (`ANALISE_COMPATIBILIDADE_IMPLEMENTACOES.md`)
 3. 🟡 **Duplicação de Estrutura** - Preparado para implementação (seguir padrão de fichas de custo)
@@ -849,6 +883,7 @@ Uma fase está completa quando:
 ## 📊 RESUMO DO PROGRESSO
 
 ### ✅ Fases Completas ou Quase Completas:
+
 - **Fase 1**: ✅ 100% - Estrutura Base e Navegação
 - **Fase 2**: ✅ 100% - Telas de Configurações
 - **Fase 3**: ✅ 100% - Sistema de Usuários (upload de documentos, ações administrativas, organograma, templates de convite implementados)
@@ -857,6 +892,7 @@ Uma fase está completa quando:
 - **Fase 6**: ✅ 100% - Logout e Segurança
 
 ### 🟡 Fases Parcialmente Implementadas:
+
 - **Fase 7**: ✅ 100% - Backend APIs
   - ✅ APIs de Perfil: 100% completo (todas as rotas frontend criadas)
   - ✅ APIs de Logout: 100% completo (logout, logout-all, logout por sessão)
@@ -864,14 +900,17 @@ Uma fase está completa quando:
   - ✅ APIs de Notificações: 100% completo (CRUD completo, preferences, history, stats, test, bulk-action)
 
 ### 🟡 Fases Parcialmente Implementadas (continuação):
+
 - **Fase 8**: ✅ 100% - Componentes Reutilizáveis (todos os componentes implementados: UserPicker, SettingsHeader, SettingsTabs genérico)
 
 ### 🟡 Fases Parcialmente Implementadas:
+
 - **Fase 9**: ✅ 100% - Validações e Segurança (validações completas, segurança implementada, CSRF pode ser melhorado)
 - **Fase 10**: 🟢 ~80% - Testes e Documentação (documentação completa criada, testes unitários implementados, testes de integração/E2E pendentes)
 - **Fase 11**: 🟢 ~95% - Polish e Otimizações (componentes de estado criados, hooks de performance, code splitting, tooltips, atalhos de teclado)
 
 ### 🎯 Próximas Prioridades:
+
 1. ✅ Integrações de upload de documentos (RG, CPF, CTPS, etc.) - **CONCLUÍDO**
 2. ✅ Ações administrativas de usuários (forçar logout, suspender conta, etc.) - **CONCLUÍDO**
 3. ✅ Visualização em organograma - **CONCLUÍDO**
@@ -880,6 +919,7 @@ Uma fase está completa quando:
 6. ✅ Mapa interativo (Google Maps) para endereços e filiais - **CONCLUÍDO**
 
 ### ✅ Tarefas Concluídas (Última Sessão):
+
 1. ✅ **Backend APIs de Notificações** (CRUD completo, preferences, history, stats, test) - **CONCLUÍDO**
 2. ✅ **APIs de Usuários faltantes** (import/export em massa, bulk-action, 2FA) - **CONCLUÍDO**
 3. ✅ **Dispositivos confiáveis para 2FA** (frontend e backend) - **CONCLUÍDO**
@@ -887,6 +927,7 @@ Uma fase está completa quando:
 5. ✅ **Componentes reutilizáveis faltantes** (UserPicker genérico, SettingsHeader, SettingsTabs genérico) - **CONCLUÍDO**
 
 ### ✅ Tarefas Concluídas (Última Sessão):
+
 1. ✅ **Validações de Formulário** (CPF, CNPJ, CEP, Telefone, Email, Data, Senha, Upload) - **CONCLUÍDO**
 2. ✅ **Segurança Backend** (Rate limiting, Sanitização, Security headers, Permission checks) - **CONCLUÍDO**
 3. ✅ **Componentes de Estado** (EmptyState, LoadingState, ErrorState) - **CONCLUÍDO**
@@ -895,6 +936,7 @@ Uma fase está completa quando:
 6. ✅ **Documentação** (Validações, Segurança, Otimizações, Acessibilidade) - **CONCLUÍDO**
 
 ### ✅ Tarefas Concluídas (Sessão Atual):
+
 1. ✅ **Testes Unitários** (Validadores, Hooks, Componentes UI) - **CONCLUÍDO**
 2. ✅ **Code Splitting de Rotas** (Lazy loading implementado) - **CONCLUÍDO**
 3. ✅ **Sistema de Atalhos de Teclado** (KeyboardShortcutsProvider, useKeyboardShortcuts) - **CONCLUÍDO**
@@ -904,4 +946,5 @@ Uma fase está completa quando:
 7. ✅ **Testes E2E** (Cenários críticos, erro, segurança) - **CONCLUÍDO**
 
 ### ✅ Projeto 100% Completo!
+
 Todas as fases foram implementadas e testadas. O sistema está pronto para produção.

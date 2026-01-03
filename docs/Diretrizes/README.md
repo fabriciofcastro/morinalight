@@ -35,7 +35,6 @@ O sistema já possui um **Design System completo e funcional**:
   - Tipografia (Inter, escala completa)
   - Espaçamento (escala 8px)
   - Border radius, shadows, breakpoints
-  
 - ✅ **Componentes Reutilizáveis** (`packages/ui/src/components/`)
   - Button, Input, Select, Textarea
   - FormField, Checkbox, Tooltip
@@ -59,16 +58,13 @@ Muitas telas já foram criadas e estão em uso:
   - Workflow de aprovação
   - Versionamento e auditoria
   - Upload de arquivos
-  
 - ✅ **Gestão de Usuários**
   - CRUD completo
   - Perfis e permissões
   - Estrutura organizacional
-  
 - ✅ **Gestão de Organizações**
   - Multi-tenant
   - Configurações por empresa
-  
 - ✅ **Dashboard**
   - Métricas e KPIs
   - Ações rápidas
@@ -84,12 +80,10 @@ O sistema implementa **três níveis de controle de acesso**:
   - Define **o que o usuário pode fazer** (módulos, telas, ações)
   - Baseado em Roles (papéis) e Permissions (permissões)
   - Hierarquia: Role → Permission → Action
-  
 - ✅ **ABAC (Attribute-Based Access Control)**
   - Define **em quais dados o usuário pode atuar**
   - Baseado em atributos (departamento, setor, organização)
   - Filtragem de dados por contexto organizacional
-  
 - ✅ **PBAC (Policy-Based Access Control)**
   - Define **sob quais condições e aprovações**
   - Workflows de aprovação
@@ -149,6 +143,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 20-25 minutos
 
 **Conteúdo:**
+
 - Status geral de todas as fases
 - Ordem de implementação priorizada
 - Checklist de progresso
@@ -172,6 +167,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 15-20 minutos
 
 **Conteúdo:**
+
 - Dashboard executivo do sistema
 - Matriz de autoridade (quem decide o quê)
 - Procedimentos para erros graves
@@ -190,6 +186,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 30-40 minutos
 
 **Conteúdo:**
+
 - Fluxo completo de desenvolvimento (10 etapas)
 - Práticas obrigatórias a adotar
 - O que falta implementar (roadmap)
@@ -208,6 +205,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 20-25 minutos
 
 **Conteúdo:**
+
 - Estrutura da matriz
 - Regras de governança
 - Uso com IA
@@ -225,6 +223,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 25-30 minutos
 
 **Conteúdo:**
+
 - Classificação de capacidades (Core/Negócio/Suporte/Técnica)
 - Níveis de maturidade
 - Relação entre capacidades e domínios
@@ -242,6 +241,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 30-35 minutos
 
 **Conteúdo:**
+
 - Core Domain (Núcleo do Negócio)
 - Bounded Contexts
 - Governança de dependências
@@ -259,6 +259,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 35-40 minutos
 
 **Conteúdo:**
+
 - Fluxo obrigatório de autoanálise
 - Análise de existência, localização e impacto
 - Diretriz de evolução
@@ -277,6 +278,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 40-45 minutos
 
 **Conteúdo:**
+
 - Processo de inventário passo a passo
 - Templates para documentar descobertas
 - Ferramentas e scripts úteis
@@ -297,6 +299,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 40-45 minutos
 
 **Conteúdo:**
+
 - Visão geral dos três níveis (RBAC, ABAC, PBAC)
 - RBAC: Define o que pode fazer (módulos, telas, ações)
 - ABAC: Define em quais dados pode atuar (filtragem por contexto)
@@ -324,6 +327,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 30-35 minutos
 
 **Conteúdo:**
+
 - Análise da tela de login atual
 - Proposta de melhorias para dois tipos de usuários
 - Fluxo para representantes
@@ -345,6 +349,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 20-25 minutos
 
 **Conteúdo:**
+
 - Mockups visuais de todas as telas
 - Estados e feedback
 - Paleta de cores
@@ -368,6 +373,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 45-50 minutos
 
 **Conteúdo:**
+
 - Marco legal brasileiro (ICP-Brasil, Lei 14.063/2020)
 - Tipos de assinatura digital e validade jurídica
 - Requisitos técnicos e legais
@@ -393,6 +399,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 35-40 minutos
 
 **Conteúdo:**
+
 - Análise da dashboard atual
 - Proposta de welcome banner personalizado
 - Widget de informações do tempo (clima)
@@ -418,6 +425,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 60-70 minutos
 
 **Conteúdo:**
+
 - Visão executiva e objetivos
 - Arquitetura de alto nível (microserviços, WebSocket, Redis, PostgreSQL)
 - Modelo de dados completo (Prisma schema)
@@ -450,6 +458,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 30-35 minutos
 
 **Conteúdo:**
+
 - Análise da tela de login atual
 - Proposta de melhorias para dois tipos de usuários
 - Fluxo para representantes
@@ -471,6 +480,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 20-25 minutos
 
 **Conteúdo:**
+
 - Mockups visuais de todas as telas
 - Estados e feedback
 - Paleta de cores
@@ -492,6 +502,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 35-40 minutos
 
 **Conteúdo:**
+
 - Análise da dashboard atual
 - Proposta de welcome banner personalizado
 - Widget de informações do tempo (clima)
@@ -519,6 +530,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 45-50 minutos
 
 **Conteúdo:**
+
 - Marco legal brasileiro (ICP-Brasil, Lei 14.063/2020)
 - Tipos de assinatura digital e validade jurídica
 - Requisitos técnicos e legais
@@ -544,6 +556,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 **Tempo de leitura:** 60-70 minutos
 
 **Conteúdo:**
+
 - Visão executiva e objetivos
 - Arquitetura de alto nível (microserviços, WebSocket, Redis, PostgreSQL)
 - Modelo de dados completo (Prisma schema)
@@ -566,29 +579,35 @@ FASE 6: Recursos Avançados (⏳ 0%)
 ## 🗺️ Mapa de Uso por Situação
 
 ### Situação: "Preciso começar uma nova tarefa"
+
 1. **[Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)** - Visão geral
 2. **[Guia de Desenvolvimento](./Guia-Desenvolvimento-Deploy-Produção.md)** - Processo completo
 3. **[Diretiva de Governança](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)** - Autoanálise
 
 ### Situação: "Preciso criar um novo módulo"
+
 1. **[Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)** - Verificar autoridade
 2. **[Matriz](./Matriz-Capacidade×Contexto×Módulo.md)** - Mapear capacidade
 3. **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)** - Validar limites
 4. **[Diretiva de Governança](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)** - Executar autoanálise
 
 ### Situação: "Preciso fazer deploy em produção"
+
 1. **[Guia de Desenvolvimento](./Guia-Desenvolvimento-Deploy-Produção.md)** - Checklist de produção
 2. **[Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)** - Comandos de deploy
 
 ### Situação: "Ocorreu um erro grave"
+
 1. **[Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)** - Procedimentos de emergência
 2. **[Guia de Desenvolvimento](./Guia-Desenvolvimento-Deploy-Produção.md)** - Rollback
 
 ### Situação: "Preciso mapear o sistema existente"
+
 1. **[Guia de Inventário](./Guia-Inventário-Mapeamento-Sistema.md)** - Processo completo
 2. **[Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)** - Atualizar dashboard
 
 ### Situação: "Preciso identificar uma capacidade"
+
 1. **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)** - Classificação
 2. **[Matriz](./Matriz-Capacidade×Contexto×Módulo.md)** - Mapear para módulo
 
@@ -666,17 +685,20 @@ FASE 6: Recursos Avançados (⏳ 0%)
 ## 📋 Checklist Rápido
 
 ### Antes de Começar Qualquer Tarefa
+
 - [ ] Consultei o Centro de Comando?
 - [ ] Executei autoanálise completa?
 - [ ] Identifiquei a capacidade?
 - [ ] Validei módulo e contexto?
 
 ### Durante o Desenvolvimento
+
 - [ ] Seguindo padrões de código?
 - [ ] Testes escritos?
 - [ ] Documentação atualizada?
 
 ### Antes do Deploy
+
 - [ ] Checklist de produção completo?
 - [ ] Testes passando?
 - [ ] Security scan OK?
@@ -701,6 +723,7 @@ FASE 6: Recursos Avançados (⏳ 0%)
 ## 📞 Suporte e Dúvidas
 
 ### Dúvidas sobre:
+
 - **Processo de desenvolvimento** → [Guia de Desenvolvimento](./Guia-Desenvolvimento-Deploy-Produção.md)
 - **Decisões arquiteturais** → [Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)
 - **Onde implementar** → [Matriz](./Matriz-Capacidade×Contexto×Módulo.md)
@@ -731,4 +754,3 @@ Estes documentos devem ser atualizados:
 **Última atualização:** [Atualizar mensalmente]  
 **Versão:** 1.0.0  
 **Mantido por:** Equipe de Arquitetura MORINA
-

@@ -127,13 +127,13 @@ redis-cli info stats
 
 ## 🗺️ Mapa de Decisão Rápida
 
-| Situação | Ação | Documento |
-|----------|------|-----------|
-| Nova tarefa | Consultar Centro de Comando → Autoanálise | Centro de Comando |
-| Criar módulo | Verificar autoridade → Mapear capacidade → Validar contexto | Matriz + Contextos |
-| Erro grave | Seguir procedimento CRÍTICO | Centro de Comando §5.2 |
-| Deploy | Checklist produção → Blue-Green → Monitorar | Guia Deploy §6 |
-| Mapear sistema | Processo inventário → Templates | Guia Inventário §3 |
+| Situação       | Ação                                                        | Documento              |
+| -------------- | ----------------------------------------------------------- | ---------------------- |
+| Nova tarefa    | Consultar Centro de Comando → Autoanálise                   | Centro de Comando      |
+| Criar módulo   | Verificar autoridade → Mapear capacidade → Validar contexto | Matriz + Contextos     |
+| Erro grave     | Seguir procedimento CRÍTICO                                 | Centro de Comando §5.2 |
+| Deploy         | Checklist produção → Blue-Green → Monitorar                 | Guia Deploy §6         |
+| Mapear sistema | Processo inventário → Templates                             | Guia Inventário §3     |
 
 ---
 
@@ -143,21 +143,26 @@ redis-cli info stats
 
 ```markdown
 ## O que foi feito?
+
 [Descrição clara do que foi implementado]
 
 ## Por que foi feito?
+
 [Motivação/justificativa]
 
 ## Como testar?
+
 [Passos para testar]
 
 ## Checklist
+
 - [ ] Testes adicionados
 - [ ] Documentação atualizada
 - [ ] Breaking changes documentados
 - [ ] Compatibilidade validada
 
 ## Referências
+
 - Issue: #[número]
 - ADR: [link se aplicável]
 - Documentos: [links]
@@ -173,16 +178,20 @@ redis-cli info stats
 **Decisores:** [Lista]
 
 ## Contexto
+
 [Qual situação levou a esta decisão?]
 
 ## Decisão
+
 [Qual decisão foi tomada?]
 
 ## Consequências
+
 - **Positivas:** [lista]
 - **Negativas:** [lista e mitigação]
 
 ## Alternativas Consideradas
+
 1. [Alternativa 1]: [por que foi rejeitada]
 2. [Alternativa 2]: [por que foi rejeitada]
 ```
@@ -212,19 +221,19 @@ redis-cli info stats
 
 2. Contenção (5 min)
    docker-compose stop [servico]
-   
+
 3. Diagnóstico (5 min)
    grep -i "error" logs/*.log | tail -100
-   
+
 4. Decisão (3 min)
    - Rollback? → ./deploy/rollback.sh
    - Hotfix? → Aplicar e deploy
    - Escalar? → Notificar equipe
-   
+
 5. Comunicação
    - Notificar equipe
    - Atualizar status
-   
+
 6. Pós-incidente
    - Criar ADR
    - Implementar prevenção
@@ -236,18 +245,18 @@ redis-cli info stats
 
 ### Documentos por Necessidade
 
-| Preciso... | Documento | Seção |
-|------------|-----------|-------|
-| Visão geral | Centro de Comando | §2 |
-| Controle | Centro de Comando | §3 |
-| Erro grave | Centro de Comando | §5 |
-| Desenvolver | Guia Deploy | §3 |
-| Deploy | Guia Deploy | §6, §7 |
-| Mapear módulo | Matriz | §3 |
-| Identificar capacidade | Mapa Capacidades | §4 |
-| Validar contexto | Mapa Contextos | §5 |
-| Autoanálise | Diretiva | §2 |
-| Mapear sistema | Guia Inventário | §3 |
+| Preciso...             | Documento         | Seção  |
+| ---------------------- | ----------------- | ------ |
+| Visão geral            | Centro de Comando | §2     |
+| Controle               | Centro de Comando | §3     |
+| Erro grave             | Centro de Comando | §5     |
+| Desenvolver            | Guia Deploy       | §3     |
+| Deploy                 | Guia Deploy       | §6, §7 |
+| Mapear módulo          | Matriz            | §3     |
+| Identificar capacidade | Mapa Capacidades  | §4     |
+| Validar contexto       | Mapa Contextos    | §5     |
+| Autoanálise            | Diretiva          | §2     |
+| Mapear sistema         | Guia Inventário   | §3     |
 
 ---
 
@@ -255,31 +264,28 @@ redis-cli info stats
 
 ### Onde está...
 
-| Buscar... | Onde |
-|-----------|------|
-| Processo de desenvolvimento | Guia Deploy §2 |
-| Checklist produção | Guia Deploy §6 |
-| Procedimento erro | Centro Comando §5 |
-| Template ADR | Diretiva §8.1 |
-| Comandos deploy | Guia Deploy §9 |
-| Regras arquiteturais | Centro Comando §3.3 |
-| Validação rápida | Centro Comando §6 |
+| Buscar...                   | Onde                |
+| --------------------------- | ------------------- |
+| Processo de desenvolvimento | Guia Deploy §2      |
+| Checklist produção          | Guia Deploy §6      |
+| Procedimento erro           | Centro Comando §5   |
+| Template ADR                | Diretiva §8.1       |
+| Comandos deploy             | Guia Deploy §9      |
+| Regras arquiteturais        | Centro Comando §3.3 |
+| Validação rápida            | Centro Comando §6   |
 
 ---
 
 ## 📞 Contatos de Emergência
 
-| Papel | Responsabilidade | Contato |
-|------|------------------|---------|
+| Papel     | Responsabilidade       | Contato   |
+| --------- | ---------------------- | --------- |
 | Arquiteto | Decisões arquiteturais | [Contato] |
-| Tech Lead | Decisões técnicas | [Contato] |
-| DevOps | Infraestrutura | [Contato] |
+| Tech Lead | Decisões técnicas      | [Contato] |
+| DevOps    | Infraestrutura         | [Contato] |
 
 ---
 
 **💡 Dica:** Mantenha este documento sempre à mão. Imprima ou salve como favorito.
 
 **🔄 Atualização:** Este documento deve ser atualizado quando novos comandos ou processos forem adicionados.
-
-
-

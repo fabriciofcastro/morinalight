@@ -7,6 +7,7 @@
 ## 🎯 Objetivo
 
 Fornecer uma **ordem clara e priorizada** de implementação para:
+
 - ✅ Gerenciar o que está sendo feito
 - ✅ Identificar o que falta implementar
 - ✅ Evitar dependências quebradas
@@ -19,16 +20,16 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Última Atualização:** 2025-01-19  
 **⚠️ REVISÃO CRÍTICA REALIZADA:** Consulte [REVISAO-COMPLETA-FASES-MELHORIAS.md](./REVISAO-COMPLETA-FASES-MELHORIAS.md) para detalhes
 
-| Fase | Status | Progresso Real | Progresso Anterior | Prioridade |
-|------|--------|-----------------|-------------------|------------|
-| **FASE 0: Fundamentos** | ✅ Melhorado | **95%** ⬆️ | 92% | 🔥 Crítica |
-| **FASE 1: Base Organizacional** | ✅ Melhorado | **93%** ⬆️ | 90% | 🔥 Crítica |
-| **FASE 2: Controle de Acesso** | ✅ Melhorado | **95%** ⬆️ | 90% | 🔥 Crítica |
-| **FASE 3: Design System** | ✅ Melhorado | **95%** ⬆️ | 92% | 🔥 Crítica |
-| **FASE 4: Telas Base** | ✅ Melhorado | **80%** ⬆️ | 70% | 🔥 Crítica |
-| **FASE 5: Melhorias UX/UI** | ⏳ Em Planejamento | 0% | 0% | ⚡ Alta |
-| **FASE 6: Recursos Avançados** | ⏳ Em Planejamento | 0% | 0% | ⚡ Média |
-| **FASE 7: Integrações** | ⏳ Em Planejamento | 0% | 0% | ✨ Baixa |
+| Fase                            | Status             | Progresso Real | Progresso Anterior | Prioridade |
+| ------------------------------- | ------------------ | -------------- | ------------------ | ---------- |
+| **FASE 0: Fundamentos**         | ✅ Melhorado       | **95%** ⬆️     | 92%                | 🔥 Crítica |
+| **FASE 1: Base Organizacional** | ✅ Melhorado       | **93%** ⬆️     | 90%                | 🔥 Crítica |
+| **FASE 2: Controle de Acesso**  | ✅ Melhorado       | **95%** ⬆️     | 90%                | 🔥 Crítica |
+| **FASE 3: Design System**       | ✅ Melhorado       | **95%** ⬆️     | 92%                | 🔥 Crítica |
+| **FASE 4: Telas Base**          | ✅ Melhorado       | **80%** ⬆️     | 70%                | 🔥 Crítica |
+| **FASE 5: Melhorias UX/UI**     | ⏳ Em Planejamento | 0%             | 0%                 | ⚡ Alta    |
+| **FASE 6: Recursos Avançados**  | ⏳ Em Planejamento | 0%             | 0%                 | ⚡ Média   |
+| **FASE 7: Integrações**         | ⏳ Em Planejamento | 0%             | 0%                 | ✨ Baixa   |
 
 **Progresso Real Geral:** 79% (melhorado de 78% - atualizado em 2025-01-19)
 
@@ -42,12 +43,14 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Última Atualização:** 2025-01-19
 
 ### Documentos Relacionados
+
 - [Centro de Comando](./Centro-de-Comando-Controle-Absoluto.md)
 - [Guia de Desenvolvimento](./Guia-Desenvolvimento-Deploy-Produção.md)
 - [Diretiva de Governança](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)
 - [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-0-fundamentos)
 
 ### O Que Foi Implementado
+
 - ✅ Arquitetura base (DDD, Eventos, Multi-tenant)
 - ✅ Infraestrutura básica (PostgreSQL, Redis, WebSocket)
 - ✅ Processos de desenvolvimento documentados
@@ -55,6 +58,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - ✅ CI/CD básico
 
 ### ❌ Gaps Críticos Identificados
+
 - ✅ **Monitoramento Completo** (✅ CONCLUÍDO - 2025-01-19)
   - Provisioning do Grafana configurado (datasources e dashboards)
   - Dashboards criados: System Overview, API Performance, Business Metrics
@@ -77,6 +81,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 🎯 Melhorias Necessárias (15 itens - 20 sprints)
 
 **Prioridade CRÍTICA:**
+
 1. Monitoramento Completo (2 sprints) - Infraestrutura existe, integração completa pendente
 2. ~~**Health Checks Completos (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19)
    - Redis check com ping real implementado
@@ -98,12 +103,14 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Última Atualização:** 2025-01-19
 
 ### Documentos Relacionados
+
 - [Mapa de Contextos](./Mapa%20de%20Contextos-Núcleo-Domínio-Governança-Dependências.md)
-- [Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability%20Map).md)
+- [Mapa de Capacidades](<./Mapa-Capacidades-Sistema-(Capability%20Map).md>)
 - [Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)
 - [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-1-base-organizacional)
 
 ### O Que Foi Implementado
+
 - ✅ Cadastro de Empresa (com busca por CNPJ completa)
 - ✅ Configurações da Empresa
 - ✅ Tema da Empresa (logo, cores)
@@ -129,6 +136,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
   - Validação de exclusão (não permitir excluir se tiver filhos)
 
 ### ❌ Gaps Restantes (12%)
+
 - ✅ **Organograma Visual** (✅ PARCIALMENTE CONCLUÍDO - 2025-01-19)
   - OrganogramView atualizado para incluir Subdepartamentos na hierarquia
   - Suporte completo para: Departamento → Subdepartamento → Setor → Cargo
@@ -144,6 +152,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 🎯 Melhorias Necessárias (14 itens restantes - 13 sprints)
 
 **Prioridade ALTA:**
+
 1. ~~**Organograma Visual (2 sprints)**~~ ✅ **PARCIALMENTE CONCLUÍDO** (2025-01-19) - OrganogramView completo, OrganizationTree pendente
 2. Auditoria Completa (1 sprint)
 3. Importação/Exportação (2 sprints)
@@ -159,19 +168,19 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Dependências:** FASE 1
 
 ### Documentos Relacionados
+
 - [Controle de Acesso - RBAC, ABAC e PBAC](./Controle-Acesso-RBAC-ABAC-PBAC.md)
 - [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-2-controle-de-acesso)
 
 ### O Que Foi Implementado
+
 - ✅ RBAC básico (Role-Based Access Control)
   - Roles e Permissions básicos
   - Verificação de permissões básica
-  
 - ✅ ABAC básico (Attribute-Based Access Control)
   - Filtragem por organização
   - Filtragem por departamento/setor
   - Tenant context middleware
-  
 - ✅ PBAC completo (Policy-Based Access Control) (✅ CONCLUÍDO - 2025-01-19)
   - WorkflowPolicy model existe
   - PolicyService completo implementado
@@ -180,6 +189,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
   - Rotas HTTP completas
 
 ### ❌ Gaps Críticos Identificados
+
 - ✅ **PBAC Completo** - PolicyService e Approval model implementados (✅ CONCLUÍDO - 2025-01-19)
 - ✅ **Dashboard de Gestão de Permissões** - Dashboard completo implementado (✅ CONCLUÍDO - 2025-01-19)
 - ✅ **Auditoria de Acessos** - AccessAuditLog completo implementado (✅ CONCLUÍDO - 2025-01-19)
@@ -189,6 +199,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 🎯 Melhorias Necessárias (30 itens - 40 sprints)
 
 **Prioridade CRÍTICA:**
+
 1. ~~**Completar PBAC (3 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19) - PolicyService e Approval model implementados
 2. ~~**Dashboard de Gestão de Permissões (2 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19) - Dashboard completo com bulk operations e interface visual implementada
 3. ~~**Auditoria de Acessos (2 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19) - AccessAuditLog completo com dashboard de visualização implementado
@@ -207,10 +218,12 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Última Atualização:** 2025-01-19
 
 ### Documentos Relacionados
+
 - `docs/DESIGN_SYSTEM_*.md`
 - [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-3-design-system)
 
 ### O Que Foi Implementado
+
 - ✅ Design Tokens básicos (cores, tipografia, espaçamento)
 - ✅ Componentes base (Button, Input, Select, FormField)
 - ✅ Componentes avançados (GlassCard, Alert, Badge)
@@ -252,6 +265,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
   - Todos os componentes principais documentados
 
 ### ❌ Gaps Críticos Identificados
+
 - ✅ **Tokens Completos** (✅ CONCLUÍDO - 2025-01-19)
   - Border width scale implementado
   - Focus ring specs completos
@@ -269,6 +283,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 🎯 Melhorias Necessárias (40 itens - 50 sprints)
 
 **Prioridade CRÍTICA:**
+
 1. ~~**Estados de Validação (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19)
 2. ~~**Sistema de Animações (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19)
 3. ~~**Acessibilidade WCAG AA (2 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19)
@@ -287,11 +302,13 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Última Atualização:** 2025-01-19
 
 ### Documentos Relacionados
+
 - [Guia de Inventário](./Guia-Inventário-Mapeamento-Sistema.md)
 - [Revisão Completa](./REVISAO-COMPLETA-FASES-MELHORIAS.md#fase-4-telas-base)
 - [Padrão de Template de Telas](./PADRAO-TEMPLATE-TELAS.md) ✅ **NOVO**
 
 ### O Que Foi Implementado
+
 - ✅ Dashboard principal
 - ✅ Gestão de Usuários (CRUD básico)
 - ✅ Gestão de Organizações (multi-tenant básico)
@@ -308,8 +325,10 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
   - Estados de loading padronizados
 
 ### Padrão de Tela
+
 **Referência:** Ficha de Custo de Aviamentos  
 **Template:** `StandardFormPage` (✅ IMPLEMENTADO - 2025-01-19)
+
 - Formulário completo com validação
 - Auto-save com indicador visual
 - Workflow de aprovação
@@ -317,6 +336,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - Upload de arquivos
 
 ### ❌ Gaps Críticos Identificados
+
 - ✅ **Template Reutilizável de Tela** (✅ CONCLUÍDO - 2025-01-19)
   - Componente `StandardFormPage` implementado
   - Hook `useAutoSave` implementado
@@ -331,6 +351,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 🎯 Melhorias Necessárias (20 itens - 25 sprints)
 
 **Prioridade CRÍTICA:**
+
 1. ~~**Template Reutilizável de Tela (2 sprints)**~~ ✅ **CONCLUÍDO** (2025-01-19) - `StandardFormPage`, `useAutoSave` e componentes padronizados implementados
 2. **Padronizar Todas as Telas (3 sprints)** - CRÍTICO - Migrar telas existentes para usar o template
 3. ~~**Auto-Save Padronizado (1 sprint)**~~ ✅ **CONCLUÍDO** (2025-01-19) - Hook `useAutoSave` implementado e integrado no template
@@ -350,10 +371,12 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 5.1 Login e Autenticação Melhorado
 
 **Documentos:**
+
 - [Análise UX/UI - Login e Autenticação](./Análise-UX-UI-Login-Autenticação.md)
 - [Mockups - Login e Portal de Representantes](./Mockups-Login-Representantes.md)
 
 **O Que Implementar:**
+
 - [ ] Seleção de tipo de acesso (Funcionário vs Representante)
 - [ ] Login para representantes (email ou CPF)
 - [ ] Formulário de cadastro de representante (multi-step)
@@ -361,6 +384,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [ ] Formulário de pedido de venda (todos os campos)
 
 **Ordem de Implementação:**
+
 1. Seleção de tipo de acesso (1 sprint)
 2. Login para representantes (1 sprint)
 3. Cadastro de representantes (1 sprint)
@@ -374,15 +398,18 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 5.2 Dashboard - Boas-Vindas Personalizada
 
 **Documentos:**
+
 - [Dashboard - Boas-Vindas Personalizada](./Dashboard-Boas-Vindas-Personalizada.md)
 
 **O Que Implementar:**
+
 - [ ] Welcome Banner personalizado
 - [ ] Widget de informações do tempo (clima)
 - [ ] Informações contextuais por tipo de usuário
 - [ ] Dashboard condicional para usuários sem acesso completo
 
 **Ordem de Implementação:**
+
 1. Welcome Banner básico (1 sprint)
 2. Weather Widget (1 sprint)
 3. Informações contextuais (1-2 sprints)
@@ -395,9 +422,11 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 5.3 Sonorização de Notificações
 
 **Documentos:**
+
 - `docs/WEBSOCKET_NOTIFICATIONS.md` (seção adicionada)
 
 **O Que Implementar:**
+
 - [ ] NotificationSoundService
 - [ ] Arquivos de áudio (success, error, warning, info)
 - [ ] Integração no NotificationCenter
@@ -405,6 +434,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [ ] Preview de sons
 
 **Ordem de Implementação:**
+
 1. Serviço de áudio (1 sprint)
 2. Integração e configurações (1 sprint)
 
@@ -421,9 +451,11 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 6.1 Assinatura Digital
 
 **Documentos:**
+
 - [Assinatura Digital - Validade Jurídica](./Assinatura-Digital-Validade-Jurídica.md)
 
 **O Que Implementar:**
+
 - [ ] Módulo de assinatura digital
 - [ ] HashService (SHA-256)
 - [ ] TimestampService
@@ -431,6 +463,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [ ] Geração de PDF assinado
 
 **Ordem de Implementação:**
+
 1. Fase 1: MVP (Hash + Timestamp próprio) - 2-3 sprints
 2. Fase 2: TSA (Timestamp confiável) - 1 sprint
 3. Fase 3: ICP-Brasil (opcional) - 2-3 sprints
@@ -442,9 +475,11 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ### 6.2 Sistema de Mensageria Corporativa
 
 **Documentos:**
+
 - [Sistema de Mensageria Corporativa - BigTech](./Sistema-Mensageria-Corporativa-BigTech.md)
 
 **O Que Implementar:**
+
 - [ ] Messaging Service (Backend)
 - [ ] Realtime Gateway (WebSocket)
 - [ ] Interface de mensagens (Frontend)
@@ -454,6 +489,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [ ] Mobile app (React Native)
 
 **Ordem de Implementação:**
+
 1. Fase 1: MVP (mensagens texto, canais diretos) - 3 sprints
 2. Fase 2: Recursos essenciais (arquivos, edição, reações) - 2 sprints
 3. Fase 3: Recursos avançados (busca, threads, mobile) - 2 sprints
@@ -470,11 +506,13 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 **Dependências:** FASE 4, FASE 5, FASE 6
 
 ### 7.1 Integrações Externas
+
 - [ ] Integração com APIs externas
 - [ ] Webhooks
 - [ ] Bots e automação
 
 ### 7.2 Otimizações
+
 - [ ] Performance (cache, lazy loading)
 - [ ] SEO (se aplicável)
 - [ ] Acessibilidade avançada
@@ -484,12 +522,14 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ## 📋 Checklist de Progresso
 
 ### FASE 0: Fundamentos
+
 - [x] Arquitetura base
 - [x] Infraestrutura
 - [x] Processos de desenvolvimento
 - [x] Governança técnica
 
 ### FASE 1: Base Organizacional
+
 - [x] Cadastro de Empresa
 - [x] Estrutura organizacional completa
 - [x] Departamentos
@@ -501,16 +541,19 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [x] **Validações de Hierarquia** ✅ (2025-01-19)
 
 ### FASE 2: Controle de Acesso
+
 - [x] RBAC implementado
 - [x] ABAC implementado
 - [ ] PBAC completo (parcial)
 
 ### FASE 3: Design System
+
 - [x] Design Tokens
 - [x] Componentes base
 - [x] Temas
 
 ### FASE 4: Telas Base
+
 - [x] Dashboard
 - [x] Gestão de Usuários
 - [x] Gestão de Organizações
@@ -520,15 +563,18 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 - [ ] Padronização completa (migração de telas existentes)
 
 ### FASE 5: Melhorias UX/UI
+
 - [ ] Login melhorado (representantes)
 - [ ] Dashboard boas-vindas
 - [ ] Sonorização de notificações
 
 ### FASE 6: Recursos Avançados
+
 - [ ] Assinatura digital
 - [ ] Sistema de mensageria
 
 ### FASE 7: Integrações
+
 - [ ] Integrações externas
 - [ ] Otimizações
 
@@ -537,6 +583,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ## 🎯 Próximas Ações Recomendadas (REVISADO)
 
 ### 🔴 CRÍTICO - Sprint 1-4 (1 mês)
+
 1. ~~**Implementar Subdepartamento** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
 2. ~~**Completar Busca por CNPJ** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
 3. ~~**Implementar Busca por CPF** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19)
@@ -547,6 +594,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 8. ~~**Completar PBAC (FASE 2)**~~ ⚠️ **PARCIALMENTE CONCLUÍDO** (2025-01-19) - PolicyService implementado, Approval model genérico pendente
 
 ### 🟠 ALTA - Sprint 5-8 (2 meses)
+
 6. ~~**Monitoramento Completo** (FASE 0)~~ ✅ **CONCLUÍDO** (2025-01-19) - Dashboards Grafana criados, alertas corrigidos, provisioning configurado
 7. ~~**Health Checks Completos** (FASE 0)~~ ✅ **CONCLUÍDO** (2025-01-19) - Redis, Disk e Memory checks implementados
 8. ~~**Logs Estruturados** (FASE 0)~~ ✅ **CONCLUÍDO** (2025-01-19) - Middleware de contexto, helpers de logging, integração Promtail/Loki configurada
@@ -554,17 +602,20 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 10. ~~**Storybook** (FASE 3)~~ ✅ **CONCLUÍDO** (2025-01-19) - Configuração completa com stories para todos os componentes principais
 
 ### 🟡 ALTA - Sprint 9-12 (3 meses)
+
 11. ~~**Template Reutilizável de Tela** (FASE 4)~~ ✅ **CONCLUÍDO** (2025-01-19) - `StandardFormPage`, `useAutoSave` e componentes padronizados implementados
 12. **Padronizar Todas as Telas** (FASE 4) - 3 sprints - Migrar telas existentes para usar o template
 13. ~~**Organograma Visual** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19) - OrganizationTree atualizado com subdepartments, importação/exportação implementada
 14. ~~**Auditoria Completa** (FASE 1)~~ ✅ **CONCLUÍDO** (2025-01-19) - Todos os use cases registram auditoria, rota HTTP criada, frontend atualizado, documentação completa
 
 ### 📋 Médio Prazo (Próximos 2-3 meses)
+
 - Login melhorado para representantes (FASE 5.1)
 - Assinatura digital MVP (FASE 6.1)
 - Mensageria MVP (FASE 6.2)
 
 ### 📋 Longo Prazo (Próximos 6+ meses)
+
 - Mensageria completa (FASE 6.2)
 - Assinatura digital com ICP-Brasil (FASE 6.1)
 - Integrações e otimizações (FASE 7)
@@ -593,6 +644,7 @@ Fornecer uma **ordem clara e priorizada** de implementação para:
 ## 🔄 Atualização
 
 Este documento deve ser atualizado:
+
 - **Semanalmente:** Progresso de sprints
 - **Mensalmente:** Revisão completa
 - **Trimestralmente:** Ajuste de prioridades
@@ -612,66 +664,73 @@ Este documento deve ser atualizado:
 10. **Template Reutilizável de Tela** (FASE 4) ✅ **CONCLUÍDO** (2025-01-19)
 
 11. **Health Checks Completos** (FASE 0) ✅ **CONCLUÍDO** (2025-01-19)
-   - Health check de Redis com ping real implementado
-   - Health check de disk space com statfs implementado
-   - Health check de memory com thresholds configuráveis implementado
-   - Detalhes adicionais (info do Redis, métricas de memória) implementados
+
+- Health check de Redis com ping real implementado
+- Health check de disk space com statfs implementado
+- Health check de memory com thresholds configuráveis implementado
+- Detalhes adicionais (info do Redis, métricas de memória) implementados
 
 12. **Organograma Visual com Subdepartamentos** (FASE 1) ✅ **PARCIALMENTE CONCLUÍDO** (2025-01-19)
-   - OrganogramView atualizado para incluir Subdepartamentos na hierarquia completa
-   - Suporte para: Departamento → Subdepartamento → Setor → Cargo
-   - Suporte retrocompatível para: Departamento → Setor → Cargo
-   - Linhas de conexão, cores diferenciadas e legenda atualizadas
-   - API route para subdepartments criada (`/api/subdepartments`)
-   - Carregamento de dados atualizado no OrganizationalCommandCenter
-   - Tipos TypeScript atualizados (DepartmentNode, SubdepartmentNode)
-   - **Pendente:** Atualizar OrganizationTree para exibir subdepartments na árvore de navegação
+
+- OrganogramView atualizado para incluir Subdepartamentos na hierarquia completa
+- Suporte para: Departamento → Subdepartamento → Setor → Cargo
+- Suporte retrocompatível para: Departamento → Setor → Cargo
+- Linhas de conexão, cores diferenciadas e legenda atualizadas
+- API route para subdepartments criada (`/api/subdepartments`)
+- Carregamento de dados atualizado no OrganizationalCommandCenter
+- Tipos TypeScript atualizados (DepartmentNode, SubdepartmentNode)
+- **Pendente:** Atualizar OrganizationTree para exibir subdepartments na árvore de navegação
 
 13. **Logs Estruturados** (FASE 0) ✅ **CONCLUÍDO** (2025-01-19)
-   - Middleware de logging estruturado implementado (requestId, userId, orgId automáticos)
-   - Helpers de logging contextualizado (logError, logBusinessOperation, logAccess)
-   - Configuração do Pino otimizada para produção (JSON) e desenvolvimento (pino-pretty)
-   - Configuração do Promtail para coletar logs JSON do Pino
-   - Integração completa com Loki para agregação de logs
-   - Documentação completa criada (LOGS_ESTRUTURADOS.md)
+
+- Middleware de logging estruturado implementado (requestId, userId, orgId automáticos)
+- Helpers de logging contextualizado (logError, logBusinessOperation, logAccess)
+- Configuração do Pino otimizada para produção (JSON) e desenvolvimento (pino-pretty)
+- Configuração do Promtail para coletar logs JSON do Pino
+- Integração completa com Loki para agregação de logs
+- Documentação completa criada (LOGS_ESTRUTURADOS.md)
 
 14. **Monitoramento Completo** (FASE 0) ✅ **CONCLUÍDO** (2025-01-19)
-   - Provisioning do Grafana configurado (datasources Prometheus e Loki)
-   - Dashboards criados: System Overview, API Performance, Business Metrics
-   - Alertas do Prometheus corrigidos para usar métricas corretas (morina_api_*)
-   - Estrutura completa de observabilidade funcional
-   - Documentação completa criada (MONITORAMENTO_COMPLETO.md)
+
+- Provisioning do Grafana configurado (datasources Prometheus e Loki)
+- Dashboards criados: System Overview, API Performance, Business Metrics
+- Alertas do Prometheus corrigidos para usar métricas corretas (morina*api*\*)
+- Estrutura completa de observabilidade funcional
+- Documentação completa criada (MONITORAMENTO_COMPLETO.md)
 
 15. **Auditoria Completa** (FASE 1) ✅ **CONCLUÍDO** (2025-01-19)
-   - Todos os use cases de estrutura organizacional registram auditoria automaticamente
-   - Rota HTTP `/organizational-structure/audit-log` criada com filtros completos
-   - Use case `ListarOrganizationalStructureAuditLogUseCase` implementado
-   - Frontend atualizado para incluir "subdepartment" nos filtros
-   - Tipos atualizados para incluir "subdepartment" em todos os lugares
-   - Documentação completa criada (AUDITORIA_COMPLETA.md)
+
+- Todos os use cases de estrutura organizacional registram auditoria automaticamente
+- Rota HTTP `/organizational-structure/audit-log` criada com filtros completos
+- Use case `ListarOrganizationalStructureAuditLogUseCase` implementado
+- Frontend atualizado para incluir "subdepartment" nos filtros
+- Tipos atualizados para incluir "subdepartment" em todos os lugares
+- Documentação completa criada (AUDITORIA_COMPLETA.md)
 
 16. **Organograma Visual Completo** (FASE 1) ✅ **CONCLUÍDO** (2025-01-19)
-   - OrganizationTree atualizado para exibir subdepartments na hierarquia completa
-   - Hierarquia: Department → Subdepartment → Sector → Position
-   - Suporte a ações (editar, deletar, adicionar) para todos os níveis
-   - Ícones e badges diferenciados por tipo de entidade
+
+- OrganizationTree atualizado para exibir subdepartments na hierarquia completa
+- Hierarquia: Department → Subdepartment → Sector → Position
+- Suporte a ações (editar, deletar, adicionar) para todos os níveis
+- Ícones e badges diferenciados por tipo de entidade
 
 17. **Importação/Exportação** (FASE 1) ✅ **CONCLUÍDO** (2025-01-19)
-   - Exportação para JSON e CSV implementada
-   - Importação de JSON com validação completa
-   - Tratamento de duplicatas e atualizações
-   - Componente `ImportExportPanel` criado
-   - Validação de referências e integridade
-   - Relatório detalhado de importação (sucessos, erros, avisos)
-   - Componente `StandardFormPage` completo implementado
-   - Hook `useAutoSave` padronizado com intervalo configurável
-   - Componentes de formulário padronizados (FuturisticInput, FuturisticSelect, FuturisticTextarea)
-   - Documentação completa do padrão (`PADRAO-TEMPLATE-TELAS.md`)
-   - Atalhos de teclado integrados (Ctrl+S, Escape)
-   - Indicadores visuais de auto-save
-   - Estados de loading padronizados
-   - Suporte a validação e mensagens de erro
-   - Glass morphism e animações consistentes
+
+- Exportação para JSON e CSV implementada
+- Importação de JSON com validação completa
+- Tratamento de duplicatas e atualizações
+- Componente `ImportExportPanel` criado
+- Validação de referências e integridade
+- Relatório detalhado de importação (sucessos, erros, avisos)
+- Componente `StandardFormPage` completo implementado
+- Hook `useAutoSave` padronizado com intervalo configurável
+- Componentes de formulário padronizados (FuturisticInput, FuturisticSelect, FuturisticTextarea)
+- Documentação completa do padrão (`PADRAO-TEMPLATE-TELAS.md`)
+- Atalhos de teclado integrados (Ctrl+S, Escape)
+- Indicadores visuais de auto-save
+- Estados de loading padronizados
+- Suporte a validação e mensagens de erro
+- Glass morphism e animações consistentes
 
 ### ✅ Implementações Concluídas Anteriormente
 
@@ -747,4 +806,3 @@ Este documento deve ser atualizado:
 - **FASE 4:** 70% → **80%** (+10%) - Melhorado com template reutilizável implementado
 - **FASE 0:** 85% → **88%** (+3%) - Melhorado com health checks completos
 - **Progresso Geral:** 60% → **74%** (+14%)
-

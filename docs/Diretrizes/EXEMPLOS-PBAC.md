@@ -205,6 +205,7 @@ Se houver múltiplas políticas ativas para o mesmo módulo/flowType, todas deve
 ## 7. Fallback quando Não Há Políticas
 
 Se não houver políticas configuradas para um módulo/flowType:
+
 - Retorna `{ allowed: true }`
 - O controle cai para RBAC/ABAC apenas
 
@@ -215,4 +216,3 @@ Se não houver políticas configuradas para um módulo/flowType:
 3. **PBAC** - Verificar políticas e condições (PolicyService)
 
 Se qualquer nível falhar, a ação não é permitida.
-

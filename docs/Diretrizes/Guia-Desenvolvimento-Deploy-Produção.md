@@ -26,12 +26,14 @@ Este guia fornece:
 O sistema já possui um **Design System completo** em `packages/ui/`:
 
 **Componentes Disponíveis:**
+
 - `Button`, `Input`, `Select`, `Textarea`
 - `FormField`, `Checkbox`, `Tooltip`
 - `GlassCard`, `Alert`, `Badge`
 - `TreeView`, `Popover`, `DropdownMenu`
 
 **Design Tokens:**
+
 - Cores semânticas (primary, success, warning, danger)
 - Tipografia (Inter, escala completa)
 - Espaçamento (escala 8px)
@@ -44,6 +46,7 @@ O sistema já possui um **Design System completo** em `packages/ui/`:
 O formato da tela **Ficha de Custo de Aviamentos** está sendo usado como **padrão de referência**:
 
 **Estrutura Padrão:**
+
 - Header com título e descrição
 - Formulário com validação em tempo real
 - Auto-save com indicador visual
@@ -60,16 +63,19 @@ O formato da tela **Ficha de Custo de Aviamentos** está sendo usado como **padr
 O sistema implementa **RBAC + ABAC + PBAC**:
 
 **RBAC (Role-Based):**
+
 - Define **o que** o usuário pode fazer
 - Módulos, telas, ações permitidas
 - Baseado em Roles e Permissions
 
 **ABAC (Attribute-Based):**
+
 - Define **em quais dados** pode atuar
 - Filtragem por departamento, setor, organização
 - Contexto organizacional
 
 **PBAC (Policy-Based):**
+
 - Define **sob quais condições** e aprovações
 - Workflows de aprovação
 - Regras de negócio condicionais
@@ -205,6 +211,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 #### ✅ Padrões de Código Obrigatórios
 
 **Backend:**
+
 - [ ] **DDD aplicado corretamente**
   - Regras de negócio no Domain
   - Use Cases na Application
@@ -231,6 +238,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - Request ID tracking
 
 **Frontend:**
+
 - [ ] **Componentes reutilizáveis**
   - Se aparece 2x, vira componente
   - Classificação: Atômico/Composto/Container
@@ -254,12 +262,14 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 #### ✅ Testes Obrigatórios
 
 **Cobertura Mínima:**
+
 - [ ] **Unit Tests**: > 80% para código crítico
 - [ ] **Integration Tests**: Fluxos principais
 - [ ] **E2E Tests**: Funcionalidades críticas
 - [ ] **Testes de segurança**: Validações de acesso
 
 **O que testar:**
+
 - [ ] Regras de negócio (Domain)
 - [ ] Casos de uso (Application)
 - [ ] Validações (Zod schemas)
@@ -276,21 +286,25 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - Sem código órfão
 
 - [ ] **Linter passando**
+
   ```bash
   pnpm lint
   ```
 
 - [ ] **Type check passando**
+
   ```bash
   pnpm type-check
   ```
 
 - [ ] **Testes passando**
+
   ```bash
   pnpm test
   ```
 
 - [ ] **Build funcionando**
+
   ```bash
   pnpm build
   ```
@@ -332,6 +346,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 4.1 Prioridade CRÍTICA (Fazer Agora)
 
 #### ✅ Fundação Organizacional (Base)
+
 - [ ] **Cadastro de Empresa**
   - Busca automática por CNPJ
   - Validação completa
@@ -355,6 +370,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - Contexto organizacional
 
 #### ✅ Infraestrutura de Produção
+
 - [ ] **Health Checks Completos**
   - Database
   - Redis
@@ -374,6 +390,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 4.2 Prioridade ALTA (Próximas 2-4 semanas)
 
 #### ✅ Qualidade e Testes
+
 - [ ] **Cobertura de testes > 80%**
   - Unit tests completos
   - Integration tests críticos
@@ -385,6 +402,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - Cache strategy definida
 
 #### ✅ Segurança
+
 - [ ] **Security scanning automatizado**
   - SAST (CodeQL)
   - Dependency scanning
@@ -398,6 +416,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 4.3 Prioridade MÉDIA (Próximo mês)
 
 #### ✅ Observabilidade
+
 - [ ] **Distributed Tracing**
   - Jaeger configurado
   - Traces em produção
@@ -409,6 +428,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - Alertas de negócio
 
 #### ✅ DevOps
+
 - [ ] **GitOps**
   - ArgoCD ou Flux
   - Deploy automatizado
@@ -433,18 +453,21 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 5.1 Prevenção de Bugs em Produção
 
 #### ✅ Validações Múltiplas
+
 - [ ] **Frontend**: Validação imediata (UX)
 - [ ] **Backend**: Validação obrigatória (Segurança)
 - [ ] **Database**: Constraints quando possível
 - [ ] **Nunca confiar apenas no frontend**
 
 #### ✅ Tratamento de Erros Robusto
+
 - [ ] **Try-catch em operações críticas**
 - [ ] **Fallbacks para serviços externos**
 - [ ] **Circuit breakers para integrações**
 - [ ] **Retry com exponential backoff**
 
 #### ✅ Testes de Carga
+
 - [ ] **Load testing antes de deploy**
 - [ ] **Identificar gargalos**
 - [ ] **Validar limites de escalabilidade**
@@ -452,18 +475,21 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 5.2 Prevenção de Problemas de Segurança
 
 #### ✅ Validação de Entrada
+
 - [ ] **Sanitização de inputs**
 - [ ] **SQL injection prevention** (Prisma ajuda)
 - [ ] **XSS prevention** (React escapa por padrão)
 - [ ] **CSRF protection**
 
 #### ✅ Autenticação e Autorização
+
 - [ ] **Tokens seguros** (JWT com expiração)
 - [ ] **Refresh tokens** implementados
 - [ ] **RBAC validado em cada endpoint**
 - [ ] **Rate limiting** configurado
 
 #### ✅ Secrets e Credenciais
+
 - [ ] **Nunca commitar secrets**
 - [ ] **Usar variáveis de ambiente**
 - [ ] **Rotação periódica**
@@ -472,6 +498,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 5.3 Prevenção de Problemas de Performance
 
 #### ✅ Otimizações Preventivas
+
 - [ ] **Cache strategy definida**
   - O que cachear?
   - TTL apropriado?
@@ -488,6 +515,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - Imagens otimizadas
 
 #### ✅ Monitoramento Proativo
+
 - [ ] **Métricas de performance**
   - Latência p50, p95, p99
   - Throughput
@@ -501,6 +529,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 5.4 Prevenção de Problemas de Deploy
 
 #### ✅ Deploy Seguro
+
 - [ ] **Blue-Green deployment**
   - Zero downtime
   - Rollback rápido
@@ -517,6 +546,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
   - A/B testing
 
 #### ✅ Validação Pré-Deploy
+
 - [ ] **Staging environment**
   - Testar antes de produção
   - Dados similares a produção
@@ -534,6 +564,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 6.1 Pré-Deploy (Antes de Fazer Deploy)
 
 #### ✅ Código
+
 - [ ] Todos os testes passando (> 80% cobertura)
 - [ ] Linter sem erros
 - [ ] Type check sem erros
@@ -543,6 +574,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] Secrets não commitados
 
 #### ✅ Arquitetura
+
 - [ ] ADR criado (se necessário)
 - [ ] Matriz atualizada
 - [ ] Capacidade identificada
@@ -551,6 +583,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] Dependências validadas
 
 #### ✅ Segurança
+
 - [ ] Security scan passando
 - [ ] Dependencies atualizadas
 - [ ] Vulnerabilidades corrigidas
@@ -559,6 +592,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] CORS configurado corretamente
 
 #### ✅ Performance
+
 - [ ] Queries otimizadas
 - [ ] Cache configurado
 - [ ] Lazy loading implementado
@@ -566,6 +600,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] Bundle size validado
 
 #### ✅ Observabilidade
+
 - [ ] Logs estruturados
 - [ ] Métricas implementadas
 - [ ] Health checks funcionando
@@ -573,6 +608,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] Tracing implementado (se aplicável)
 
 #### ✅ Documentação
+
 - [ ] Código documentado
 - [ ] ADR criado (se necessário)
 - [ ] README atualizado
@@ -582,6 +618,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 6.2 Deploy (Durante o Deploy)
 
 #### ✅ Processo
+
 - [ ] Backup realizado
 - [ ] Staging validado
 - [ ] Smoke tests passando
@@ -590,6 +627,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] Equipe notificada
 
 #### ✅ Validação
+
 - [ ] Health checks passando
 - [ ] Funcionalidades críticas testadas
 - [ ] Performance dentro do esperado
@@ -599,6 +637,7 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 ### 6.3 Pós-Deploy (Após Deploy)
 
 #### ✅ Monitoramento (Primeiros 15 minutos)
+
 - [ ] Health checks contínuos
 - [ ] Error rate monitorado
 - [ ] Latência monitorada
@@ -606,12 +645,14 @@ O sistema implementa **RBAC + ABAC + PBAC**:
 - [ ] Alertas verificados
 
 #### ✅ Validação (Primeira hora)
+
 - [ ] Funcionalidades críticas validadas
 - [ ] Performance validada
 - [ ] Sem regressões detectadas
 - [ ] Usuários não reportando problemas
 
 #### ✅ Consolidação (Primeiras 24 horas)
+
 - [ ] Métricas estáveis
 - [ ] Sem incidentes
 - [ ] Documentação finalizada
@@ -699,16 +740,16 @@ curl https://api.morina.com/health
 
 ### 8.1 Quando Consultar Cada Documento
 
-| Situação | Documento | Seção |
-|----------|-----------|-------|
-| Iniciar nova tarefa | Centro de Comando | Seção 2, 3 |
-| Decisão arquitetural | Centro de Comando | Seção 3 |
-| Erro grave | Centro de Comando | Seção 5 |
-| Autoanálise | Diretiva de Governança | Seção 2 |
-| Identificar capacidade | Mapa de Capacidades | Seção 4 |
-| Mapear módulo | Matriz | Seção 3 |
-| Validar contexto | Mapa de Contextos | Seção 5 |
-| Mapear sistema | Guia de Inventário | Seção 3 |
+| Situação               | Documento              | Seção      |
+| ---------------------- | ---------------------- | ---------- |
+| Iniciar nova tarefa    | Centro de Comando      | Seção 2, 3 |
+| Decisão arquitetural   | Centro de Comando      | Seção 3    |
+| Erro grave             | Centro de Comando      | Seção 5    |
+| Autoanálise            | Diretiva de Governança | Seção 2    |
+| Identificar capacidade | Mapa de Capacidades    | Seção 4    |
+| Mapear módulo          | Matriz                 | Seção 3    |
+| Validar contexto       | Mapa de Contextos      | Seção 5    |
+| Mapear sistema         | Guia de Inventário     | Seção 3    |
 
 ### 8.2 Fluxo Integrado
 
@@ -829,10 +870,10 @@ k6 run tests/load/script.js
 > **Antecipe problemas, não reaja a eles.**
 
 **Lembre-se:**
+
 - ✅ Qualidade > Velocidade
 - ✅ Prevenção > Correção
 - ✅ Testes > Confiança
 - ✅ Documentação > Memória
 
 **Qualquer dúvida, consulte o Centro de Comando primeiro.**
-

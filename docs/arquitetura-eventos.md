@@ -59,6 +59,7 @@ Os eventos são processados e atualizam stores Zustand para reatividade imediata
 ### 1. Hook `useConnectionStatus`
 
 Monitora:
+
 - Status da conexão de rede (`navigator.onLine`)
 - Status do backend (health check em `/health`)
 - Status do WebSocket realtime
@@ -66,6 +67,7 @@ Monitora:
 ### 2. Componente `ConnectionStatusIndicator`
 
 Exibe visualmente o status de conexão:
+
 - 🟢 **Conectado**: Backend e realtime online
 - 🟡 **Parcialmente conectado**: Backend online, realtime offline
 - 🟠 **Servidor offline**: Backend não responde
@@ -159,4 +161,3 @@ Exibe visualmente o status de conexão:
 3. **Event Sourcing**: Armazenar histórico completo de eventos
 4. **CQRS**: Separar comandos (write) de queries (read)
 5. **Service Worker**: Sincronização em background mesmo com aba fechada
-

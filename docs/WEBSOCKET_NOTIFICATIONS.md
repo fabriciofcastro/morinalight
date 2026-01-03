@@ -86,8 +86,11 @@ export class AprovarProdutoUseCase {
   ) {}
 
   async execute({ orgId, produtoId, actorId }: Input) {
-    const produto = await this.produtoRepository.encontrarPorId(orgId, produtoId);
-    
+    const produto = await this.produtoRepository.encontrarPorId(
+      orgId,
+      produtoId,
+    );
+
     // ... lógica de aprovação ...
 
     // Notificar usuário
@@ -157,8 +160,14 @@ notificationCenter.add({
 ## Fluxo de Eventos
 
 1. **Backend publica evento**:
+
    ```typescript
-   await notificationService.publishSuccess(orgId, userId, "Título", "Mensagem");
+   await notificationService.publishSuccess(
+     orgId,
+     userId,
+     "Título",
+     "Mensagem",
+   );
    ```
 
 2. **Evento vai para Redis Stream**:
@@ -183,12 +192,14 @@ notificationCenter.add({
 ### Variáveis de Ambiente
 
 **Backend (API)**:
+
 ```env
 REDIS_URL=redis://localhost:6379
 REALTIME_STREAM=realtime.notifications
 ```
 
 **Realtime Service**:
+
 ```env
 REDIS_URL=redis://localhost:6379
 REALTIME_STREAM=realtime.notifications
@@ -196,6 +207,7 @@ REALTIME_SECRET=your-secret-key
 ```
 
 **Frontend**:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3333
 NEXT_PUBLIC_REALTIME_URL=ws://localhost:3334
@@ -217,8 +229,11 @@ export class AprovarProdutoUseCase {
   ) {}
 
   async execute({ orgId, produtoId, actorId }: Input) {
-    const produto = await this.produtoRepository.encontrarPorId(orgId, produtoId);
-    
+    const produto = await this.produtoRepository.encontrarPorId(
+      orgId,
+      produtoId,
+    );
+
     // Aprovar produto
     produto.aprovar();
     await this.produtoRepository.salvar(produto);
@@ -296,4 +311,3 @@ O sistema expõe métricas Prometheus:
 - Autenticação via `REALTIME_SECRET`
 - Filtragem por `orgId` (isolamento de dados)
 - Validação de origem no WebSocket
-

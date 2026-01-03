@@ -17,6 +17,7 @@
 **Problema:** Versões estavam sendo criadas com dados do estado anterior ao invés do novo estado.
 
 **Correção Aplicada:**
+
 ```typescript
 // ANTES (ERRADO):
 dadosSnapshot: this.supplierToJson(estadoAnterior),
@@ -34,6 +35,7 @@ dadosSnapshot: this.supplierToJson(supplier), // Salva estado NOVO
 **Arquivo:** `apps/web/src/app/(app)/fornecedores/[id]/fornecedor-detail-client.tsx`
 
 **Melhorias Aplicadas:**
+
 - ✅ Validação de tamanho máximo (10MB)
 - ✅ Validação de tipo de arquivo permitido
 - ✅ Validação de extensão
@@ -41,6 +43,7 @@ dadosSnapshot: this.supplierToJson(supplier), // Salva estado NOVO
 - ✅ Uso de base64 temporário (com TODO para implementação real)
 
 **Código Adicionado:**
+
 ```typescript
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "application/pdf", ...];
@@ -58,6 +61,7 @@ const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx"];
 **Problema:** Filtros avançados não tinham debounce, causando muitas requisições.
 
 **Correção Aplicada:**
+
 - ✅ Debounce de 500ms em `filtroDocumento`
 - ✅ Debounce de 500ms em `filtroCidade`
 - ✅ Debounce de 500ms em `filtroEstado`
@@ -75,12 +79,14 @@ const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".pdf", ".doc", ".docx"];
 **Problema:** Se um fornecedor falhasse, todos falhavam. Não mostrava resultados parciais.
 
 **Correção Aplicada:**
+
 - ✅ Uso de `Promise.allSettled` ao invés de `Promise.all`
 - ✅ Contagem de sucessos e falhas
 - ✅ Notificações informativas sobre resultados parciais
 - ✅ Confirmação antes de ações em lote
 
 **Código:**
+
 ```typescript
 const resultados = await Promise.allSettled(/* ... */);
 const sucessos = resultados.filter((r) => r.status === "fulfilled").length;
@@ -96,6 +102,7 @@ const falhas = resultados.filter((r) => r.status === "rejected").length;
 **Arquivo:** `apps/web/src/app/(app)/fornecedores/list/fornecedores-list-client.tsx`
 
 **Melhorias Aplicadas:**
+
 - ✅ Confirmação antes de mudar status em lote
 - ✅ Mensagens personalizadas por ação (ativar/desativar/suspender)
 - ✅ Confirmação já existia para deleção (mantido)
@@ -109,6 +116,7 @@ const falhas = resultados.filter((r) => r.status === "rejected").length;
 **Arquivo:** `apps/api/src/modules/suppliers/infra/prisma/prisma-supplier.repository.ts`
 
 **Melhoria Aplicada:**
+
 - ✅ `console.error` agora só executa em desenvolvimento
 - ✅ Adicionado `motivoAlteracao` no versionamento
 
@@ -118,14 +126,14 @@ const falhas = resultados.filter((r) => r.status === "rejected").length;
 
 ## 📊 RESUMO DAS CORREÇÕES
 
-| # | Correção | Status | Prioridade |
-|---|----------|--------|------------|
-| 1 | Versionamento incorreto | ✅ Corrigido | 🔴 Crítica |
-| 2 | Validação de upload | ✅ Melhorado | 🔴 Crítica |
-| 3 | Debounce em filtros | ✅ Adicionado | 🟠 Alta |
-| 4 | Erros em lote | ✅ Melhorado | 🟠 Alta |
-| 5 | Confirmações | ✅ Adicionado | 🟡 Média |
-| 6 | Logging | ✅ Melhorado | 🟡 Média |
+| #   | Correção                | Status        | Prioridade |
+| --- | ----------------------- | ------------- | ---------- |
+| 1   | Versionamento incorreto | ✅ Corrigido  | 🔴 Crítica |
+| 2   | Validação de upload     | ✅ Melhorado  | 🔴 Crítica |
+| 3   | Debounce em filtros     | ✅ Adicionado | 🟠 Alta    |
+| 4   | Erros em lote           | ✅ Melhorado  | 🟠 Alta    |
+| 5   | Confirmações            | ✅ Adicionado | 🟡 Média   |
+| 6   | Logging                 | ✅ Melhorado  | 🟡 Média   |
 
 ---
 
@@ -155,16 +163,19 @@ const falhas = resultados.filter((r) => r.status === "rejected").length;
 ## 🎯 PRÓXIMOS PASSOS RECOMENDADOS
 
 ### Imediato (Antes de Produção)
+
 1. ✅ Corrigir versionamento - **FEITO**
 2. ✅ Adicionar validações de upload - **FEITO**
 3. ⚠️ Implementar upload real de documentos - **PENDENTE**
 
 ### Curto Prazo
+
 4. Implementar sistema de logging
 5. Adicionar testes unitários
 6. Adicionar testes de integração
 
 ### Médio Prazo
+
 7. Implementar importação em massa
 8. Adicionar tags/categorias
 9. Implementar histórico de preços
@@ -174,11 +185,13 @@ const falhas = resultados.filter((r) => r.status === "rejected").length;
 ## 📝 NOTAS TÉCNICAS
 
 ### Arquivos Modificados
+
 1. `apps/api/src/modules/suppliers/infra/prisma/prisma-supplier.repository.ts`
 2. `apps/web/src/app/(app)/fornecedores/[id]/fornecedor-detail-client.tsx`
 3. `apps/web/src/app/(app)/fornecedores/list/fornecedores-list-client.tsx`
 
 ### Testes Recomendados
+
 - [ ] Testar versionamento após atualização
 - [ ] Testar validações de upload
 - [ ] Testar debounce em filtros
@@ -198,6 +211,4 @@ O módulo está mais robusto e pronto para uso, mas ainda precisa de implementa�
 
 ---
 
-*Documento gerado automaticamente - Correções aplicadas no módulo de Fornecedores*
-
-
+_Documento gerado automaticamente - Correções aplicadas no módulo de Fornecedores_

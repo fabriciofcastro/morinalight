@@ -81,4 +81,3 @@ registerCompanySettingsRoutes(app, repository);
 - Versionar alterações (audit trail) reutilizando o `ProductAuditLog`.
 - Oferecer staging area (preview) antes do publish.
 - Enviar evento `Branding.CompanySettingsAtualizado.v1` para sincronizar com outras aplicações (mobile, TOTVS).
-

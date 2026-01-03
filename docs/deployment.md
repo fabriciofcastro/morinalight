@@ -376,4 +376,3 @@ Para problemas:
 - [Docker Compose](https://docs.docker.com/compose/)
 - [Nginx Load Balancing](https://nginx.org/en/docs/http/load_balancing.html)
 - [PostgreSQL Replication](https://www.postgresql.org/docs/current/high-availability.html)
-

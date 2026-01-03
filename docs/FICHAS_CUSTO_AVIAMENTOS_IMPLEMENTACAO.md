@@ -21,6 +21,7 @@ Criados 6 modelos principais no banco de dados:
 - ✅ `DocumentoFichaCusto` - Documentos anexados (fotos, notas fiscais, etc.)
 
 **Enums criados:**
+
 - `FichaCustoStatus`: rascunho, enviada_para_conferencia, aprovada, reprovada
 - `TipoInsumo`: aviamento, servico, terceirizacao, outros
 - `TipoDocumento`: foto_peca, nota_fiscal, boleto, comprovante_pagamento, outros
@@ -29,12 +30,14 @@ Criados 6 modelos principais no banco de dados:
 ### 2. Domain Layer - DDD Completo (100% ✅)
 
 #### Value Objects:
+
 - ✅ `FichaCustoId` - Identificador único
 - ✅ `ValorMonetario` - Value Object para valores financeiros com precisão decimal
 - ✅ `Quantidade` - Value Object para quantidades com unidade de medida
 - ✅ `StatusFichaCustoVO` - Value Object para status com transições válidas
 
 #### Entities:
+
 - ✅ `FichaCusto` - Aggregate Root com todas as regras de negócio:
   - Validação de edição por status
   - Workflow obrigatório (rascunho → enviada → aprovada/reprovada)
@@ -50,6 +53,7 @@ Criados 6 modelos principais no banco de dados:
   - Validação de nota fiscal obrigatória
 
 #### Repository Interface:
+
 - ✅ `FichaCustoRepository` - Interface completa com:
   - salvar, buscarPorId, buscarPorNumeroSequencial
   - listar com filtros avançados e paginação
@@ -71,12 +75,14 @@ Todos os eventos de domínio criados:
 ### 4. Application Layer (100% ✅)
 
 #### Schemas Zod:
+
 - ✅ Validação completa de todos os inputs
 - ✅ Schemas para criação, atualização, aprovação, reprovação
 - ✅ Schemas para boletos e insumos
 - ✅ Filtros e paginação
 
 #### Use Cases Implementados:
+
 - ✅ `CriarFichaCustoUseCase` - Criar nova ficha com insumos
 - ✅ `AtualizarFichaCustoUseCase` - Atualizar ficha (com versionamento)
 - ✅ `ListarFichasCustoUseCase` - Listar com filtros avançados
@@ -107,6 +113,7 @@ Rotas implementadas:
 - ✅ `POST /organizations/:orgId/fichas-custo/:id/reject` - Reprovar
 
 **Características:**
+
 - ✅ Validação completa com Zod
 - ✅ Autenticação JWT
 - ✅ Tenant isolation (multi-tenant)
@@ -181,17 +188,20 @@ apps/api/src/modules/fichas-custo/
 ## 🔧 Próximos Passos
 
 ### Backend - Pendente:
+
 1. ⏳ **Audit Log Repository** - Implementar repositório de auditoria (opcional, já está no schema)
 2. ⏳ **Notification Service** - Integrar com sistema de notificações
 3. ⏳ **File Storage Service** - Integrar com Object Storage (S3) para fotos/documentos
 
 ### Frontend - Pendente:
+
 1. ⏳ **API Client** - Cliente HTTP para comunicação com backend
 2. ⏳ **Components** - Form, List, Detail, InsumosTable, etc.
 3. ⏳ **Páginas** - Lista, Criar, Editar, Visualizar, Aprovar
 4. ⏳ **Design System** - Aplicar glass morphism e design "secret lab"
 
 ### Banco de Dados:
+
 1. ⏳ **Migração Prisma** - Executar `npx prisma migrate dev --name add_fichas_custo`
 
 ---
@@ -208,19 +218,21 @@ apps/api/src/modules/fichas-custo/
 ✅ **Versionamento completo** de alterações  
 ✅ **Auditoria 100%** (todas as ações são registradas)  
 ✅ **Validação de boletos** (não pode exceder valor aprovado)  
-✅ **Bloqueio de edição** por status  
+✅ **Bloqueio de edição** por status
 
 ---
 
 ## 🚀 Como Testar
 
 1. **Gerar migração do Prisma:**
+
    ```bash
    cd apps/api
    npx prisma migrate dev --name add_fichas_custo
    ```
 
 2. **Iniciar servidor:**
+
    ```bash
    npm run dev
    ```

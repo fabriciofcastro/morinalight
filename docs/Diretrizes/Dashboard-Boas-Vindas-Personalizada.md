@@ -19,6 +19,7 @@ Cada usuário que acessa a dashboard deve receber:
 ### 1.2 Objetivo
 
 Criar uma experiência personalizada e informativa que:
+
 - Melhore a experiência do usuário
 - Forneça contexto útil imediatamente
 - Não sobrecarregue a interface
@@ -53,6 +54,7 @@ Dashboard
 ### 3.1 Componente de Boas-Vindas (Welcome Banner)
 
 #### **Posicionamento:**
+
 - **Topo da dashboard**, logo após o header
 - **Não fixo** (pode ser minimizado/fechado)
 - **Responsivo** (mobile: compacto, desktop: expandido)
@@ -89,15 +91,18 @@ Dashboard
 #### **Fonte de Dados:**
 
 **Opção 1: API Gratuita (Recomendada)**
+
 - **OpenWeatherMap** (free tier: 1.000 calls/dia)
 - **WeatherAPI** (free tier: 1 milhão calls/mês)
 - **AccuWeather** (free tier limitado)
 
 **Opção 2: API Paga**
+
 - **OpenWeatherMap Pro:** ~$40/mês
 - **WeatherAPI Pro:** ~$4/mês
 
 **Opção 3: Cache Local**
+
 - Cache de 30 minutos
 - Reduz chamadas à API
 - Fallback se API falhar
@@ -107,6 +112,7 @@ Dashboard
 #### **A. Funcionário da Empresa**
 
 **Informações a Exibir:**
+
 - ✅ Notificações não lidas (com sonorização)
 - ✅ Tarefas pendentes
 - ✅ Aprovações aguardando
@@ -115,6 +121,7 @@ Dashboard
 - ✅ Eventos da empresa (opcional)
 
 **Sonorização de Notificações:**
+
 - ✅ Som diferente por tipo (success, error, warning, info)
 - ✅ Volume configurável nas preferências
 - ✅ Pode ser desativado pelo usuário
@@ -123,6 +130,7 @@ Dashboard
 #### **B. Representante**
 
 **Informações a Exibir:**
+
 - ✅ Comissões pendentes
 - ✅ Pedidos aguardando aprovação
 - ✅ Valor total de comissões do mês
@@ -132,6 +140,7 @@ Dashboard
 #### **C. Gestor/Administrador**
 
 **Informações a Exibir:**
+
 - ✅ Pendências de aprovação
 - ✅ Alertas do sistema
 - ✅ Métricas críticas
@@ -161,7 +170,12 @@ interface WelcomeBannerProps {
   onDismiss?: () => void;
 }
 
-export function WelcomeBanner({ user, minimized, onMinimize, onDismiss }: WelcomeBannerProps) {
+export function WelcomeBanner({
+  user,
+  minimized,
+  onMinimize,
+  onDismiss,
+}: WelcomeBannerProps) {
   // Lógica de boas-vindas
   // Saudação baseada no horário
   // Informações contextuais
@@ -179,7 +193,11 @@ interface WeatherWidgetProps {
   compact?: boolean;
 }
 
-export function WeatherWidget({ location, showForecast, compact }: WeatherWidgetProps) {
+export function WeatherWidget({
+  location,
+  showForecast,
+  compact,
+}: WeatherWidgetProps) {
   // Buscar dados do tempo
   // Exibir temperatura e condição
   // Cache de 30 minutos
@@ -192,7 +210,7 @@ export function WeatherWidget({ location, showForecast, compact }: WeatherWidget
 // components/dashboard/ContextualInfo.tsx
 
 interface ContextualInfoProps {
-  userType: 'employee' | 'representative' | 'manager';
+  userType: "employee" | "representative" | "manager";
   userId: string;
 }
 
@@ -214,7 +232,7 @@ type UserContext = {
   position?: string;
   department?: string;
   avatarUrl?: string;
-  userType: 'employee' | 'representative' | 'manager';
+  userType: "employee" | "representative" | "manager";
   location?: {
     city: string;
     state: string;
@@ -361,6 +379,7 @@ type ContextualInfo = {
 ### 6.1 Problema
 
 Alguns usuários podem não ter acesso à dashboard:
+
 - Representantes (podem ter portal próprio)
 - Usuários com permissões muito limitadas
 - Usuários em onboarding (ainda não configurados)
@@ -370,6 +389,7 @@ Alguns usuários podem não ter acesso à dashboard:
 #### **Opção A: Dashboard Mínima (Recomendada)**
 
 Criar uma dashboard simplificada com:
+
 - Mensagem de boas-vindas
 - Informações básicas do usuário
 - Ações disponíveis (limitadas)
@@ -395,6 +415,7 @@ Criar uma dashboard simplificada com:
 #### **Opção B: Redirecionamento Inteligente**
 
 Baseado no tipo de usuário:
+
 - **Representante** → `/representative/dashboard`
 - **Usuário limitado** → `/profile` ou página específica
 - **Sem permissões** → Mensagem + contato
@@ -402,6 +423,7 @@ Baseado no tipo de usuário:
 #### **Opção C: Dashboard Condicional**
 
 Dashboard que adapta conteúdo baseado em permissões:
+
 - Se não tem permissão para ver stats → Não mostra
 - Se não tem permissão para ações → Não mostra
 - Mostra apenas o que o usuário pode acessar
@@ -415,6 +437,7 @@ Dashboard que adapta conteúdo baseado em permissões:
 **Objetivo:** Mensagem de boas-vindas simples
 
 **Implementação:**
+
 - [ ] Componente `WelcomeBanner`
 - [ ] Saudação baseada no horário (Bom dia/Tarde/Noite)
 - [ ] Nome do usuário
@@ -428,6 +451,7 @@ Dashboard que adapta conteúdo baseado em permissões:
 **Objetivo:** Adicionar widget de clima
 
 **Implementação:**
+
 - [ ] Componente `WeatherWidget`
 - [ ] Integração com API de clima (OpenWeatherMap)
 - [ ] Cache de 30 minutos
@@ -441,6 +465,7 @@ Dashboard que adapta conteúdo baseado em permissões:
 **Objetivo:** Adicionar informações relevantes
 
 **Implementação:**
+
 - [ ] Componente `ContextualInfo`
 - [ ] Buscar notificações não lidas
 - [ ] Buscar tarefas pendentes
@@ -454,6 +479,7 @@ Dashboard que adapta conteúdo baseado em permissões:
 **Objetivo:** Adaptar dashboard para usuários sem acesso completo
 
 **Implementação:**
+
 - [ ] Verificar permissões do usuário
 - [ ] Renderizar apenas conteúdo permitido
 - [ ] Dashboard mínima para usuários limitados
@@ -470,15 +496,15 @@ Dashboard que adapta conteúdo baseado em permissões:
 ```typescript
 function getGreeting(): string {
   const hour = new Date().getHours();
-  
+
   if (hour >= 5 && hour < 12) {
-    return 'Bom dia';
+    return "Bom dia";
   } else if (hour >= 12 && hour < 18) {
-    return 'Boa tarde';
+    return "Boa tarde";
   } else if (hour >= 18 && hour < 22) {
-    return 'Boa noite';
+    return "Boa noite";
   } else {
-    return 'Boa madrugada';
+    return "Boa madrugada";
   }
 }
 ```
@@ -501,7 +527,7 @@ export class WeatherService {
 
     // Buscar da API
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=pt_br`
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=pt_br`,
     );
 
     const data = await response.json();
@@ -529,13 +555,13 @@ export class WeatherService {
 
   private translateCondition(condition: string): string {
     const translations: Record<string, string> = {
-      Clear: 'Ensolarado',
-      Clouds: 'Nublado',
-      Rain: 'Chuva',
-      Drizzle: 'Garoa',
-      Thunderstorm: 'Tempestade',
-      Snow: 'Neve',
-      Mist: 'Neblina',
+      Clear: "Ensolarado",
+      Clouds: "Nublado",
+      Rain: "Chuva",
+      Drizzle: "Garoa",
+      Thunderstorm: "Tempestade",
+      Snow: "Neve",
+      Mist: "Neblina",
     };
     return translations[condition] || condition;
   }
@@ -555,7 +581,7 @@ export function useDashboardContext() {
   useEffect(() => {
     async function fetchContext() {
       try {
-        const response = await fetch('/api/dashboard/context', {
+        const response = await fetch("/api/dashboard/context", {
           headers: getAuthHeadersWithTenant(),
         });
 
@@ -564,7 +590,7 @@ export function useDashboardContext() {
           setContext(data);
         }
       } catch (error) {
-        console.error('Erro ao buscar contexto:', error);
+        console.error("Erro ao buscar contexto:", error);
       } finally {
         setLoading(false);
       }
@@ -609,7 +635,7 @@ export function WelcomeBanner() {
     if (pref === 'true') {
       setMinimized(true);
     }
-    
+
     const dismissedToday = localStorage.getItem(`welcome_banner_${user?.userId}_dismissed_${new Date().toDateString()}`);
     if (dismissedToday === 'true') {
       setDismissed(true);
@@ -620,10 +646,10 @@ export function WelcomeBanner() {
 
   const greeting = getGreeting();
   const dayName = new Date().toLocaleDateString('pt-BR', { weekday: 'long' });
-  const date = new Date().toLocaleDateString('pt-BR', { 
-    day: '2-digit', 
-    month: 'long', 
-    year: 'numeric' 
+  const date = new Date().toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
   });
 
   const handleMinimize = () => {
@@ -717,7 +743,7 @@ export function WelcomeBanner() {
         {context?.weather && (
           <WeatherWidget data={context.weather} compact />
         )}
-        
+
         {context?.notifications > 0 && (
           <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4">
             <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
@@ -769,16 +795,16 @@ function getGreeting(): string {
 export function useDashboardAccess() {
   const { user } = useAuth();
   const { permissions } = usePermissions();
-  
-  const hasFullAccess = permissions.includes('dashboard:view:full');
-  const hasStatsAccess = permissions.includes('dashboard:view:stats');
-  const hasActionsAccess = permissions.includes('dashboard:view:actions');
+
+  const hasFullAccess = permissions.includes("dashboard:view:full");
+  const hasStatsAccess = permissions.includes("dashboard:view:stats");
+  const hasActionsAccess = permissions.includes("dashboard:view:actions");
 
   return {
     hasFullAccess,
     hasStatsAccess,
     hasActionsAccess,
-    userType: user?.userType || 'employee',
+    userType: user?.userType || "employee",
   };
 }
 ```
@@ -800,10 +826,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <WelcomeBanner />
-      
+
       {hasStatsAccess && <StatsGrid />}
       {hasActionsAccess && <QuickActions />}
-      
+
       <RecentActivity />
     </div>
   );
@@ -819,7 +845,7 @@ export function MinimalDashboard({ userType }: { userType: string }) {
   return (
     <div className="space-y-6">
       <WelcomeBanner />
-      
+
       <div className="rounded-lg border border-white/10 bg-white/5 p-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">
           Bem-vindo ao MORINA!
@@ -827,7 +853,7 @@ export function MinimalDashboard({ userType }: { userType: string }) {
         <p className="text-white/70 mb-6">
           Você está acessando o sistema com permissões limitadas.
         </p>
-        
+
         <div className="grid gap-4 sm:grid-cols-2 max-w-md mx-auto">
           <Link
             href="/profile"
@@ -836,7 +862,7 @@ export function MinimalDashboard({ userType }: { userType: string }) {
             <User className="h-5 w-5 text-[hsl(var(--primary))]" />
             <span>Meu Perfil</span>
           </Link>
-          
+
           <Link
             href="/notifications"
             className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-colors"
@@ -845,7 +871,7 @@ export function MinimalDashboard({ userType }: { userType: string }) {
             <span>Notificações</span>
           </Link>
         </div>
-        
+
         <p className="mt-6 text-sm text-white/50">
           Precisa de mais acesso? Entre em contato com o administrador.
         </p>
@@ -910,7 +936,7 @@ Response: {
   forecast: {
     max: number;
     min: number;
-  };
+  }
   lastUpdated: string;
 }
 ```
@@ -928,7 +954,7 @@ type UserPreferences = {
   welcomeBannerDismissedToday: boolean;
   showWeather: boolean;
   showContextualInfo: boolean;
-  dashboardLayout: 'default' | 'compact' | 'minimal';
+  dashboardLayout: "default" | "compact" | "minimal";
 };
 ```
 
@@ -1036,4 +1062,3 @@ type UserPreferences = {
 **Última atualização:** 2025-01-19  
 **Versão:** 1.0.0  
 **Status:** Documentação para implementação futura
-

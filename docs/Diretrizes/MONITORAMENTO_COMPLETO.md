@@ -24,6 +24,7 @@ Aplicações → Prometheus → Grafana
 ### 1. Provisioning do Grafana
 
 **Arquivos:**
+
 - `devops/observability/grafana/provisioning/datasources/prometheus.yml`
 - `devops/observability/grafana/provisioning/dashboards/default.yml`
 
@@ -35,9 +36,11 @@ Aplicações → Prometheus → Grafana
 ### 2. Dashboards do Grafana
 
 #### System Overview
+
 **Arquivo:** `devops/observability/grafana/dashboards/system-overview.json`
 
 Métricas exibidas:
+
 - CPU Usage (%)
 - Memory Usage (%)
 - Disk Usage (%)
@@ -46,9 +49,11 @@ Métricas exibidas:
 - Error Rate (errors/s)
 
 #### API Performance
+
 **Arquivo:** `devops/observability/grafana/dashboards/api-performance.json`
 
 Métricas exibidas:
+
 - Request Rate por método HTTP
 - Response Time (p50, p95, p99)
 - Requests por Status Code (gráfico de pizza)
@@ -56,9 +61,11 @@ Métricas exibidas:
 - Error Rate por Route
 
 #### Business Metrics
+
 **Arquivo:** `devops/observability/grafana/dashboards/business-metrics.json`
 
 Métricas exibidas:
+
 - Domain Events Published (por stream)
 - Realtime Events Forwarded (por stream)
 - Domain Event Stream Length
@@ -74,6 +81,7 @@ Métricas exibidas:
 Alertas configurados:
 
 #### Sistema
+
 - **HighErrorRate**: Taxa de erro acima de 5% por 5 minutos
 - **HighLatency**: Latência p95 acima de 1s por 5 minutos
 - **ServiceDown**: Serviço down por mais de 2 minutos
@@ -82,13 +90,16 @@ Alertas configurados:
 - **DiskSpaceLow**: Espaço em disco abaixo de 15% por 5 minutos
 
 #### Banco de Dados
+
 - **DatabaseConnectionPoolExhausted**: Pool de conexões acima de 80% por 5 minutos
 - **PostgreSQLReplicationLag**: Lag de replicação acima de 30s por 5 minutos
 
 #### Redis
+
 - **RedisDown**: Redis down por mais de 2 minutos
 
 #### Negócio
+
 - **HighAPIResponseTime**: Tempo de resposta p99 acima de 2s por 5 minutos
 - **LowRequestRate**: Taxa de requisições abaixo de 1 req/s por 10 minutos
 
@@ -123,6 +134,7 @@ docker-compose -f docker-compose.observability.yml up -d
 ```
 
 Serviços disponíveis:
+
 - **Prometheus**: http://localhost:9090
 - **Grafana**: http://localhost:3001 (admin/admin)
 - **Loki**: http://localhost:3100
@@ -143,26 +155,31 @@ Serviços disponíveis:
 ## Queries PromQL Úteis
 
 ### Request Rate
+
 ```promql
 rate(morina_api_http_requests_total[5m])
 ```
 
 ### Error Rate
+
 ```promql
 rate(morina_api_http_requests_total{status_code=~"5.."}[5m])
 ```
 
 ### Response Time (p95)
+
 ```promql
 histogram_quantile(0.95, rate(morina_api_http_request_duration_seconds_bucket[5m]))
 ```
 
 ### Total Requests (últimas 24h)
+
 ```promql
 sum(increase(morina_api_http_requests_total[24h]))
 ```
 
 ### Error Percentage
+
 ```promql
 sum(rate(morina_api_http_requests_total{status_code=~"5.."}[5m])) / sum(rate(morina_api_http_requests_total[5m])) * 100
 ```
@@ -193,6 +210,7 @@ Edite o arquivo JSON do dashboard e adicione um novo painel com a query PromQL.
 ## Alertas
 
 Os alertas são avaliados pelo Prometheus e podem ser encaminhados para:
+
 - Email
 - Slack
 - PagerDuty
@@ -231,11 +249,3 @@ Os alertas são avaliados pelo Prometheus e podem ser encaminhados para:
 3. **Dashboards Customizados**: Criar dashboards específicos por módulo
 4. **SLOs/SLIs**: Definir e monitorar Service Level Objectives
 5. **Distributed Tracing**: Integrar Jaeger para tracing completo
-
-
-
-
-
-
-
-

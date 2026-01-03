@@ -79,6 +79,7 @@ apps/web/src/
 ## 📋 Regras de Nomenclatura
 
 ### Arquivos
+
 - **Componentes:** `kebab-case.tsx` (ex: `user-form-client.tsx`)
 - **Hooks:** `use-kebab-case.ts` (ex: `use-auto-save.ts`)
 - **Utils:** `kebab-case.ts` (ex: `format-cpf.ts`)
@@ -88,10 +89,12 @@ apps/web/src/
 - **Constants:** `kebab-case.constants.ts` (ex: `app.constants.ts`)
 
 ### Pastas
+
 - **Módulos:** `kebab-case` (ex: `user-management`)
 - **Features:** `kebab-case` (ex: `permission-matrix`)
 
 ### Componentes React
+
 - **Client Components:** `[Module][Feature]Client` (ex: `UserFormClient`)
 - **Server Components:** `[Module][Feature]` (ex: `UserList`)
 - **UI Components:** `[Feature]` (ex: `FuturisticInput`)
@@ -113,8 +116,3 @@ Ao criar novo módulo:
 ---
 
 **Última atualização:** 2025-01-19
-
-
-
-
-

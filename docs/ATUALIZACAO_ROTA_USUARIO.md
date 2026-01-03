@@ -21,6 +21,7 @@ A rota agora aceita e atualiza os seguintes campos opcionais:
 - `avatarUrl` (String URL?, nullable) - URL do avatar
 
 ### Campos Já Existentes
+
 - `email` (String, optional)
 - `displayName` (String?, nullable, optional)
 - `status` (Enum, optional)
@@ -51,6 +52,7 @@ A rota agora aceita e atualiza os seguintes campos opcionais:
 ## 🔄 Validações
 
 ### Schema Zod
+
 - `cpf`: String opcional, nullable
 - `phone`: String opcional, nullable
 - `birthDate`: String datetime ou formato YYYY-MM-DD, nullable
@@ -59,6 +61,7 @@ A rota agora aceita e atualiza os seguintes campos opcionais:
 - `avatarUrl`: URL opcional, nullable
 
 ### Parsing
+
 - Datas são convertidas de string para `Date` antes de salvar
 - Suporta formato ISO 8601 e YYYY-MM-DD
 
@@ -90,22 +93,26 @@ A resposta da rota `PUT /users/:userId` agora inclui todos os campos:
 ## ✅ Status Completo do CRUD
 
 ### Create (POST /users) ✅
+
 - ✅ Todos os campos suportados
 - ✅ Validações completas
 - ✅ Parsing de datas
 - ✅ Persistência no banco
 
 ### Read (GET /users/:userId) ✅
+
 - ✅ Retorna todos os campos
 - ✅ Implementado
 
 ### Update (PUT /users/:userId) ✅
+
 - ✅ Todos os campos suportados
 - ✅ Validações completas
 - ✅ Parsing de datas
 - ✅ Persistência no banco
 
 ### Delete (DELETE /users/:userId) ✅
+
 - ✅ Implementado
 - ✅ Limpa relacionamentos
 
@@ -114,10 +121,13 @@ A resposta da rota `PUT /users/:userId` agora inclui todos os campos:
 ## 🔒 Segurança
 
 ### Criptografia
+
 Os campos `cpf` e `phone` são automaticamente criptografados pelo middleware:
+
 - `apps/api/src/core/database/encryption.middleware.ts`
 
 ### Validações
+
 - Email único (verificado antes de atualizar)
 - Senha mínima 6 caracteres
 - URLs válidas para avatarUrl
@@ -158,5 +168,3 @@ O sistema de CRUD de usuários está agora **100% completo** com suporte a todos
 ---
 
 **Última atualização:** 2025-01-19
-
-

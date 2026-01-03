@@ -1,10 +1,13 @@
-# FUNDAMENTOS ESTRUTURAIS – MORINA  
-### Diretriz Oficial para o Cursor  
+# FUNDAMENTOS ESTRUTURAIS – MORINA
+
+### Diretriz Oficial para o Cursor
+
 ### Construção Prioritária da Base Corporativa Antes de Módulos Funcionais
 
 ---
 
 # 🧭 Objetivo
+
 Garantir que o Cursor construa **primeiro a fundação corporativa universal**, necessária para sustentar todos os módulos funcionais da aplicação corporativa interna Morina.
 
 Sem essa base:  
@@ -13,30 +16,30 @@ Sem essa base:
 ❌ não existe fluxo entre departamentos  
 ❌ não existe auditoria  
 ❌ não existe identidade corporativa  
-❌ não existe DDD consistente  
+❌ não existe DDD consistente
 
 Com essa base:  
 ✔ 100% escalável  
 ✔ governança sólida  
 ✔ todos os módulos plug-and-play  
 ✔ estrutura organizacional viva  
-✔ IA integrada em cada setor  
+✔ IA integrada em cada setor
 
 ---
 
 # 📌 ORDEM OBRIGATÓRIA DE CONSTRUÇÃO
 
-1. **Cadastro de Empresa** (com busca automática por CNPJ)  
-2. **Configurações da Empresa**  
-3. **Tema da Empresa** (logo, cores, vídeo)  
-4. **Cadastro de Departamentos**  
-5. **Cadastro de Setores**  
-6. **Cadastro de Cargos**  
-7. **Cadastro de Permissões (RBAC base)**  
-8. **Cadastro de Usuários / Funcionários** (com busca automática por CPF)  
-9. **Matriz de Permissões (RBAC por cargo/setor/departamento)**  
-10. **Auditoria e Versionamento Interno**  
-11. **Eventos Base do Domínio**  
+1. **Cadastro de Empresa** (com busca automática por CNPJ)
+2. **Configurações da Empresa**
+3. **Tema da Empresa** (logo, cores, vídeo)
+4. **Cadastro de Departamentos**
+5. **Cadastro de Setores**
+6. **Cadastro de Cargos**
+7. **Cadastro de Permissões (RBAC base)**
+8. **Cadastro de Usuários / Funcionários** (com busca automática por CPF)
+9. **Matriz de Permissões (RBAC por cargo/setor/departamento)**
+10. **Auditoria e Versionamento Interno**
+11. **Eventos Base do Domínio**
 12. **Somente depois disso → Módulos finais (PCP, Corte, Produção, Financeiro, Qualidade etc.)**
 
 ---
@@ -44,33 +47,37 @@ Com essa base:
 # 🔥 1. CADASTRO DE EMPRESA
 
 ### Dados obrigatórios
-- Razão Social  
-- Nome Fantasia  
-- CNPJ  
-- Inscrição Estadual  
-- Inscrição Municipal  
-- CNAE  
-- Regime Tributário  
-- Endereço completo  
-- E-mail corporativo  
-- Telefone  
-- Responsável legal  
-- Logo da empresa  
-- Vídeo institucional (YouTube/Vimeo)  
+
+- Razão Social
+- Nome Fantasia
+- CNPJ
+- Inscrição Estadual
+- Inscrição Municipal
+- CNAE
+- Regime Tributário
+- Endereço completo
+- E-mail corporativo
+- Telefone
+- Responsável legal
+- Logo da empresa
+- Vídeo institucional (YouTube/Vimeo)
 
 ### Busca Automática por CNPJ
+
 O sistema deve integrar-se para preencher automaticamente:
-- Razão Social  
-- Nome Fantasia  
-- Endereço busca automática por cep   
-- Situação cadastral  
-- CNAE principal  
-- Atividades secundárias  
+
+- Razão Social
+- Nome Fantasia
+- Endereço busca automática por cep
+- Situação cadastral
+- CNAE principal
+- Atividades secundárias
 
 ### Entidades DDD
-- `Empresa`  
-- `Filial`  
-- `ConfiguracaoEmpresa`  
+
+- `Empresa`
+- `Filial`
+- `ConfiguracaoEmpresa`
 - `TemaEmpresa`
 
 ---
@@ -78,37 +85,46 @@ O sistema deve integrar-se para preencher automaticamente:
 # 🔥 2. ESTRUTURA ORGANIZACIONAL
 
 ### Hierarquia base
-Empresa  
-> Departamento  
-> > Setor  
-> > > Cargo  
-> > > > Permissões  
+
+Empresa
+
+> Departamento
+>
+> > Setor
+> >
+> > > Cargo
+> > >
+> > > > Permissões
 
 ### 2.1 Cadastro de Departamento
-- Nome  
-- Sigla  
-- Responsável  
-- Finalidade  
-- Data de criação  
+
+- Nome
+- Sigla
+- Responsável
+- Finalidade
+- Data de criação
 
 ### 2.2 Cadastro de Setor
-- Nome  
-- Departamento vinculado  
-- Responsável  
-- Política interna  
-- Atribuições  
+
+- Nome
+- Departamento vinculado
+- Responsável
+- Política interna
+- Atribuições
 
 ### 2.3 Cadastro de Cargo
-- Nome  
-- Senioridade  
-- Responsabilidades  
-- Ações permitidas  
-- KPIs  
+
+- Nome
+- Senioridade
+- Responsabilidades
+- Ações permitidas
+- KPIs
 
 ### Entidades
-- `Departamento`  
-- `Setor`  
-- `Cargo`  
+
+- `Departamento`
+- `Setor`
+- `Cargo`
 - `PermissaoCargo`
 
 ---
@@ -116,51 +132,57 @@ Empresa
 # 🔥 3. CADASTRO DO FUNCIONÁRIO / USUÁRIO
 
 ### Inputs obrigatórios
-- Nome completo  
-- CPF  
-- RG  
-- Data de nascimento  
-- Email corporativo  
-- Telefone  
-- Endereço  
-- Cargo  
-- Setor  
-- Departamento  
-- Filial  
-- Data de admissão  
-- Status  
+
+- Nome completo
+- CPF
+- RG
+- Data de nascimento
+- Email corporativo
+- Telefone
+- Endereço
+- Cargo
+- Setor
+- Departamento
+- Filial
+- Data de admissão
+- Status
 
 ### Busca automática por CPF
-Deve preencher:  
-- Nome  
-- Data de nascimento  
-- Situação  
+
+Deve preencher:
+
+- Nome
+- Data de nascimento
+- Situação
 
 ### Entidades
-- `Usuario`  
-- `Funcionario`  
-- `PerfilUsuario`  
-- `Acesso`  
+
+- `Usuario`
+- `Funcionario`
+- `PerfilUsuario`
+- `Acesso`
 
 ---
 
 # 🔥 4. RBAC – PAPÉIS & PERMISSÕES
 
 ### Papéis fundamentais
-- Super Administrador Morina  
-- Administrador da Empresa  
-- Gestor  
-- Supervisor  
-- Analista  
-- Operador  
-- Auditor  
-- Visualizador  
+
+- Super Administrador Morina
+- Administrador da Empresa
+- Gestor
+- Supervisor
+- Analista
+- Operador
+- Auditor
+- Visualizador
 
 Cada papel deve ter:
-- Ações (Criar/Editar/Excluir/Aprovar/Reprovar/Visualizar/Configurar)  
-- Acesso a módulos específicos  
-- Regras de restrição  
-- Logs obrigatórios  
+
+- Ações (Criar/Editar/Excluir/Aprovar/Reprovar/Visualizar/Configurar)
+- Acesso a módulos específicos
+- Regras de restrição
+- Logs obrigatórios
 
 ---
 
@@ -168,35 +190,37 @@ Cada papel deve ter:
 
 Cada empresa deve ter seu centro de configurações:
 
-- Fuso horário  
-- Idioma  
-- Moeda  
-- Regime tributário  
-- Políticas internas  
-- SLA por departamento  
-- Parâmetros de numeração  
-- Tema (cores, fontes, logo, dark/light, vídeo fundo)  
+- Fuso horário
+- Idioma
+- Moeda
+- Regime tributário
+- Políticas internas
+- SLA por departamento
+- Parâmetros de numeração
+- Tema (cores, fontes, logo, dark/light, vídeo fundo)
 
 ---
 
 # 🔥 6. AUDITORIA E VERSIONAMENTO
 
 ### Log obrigatório
-- Quem fez  
-- O que fez  
-- Antes  
-- Depois  
-- IP  
-- Timestamp  
-- Canal (web, mobile, api)  
+
+- Quem fez
+- O que fez
+- Antes
+- Depois
+- IP
+- Timestamp
+- Canal (web, mobile, api)
 
 ### Registro de eventos
-- `EmpresaRegistrada`  
-- `DepartamentoCriado`  
-- `CargoAtribuido`  
-- `UsuarioCriado`  
-- `LoginRealizado`  
-- `PermissaoAlterada`  
+
+- `EmpresaRegistrada`
+- `DepartamentoCriado`
+- `CargoAtribuido`
+- `UsuarioCriado`
+- `LoginRealizado`
+- `PermissaoAlterada`
 
 ---
 
@@ -204,14 +228,14 @@ Cada empresa deve ter seu centro de configurações:
 
 Deve existir antes de qualquer módulo avançado:
 
-- `EmpresaCriada`  
-- `EmpresaConfigurada`  
-- `DepartamentoCriado`  
-- `SetorCriado`  
-- `CargoCriado`  
-- `UsuarioRegistrado`  
-- `PermissaoAtualizada`  
-- `AuditoriaRegistrada`  
+- `EmpresaCriada`
+- `EmpresaConfigurada`
+- `DepartamentoCriado`
+- `SetorCriado`
+- `CargoCriado`
+- `UsuarioRegistrado`
+- `PermissaoAtualizada`
+- `AuditoriaRegistrada`
 
 ---
 
@@ -219,15 +243,15 @@ Deve existir antes de qualquer módulo avançado:
 
 O Cursor deve:
 
-- Criar **todos os cadastros base completos**  
-- Criar modelos DDD sólidos  
-- Criar endpoints padrão  
-- Criar validações Zod  
-- Criar sistema RBAC completo  
-- Criar primeiros eventos de domínio  
-- Criar testes iniciais  
-- Criar documentação automática  
-- Garantir escalabilidade multiempresa  
+- Criar **todos os cadastros base completos**
+- Criar modelos DDD sólidos
+- Criar endpoints padrão
+- Criar validações Zod
+- Criar sistema RBAC completo
+- Criar primeiros eventos de domínio
+- Criar testes iniciais
+- Criar documentação automática
+- Garantir escalabilidade multiempresa
 
 ---
 
@@ -235,25 +259,28 @@ O Cursor deve:
 
 Com este documento aplicado, o Cursor será capaz de:
 
-- Construir toda a base corporativa sólida  
-- Criar os módulos superiores sem retrabalho  
-- Organizar departamentos e fluxos  
-- Integrar IA em cada ponto  
-- Garantir rastreabilidade e governança  
-- Criar qualquer módulo futuro plug-and-play  
+- Construir toda a base corporativa sólida
+- Criar os módulos superiores sem retrabalho
+- Organizar departamentos e fluxos
+- Integrar IA em cada ponto
+- Garantir rastreabilidade e governança
+- Criar qualquer módulo futuro plug-and-play
 
 Este arquivo é a fundação oficial da Morina.
 
 ✅ 2. .cursorignore (versão otimizada para turborepo)
 txt
 Copiar código
+
 # Ignorar dependências
+
 node_modules/
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
 # Ignorar builds
+
 dist/
 build/
 out/
@@ -261,72 +288,78 @@ out/
 .vercel/
 
 # Ignorar arquivos temporários
+
 .DS_Store
 Thumbs.db
-*.log
-*.tmp
-*.cache
+_.log
+_.tmp
+\*.cache
 
 # Ignorar configs sensíveis
+
 .env
-.env.*
+.env.\*
 !.env.example
 
 # Ignorar artefatos
-*.zip
-*.tar
-*.tar.gz
+
+_.zip
+_.tar
+\*.tar.gz
 
 # Ignorar sistema operacional
+
 .idea/
 .vscode/
-*.swp
-*.swo
+_.swp
+_.swo
 
 # Ignorar outputs gerados
+
 coverage/
 tmp/
 
 # Ignorar pastas de infra opcional
+
 terraform/
 ansible/
 helm/
 
 # Ignorar pacotes externos
+
 apps/webx/.next
 apps/webx/out
 apps/api/dist
 apps/admin-api/dist
 
-
 # 3. Regra MCP – mcp-estrutura-organizacional.json
-Este arquivo faz o Cursor carregar automaticamente o documento de fundamentos toda vez que você abrir o repositório.
 
+Este arquivo faz o Cursor carregar automaticamente o documento de fundamentos toda vez que você abrir o repositório.
 
 json
 Copiar código
 {
-  "version": "1.0",
-  "name": "estrutura-organizacional-morina",
-  "description": "Carrega automaticamente a estrutura organizacional base para orientar o Cursor no desenvolvimento.",
-  "load_on_start": true,
-  "files": [
-    {
-      "path": "./FUNDAMENTOS_ESTRUTURA_ORGANIZACIONAL_MORINA.md",
-      "purpose": "context",
-      "required": true
-    }
-  ],
-  "rules": {
-    "priority": "high",
-    "context_strategy": "always_include",
-    "instructions": [
-      "Sempre considerar o documento de fundamentos antes de gerar qualquer tela, módulo, API ou fluxo.",
-      "Priorize a construção do cadastro de empresa, departamentos, setores, cargos, usuários e RBAC.",
-      "Nunca gerar módulos avançados sem validar primeiro a fundação organizacional descrita.",
-      "A arquitetura deve seguir estritamente DDD, eventos de domínio e RBAC corporativo definido."
-    ]
-  }
+"version": "1.0",
+"name": "estrutura-organizacional-morina",
+"description": "Carrega automaticamente a estrutura organizacional base para orientar o Cursor no desenvolvimento.",
+"load_on_start": true,
+"files": [
+{
+"path": "./FUNDAMENTOS_ESTRUTURA_ORGANIZACIONAL_MORINA.md",
+"purpose": "context",
+"required": true
+}
+],
+"rules": {
+"priority": "high",
+"context_strategy": "always_include",
+"instructions": [
+"Sempre considerar o documento de fundamentos antes de gerar qualquer tela, módulo, API ou fluxo.",
+"Priorize a construção do cadastro de empresa, departamentos, setores, cargos, usuários e RBAC.",
+"Nunca gerar módulos avançados sem validar primeiro a fundação organizacional descrita.",
+"A arquitetura deve seguir estritamente DDD, eventos de domínio e RBAC corporativo definido."
+]
+}
 }
 
 📘 Diretriz Oficial – Estrutura Organizacional Corporativa (Para uso no Cursor)
@@ -655,7 +688,7 @@ Criar uma estrutura organizacional corporativa completa, cobrindo hierarquia, re
 O Cursor deve gerar sistemas, documentos e modelos a partir deste blueprint.
 
 1. ORGANOGRAMA CORPORATIVO – NÍVEL MACRO
-Diretoria Geral
+   Diretoria Geral
 
 Presidência
 
@@ -702,7 +735,7 @@ Casos de uso
 Dependências
 
 2. SUBDEPARTAMENTOS OBRIGATÓRIOS (POR ÁREA)
-2.1 PCP
+   2.1 PCP
 
 Planejamento de Coleção
 
@@ -789,25 +822,25 @@ Centro de custo
 Rateios
 
 3. ENTREGAS PADRÃO QUE O CURSOR DEVE GERAR
-3.1 Organograma em Árvore (Markdown)
+   3.1 Organograma em Árvore (Markdown)
 
 Exemplo de estrutura esperada:
 
 Diretoria Geral
- ├── Financeiro
- │    ├── Contas a pagar
- │    ├── Contas a receber
- │    └── Controladoria
- ├── RH
- ├── Estilo
- │    ├── Pesquisa
- │    ├── Modelagem
- │    └── Ficha técnica
- ├── PCP
- │    ├── Planejamento
- │    ├── Programação
- │    └── Controle
- ...
+├── Financeiro
+│ ├── Contas a pagar
+│ ├── Contas a receber
+│ └── Controladoria
+├── RH
+├── Estilo
+│ ├── Pesquisa
+│ ├── Modelagem
+│ └── Ficha técnica
+├── PCP
+│ ├── Planejamento
+│ ├── Programação
+│ └── Controle
+...
 
 4. DDD – DIRETRIZ DE DOMÍNIO
 

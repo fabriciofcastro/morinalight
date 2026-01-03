@@ -45,6 +45,7 @@ Este documento descreve a estrutura completa de DevOps implementada no projeto M
 ### Workflows GitHub Actions
 
 #### 1. CI Enhanced (`ci-enhanced.yml`)
+
 Pipeline completo de Continuous Integration com múltiplos estágios:
 
 - **Code Quality**: Linting, type checking, complexity analysis
@@ -55,6 +56,7 @@ Pipeline completo de Continuous Integration com múltiplos estágios:
 - **Security Gate**: Validação de segurança antes de deploy
 
 #### 2. CD Enhanced (`cd-enhanced.yml`)
+
 Pipeline de Continuous Deployment:
 
 - **Multi-Environment**: Staging e Production
@@ -110,6 +112,7 @@ Pipeline de Continuous Deployment:
 ### Métricas Coletadas
 
 #### Application Metrics
+
 - Request rate (req/s)
 - Error rate (%)
 - Latency (p50, p95, p99)
@@ -117,12 +120,14 @@ Pipeline de Continuous Deployment:
 - Active connections
 
 #### Business Metrics
+
 - User registrations
 - API usage per endpoint
 - Feature usage
 - Conversion rates
 
 #### Infrastructure Metrics
+
 - CPU usage
 - Memory usage
 - Disk I/O
@@ -168,16 +173,19 @@ Pipeline de Continuous Deployment:
 ## 🚀 Deployment Strategies
 
 ### 1. Blue-Green Deployment
+
 - Zero downtime
 - Rollback instantâneo
 - Isolamento completo
 
 ### 2. Canary Deployment
+
 - Deploy gradual
 - Tráfego progressivo
 - Validação antes de scale completo
 
 ### 3. Rolling Update
+
 - Atualização gradual
 - Sem downtime
 - Rollback automático em caso de falha
@@ -185,17 +193,20 @@ Pipeline de Continuous Deployment:
 ## 📦 Infrastructure as Code
 
 ### Terraform
+
 - Provisionamento de infraestrutura
 - Gerenciamento de estado
 - Versionamento de configurações
 
 ### Kubernetes
+
 - Orquestração de containers
 - Auto-scaling
 - Self-healing
 - Service discovery
 
 ### Helm Charts
+
 - Gerenciamento de aplicações K8s
 - Templates reutilizáveis
 - Versionamento de releases
@@ -203,12 +214,14 @@ Pipeline de Continuous Deployment:
 ## 🔄 GitOps
 
 ### ArgoCD
+
 - Sincronização automática
 - Rollback automático
 - Multi-cluster support
 - UI para visualização
 
 ### Flux
+
 - Alternative to ArgoCD
 - Continuous reconciliation
 - Helm repository support
@@ -218,18 +231,21 @@ Pipeline de Continuous Deployment:
 ### Alert Rules
 
 #### Critical Alerts
+
 - Service down
 - High error rate (>5%)
 - Database connection pool exhausted
 - Disk space low (<15%)
 
 #### Warning Alerts
+
 - High latency (p95 > 1s)
 - High CPU usage (>80%)
 - High memory usage (>85%)
 - Replication lag
 
 ### Notification Channels
+
 - Slack
 - Email
 - PagerDuty
@@ -261,12 +277,14 @@ Pipeline de Continuous Deployment:
 ## 🔧 Tools & Technologies
 
 ### CI/CD
+
 - GitHub Actions
 - Docker
 - Docker Compose
 - Kubernetes
 
 ### Observability
+
 - Prometheus
 - Grafana
 - Loki
@@ -274,21 +292,25 @@ Pipeline de Continuous Deployment:
 - Alertmanager
 
 ### IaC
+
 - Terraform
 - Kubernetes Manifests
 - Helm Charts
 
 ### GitOps
+
 - ArgoCD
 - Flux
 
 ### Security
+
 - Trivy
 - CodeQL
 - SonarCloud
 - npm audit
 
 ### Testing
+
 - Vitest (unit)
 - Playwright (E2E)
 - k6 (performance)
@@ -316,15 +338,3 @@ Pipeline de Continuous Deployment:
 **Última atualização**: 2025-01-01  
 **Versão**: 1.0.0  
 **Mantido por**: Equipe DevOps Morina
-
-
-
-
-
-
-
-
-
-
-
-

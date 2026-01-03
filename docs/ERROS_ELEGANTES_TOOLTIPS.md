@@ -19,6 +19,7 @@ import { ErrorTooltip } from "@/components/errors";
 ```
 
 **Características:**
+
 - ✅ Aparece ao passar o mouse
 - ✅ Ícone automático baseado na severidade
 - ✅ Cores adaptadas ao tipo de erro
@@ -38,6 +39,7 @@ import { FieldErrorTooltip } from "@/components/errors";
 ```
 
 **Características:**
+
 - ✅ Posicionado ao lado do campo (direita por padrão)
 - ✅ Ícone de erro visível
 - ✅ Mensagem clara e específica
@@ -61,6 +63,7 @@ import { InputWithError } from "@/components/errors";
 ```
 
 **Características:**
+
 - ✅ Label integrado
 - ✅ Tooltip de erro automático
 - ✅ Borda vermelha quando há erro
@@ -93,6 +96,7 @@ import { ErrorBadge } from "@/components/errors";
 ```
 
 **Variantes:**
+
 - `subtle` - Mais discreto
 - `prominent` - Mais destacado
 
@@ -110,12 +114,14 @@ import { InlineErrorIndicator } from "@/components/errors";
 ```
 
 **Posições:**
+
 - `top-right` (padrão)
 - `top-left`
 - `bottom-right`
 - `bottom-left`
 
 **Tamanhos:**
+
 - `sm` - Pequeno
 - `md` - Médio (padrão)
 - `lg` - Grande
@@ -136,6 +142,7 @@ import { ElegantErrorNotification } from "@/components/errors";
 ```
 
 **Variantes:**
+
 - `minimal` - Apenas ícone com tooltip
 - `compact` - Linha compacta com tooltip
 - `expanded` - Card expansível
@@ -252,7 +259,7 @@ function App() {
   return (
     <>
       {/* Seu app */}
-      
+
       {globalError && (
         <ElegantErrorNotification
           error={globalError}
@@ -279,6 +286,7 @@ Os tooltips automaticamente ajustam cores:
 ### Posicionamento
 
 Tooltips podem ser posicionados em:
+
 - `top` (padrão)
 - `right`
 - `bottom`
@@ -302,7 +310,7 @@ Controlar delay antes do tooltip aparecer:
 ✅ **Responsivo** - Adapta-se ao espaço disponível  
 ✅ **Acessível** - Suporta navegação por teclado  
 ✅ **Animado** - Transições suaves  
-✅ **Customizável** - Múltiplas variantes e opções  
+✅ **Customizável** - Múltiplas variantes e opções
 
 ## 🚀 Boas Práticas
 
@@ -323,12 +331,3 @@ Os erros agora aparecem de forma:
 - ✨ **Animada** - Transições suaves e agradáveis
 
 Os usuários têm uma experiência muito mais polida e profissional! 🎉
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,27 @@
+
+// ========================================
+// SECURITY ALERT MODEL
+// ========================================
+
+model SecurityAlert {
+  id          String   @id @default(uuid())
+  userId      String
+  alertType   String   @db.VarChar(100) // multiple_failed_logins, multiple_ips, etc
+  severity    String   @db.VarChar(20) // low, medium, high, critical
+  description String   @db.Text
+  metadata    Json? // Dados adicionais do alerta
+  
+  acknowledged Boolean  @default(false)
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+  
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation("UserSecurityAlerts", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@index([severity])
+  @@index([alertType])
+  @@index([acknowledged])
+}

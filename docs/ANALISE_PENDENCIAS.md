@@ -8,11 +8,13 @@
 ## 🔥 PRIORIDADE ALTA (Funcionalidades Core Pendentes)
 
 ### Fase 2.1: 🏢 Organização → Empresa
+
 - [x] **Integração com ReceitaWS** para auto-preenchimento de dados da empresa (CNPJ) - implementado (BrasilAPI)
 - [ ] **Mapa interativo** na tab Endereços (opcional, via Google Maps API)
 - [ ] **Alertas de expiração** de documentos (campo de validade já existe)
 
 ### Fase 2.2: 🏢 Estrutura Organizacional
+
 - [ ] **Visualização em organograma** (gráfico) - estrutura criada, implementação pendente
 - [x] **Exportação completa** (PDF, Excel, JSON) - implementado (exporta departamentos, setores e cargos em JSON, Excel (TSV) e PDF (HTML para impressão))
 - [ ] **Funcionalidades avançadas:**
@@ -23,10 +25,12 @@
   - [ ] Sugestões de estrutura (IA)
 
 ### Fase 2.3: 🏢 Filiais
+
 - [x] **Integração do campo Responsável** com lista de usuários - implementado (campo select integrado, carrega lista de usuários, exibe no card)
 - [ ] **Mapa de localização** para cada filial
 
 ### Fase 3.1: 👥 Usuários
+
 - [ ] **Integrações de upload de documentos** (RG, CPF, CTPS, etc.) - estrutura criada, API pendente
 - [ ] **Integrações de ações administrativas:**
   - [ ] Salvar e Enviar Convite
@@ -40,14 +44,17 @@
   - [ ] Visualizar solicitações pendentes
 
 ### Fase 3.3: 👥 Convites
+
 - [ ] **Templates de convite** personalizáveis
 
 ### Fase 4.1: 👤 Perfil Pessoal
+
 - [ ] **Histórico de senhas** (não permitir reutilização)
 - [ ] **Dispositivos confiáveis** para 2FA
 - [ ] **Histórico de uso** de Tokens de API
 
 ### Fase 6.1: Logout
+
 - [x] **Registrar evento de logout** na auditoria - implementado (rotas frontend criadas/atualizadas para chamar backend que registra na auditoria)
 
 ---
@@ -55,13 +62,16 @@
 ## ⚡ PRIORIDADE MÉDIA (Melhorias e Integrações)
 
 ### Fase 3.2: 👥 Equipe
+
 - [x] **Exportação funcional** (CSV, JSON) - implementado (exporta membros filtrados em CSV ou JSON formatado)
 
 ### Fase 3.4: 👥 Perfis
+
 - [ ] **Aplicar perfil a usuários** - botão criado, funcionalidade pendente
 - [ ] **Exportar/Importar perfis** - botões criados, funcionalidade pendente
 
 ### Fase 5.2: 🔔 Preferências de Notificação
+
 - [ ] **Filtros por palavras-chave** - estrutura criada, funcionalidade pendente
 - [ ] **Regras customizadas** - estrutura criada, funcionalidade pendente
 - [ ] **Integração com calendário** - estrutura criada, funcionalidade pendente
@@ -71,6 +81,7 @@
 ## 📦 FASE 7: BACKEND - APIs NECESSÁRIAS (TODAS PENDENTES)
 
 ### 7.1 APIs de Usuários
+
 - [ ] Verificar APIs existentes (`GET /users`, `POST /users`, etc.)
 - [ ] Criar/Expandir APIs faltantes:
   - [ ] `GET /users/:id/activity`
@@ -89,6 +100,7 @@
   - [ ] `GET /users/:id/2fa/qr-code`
 
 ### 7.2 APIs de Notificações
+
 - [ ] Verificar APIs existentes
 - [ ] Criar/Expandir APIs faltantes:
   - [ ] `GET /notifications/preferences`
@@ -100,6 +112,7 @@
   - [ ] `POST /notifications/test`
 
 ### 7.3 APIs de Perfil
+
 - [x] `GET /profile` - rota frontend criada
 - [x] `PUT /profile` - rota frontend criada
 - [x] `POST /profile/avatar` - rota frontend criada
@@ -110,6 +123,7 @@
 - [x] `POST /profile/sessions/:id/revoke` - rota frontend criada
 
 ### 7.4 APIs de Logout
+
 - [x] Verificar `POST /auth/logout` - rota frontend atualizada
 - [x] `POST /auth/logout-all` - rota frontend criada
 - [x] `POST /auth/logout/:sessionId` - rota frontend criada
@@ -119,6 +133,7 @@
 ## 📦 FASE 8: COMPONENTES REUTILIZÁVEIS (TODAS PENDENTES)
 
 ### 8.1 Componentes de Formulário
+
 - [ ] `UserForm`
 - [ ] `UserAvatar`
 - [ ] `UserStatusBadge`
@@ -135,6 +150,7 @@
 - [ ] `ContactForm`
 
 ### 8.2 Componentes de Layout
+
 - [ ] `SettingsLayout` (verificar se já existe)
 - [ ] `SettingsNavigation` (verificar se já existe)
 - [ ] `SettingsHeader` (verificar se já existe)
@@ -148,6 +164,7 @@
 ## 📦 FASE 9: VALIDAÇÕES E SEGURANÇA (TODAS PENDENTES)
 
 ### 9.1 Validações
+
 - [ ] CPF (formato e dígito verificador)
 - [ ] CNPJ (formato e dígito verificador)
 - [ ] Email (formato e domínio)
@@ -158,6 +175,7 @@
 - [ ] Upload (tipo, tamanho, dimensões)
 
 ### 9.2 Segurança
+
 - [ ] Rate limiting em APIs sensíveis
 - [ ] Validação de permissões em todas as ações
 - [ ] Auditoria de todas as alterações
@@ -172,11 +190,13 @@
 ## 📦 FASE 10: TESTES E DOCUMENTAÇÃO (TODAS PENDENTES)
 
 ### 10.1 Testes
+
 - [ ] Testes Unitários (componentes, hooks, utilitários, validações)
 - [ ] Testes de Integração (fluxos completos)
 - [ ] Testes E2E (cenários críticos, erros, segurança)
 
 ### 10.2 Documentação
+
 - [ ] Estrutura de pastas
 - [ ] Componentes principais
 - [ ] APIs disponíveis
@@ -189,6 +209,7 @@
 ## 📦 FASE 11: POLISH E OTIMIZAÇÕES (TODAS PENDENTES)
 
 ### 11.1 Performance
+
 - [ ] Lazy loading de componentes pesados
 - [ ] Virtualização de listas longas
 - [ ] Debounce em buscas
@@ -197,6 +218,7 @@
 - [ ] Code splitting
 
 ### 11.2 UX/UI
+
 - [ ] Loading states em todas as ações
 - [ ] Empty states informativos
 - [ ] Error states com ações de recuperação
@@ -207,6 +229,7 @@
 - [ ] Ajuda contextual
 
 ### 11.3 Acessibilidade
+
 - [ ] ARIA labels
 - [ ] Navegação por teclado
 - [ ] Foco visível
@@ -219,6 +242,7 @@
 ## 📈 RESUMO ESTATÍSTICO
 
 ### Por Fase:
+
 - **Fase 1**: ✅ 100% Completo
 - **Fase 2**: 🟡 ~90% Completo (pendências: integrações e funcionalidades avançadas)
 - **Fase 3**: 🟡 ~95% Completo (pendências: integrações de API e funcionalidades avançadas)
@@ -232,6 +256,7 @@
 - **Fase 11**: 🔴 0% Completo (todas as otimizações pendentes)
 
 ### Por Categoria:
+
 - **Frontend Core**: 🟡 ~90% Completo
 - **Backend APIs**: 🔴 ~10% Completo (estruturas criadas, integrações pendentes)
 - **Componentes Reutilizáveis**: 🔴 ~20% Completo (alguns existem, maioria pendente)
@@ -245,18 +270,21 @@
 ## 🎯 RECOMENDAÇÕES DE PRÓXIMOS PASSOS
 
 ### Curto Prazo (1-2 semanas):
+
 1. **Completar integrações de API pendentes** (Fase 7.1, 7.2, 7.3, 7.4)
 2. **Implementar funcionalidades de upload de documentos** (Fase 3.1)
 3. **Integrar campo Responsável em Filiais** (Fase 2.3)
 4. **Implementar ReceitaWS** (Fase 2.1)
 
 ### Médio Prazo (1 mês):
+
 5. **Criar componentes reutilizáveis** (Fase 8)
 6. **Implementar validações completas** (Fase 9.1)
 7. **Visualização em organograma** (Fase 2.2)
 8. **Funcionalidades avançadas de estrutura organizacional** (Fase 2.2)
 
 ### Longo Prazo (2-3 meses):
+
 9. **Testes completos** (Fase 10.1)
 10. **Documentação** (Fase 10.2)
 11. **Otimizações de performance** (Fase 11.1)
@@ -266,6 +294,3 @@
 ---
 
 **Última atualização**: 2025-12-11
-
-
-

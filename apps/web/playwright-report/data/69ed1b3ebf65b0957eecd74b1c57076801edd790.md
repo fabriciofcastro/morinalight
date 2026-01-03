@@ -1,0 +1,126 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e5]:
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - generic [ref=e44]: SECURE_ACCESS_TERMINAL
+          - heading "MORINA" [level=1] [ref=e46]
+          - generic [ref=e48]:
+            - generic [ref=e49]: System v2.0
+            - generic [ref=e50]: BUILD.2025.11.27
+        - generic [ref=e51]:
+          - link "Certificações de Segurança" [ref=e52] [cursor=pointer]:
+            - /url: /certifications
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - img [ref=e61]
+                - generic [ref=e64]: Certificações de Segurança
+              - img [ref=e66]
+          - generic [ref=e68]:
+            - generic [ref=e74]:
+              - img [ref=e75]
+              - generic [ref=e78]: IDEALIZADORES
+            - generic [ref=e83]:
+              - link "M Michel Backend & Database" [ref=e84] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e85]:
+                  - generic [ref=e86]: M
+                  - generic [ref=e87]:
+                    - generic [ref=e88]: Michel
+                    - generic [ref=e89]: Backend & Database
+              - link "A Adriana Design & UX" [ref=e90] [cursor=pointer]:
+                - /url: "#"
+                - generic [ref=e91]:
+                  - generic [ref=e92]: A
+                  - generic [ref=e93]:
+                    - generic [ref=e94]: Adriana
+                    - generic [ref=e95]: Design & UX
+              - link "F Fabrício Engenheiro e Arquiteto de Software Fullstack" [ref=e96] [cursor=pointer]:
+                - /url: https://www.fabriciofcastro.com.br/
+                - generic [ref=e97]:
+                  - generic [ref=e98]: F
+                  - generic [ref=e99]:
+                    - generic [ref=e100]: Fabrício
+                    - generic [ref=e101]: Engenheiro e Arquiteto de Software Fullstack
+                - img [ref=e103]
+      - generic [ref=e113]:
+        - generic [ref=e114]:
+          - heading "/Acesso Restrito" [level=2] [ref=e115]
+          - paragraph [ref=e116]: Autenticação Necessária
+        - form "Formulário de login" [ref=e117]:
+          - generic [ref=e118]:
+            - generic [ref=e119]:
+              - generic [ref=e120]:
+                - img [ref=e121]
+                - text: Identificador Corporativo
+              - generic [ref=e124]:
+                - img [ref=e126]
+                - textbox "Identificador Corporativo" [ref=e129]:
+                  - /placeholder: USUARIO@MORINA.COM
+            - generic [ref=e132]:
+              - generic [ref=e133]:
+                - generic [ref=e134]:
+                  - img [ref=e135]
+                  - text: Credencial de Acesso
+                - link "[ Recuperar Acesso ]" [ref=e138] [cursor=pointer]:
+                  - /url: /forgot-password
+              - generic [ref=e140]:
+                - img [ref=e142]
+                - textbox "Credencial de Acesso" [ref=e145]:
+                  - /placeholder: ••••••••
+                - button [ref=e146]:
+                  - img [ref=e147]
+          - generic [ref=e159]:
+            - generic [ref=e160] [cursor=pointer]:
+              - 'checkbox "CONFIRMO LEITURA: TERMOS & POLÍTICAS" [ref=e162]'
+              - generic [ref=e165]:
+                - text: "CONFIRMO LEITURA:"
+                - link "TERMOS" [ref=e166]:
+                  - /url: /termos
+                - text: "&"
+                - link "POLÍTICAS" [ref=e167]:
+                  - /url: /privacidade
+            - generic [ref=e168] [cursor=pointer]:
+              - checkbox "Manter Sessão Ativa" [ref=e170]
+              - generic [ref=e173]: Manter Sessão Ativa
+          - button "INICIAR SISTEMA" [disabled] [ref=e174]:
+            - generic [ref=e176]:
+              - text: INICIAR SISTEMA
+              - img [ref=e177]
+        - generic [ref=e179]:
+          - generic [ref=e180]: SECURE CONNECTION
+          - generic [ref=e181]: ONLINE
+    - generic [ref=e186]:
+      - link "LGPD" [ref=e187] [cursor=pointer]:
+        - /url: /lgpd
+      - link "Termos" [ref=e188] [cursor=pointer]:
+        - /url: /termos
+      - link "Privacidade" [ref=e189] [cursor=pointer]:
+        - /url: /privacidade
+      - link "Cookies" [ref=e190] [cursor=pointer]:
+        - /url: /cookies
+      - link "Lei 4.886/65" [ref=e191] [cursor=pointer]:
+        - /url: /lei-representante
+      - link "Não Vínculo" [ref=e192] [cursor=pointer]:
+        - /url: /vinculo-empregaticio
+  - 'generic "Última verificação: 12:53:32" [ref=e193]':
+    - img [ref=e194]
+    - generic [ref=e196]: Servidor offline
+  - generic [ref=e198]:
+    - generic [ref=e199]:
+      - heading "🍪 Configuração de Cookies" [level=3] [ref=e200]
+      - paragraph [ref=e201]: Nós usamos cookies para melhorar sua experiência. Alguns são essenciais, enquanto outros nos ajudam a melhorar o site.
+    - generic [ref=e203]:
+      - button "Personalizar" [ref=e204]
+      - button "Aceitar Tudo" [ref=e205]
+  - generic [ref=e206]:
+    - img [ref=e208]
+    - button "Open Tanstack query devtools" [ref=e256] [cursor=pointer]:
+      - img [ref=e257]
+  - button "Open Next.js Dev Tools" [ref=e310] [cursor=pointer]:
+    - img [ref=e311]
+  - alert [ref=e314]
+```

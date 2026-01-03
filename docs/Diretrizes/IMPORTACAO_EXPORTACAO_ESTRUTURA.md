@@ -9,12 +9,14 @@ Sistema completo de importação e exportação da estrutura organizacional (Dep
 ### Exportação
 
 #### JSON
+
 - Exporta estrutura completa em formato JSON formatado
 - Inclui metadados (versão, data de exportação)
 - Preserva todas as relações hierárquicas
 - Formato legível e fácil de editar
 
 #### CSV
+
 - Exporta estrutura em formato CSV compatível com Excel
 - Colunas: Tipo, ID, Código, Nome, Status, Departamento, Subdepartamento, Setor, Descrição
 - Fácil de visualizar e editar em planilhas
@@ -23,6 +25,7 @@ Sistema completo de importação e exportação da estrutura organizacional (Dep
 ### Importação
 
 #### JSON
+
 - Importa estrutura completa de arquivo JSON
 - Validação completa antes de importar:
   - Códigos únicos
@@ -33,6 +36,7 @@ Sistema completo de importação e exportação da estrutura organizacional (Dep
   - `updateExisting`: Atualizar entidades existentes
 
 #### CSV
+
 - Importa estrutura de arquivo CSV
 - Parse automático de valores com aspas
 - Conversão para formato interno
@@ -55,7 +59,7 @@ import { ImportExportPanel } from "@/components/organizational-structure/ImportE
     // Recarregar dados após importação
     await loadAll();
   }}
-/>
+/>;
 ```
 
 ### Programaticamente
@@ -63,7 +67,11 @@ import { ImportExportPanel } from "@/components/organizational-structure/ImportE
 #### Exportação
 
 ```typescript
-import { exportToJSON, exportToCSV, downloadFile } from "@/lib/organizational-structure/export";
+import {
+  exportToJSON,
+  exportToCSV,
+  downloadFile,
+} from "@/lib/organizational-structure/export";
 
 // Exportar para JSON
 const json = exportToJSON(departments, subdepartments, sectors, positions);
@@ -77,7 +85,11 @@ downloadFile(csv, "estrutura.csv", "text/csv");
 #### Importação
 
 ```typescript
-import { importFromJSON, importFromCSV, readFileAsText } from "@/lib/organizational-structure/import";
+import {
+  importFromJSON,
+  importFromCSV,
+  readFileAsText,
+} from "@/lib/organizational-structure/import";
 
 // Importar de JSON
 const file = event.target.files[0];
@@ -228,20 +240,24 @@ O `ImportExportPanel` está integrado como uma aba no painel de detalhes:
 ## Troubleshooting
 
 ### Erro: "Código duplicado"
+
 - Verifique se há códigos duplicados no arquivo
 - Cada código deve ser único dentro do mesmo tipo
 
 ### Erro: "Referência não encontrada"
+
 - Verifique se todas as referências estão corretas
 - Departments devem ser criados antes de Subdepartments
 - Subdepartments devem ser criados antes de Sectors
 - Sectors devem ser criados antes de Positions
 
 ### Erro: "Organização não encontrada"
+
 - Certifique-se de que `orgId` está correto
 - Verifique se está logado e tem acesso à organização
 
 ### CSV não importa corretamente
+
 - Verifique se o CSV está no formato correto
 - Certifique-se de que valores com vírgulas estão entre aspas
 - Verifique se o encoding é UTF-8
@@ -253,11 +269,3 @@ O `ImportExportPanel` está integrado como uma aba no painel de detalhes:
 3. **Template CSV**: Download de template CSV vazio
 4. **Importação em Lote**: Processar múltiplos arquivos
 5. **Histórico de Importações**: Rastrear todas as importações realizadas
-
-
-
-
-
-
-
-

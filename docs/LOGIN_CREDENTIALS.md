@@ -116,12 +116,12 @@ cd apps/api && pnpm prisma db seed
 
 ## Mensagens de Erro Comuns
 
-| Erro | Solução |
-|------|---------|
-| "Can't reach database" | Iniciar PostgreSQL: `docker-compose up -d postgres` |
-| "Credenciais inválidas" | Rodar seed: `pnpm prisma db seed` |
-| "Network error" | Verificar se API está rodando na porta 3333 |
-| "Tenant não disponível" | Normal em rotas públicas, não afeta login |
+| Erro                    | Solução                                             |
+| ----------------------- | --------------------------------------------------- |
+| "Can't reach database"  | Iniciar PostgreSQL: `docker-compose up -d postgres` |
+| "Credenciais inválidas" | Rodar seed: `pnpm prisma db seed`                   |
+| "Network error"         | Verificar se API está rodando na porta 3333         |
+| "Tenant não disponível" | Normal em rotas públicas, não afeta login           |
 
 ## Portas Utilizadas
 

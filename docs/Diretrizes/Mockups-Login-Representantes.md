@@ -36,6 +36,7 @@
 ```
 
 **Características:**
+
 - Dois cards grandes e destacados
 - Ícones visuais distintos
 - Descrição clara de cada opção
@@ -89,6 +90,7 @@
 ```
 
 **Características:**
+
 - Informações claras sobre o que pode fazer
 - Aceita email OU CPF
 - Placeholder explicativo
@@ -138,6 +140,7 @@
 ```
 
 **Características:**
+
 - Multi-step form (3 passos)
 - Busca automática por CPF
 - Validação em tempo real
@@ -186,6 +189,7 @@
 ```
 
 **Características:**
+
 - Cards de resumo destacados
 - Ações rápidas visíveis
 - Lista de pedidos recentes
@@ -264,6 +268,7 @@
 ```
 
 **Características:**
+
 - Todos os campos da imagem
 - Busca inteligente de cliente
 - Validação em tempo real
@@ -349,12 +354,14 @@
 ## 8. Paleta de Cores
 
 ### 8.1 Funcionário (Corporativo)
+
 - Primary: `#0EA5E9` (Azul corporativo)
 - Secondary: `#6366F1` (Índigo)
 - Background: `#030712` (Preto)
 - Surface: Glass effect
 
 ### 8.2 Representante (Amigável)
+
 - Primary: `#10B981` (Verde - dinheiro/comissão)
 - Secondary: `#F59E0B` (Amarelo - atenção)
 - Background: `#030712` (Preto)
@@ -365,16 +372,19 @@
 ## 9. Animações e Transições
 
 ### 9.1 Hover Effects
+
 - Cards: Elevação + glow
 - Botões: Scale + shadow
 - Inputs: Border color change
 
 ### 9.2 Loading
+
 - Skeleton screens
 - Progress indicators
 - Spinners contextuais
 
 ### 9.3 Transições
+
 - Fade in/out
 - Slide transitions
 - Smooth scrolling
@@ -384,15 +394,18 @@
 ## 10. Acessibilidade
 
 ### 10.1 Contraste
+
 - WCAG AA mínimo
 - Texto legível em todos os backgrounds
 
 ### 10.2 Navegação por Teclado
+
 - Tab order lógico
 - Focus visible
 - Atalhos de teclado
 
 ### 10.3 Screen Readers
+
 - Labels descritivos
 - ARIA attributes
 - Mensagens de status
@@ -402,4 +415,3 @@
 **Última atualização:** 2025-01-19  
 **Versão:** 1.0.0  
 **Status:** Mockups para implementação
-

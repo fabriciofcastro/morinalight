@@ -1,0 +1,110 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e5]:
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e43]: SECURE_ACCESS
+        - heading "MORINA" [level=1] [ref=e45]
+      - generic [ref=e46]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - heading "/Acesso Restrito" [level=2] [ref=e54]
+            - paragraph [ref=e55]: Autenticação Necessária
+          - form "Formulário de login" [ref=e56]:
+            - generic [ref=e57]:
+              - generic [ref=e58]:
+                - generic [ref=e59]:
+                  - img [ref=e60]
+                  - text: Identificador Corporativo
+                - generic [ref=e63]:
+                  - img [ref=e65]
+                  - textbox "Identificador Corporativo" [ref=e68]:
+                    - /placeholder: USUARIO@MORINA.COM
+              - generic [ref=e71]:
+                - generic [ref=e72]:
+                  - generic [ref=e73]:
+                    - img [ref=e74]
+                    - text: Credencial de Acesso
+                  - link "[ Recuperar Acesso ]" [ref=e77] [cursor=pointer]:
+                    - /url: /forgot-password
+                - generic [ref=e79]:
+                  - img [ref=e81]
+                  - textbox "Credencial de Acesso" [ref=e84]:
+                    - /placeholder: ••••••••
+                  - button [ref=e85]:
+                    - img [ref=e86]
+            - generic [ref=e98]:
+              - generic [ref=e99] [cursor=pointer]:
+                - 'checkbox "CONFIRMO LEITURA: TERMOS & POLÍTICAS" [ref=e101]'
+                - generic [ref=e104]:
+                  - text: "CONFIRMO LEITURA:"
+                  - link "TERMOS" [ref=e105]:
+                    - /url: /termos
+                  - text: "&"
+                  - link "POLÍTICAS" [ref=e106]:
+                    - /url: /privacidade
+              - generic [ref=e107] [cursor=pointer]:
+                - checkbox "Manter Sessão Ativa" [ref=e109]
+                - generic [ref=e112]: Manter Sessão Ativa
+            - button "INICIAR SISTEMA" [disabled] [ref=e113]:
+              - generic [ref=e115]:
+                - text: INICIAR SISTEMA
+                - img [ref=e116]
+          - generic [ref=e118]:
+            - generic [ref=e119]: SECURE CONNECTION
+            - generic [ref=e120]: ONLINE
+        - generic [ref=e123]:
+          - generic [ref=e129]:
+            - img [ref=e130]
+            - generic [ref=e133]: IDEALIZADORES
+          - generic [ref=e138]:
+            - link "Michel" [ref=e139] [cursor=pointer]:
+              - /url: https://github.com/michel
+              - generic [ref=e140]:
+                - img [ref=e142]
+                - generic [ref=e147]: Michel
+              - img [ref=e149]
+            - link "Adriana" [ref=e151] [cursor=pointer]:
+              - /url: https://dribbble.com/adriana
+              - generic [ref=e152]:
+                - img [ref=e154]
+                - generic [ref=e161]: Adriana
+              - img [ref=e163]
+            - link "Fabrício" [ref=e165] [cursor=pointer]:
+              - /url: https://github.com/fabricio
+              - generic [ref=e166]:
+                - img [ref=e168]
+                - generic [ref=e173]: Fabrício
+              - img [ref=e175]
+    - generic [ref=e180]:
+      - link "LGPD" [ref=e181] [cursor=pointer]:
+        - /url: /lgpd
+      - link "Termos" [ref=e182] [cursor=pointer]:
+        - /url: /termos
+      - link "Privacidade" [ref=e183] [cursor=pointer]:
+        - /url: /privacidade
+      - link "Cookies" [ref=e184] [cursor=pointer]:
+        - /url: /cookies
+      - link "Lei 4.886/65" [ref=e185] [cursor=pointer]:
+        - /url: /lei-representante
+      - link "Não Vínculo" [ref=e186] [cursor=pointer]:
+        - /url: /vinculo-empregaticio
+  - 'generic "Última verificação: 10:00:00" [ref=e187]':
+    - img [ref=e188]
+  - generic [ref=e191]:
+    - generic [ref=e192]:
+      - heading "🍪 Configuração de Cookies" [level=3] [ref=e193]
+      - paragraph [ref=e194]: Nós usamos cookies para melhorar sua experiência. Alguns são essenciais, enquanto outros nos ajudam a melhorar o site.
+    - generic [ref=e196]:
+      - button "Personalizar" [ref=e197]
+      - button "Aceitar Tudo" [ref=e198]
+  - generic [ref=e199]:
+    - img [ref=e201]
+    - button "Open Tanstack query devtools" [ref=e249] [cursor=pointer]:
+      - img [ref=e250]
+  - button "Open Next.js Dev Tools" [ref=e303] [cursor=pointer]:
+    - img [ref=e304]
+  - alert [ref=e307]
+```

@@ -3,12 +3,14 @@
 ## 📦 O que foi criado
 
 ### Componentes
+
 - ✅ **LoginForm** - Formulário moderno com validação
 - ✅ **RegisterForm** - Registro com validação de senha forte
 - ✅ **DashboardLayout** - Layout com sidebar e topbar
 - ✅ **Organization Selector** - Seleção de organização
 
 ### Páginas
+
 - ✅ `/login` - Página de login profissional
 - ✅ `/register` - Página de registro
 - ✅ `/select-organization` - Seleção de organização
@@ -16,6 +18,7 @@
 - ✅ `/` - Redirect automático
 
 ### API Clients
+
 - ✅ `lib/api/base.ts` - Cliente HTTP com interceptors
 - ✅ `lib/api/auth.ts` - Autenticação completa
 - ✅ Automatic token injection
@@ -25,6 +28,7 @@
 ## 🎨 Features do Login
 
 ### Formulário
+
 - [x] Email com ícone
 - [x] Senha com toggle de visibilidade
 - [x] Checkbox "Manter conectado"
@@ -36,6 +40,7 @@
 - [x] Autocomplete para password managers
 
 ### Design
+
 - [x] Layout two-column responsivo
 - [x] Branding "Morina Light"
 - [x] Features destacadas
@@ -69,6 +74,7 @@
 ## 🧪 Como Testar
 
 ### Opção 1: Script Automático
+
 ```bash
 ./scripts/test-login.sh
 ```
@@ -76,21 +82,25 @@
 ### Opção 2: Manual
 
 **Terminal 1:**
+
 ```bash
 cd apps/api && pnpm dev
 ```
 
 **Terminal 2:**
+
 ```bash
 cd apps/web && pnpm dev
 ```
 
 **Navegador:**
+
 ```
 http://localhost:3000
 ```
 
 ### Credenciais de Teste
+
 ```
 Email: admin@morina.com
 Senha: Admin@123
@@ -133,11 +143,13 @@ apps/web/src/
 ## 🔧 Configuração
 
 ### Frontend (.env.local)
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ### Backend (.env)
+
 ```env
 JWT_SECRET=your-secret-key-here
 DATABASE_URL=postgresql://...
@@ -157,6 +169,7 @@ DATABASE_URL=postgresql://...
 ## 🎯 Status Atual
 
 **Completo:**
+
 - ✅ Fase 1: Pesquisa e Planejamento
 - ✅ Fase 2: Limpeza Total
 - ✅ Fase 3: Autenticação e Onboarding
@@ -164,6 +177,7 @@ DATABASE_URL=postgresql://...
 - 🔄 Fase 5: Módulos Principais (4/9)
 
 **Pronto para produção:**
+
 - Sistema de login funcional
 - Registro com validação forte
 - Dashboard com navegação

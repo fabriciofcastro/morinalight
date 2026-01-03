@@ -83,12 +83,12 @@ O hook `useConnectionStatus` fornece:
 
 ```typescript
 const {
-  status,           // "online" | "offline" | "checking" | "error"
-  isOnline,         // boolean - conexão de rede
-  backendOnline,    // boolean - backend responde
+  status, // "online" | "offline" | "checking" | "error"
+  isOnline, // boolean - conexão de rede
+  backendOnline, // boolean - backend responde
   realtimeConnected, // boolean - WebSocket conectado
-  lastChecked,      // Date | null
-  refresh,          // função para verificar manualmente
+  lastChecked, // Date | null
+  refresh, // função para verificar manualmente
 } = useConnectionStatus();
 ```
 
@@ -107,4 +107,3 @@ function MyComponent() {
   );
 }
 ```
-

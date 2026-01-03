@@ -7,12 +7,14 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 ## 📦 Componentes Criados
 
 ### 1. Error Handling System
+
 **Localização**: `apps/api/src/core/errors/`
 
 - ✅ `app-error.ts` - Hierarquia completa de erros (12 classes)
 - ✅ `error-handler.ts` - Handler global integrado ao Fastify
 
 **Features**:
+
 - Erros padronizados com códigos e status HTTP
 - Sanitização automática para produção
 - Request ID tracking
@@ -20,12 +22,14 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 - Integração com Prisma errors
 
 ### 2. Resilience Patterns
+
 **Localização**: `apps/api/src/core/resilience/`
 
 - ✅ `retry.ts` - Retry com exponential backoff e jitter
 - ✅ `circuit-breaker.ts` - Circuit breaker pattern completo
 
 **Features**:
+
 - Exponential backoff configurável
 - Jitter para evitar thundering herd
 - Circuit breaker com estados (CLOSED/OPEN/HALF_OPEN)
@@ -33,23 +37,27 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 - Estatísticas e monitoramento
 
 ### 3. Health Checks
+
 **Localização**: `apps/api/src/core/health/`
 
 - ✅ `health-check.service.ts` - Serviço completo de health checks
 - ✅ Rotas: `/health`, `/health/ready`, `/health/live`
 
 **Features**:
+
 - Checks de database, Redis, disk, memory
 - Status: healthy/degraded/unhealthy
 - Latency tracking
 - Connection pool monitoring
 
 ### 4. Caching Strategy
+
 **Localização**: `apps/api/src/core/cache/`
 
 - ✅ `cache.service.ts` - Serviço de cache robusto
 
 **Features**:
+
 - Redis backend com memory fallback
 - TTL configurável
 - Pattern-based invalidation
@@ -58,17 +66,20 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 - Versionamento
 
 ### 5. Database Optimization
+
 **Localização**: `apps/api/src/core/database/`
 
 - ✅ `connection-pool.service.ts` - Otimização de connection pool
 
 **Features**:
+
 - Configuração otimizada de pool
 - Suporte a read replicas
 - Monitoramento de pool stats
 - Timeouts configuráveis
 
 ### 6. Server Integration
+
 **Localização**: `apps/api/src/core/server/`
 
 - ✅ Error handler global integrado
@@ -78,6 +89,7 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 ## 📊 Métricas de Melhoria
 
 ### Antes
+
 - ❌ Erros genéricos
 - ❌ Sem retry logic
 - ❌ Health check básico
@@ -85,6 +97,7 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 - ❌ Pool não otimizado
 
 ### Depois
+
 - ✅ Error handling robusto (12 tipos de erro)
 - ✅ Retry + Circuit Breaker
 - ✅ Health checks avançados (4 componentes)
@@ -94,6 +107,7 @@ Todas as melhorias críticas para tornar o projeto Morina Light robusto de alto 
 ## 🚀 Como Usar
 
 ### Error Handling
+
 ```typescript
 import { NotFoundError, ValidationError } from "@/core/errors/app-error";
 
@@ -102,6 +116,7 @@ throw new ValidationError("Invalid input", fields);
 ```
 
 ### Retry
+
 ```typescript
 import { retry } from "@/core/resilience/retry";
 
@@ -112,6 +127,7 @@ const result = await retry(() => externalService.call(), {
 ```
 
 ### Circuit Breaker
+
 ```typescript
 import { circuitBreakerRegistry } from "@/core/resilience/circuit-breaker";
 
@@ -120,6 +136,7 @@ const result = await breaker.execute(() => service.call());
 ```
 
 ### Cache
+
 ```typescript
 import { getCacheService } from "@/core/cache/cache.service";
 
@@ -128,6 +145,7 @@ const value = await cache.getOrSet("key", fetchFn, { ttl: 3600 });
 ```
 
 ### Health Check
+
 ```bash
 curl http://localhost:3333/health
 curl http://localhost:3333/health/ready
@@ -160,21 +178,25 @@ apps/api/src/app/http/
 ## 🎯 Benefícios Alcançados
 
 ### Confiabilidade
+
 - 🛡️ Error handling consistente e padronizado
 - 🛡️ Resiliência a falhas (retry + circuit breaker)
 - 🛡️ Health checks para monitoramento proativo
 
 ### Performance
+
 - ⚡ Connection pooling otimizado
 - ⚡ Caching eficiente (Redis + memory)
 - ⚡ Retry inteligente evita sobrecarga
 
 ### Observabilidade
+
 - 📈 Logging estruturado
 - 📈 Request ID tracking
 - 📈 Health metrics detalhadas
 
 ### Manutenibilidade
+
 - 🔧 Código organizado e testável
 - 🔧 Padrões consistentes
 - 🔧 Documentação completa
@@ -197,14 +219,3 @@ apps/api/src/app/http/
 **Data**: 2025-01-01  
 **Versão**: 1.0.0  
 **Status**: ✅ Production Ready
-
-
-
-
-
-
-
-
-
-
-

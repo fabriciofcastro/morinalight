@@ -18,7 +18,7 @@ try {
 } catch (error) {
   const appError = parseError(error);
   const friendly = getUserFriendlyMessage(appError);
-  
+
   // friendly.title = "Dados Inválidos"
   // friendly.message = "Por favor, verifique os dados informados..."
   // friendly.action = "Verificar campos"
@@ -35,7 +35,7 @@ import { ErrorDisplay } from "@/components/errors";
 
 function MyComponent() {
   const [error, setError] = useState(null);
-  
+
   return (
     <>
       {error && (
@@ -62,7 +62,7 @@ function MyComponent() {
   const { handleError } = useErrorHandler({
     showNotification: true, // Mostra notificação automática
   });
-  
+
   const handleSubmit = async () => {
     try {
       await api.post("/data", formData);
@@ -79,6 +79,7 @@ function MyComponent() {
 
 **Código Técnico:** `VALIDATION_ERROR`  
 **Mensagem Amigável:**
+
 - **Título:** "Dados Inválidos"
 - **Mensagem:** "Por favor, verifique os dados informados e tente novamente."
 - **Ação:** "Verificar campos"
@@ -87,6 +88,7 @@ function MyComponent() {
 
 **Código Técnico:** `INVALID_CREDENTIALS`  
 **Mensagem Amigável:**
+
 - **Título:** "Credenciais Inválidas"
 - **Mensagem:** "Email ou senha incorretos. Verifique suas credenciais e tente novamente."
 - **Ação:** "Tentar Novamente"
@@ -95,6 +97,7 @@ function MyComponent() {
 
 **Código Técnico:** `INSUFFICIENT_PERMISSIONS`  
 **Mensagem Amigável:**
+
 - **Título:** "Permissão Insuficiente"
 - **Mensagem:** "Você não possui as permissões necessárias para esta operação."
 - **Ação:** "Solicitar Permissão"
@@ -103,6 +106,7 @@ function MyComponent() {
 
 **Código Técnico:** `NETWORK_ERROR`  
 **Mensagem Amigável:**
+
 - **Título:** "Erro de Conexão"
 - **Mensagem:** "Não foi possível conectar ao servidor. Verifique sua conexão com a internet."
 - **Ação:** "Verificar Conexão"
@@ -111,6 +115,7 @@ function MyComponent() {
 
 **Código Técnico:** `INTERNAL_ERROR`  
 **Mensagem Amigável:**
+
 - **Título:** "Erro Interno"
 - **Mensagem:** "Ocorreu um erro inesperado. Nossa equipe foi notificada e está trabalhando para resolver."
 - **Ação:** "Tentar Novamente"
@@ -161,9 +166,12 @@ Exibe uma tela completa de erro.
 Edite `apps/web/src/lib/errors/user-messages.ts`:
 
 ```typescript
-const USER_FRIENDLY_MESSAGES: Record<string, { title: string; message: string; action?: string }> = {
+const USER_FRIENDLY_MESSAGES: Record<
+  string,
+  { title: string; message: string; action?: string }
+> = {
   // ... mensagens existentes
-  
+
   [ErrorCode.MEU_NOVO_ERRO]: {
     title: "Título Amigável",
     message: "Mensagem explicativa para o usuário.",
@@ -197,6 +205,7 @@ Quando o erro contém campos de validação, eles são automaticamente exibidos:
 ```
 
 **Exibição:**
+
 - Lista de campos com erros
 - Mensagem específica para cada campo
 - Formatação visual destacada
@@ -223,6 +232,7 @@ const { handleError } = useErrorHandler({
 ```
 
 Todas as notificações de erro exibem:
+
 - Título amigável
 - Mensagem clara
 - Severidade visual apropriada
@@ -237,15 +247,6 @@ Com este sistema, os usuários veem:
 ✅ **Ações sugeridas** para resolver o problema  
 ✅ **Visual consistente** com cores e ícones apropriados  
 ✅ **Detalhes técnicos** apenas quando necessário (desenvolvimento)  
-✅ **Campos de validação** destacados quando aplicável  
+✅ **Campos de validação** destacados quando aplicável
 
 Os erros técnicos são transformados em uma experiência de usuário positiva e acionável! 🎉
-
-
-
-
-
-
-
-
-

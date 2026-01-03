@@ -125,8 +125,6 @@ Para manter o processo **rápido e simples**, os campos abaixo são **estruturad
 
 ---
 
-
-
 ## 6. Workflow e Status
 
 ### 6.1 Fluxo Enxuto de Aprovação (3 Etapas)
@@ -190,6 +188,7 @@ O fluxo foi desenhado para **não atrasar o preenchimento** e ainda garantir gov
   - Notificação: Notifica criador e responsáveis técnicos
 
 **Regras gerais:**
+
 - Somente perfis técnicos podem avaliar
 - Aprovação congela a ficha (campos técnicos imutáveis)
 - Reprovação exige justificativa obrigatória
@@ -309,8 +308,6 @@ Nenhuma ação adicional do usuário.
 
 ---
 
-
-
 ## 14. Conclusão
 
 A **Lista de Moldes Liberados** é o **gate técnico da produção**.
@@ -318,4 +315,3 @@ A **Lista de Moldes Liberados** é o **gate técnico da produção**.
 Separá-la de custos e finanças garante clareza de domínio, confiabilidade operacional e maturidade de processo.
 
 Este documento deve ser tratado como **ativo estratégico da engenharia de produto**.
-

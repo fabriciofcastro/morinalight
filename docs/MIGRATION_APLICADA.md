@@ -21,6 +21,7 @@ Os seguintes campos foram adicionados à tabela `User`:
 - `observations` (TEXT) - Observações sobre o usuário
 
 **Índice criado:**
+
 - `User_cpf_idx` em `cpf` para busca rápida
 
 ---
@@ -64,5 +65,3 @@ O banco de dados está agora sincronizado com o schema Prisma e os novos campos 
 ---
 
 **Última atualização:** 2025-01-19
-
-

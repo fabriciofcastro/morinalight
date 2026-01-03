@@ -9,6 +9,7 @@ Adicionados novos campos ao modelo `User` no Prisma schema para suportar informa
 ## ✅ Campos Adicionados
 
 ### Informações Pessoais
+
 - `cpf` (String?, VarChar(14)) - CPF formatado (000.000.000-00)
 - `phone` (String?, VarChar(20)) - Telefone formatado
 - `birthDate` (DateTime?) - Data de nascimento
@@ -16,6 +17,7 @@ Adicionados novos campos ao modelo `User` no Prisma schema para suportar informa
 - `observations` (String?, Text) - Observações sobre o usuário
 
 ### Índices
+
 - Índice adicionado em `cpf` para busca rápida
 
 ---
@@ -63,6 +65,7 @@ pnpm prisma migrate dev --name add_user_personal_fields
 ```
 
 Isso irá:
+
 - Criar um arquivo de migration com os novos campos
 - Aplicar a migration no banco de dados de desenvolvimento
 - Regenerar o Prisma Client com os novos tipos
@@ -90,7 +93,8 @@ cd apps/api
 pnpm prisma migrate deploy
 ```
 
-**⚠️ IMPORTANTE:** 
+**⚠️ IMPORTANTE:**
+
 - Faça backup do banco antes de aplicar em produção
 - Os campos são opcionais, então a migration é segura (não quebra dados existentes)
 
@@ -121,6 +125,7 @@ const SENSITIVE_FIELDS: Record<string, string[]> = {
 ## ✅ Validações Implementadas
 
 ### Backend (Zod)
+
 - `cpf`: String opcional
 - `phone`: String opcional
 - `birthDate`: String datetime ou formato YYYY-MM-DD
@@ -129,6 +134,7 @@ const SENSITIVE_FIELDS: Record<string, string[]> = {
 - `avatarUrl`: URL opcional
 
 ### Frontend
+
 - Validação de CPF (formato e dígitos verificadores)
 - Máscaras de input (CPF, telefone)
 - Validação de datas
@@ -139,11 +145,13 @@ const SENSITIVE_FIELDS: Record<string, string[]> = {
 ## 📊 Impacto
 
 ### Dados Existentes
+
 - ✅ **Seguro**: Todos os campos são opcionais
 - ✅ **Compatível**: Usuários existentes não serão afetados
 - ✅ **Backward Compatible**: API continua funcionando sem os novos campos
 
 ### Performance
+
 - ✅ **Índice em CPF**: Busca rápida por CPF
 - ✅ **Campos opcionais**: Não afeta queries existentes
 - ✅ **Criptografia**: Apenas campos sensíveis são criptografados
@@ -163,16 +171,19 @@ const SENSITIVE_FIELDS: Record<string, string[]> = {
 ## 📝 Notas Técnicas
 
 ### Formato de Datas
+
 - Backend aceita: ISO 8601 datetime ou formato YYYY-MM-DD
 - Frontend envia: YYYY-MM-DD (formato de input date)
 - Banco armazena: DateTime (PostgreSQL)
 
 ### Campos Criptografados
+
 - `cpf`: Criptografado automaticamente
 - `phone`: Criptografado automaticamente
 - Outros campos: Armazenados em texto plano
 
 ### Tamanhos de Campo
+
 - `cpf`: VarChar(14) - suficiente para formato brasileiro
 - `phone`: VarChar(20) - suficiente para formatos internacionais
 - `observations`: Text - sem limite de tamanho
@@ -181,4 +192,3 @@ const SENSITIVE_FIELDS: Record<string, string[]> = {
 
 **Data de Implementação:** 2025-01-19  
 **Status:** ✅ Código implementado, aguardando migration
-

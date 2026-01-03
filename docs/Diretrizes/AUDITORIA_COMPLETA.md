@@ -27,26 +27,31 @@ Use Cases → AuditLogRepository → Prisma → Database
 Todos os use cases de estrutura organizacional registram auditoria automaticamente:
 
 #### Departments
+
 - ✅ `CriarDepartmentUseCase` - action: "created"
 - ✅ `AtualizarDepartmentUseCase` - action: "updated"
 - ✅ `DeletarDepartmentUseCase` - action: "deleted"
 
 #### Subdepartments
+
 - ✅ `CriarSubdepartmentUseCase` - action: "created"
 - ✅ `AtualizarSubdepartmentUseCase` - action: "updated"
 - ✅ `DeletarSubdepartmentUseCase` - action: "deleted"
 
 #### Sectors
+
 - ✅ `CriarSectorUseCase` - action: "created"
 - ✅ `AtualizarSectorUseCase` - action: "updated"
 - ✅ `DeletarSectorUseCase` - action: "deleted"
 
 #### Positions
+
 - ✅ `CriarPositionUseCase` - action: "created"
 - ✅ `AtualizarPositionUseCase` - action: "updated"
 - ✅ `DeletarPositionUseCase` - action: "deleted"
 
 #### Membros
+
 - ✅ `AdicionarMembroDepartmentUseCase` - action: "member_added"
 - ✅ `RemoverMembroDepartmentUseCase` - action: "member_removed"
 - ✅ `AtualizarRoleMembroDepartmentUseCase` - action: "member_role_updated"
@@ -77,6 +82,7 @@ Todos os use cases de estrutura organizacional registram auditoria automaticamen
 #### Payload por Ação
 
 **created/updated:**
+
 ```json
 {
   "name": "Nome da entidade",
@@ -87,6 +93,7 @@ Todos os use cases de estrutura organizacional registram auditoria automaticamen
 ```
 
 **deleted:**
+
 ```json
 {
   "name": "Nome da entidade",
@@ -95,6 +102,7 @@ Todos os use cases de estrutura organizacional registram auditoria automaticamen
 ```
 
 **member_added/member_removed:**
+
 ```json
 {
   "userId": "...",
@@ -111,6 +119,7 @@ Todos os use cases de estrutura organizacional registram auditoria automaticamen
 Lista logs de auditoria com filtros opcionais.
 
 **Query Parameters:**
+
 - `entityType` (opcional): "department" | "subdepartment" | "sector" | "position"
 - `entityId` (opcional): UUID da entidade
 - `action` (opcional): Tipo de ação
@@ -121,6 +130,7 @@ Lista logs de auditoria com filtros opcionais.
 - `search` (opcional): Busca textual
 
 **Response:**
+
 ```json
 {
   "itens": [
@@ -146,10 +156,12 @@ Lista logs de auditoria com filtros opcionais.
 Componente React para visualizar logs de auditoria.
 
 **Props:**
+
 - `entityType` (opcional): Filtrar por tipo de entidade
 - `entityId` (opcional): Filtrar por ID de entidade específica
 
 **Funcionalidades:**
+
 - Lista de logs com paginação
 - Filtros por tipo de entidade, campo, data
 - Busca textual
@@ -192,9 +204,9 @@ import { OrganizationalAuditPanel } from "@/components/organizational-structure/
 <OrganizationalAuditPanel />
 
 // Visualizar logs de um departamento específico
-<OrganizationalAuditPanel 
-  entityType="department" 
-  entityId="department-id" 
+<OrganizationalAuditPanel
+  entityType="department"
+  entityId="department-id"
 />
 ```
 
@@ -275,11 +287,3 @@ Os seguintes índices foram criados para otimizar consultas:
 1. Verifique se os índices estão sendo usados
 2. Considere adicionar índices adicionais se necessário
 3. Use filtros de data para limitar escopo
-
-
-
-
-
-
-
-

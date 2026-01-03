@@ -77,6 +77,7 @@
 ## 🧪 Manual Testing Required
 
 ### Authentication Flow
+
 - [ ] Navigate to http://localhost:3000/login
 - [ ] Enter test credentials
 - [ ] Verify password strength indicator works
@@ -89,6 +90,7 @@
   - `current_organization_id`
 
 ### Dashboard
+
 - [ ] Verify stats cards display
 - [ ] Click on each stat card
 - [ ] Test sidebar navigation
@@ -96,12 +98,14 @@
 - [ ] Test logout functionality
 
 ### Legal Pages
+
 - [ ] Click "Termos" in login footer
 - [ ] Verify page loads with proper styling
 - [ ] Test navigation between legal pages
 - [ ] Click "Voltar para Login" button
 
 ### Network Requests
+
 - [ ] Open browser DevTools → Network tab
 - [ ] Verify API calls go to `localhost:3333`
 - [ ] Check request headers include:
@@ -114,6 +118,7 @@
 ## 📊 System Health
 
 ### Backend Logs (Expected)
+
 ```
 ✅ Server listening at http://0.0.0.0:3333
 ✅ incoming request GET /health → 200
@@ -122,6 +127,7 @@
 ```
 
 ### Frontend Console (Expected)
+
 ```
 ✅ No critical errors
 ⚠️  Warnings only (WebSocket disabled - non-critical)

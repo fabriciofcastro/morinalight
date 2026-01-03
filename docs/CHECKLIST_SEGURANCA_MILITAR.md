@@ -1,6 +1,7 @@
 # 🔒 Checklist de Segurança - Nível Militar
 
 ## 📊 Status Geral
+
 - **Progresso**: 6/36 itens (17%)
 - **Última atualização**: 2025-12-11
 - **Versão**: 1.1.0
@@ -10,6 +11,7 @@
 ## 🔴 FASE 1: CRÍTICO - Bloqueia Funcionamento (6/6) ✅
 
 ### 1.1 Autenticação e Autorização
+
 - [x] **1.1.1** Rate Limiting Distribuído (Redis) ✅
   - [x] Criar serviço de rate limiting com Redis (`redis.service.ts`)
   - [x] Migrar de Map em memória para Redis (`rate-limit-redis.middleware.ts`)
@@ -62,6 +64,7 @@
 ## 🟠 FASE 2: ALTA PRIORIDADE - Segurança Básica (4/8)
 
 ### 2.1 Criptografia de Dados
+
 - [x] **2.1.1** Criptografia de Campos Sensíveis ✅
   - [x] Criar serviço de criptografia (AES-256-GCM) (`field-encryption.service.ts`)
   - [x] Identificar campos sensíveis (CPF, RG, telefone, endereço)
@@ -83,6 +86,7 @@
   - [ ] Testar recuperação de chaves
 
 ### 2.2 Isolamento Multi-Tenant
+
 - [x] **2.2.1** Prisma Middleware para Filtro Automático ✅
   - [x] Criar middleware de filtro por orgId (`tenant-filter.middleware.ts`)
   - [x] Aplicar em todos os modelos multi-tenant
@@ -97,6 +101,7 @@
   - [ ] Logar tentativas de acesso negado
 
 ### 2.3 Proteção de Dados
+
 - [x] **2.3.1** Data Loss Prevention (DLP) ✅
   - [x] Criar serviço de DLP (`dlp.service.ts`)
   - [x] Implementar detecção de padrões (CPF, CNPJ, cartão, email, telefone)
@@ -116,6 +121,7 @@
 ## 🟡 FASE 3: MÉDIA PRIORIDADE - Segurança Avançada (0/12)
 
 ### 3.1 Web Application Firewall
+
 - [ ] **3.1.1** WAF em Aplicação
   - [ ] Criar middleware WAF
   - [ ] Implementar regras básicas (SQL injection, XSS)
@@ -129,6 +135,7 @@
   - [ ] Monitorar falsos positivos
 
 ### 3.2 Intrusion Detection System
+
 - [ ] **3.2.1** IDS Baseado em Regras
   - [ ] Criar serviço de IDS
   - [ ] Implementar detecção de brute force
@@ -143,6 +150,7 @@
   - [ ] Integrar com alertas
 
 ### 3.3 Secrets Management
+
 - [ ] **3.3.1** Integração com HashiCorp Vault
   - [ ] Configurar Vault
   - [ ] Criar serviço de integração
@@ -156,6 +164,7 @@
   - [ ] Testar rotação
 
 ### 3.4 Auditoria e Compliance
+
 - [ ] **3.4.1** Logs Imutáveis
   - [ ] Implementar storage imutável (S3 WORM)
   - [ ] Criar hash de logs
@@ -180,6 +189,7 @@
 ## 🟢 FASE 4: BAIXA PRIORIDADE - Hardening (0/10)
 
 ### 4.1 Backup e Disaster Recovery
+
 - [ ] **4.1.1** Backup Criptografado
   - [ ] Implementar criptografia de backups
   - [ ] Configurar backup off-site
@@ -193,6 +203,7 @@
   - [ ] Testar DR
 
 ### 4.2 Hardening de Infraestrutura
+
 - [ ] **4.2.1** Dockerfile Hardening
   - [ ] Usuário não-root
   - [ ] Remover ferramentas desnecessárias
@@ -212,6 +223,7 @@
   - [ ] Automatizar scanning
 
 ### 4.3 Testes de Segurança
+
 - [ ] **4.3.1** Penetration Testing
   - [ ] Configurar OWASP ZAP
   - [ ] Executar testes automatizados
@@ -231,6 +243,7 @@
   - [ ] Integrar no CI/CD
 
 ### 4.4 Compliance e Certificações
+
 - [ ] **4.4.1** ISO 27001 Compliance
   - [ ] Documentar políticas
   - [ ] Implementar controles
@@ -247,13 +260,13 @@
 
 ## 📈 Progresso por Fase
 
-| Fase | Concluído | Total | Percentual |
-|------|-----------|-------|------------|
-| Fase 1: Crítico | 6 | 6 | 100% ✅ |
-| Fase 2: Alta | 4 | 8 | 50% |
-| Fase 3: Média | 0 | 12 | 0% |
-| Fase 4: Baixa | 0 | 10 | 0% |
-| **TOTAL** | **10** | **36** | **28%** |
+| Fase            | Concluído | Total  | Percentual |
+| --------------- | --------- | ------ | ---------- |
+| Fase 1: Crítico | 6         | 6      | 100% ✅    |
+| Fase 2: Alta    | 4         | 8      | 50%        |
+| Fase 3: Média   | 0         | 12     | 0%         |
+| Fase 4: Baixa   | 0         | 10     | 0%         |
+| **TOTAL**       | **10**    | **36** | **28%**    |
 
 ---
 
@@ -266,6 +279,7 @@
 5. ⏳ Fase 4: Baixa Prioridade - PENDENTE
 
 ### Ações Imediatas Necessárias:
+
 1. **Gerar chaves RSA**: Executar `./scripts/generate-jwt-keys.sh`
 2. **Configurar ENCRYPTION_KEY**: Adicionar ao .env
 3. **Testar implementações**: Validar funcionamento dos recursos criados
@@ -274,4 +288,3 @@
 ---
 
 **Última atualização**: 2025-12-11
-

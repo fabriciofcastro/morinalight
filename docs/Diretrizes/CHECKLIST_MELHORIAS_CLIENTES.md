@@ -11,6 +11,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1.1 Funcionalidades Base Implementadas
 
 #### Visual e Interface
+
 - [x] Background animado avançado
 - [x] Visualização em cards e tabela
 - [x] Modal de detalhes
@@ -18,30 +19,36 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Estatísticas em tempo real
 
 #### Validações e Máscaras
+
 - [x] Validação CPF/CNPJ
 - [x] Máscaras de input
 - [x] Validação em tempo real com feedback visual
 
 #### Exportação e Relatórios
+
 - [x] Exportação CSV avançada
 - [x] Exportação PDF formatada
 
 #### Busca e Filtros
+
 - [x] Filtros e busca básica
 - [x] Busca por múltiplos campos simultaneamente
 - [x] Integração BrasilAPI para CNPJ (preenchimento automático)
 - [x] Integração ViaCEP para endereço (busca automática)
 
 #### Gestão de Clientes
+
 - [x] Histórico completo de interações (Timeline de auditoria)
 - [x] Vincular representantes (formulário completo no modal)
 
 #### Ações em Massa
+
 - [x] Seleção múltipla
 - [x] Ações em massa (ativar, desativar, deletar múltiplos)
 - [x] Alterar status em massa
 
 #### Recursos Inovadores de UX
+
 - [x] Confetti Celebration - Animação ao salvar
 - [x] Indicador de Progresso - Barra animada do formulário
 - [x] Seções Colapsáveis - Organização inteligente (Dados Básicos, Contato, Endereço, Observações)
@@ -56,6 +63,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.1 Estrutura e Organização do Formulário
 
 #### Layout e Navegação
+
 - [x] Seções colapsáveis organizadas (Dados Básicos, Contato, Endereço, Observações)
 - [x] Indicador de progresso visual animado
 - [x] Atalhos de teclado (Ctrl+S para salvar, Esc para cancelar)
@@ -69,6 +77,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Formulário adaptativo - Campos mudam baseado em tipo de cliente
 
 #### Experiência do Usuário
+
 - [x] Validação em tempo real com feedback visual
 - [x] Estados de erro contextuais por campo
 - [x] Animações suaves de transição
@@ -85,6 +94,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.2 Dados Básicos e Identificação
 
 #### Identificação Principal
+
 - [x] Nome completo / Razão Social
 - [x] Tipo (Pessoa Física / Jurídica)
 - [x] CPF/CNPJ com validação completa
@@ -110,6 +120,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Biometria facial (opcional) - Para identificação avançada
 
 #### Validações Avançadas
+
 - [x] Validação de CPF com algoritmo completo
 - [x] Validação de CNPJ com algoritmo completo
 - [ ] Verificação de CPF/CNPJ na Receita Federal (API)
@@ -122,6 +133,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.3 Informações de Contato
 
 #### Contatos Múltiplos
+
 - [x] Email principal
 - [x] Telefone fixo
 - [x] Celular
@@ -141,6 +153,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Outros canais de comunicação
 
 #### Gestão de Contatos
+
 - [x] Lista de contatos múltiplos - Adicionar vários contatos ✅ IMPLEMENTADO (componente ContactsManager, schema ClienteContact, APIs completas)
 - [x] Contato principal - Marcar contato principal ✅ IMPLEMENTADO (campo isPrincipal, desmarca outros automaticamente)
 - [x] Horário preferencial de contato
@@ -153,6 +166,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.4 Endereço e Localização
 
 #### Endereço Completo
+
 - [x] CEP com busca automática ViaCEP
 - [x] Endereço (Logradouro)
 - [x] Cidade
@@ -168,6 +182,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [x] Zona (Urbana/Rural)
 
 #### Endereços Múltiplos
+
 - [ ] Endereço de correspondência - Diferente do principal
 - [ ] Endereço comercial
 - [ ] Endereço de entrega
@@ -182,6 +197,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Verificação de endereço válido
 
 #### Integrações de Endereço
+
 - [x] Integração ViaCEP para busca automática - Atualizado para preencher bairro e complemento
 - [ ] Integração Google Maps API
 - [ ] Integração OpenStreetMap
@@ -191,6 +207,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.5 Informações Fiscais e Financeiras
 
 #### Dados Fiscais
+
 - [ ] Regime Tributário (Simples, Presumido, Real)
 - [ ] CNAE Principal - Código e descrição
 - [ ] CNAEs Secundários - Lista de atividades
@@ -203,6 +220,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Histórico de mudanças fiscais
 
 #### Informações Financeiras
+
 - [ ] Limite de crédito
 - [ ] Limite de compra a prazo
 - [ ] Limite disponível
@@ -221,6 +239,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.6 Informações Comerciais
 
 #### Dados Comerciais
+
 - [ ] Segmento de mercado
 - [ ] Ramo de atividade
 - [ ] Porte da empresa (Micro, Pequena, Média, Grande)
@@ -238,6 +257,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Frequência de compra
 
 #### Histórico Comercial
+
 - [ ] Primeira compra
 - [ ] Última compra
 - [ ] Total de compras
@@ -249,6 +269,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.7 Relacionamentos e Representantes
 
 #### Representantes e Vendedores
+
 - [x] Vincular representantes no modal de detalhes
 - [ ] Lista de representantes no formulário
 - [ ] Representante principal
@@ -259,6 +280,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Gerente de conta
 
 #### Relacionamentos
+
 - [ ] Clientes relacionados - Vincular outros clientes
 - [ ] Tipo de relacionamento (Matriz/Filial, Grupo, etc)
 - [ ] Fornecedores relacionados
@@ -269,6 +291,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.8 Documentos e Anexos
 
 #### Gestão de Documentos
+
 - [ ] Upload de documentos - Múltiplos arquivos
 - [ ] Categorização de documentos
 - [ ] Tipos de documento (RG, CPF, CNH, Contrato, etc)
@@ -284,6 +307,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Notificações de documentos próximos ao vencimento
 
 #### Tipos de Documentos Suportados
+
 - [ ] RG, CPF, CNH
 - [ ] Contratos
 - [ ] Certidões
@@ -295,6 +319,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.9 Observações e Notas
 
 #### Sistema de Notas
+
 - [x] Campo de observações básico
 - [ ] Notas múltiplas - Lista de notas
 - [ ] Notas por categoria
@@ -308,6 +333,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Notas com lembretes
 
 #### Campos de Texto Avançados
+
 - [ ] Rich text editor
 - [ ] Markdown support
 - [ ] Anexos inline
@@ -319,6 +345,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.10 Tags e Categorização
 
 #### Sistema de Tags
+
 - [x] Tags personalizadas - Criar tags customizadas ✅ IMPLEMENTADO (componente TagsInput, schema ClienteTag, APIs completas)
 - [ ] Tags predefinidas - Tags padrão do sistema
 - [x] Múltiplas tags - Adicionar várias tags ✅ IMPLEMENTADO
@@ -331,6 +358,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Tagging em massa
 
 #### Categorização
+
 - [ ] Categorias principais
 - [ ] Subcategorias
 - [ ] Segmentação automática
@@ -341,6 +369,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.11 Campos Customizáveis
 
 #### Customização de Formulário
+
 - [ ] Campos customizados - Adicionar campos próprios
 - [ ] Tipos de campo customizados (Texto, Número, Data, Select, etc)
 - [ ] Validações customizadas
@@ -353,6 +382,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.12 Validações Avançadas
 
 #### Validações em Tempo Real
+
 - [x] Validação de CPF/CNPJ
 - [x] Validação de email
 - [x] Validação de CEP
@@ -369,6 +399,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Validação de regras de negócio
 
 #### Validações Externas
+
 - [ ] Verificação de email válido (API)
 - [ ] Verificação de telefone válido (API)
 - [ ] Verificação de endereço válido (API)
@@ -379,6 +410,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.13 Integrações e Automações
 
 #### Integrações de Dados
+
 - [x] BrasilAPI para CNPJ
 - [x] ViaCEP para CEP
 - [ ] Integração com ReceitaWS
@@ -391,6 +423,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Importação em massa de dados
 
 #### Automações
+
 - [ ] Preenchimento automático inteligente
 - [ ] Sugestões baseadas em IA
 - [ ] Validação automática de dados
@@ -404,6 +437,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.14 Acessibilidade e Internacionalização
 
 #### Acessibilidade
+
 - [ ] Suporte a leitores de tela
 - [ ] Navegação por teclado completa
 - [ ] Alto contraste
@@ -414,6 +448,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Modo de alto contraste
 
 #### Internacionalização
+
 - [ ] Multi-idioma
 - [ ] Formatação por região
 - [ ] Formatos de data por país
@@ -425,6 +460,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.15 Recursos Avançados de UX
 
 #### Feedback Visual
+
 - [x] Animações suaves
 - [x] Estados de loading
 - [x] Mensagens de erro contextuais
@@ -438,6 +474,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Sugestões contextuais
 
 #### Performance
+
 - [ ] Lazy loading de campos
 - [ ] Debounce otimizado
 - [ ] Cache de validações
@@ -449,6 +486,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1B.16 Segurança e Privacidade
 
 #### Segurança
+
 - [ ] Criptografia de dados sensíveis
 - [ ] Mascaramento de dados sensíveis
 - [ ] Logs de auditoria de alterações
@@ -460,6 +498,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Sanitização de inputs
 
 #### Privacidade (LGPD)
+
 - [ ] Consentimento de dados
 - [ ] Anonimização de dados
 - [ ] Exclusão de dados
@@ -474,6 +513,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 1.2 Melhorias de Design e UX
 
 #### 1.2.1 Background e Animações
+
 - [ ] Background interativo - Partículas que reagem ao mouse
 - [ ] Efeito parallax - Camadas de profundidade no background
 - [ ] Gradientes animados - Transições de cores suaves
@@ -484,6 +524,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - [ ] Efeito shimmer - Loading shimmer nos cards
 
 #### 1.2.2 Visual e Layout
+
 - [ ] Dark/Light mode toggle - Alternância de tema
 - [ ] Temas personalizados - Múltiplos esquemas de cores
 - [ ] Layout responsivo avançado - Breakpoints otimizados
@@ -500,6 +541,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 2.1 Busca Avançada
 
 #### Funcionalidades de Busca
+
 - [x] Busca por múltiplos campos (Nome, documento, email, endereço simultaneamente)
 - [x] Integração BrasilAPI - Busca automática de dados por CNPJ
 - [x] Integração ViaCEP - Busca automática de endereço por CEP
@@ -514,6 +556,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 2.2 Filtros Avançados
 
 #### Tipos de Filtros
+
 - [ ] Filtros múltiplos - Combinar vários filtros
 - [ ] Filtros por data - Criado em, atualizado em, última interação
 - [ ] Filtros por região - Estado, cidade, CEP
@@ -526,6 +569,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 2.3 Ordenação
 
 #### Funcionalidades de Ordenação
+
 - [ ] Ordenação múltipla - Ordenar por vários campos
 - [ ] Ordenação customizada - Salvar ordenações favoritas
 - [ ] Ordenação por relevância - Algoritmo de relevância personalizado
@@ -537,6 +581,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 3.1 Dashboards e Métricas
 
 #### KPIs e Métricas
+
 - [ ] Dashboard de métricas - KPIs principais em cards
 - [ ] Gráfico de crescimento - Evolução de clientes ao longo do tempo
 - [ ] Gráfico de distribuição - Distribuição por tipo, status, região
@@ -549,6 +594,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 3.2 Visualizações Alternativas
 
 #### Tipos de Visualização
+
 - [ ] Visualização em mapa - Mapa interativo com localização
 - [ ] Visualização em timeline - Linha do tempo de interações
 - [ ] Visualização em kanban - Board com colunas por status
@@ -562,6 +608,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 4.1 Informações Adicionais
 
 #### Recursos de Informação
+
 - [x] Histórico completo - Timeline de todas as interações
 - [ ] Notas e anotações - Sistema de notas por cliente
 - [ ] Anexos e documentos - Upload de documentos
@@ -574,6 +621,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 4.2 Representantes e Comissões
 
 #### Funcionalidades de Comissões
+
 - [x] Vincular representantes - Formulário completo para vincular representantes
 - [ ] Histórico de comissões - Todas as comissões do cliente
 - [ ] Cálculo automático - Cálculo de comissões em tempo real
@@ -583,6 +631,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 4.3 Comunicação
 
 #### Canais de Comunicação
+
 - [ ] Envio de emails - Enviar emails diretamente da plataforma
 - [ ] Histórico de emails - Log de todos os emails enviados
 - [ ] Templates de email - Templates personalizáveis
@@ -597,6 +646,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 5.1 Operações em Lote
 
 #### Funcionalidades de Massa
+
 - [x] Seleção múltipla - Selecionar vários clientes
 - [x] Ações em massa - Aplicar ações a múltiplos clientes
 - [x] Alterar status em massa - Ativar/desativar múltiplos
@@ -609,6 +659,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 5.2 Seleção Inteligente
 
 #### Recursos de Seleção
+
 - [ ] Selecionar todos - Selecionar todos os resultados
 - [ ] Selecionar por filtro - Selecionar baseado em filtros
 - [ ] Selecionar por busca - Selecionar resultados da busca
@@ -621,6 +672,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 6.1 Formatos de Exportação
 
 #### Tipos de Exportação
+
 - [x] Exportar para PDF - Relatórios em PDF formatados
 - [x] Exportar para CSV avançado - CSV com formatação
 - [ ] Exportar para Excel - Planilhas Excel avançadas
@@ -632,6 +684,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 6.2 Relatórios
 
 #### Tipos de Relatórios
+
 - [ ] Relatório de clientes - Relatório completo
 - [ ] Relatório de vendas - Vendas por cliente
 - [ ] Relatório de comissões - Comissões detalhadas
@@ -647,6 +700,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 7.1 Automações
 
 #### Workflows Automáticos
+
 - [ ] Workflows automáticos - Ações automáticas baseadas em eventos
 - [ ] Regras de negócio - Regras configuráveis
 - [ ] Alertas inteligentes - Notificações baseadas em comportamento
@@ -656,6 +710,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 7.2 Integrações
 
 #### APIs e Conexões
+
 - [ ] API pública - API REST para integrações
 - [ ] Webhooks - Notificações para sistemas externos
 - [ ] Integração CRM - Conectar com CRMs populares
@@ -671,6 +726,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 8.1 Permissões Granulares
 
 #### Controle de Acesso
+
 - [ ] RBAC avançado - Controle de acesso por função
 - [ ] Permissões por campo - Controlar acesso a campos específicos
 - [ ] Permissões por ação - Criar, editar, deletar, visualizar
@@ -682,6 +738,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 8.2 LGPD e Compliance
 
 #### Conformidade Legal
+
 - [ ] Anonimização de dados - Anonimizar dados sensíveis
 - [ ] Exportação LGPD - Exportar dados conforme LGPD
 - [ ] Exclusão de dados - Excluir dados permanentemente
@@ -695,6 +752,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 9.1 Performance
 
 #### Otimizações de Performance
+
 - [ ] Virtual scrolling - Scroll virtual para grandes listas
 - [ ] Lazy loading - Carregamento sob demanda
 - [ ] Cache inteligente - Cache de dados e queries
@@ -707,6 +765,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 9.2 Otimizações Técnicas
 
 #### Melhorias de Código
+
 - [ ] Debounce otimizado - Debounce mais eficiente
 - [ ] Throttle de scroll - Otimizar eventos de scroll
 - [ ] Memoização - Memoizar cálculos pesados
@@ -721,6 +780,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 10.1 Mobile First
 
 #### Funcionalidades Mobile
+
 - [ ] PWA completo - Progressive Web App
 - [ ] Offline mode - Funcionar offline
 - [ ] Gestos touch - Swipe, pinch, etc
@@ -733,6 +793,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 10.2 Responsividade
 
 #### Adaptação de Layout
+
 - [ ] Breakpoints otimizados - Breakpoints customizados
 - [ ] Layout adaptativo - Layout que se adapta
 - [ ] Touch targets - Áreas de toque adequadas
@@ -745,6 +806,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 11.1 IA e Machine Learning
 
 #### Recursos de IA
+
 - [ ] Sugestões inteligentes - IA sugere ações
 - [ ] Detecção de anomalias - Detectar comportamentos anômalos
 - [ ] Previsão de churn - Prever clientes que vão sair
@@ -757,6 +819,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 11.2 Processamento de Linguagem Natural
 
 #### Recursos de NLP
+
 - [ ] Busca por linguagem natural - Buscar em português natural
 - [ ] Geração de relatórios - IA gera relatórios
 - [ ] Resumo automático - Resumir informações do cliente
@@ -769,6 +832,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 12.1 Customização
 
 #### Funcionalidades Personalizáveis
+
 - [ ] Temas personalizados - Criar temas próprios
 - [ ] Layout customizável - Arrastar e soltar colunas
 - [ ] Campos customizados - Adicionar campos próprios
@@ -780,6 +844,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 12.2 Branding
 
 #### Identidade Visual
+
 - [ ] Logo personalizado - Upload de logo
 - [ ] Cores da marca - Aplicar cores da empresa
 - [ ] Email templates - Templates com branding
@@ -792,6 +857,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 13.1 Notificações
 
 #### Canais de Notificação
+
 - [ ] Notificações em tempo real - WebSockets
 - [ ] Notificações push - Push notifications
 - [ ] Notificações por email - Emails de notificação
@@ -802,6 +868,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 13.2 Alertas
 
 #### Tipos de Alertas
+
 - [ ] Alertas de vencimento - Alertas de prazos
 - [ ] Alertas de inatividade - Clientes inativos
 - [ ] Alertas de anomalias - Comportamentos anômalos
@@ -815,6 +882,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 14.1 Analytics
 
 #### Ferramentas de Análise
+
 - [ ] Google Analytics - Integração com GA
 - [ ] Heatmaps - Mapas de calor de uso
 - [ ] Session recording - Gravar sessões
@@ -825,6 +893,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 14.2 Insights
 
 #### Recursos de Insights
+
 - [ ] Insights automáticos - IA gera insights
 - [ ] Recomendações - Recomendar ações
 - [ ] Tendências - Identificar tendências
@@ -838,6 +907,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 15.1 Testes
 
 #### Tipos de Testes
+
 - [ ] Testes unitários - Cobertura de testes
 - [ ] Testes de integração - Testes E2E
 - [ ] Testes de performance - Testes de carga
@@ -847,6 +917,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 15.2 Qualidade
 
 #### Padrões de Qualidade
+
 - [ ] Code review - Revisão de código
 - [ ] Linting - ESLint, Prettier
 - [ ] Type safety - TypeScript strict
@@ -861,6 +932,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### 16.1 Documentação
 
 #### Recursos de Documentação
+
 - [ ] Documentação de API - Swagger/OpenAPI
 - [ ] Guia do usuário - Manual do usuário
 - [ ] Tutoriais - Tutoriais interativos
@@ -873,6 +945,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ## 🎯 PRIORIDADES SUGERIDAS
 
 ### Alta Prioridade (MVP+)
+
 1. ✅ Background animado avançado
 2. ✅ Visualização cards/tabela
 3. ✅ Filtros e busca
@@ -887,6 +960,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 12. ✅ Busca avançada - Busca por múltiplos campos simultaneamente
 
 ### Média Prioridade
+
 1. [ ] Dashboard de métricas
 2. [ ] Gráficos e visualizações
 3. [ ] Notas e anotações
@@ -896,6 +970,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 7. [ ] Permissões granulares
 
 ### Baixa Prioridade (Futuro)
+
 1. [ ] IA e Machine Learning
 2. [ ] Integrações avançadas
 3. [ ] PWA completo
@@ -909,6 +984,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### Implementações Recentes - Wizard e Auto-Save (Sessão Atual)
 
 #### Wizard/Stepper Multi-etapas
+
 - ✅ Componente Stepper/Wizard criado no pacote UI
 - ✅ Formulário dividido em 5 etapas: Dados Básicos, Contato, Endereço, Observações, Preview
 - ✅ Navegação entre etapas com validação
@@ -917,12 +993,14 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Animações suaves entre etapas
 
 #### Preview Antes de Salvar
+
 - ✅ Etapa de revisão completa antes de finalizar
 - ✅ Visualização formatada de todos os dados
 - ✅ Validação final antes de salvar
 - ✅ Exibição de erros se houver
 
 #### Auto-Save de Rascunho
+
 - ✅ Salvamento automático a cada 30 segundos
 - ✅ Indicador visual de salvamento (spinner durante save, check após salvar)
 - ✅ Restauração automática de rascunho ao abrir formulário
@@ -931,6 +1009,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Rascunhos válidos por 24 horas
 
 #### Validação Condicional
+
 - ✅ Validação por etapa no wizard
 - ✅ Campos que aparecem baseados em tipo de cliente (PF/PJ)
 - ✅ Validação em tempo real com feedback visual
@@ -939,6 +1018,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### Implementações Recentes - Nível INSANO (Sessão Anterior)
 
 #### Confetti Celebration ao Salvar
+
 - ✅ Efeito de confetti animado ao criar novo cliente
 - ✅ 150 partículas coloridas com física realista
 - ✅ Cores dinâmicas baseadas no tema
@@ -946,6 +1026,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Canvas nativo (sem dependências externas)
 
 #### Indicador de Progresso do Formulário
+
 - ✅ Barra de progresso visual animada
 - ✅ Cálculo automático baseado em campos preenchidos
 - ✅ Atualização em tempo real
@@ -953,6 +1034,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Animação suave com Framer Motion
 
 #### Seções Colapsáveis Organizadas
+
 - ✅ 4 seções principais: Dados Básicos, Contato, Endereço, Observações
 - ✅ Animações de expandir/colapsar
 - ✅ Estado persistente por seção
@@ -960,12 +1042,14 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Chevron animado indicando estado
 
 #### Atalhos de Teclado Profissionais
+
 - ✅ `Ctrl+S` / `Cmd+S` para salvar
 - ✅ `Esc` para cancelar
 - ✅ Dica visual no cabeçalho do formulário
 - ✅ Suporte multiplataforma (Windows/Mac/Linux)
 
 #### Validação em Tempo Real Aprimorada
+
 - ✅ Feedback visual imediato (borda vermelha)
 - ✅ Mensagens de erro contextuais
 - ✅ Limpeza automática de erros ao corrigir
@@ -973,6 +1057,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Validação completa antes de submeter
 
 #### Integrações Inteligentes
+
 - ✅ BrasilAPI para CNPJ (preenchimento automático)
 - ✅ ViaCEP para endereço (busca ao sair do campo)
 - ✅ Loading states durante buscas
@@ -981,6 +1066,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### Implementações Recentes - Recursos Inovadores (Sessão Anterior)
 
 #### Integração BrasilAPI - Busca por CNPJ
+
 - ✅ Botão "Buscar" ao lado do campo CNPJ
 - ✅ Preenchimento automático de: Razão Social, Nome Fantasia, Endereço, Cidade, Estado, CEP, Telefone
 - ✅ Validação antes de buscar
@@ -988,6 +1074,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Notificações de sucesso/erro
 
 #### Integração ViaCEP - Busca por CEP
+
 - ✅ Busca automática ao sair do campo CEP (onBlur)
 - ✅ Preenchimento automático de: Endereço, Cidade, Estado
 - ✅ Validação de formato (8 dígitos)
@@ -995,6 +1082,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Notificações de sucesso/erro
 
 #### Validação em Tempo Real Aprimorada
+
 - ✅ Validação completa de todos os campos
 - ✅ Mensagens de erro contextuais por campo
 - ✅ Estados visuais (borda vermelha em campos com erro)
@@ -1004,6 +1092,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Validação de CEP e Estado
 
 #### UX Melhorada
+
 - ✅ Feedback visual imediato
 - ✅ Loading states durante buscas
 - ✅ Mensagens de erro específicas
@@ -1013,12 +1102,14 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### Implementações Recentes (Sessão Anterior)
 
 #### Histórico de Interações Completo
+
 - ✅ Criada API `/api/clientes/[id]/audit` para buscar histórico de auditoria
 - ✅ Modal de detalhes mostra timeline completa de todas as ações
 - ✅ Exibe campos alterados, valores anteriores e novos
 - ✅ Mostra email do usuário que realizou a ação quando disponível
 
 #### Vincular Representantes
+
 - ✅ Formulário completo no modal de detalhes
 - ✅ Validação de percentual de comissão (0-100%)
 - ✅ Máscaras de input para CPF, telefone e CEP
@@ -1026,12 +1117,14 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Lista de representantes vinculados com informações completas
 
 #### Busca Avançada
+
 - ✅ Painel de busca avançada com múltiplos campos
 - ✅ Busca simultânea por: Nome, Documento, Email, Cidade, Estado, Endereço
 - ✅ Alternância entre busca simples e avançada
 - ✅ Botão para limpar filtros rapidamente
 
 #### Melhorias Gerais
+
 - ✅ Exportação PDF funcional
 - ✅ Ações em massa (ativar, desativar, deletar) implementadas
 - ✅ Seleção múltipla com checkbox em cards e tabela
@@ -1055,6 +1148,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ## 📋 RESUMO DAS IMPLEMENTAÇÕES DESTA SESSÃO
 
 ### ✅ 1. Modo de Edição em Linha
+
 **Status:** ✅ COMPLETO
 
 - Componente `InlineEditField` criado
@@ -1065,14 +1159,17 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - Feedback visual completo
 
 ### ✅ 2. Sistema de Tags
+
 **Status:** ✅ COMPLETO
 
 **Backend:**
+
 - Schema: `ClienteTag` e `ClienteTagRelation`
 - APIs: Listar, Criar, Atualizar tags
 - Tags incluídas na resposta de listagem
 
 **Frontend:**
+
 - Componente `TagsInput` com sugestões
 - Hook `useClienteTags`
 - Integração no wizard (etapa dedicada)
@@ -1080,35 +1177,41 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - 8 cores padrão
 
 ### ✅ 3. Múltiplos Contatos
+
 **Status:** ✅ COMPLETO
 
 **Backend:**
+
 - Schema: `ClienteContact`
 - APIs: CRUD completo de contatos
 - Suporte a contato principal
 
 **Frontend:**
+
 - Componente `ContactsManager`
 - Campos: Nome, Email, Telefone, Celular, Cargo, Departamento, Tipo, Principal, Observações
 - Tipos: Geral, Comercial, Financeiro, Suporte, Técnico
 - Integração no modal de detalhes (aba "Contatos")
 
 ### 📝 Scripts Criados
+
 - `scripts/migrate-cliente-tags.sh` - Migration de tags
 - `scripts/migrate-cliente-contacts.sh` - Migration de contatos
 
 ### 🔄 Próximos Passos Necessários
 
 1. **Executar Migrations:**
+
    ```bash
    # Tags
    bash scripts/migrate-cliente-tags.sh
-   
+
    # Contatos
    bash scripts/migrate-cliente-contacts.sh
    ```
 
 2. **Ou executar tudo de uma vez:**
+
    ```bash
    cd apps/api
    pnpm prisma migrate dev --name add_cliente_tags_and_contacts
@@ -1124,6 +1227,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### Implementações Recentes - Sistema Completo de Tags, Edição Inline e Múltiplos Contatos (Sessão Atual)
 
 #### Múltiplos Contatos
+
 - ✅ Schema Prisma atualizado com `ClienteContact`
 - ✅ APIs backend completas:
   - `GET /clientes/:id/contatos` - Listar contatos do cliente
@@ -1143,6 +1247,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ### Implementações Recentes - Sistema de Tags e Edição Inline (Sessão Anterior)
 
 #### Modo de Edição em Linha
+
 - ✅ Componente `InlineEditField` criado com validação em tempo real
 - ✅ Edição inline na tabela de clientes
 - ✅ Campos editáveis: Nome, Email, Telefone, Cidade, Estado
@@ -1151,6 +1256,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ Notificações de sucesso/erro
 
 #### Sistema de Tags Completo
+
 - ✅ Schema Prisma atualizado com `ClienteTag` e `ClienteTagRelation`
 - ✅ APIs backend completas:
   - `GET /clientes/tags` - Listar tags disponíveis
@@ -1174,11 +1280,13 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ## Implementações Recentes - Campos Adicionais (2025-01-12)
 
 **Campos Implementados:**
+
 - ✅ **Nome Social / Apelido** - Campo para nome preferencial do cliente
 - ✅ **Data de Nascimento (PF) / Data de Fundação (PJ)** - Campo de data com validação
 - ✅ **RG e Órgão Emissor** - Campos para identificação adicional (apenas PF)
 
 **Alterações Realizadas:**
+
 1. **Schema Prisma** - Adicionados campos: `nomeSocial`, `rg`, `orgaoEmissor`, `dataNascimento`
 2. **Schemas de Validação** - Atualizados para incluir novos campos com transformação de data
 3. **Entidade de Domínio** - Atualizada com novos campos e métodos de atualização
@@ -1189,6 +1297,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 8. **Database** - Schema atualizado com `prisma db push`
 
 **Próximos Passos:**
+
 - [x] Adicionar validação de RG por estado ✅
 - [x] Adicionar campos: Sexo/Gênero, Estado Civil, Nacionalidade ✅
 - [x] Adicionar campos: Naturalidade, Título de Eleitor ✅
@@ -1199,6 +1308,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ## Implementações Recentes - Campos Adicionais Completos (2025-01-12)
 
 **Todos os campos adicionais implementados:**
+
 - ✅ **Sexo/Gênero** - Opções: Masculino, Feminino, Outro, Prefiro não informar
 - ✅ **Estado Civil** - Opções: Solteiro, Casado, Divorciado, Viúvo, União Estável
 - ✅ **Nacionalidade** - Campo de texto livre
@@ -1211,6 +1321,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ **Validação de RG por Estado** - Sistema completo de validação com regras específicas por UF
 
 **Alterações Realizadas:**
+
 1. **Schema Prisma** - Adicionados 10 novos campos para dados pessoais
 2. **Validador de RG** (`apps/web/src/lib/validators/rg.ts`):
    - Validação específica por estado brasileiro
@@ -1229,6 +1340,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 8. **Frontend - Cliente Client** - Atualizado tipo, state e funções de submit/edição
 
 **Nota sobre Prisma:**
+
 - Schema atualizado com todos os campos
 - Prisma Client precisa ser regenerado após ajustes de configuração
 
@@ -1237,6 +1349,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ## Implementações Recentes - Contatos Adicionais e Alertas (2025-01-12)
 
 **Contatos Adicionais Implementados:**
+
 - ✅ **Email Secundário** - Campo para email alternativo
 - ✅ **Email Corporativo** - Campo para email corporativo
 - ✅ **Telefone Comercial** - Campo para telefone comercial
@@ -1244,6 +1357,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ **Telegram** - Campo para username ou número do Telegram
 
 **Sistema de Alertas:**
+
 - ✅ **Alertas de Documentos Vencidos** - Hook `useDocumentExpiryAlerts`:
   - Identifica documentos expirados
   - Identifica documentos expirando em breve (30 dias)
@@ -1251,6 +1365,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
   - Ordenação automática por prioridade
 
 **Alterações Realizadas:**
+
 1. **Schema Prisma** - Adicionados campos: `emailSecundario`, `emailCorporativo`, `telefoneComercial`, `whatsapp`, `telegram`
 2. **Schemas de Validação** - Atualizados com novos campos de contato
 3. **Entidade de Domínio** - Atualizada com novos campos
@@ -1278,6 +1393,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 ## Implementações Recentes - Redes Sociais e Campos de Endereço (2025-01-12)
 
 **Redes Sociais Implementadas:**
+
 - ✅ **LinkedIn** - Campo URL para perfil LinkedIn
 - ✅ **Facebook** - Campo URL para página/perfil Facebook
 - ✅ **Instagram** - Campo URL para perfil Instagram
@@ -1286,6 +1402,7 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ **Blog** - Campo URL para blog do cliente
 
 **Campos de Endereço Adicionais:**
+
 - ✅ **Ponto de Referência** - Campo de texto livre
 - ✅ **Coordenadas GPS** - Campos Latitude e Longitude
 - ✅ **Código IBGE** - Campo para código IBGE da cidade
@@ -1294,11 +1411,13 @@ Criar o sistema de clientes mais completo, avançado e sofisticado possível, co
 - ✅ **Zona** - Select com opções: Urbana, Rural
 
 **Preferências de Contato:**
+
 - ✅ **Horário Preferencial de Contato** - Campo de texto livre (ex: "08:00-18:00")
 - ✅ **Idioma Preferido** - Select com opções: pt-BR, en-US, es-ES, fr-FR
 - ✅ **Forma Preferida de Comunicação** - Select com opções: email, telefone, whatsapp, telegram, presencial
 
 **Alterações Realizadas:**
+
 1. **Schema Prisma** - Adicionados 15 novos campos
 2. **Schemas de Validação** - Atualizados com validação de URLs para redes sociais
 3. **Entidade de Domínio** - Atualizada com todos os novos campos

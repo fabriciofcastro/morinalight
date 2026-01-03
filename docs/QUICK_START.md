@@ -1,12 +1,14 @@
 # 🚀 Guia Rápido - Iniciar Sistema Morina
 
 ## Problema Identificado
+
 - ❌ PostgreSQL não estava rodando
 - ❌ Login não funciona sem banco de dados
 
 ## Solução Rápida
 
 ### 1. Iniciar Banco de Dados
+
 ```bash
 # Iniciar PostgreSQL
 docker-compose up -d postgres
@@ -16,6 +18,7 @@ docker ps | grep postgres
 ```
 
 ### 2. Rodar Migrações
+
 ```bash
 # Aplicar schema do banco
 pnpm db:migrate
@@ -25,6 +28,7 @@ cd apps/api && pnpm prisma migrate deploy
 ```
 
 ### 3. Seed de Dados (Opcional)
+
 ```bash
 # Popular banco com dados iniciais
 pnpm db:seed
@@ -34,18 +38,21 @@ cd apps/api && pnpm prisma db seed
 ```
 
 ### 4. Verificar Conexão
+
 ```bash
 # Testar conexão
 curl http://localhost:3333/health
 ```
 
 ### 5. Acessar Sistema
+
 ```
 Frontend: http://localhost:3000/login
 Backend API: http://localhost:3333
 ```
 
 ## Credenciais Padrão (Após Seed)
+
 ```
 Email: admin@morina.com
 Senha: Admin@123
@@ -54,21 +61,25 @@ Senha: Admin@123
 ## Comandos Úteis
 
 ### Parar Tudo
+
 ```bash
 docker-compose down
 ```
 
 ### Reiniciar Banco
+
 ```bash
 docker-compose restart postgres
 ```
 
 ### Ver Logs do Banco
+
 ```bash
 docker-compose logs -f postgres
 ```
 
 ### Resetar Banco (CUIDADO!)
+
 ```bash
 docker-compose down -v
 docker-compose up -d postgres
@@ -79,6 +90,7 @@ pnpm db:seed
 ## Troubleshooting
 
 ### Erro: "Can't reach database"
+
 ```bash
 # 1. Verificar se PostgreSQL está rodando
 docker ps
@@ -94,11 +106,13 @@ pnpm db:migrate
 ```
 
 ### Erro: "Tenant não disponível"
+
 - Isso é normal em rotas públicas
 - O sistema tem fallback automático
 - Não afeta o login
 
 ### Login não funciona
+
 ```bash
 # 1. Verificar se API está rodando
 curl http://localhost:3333/health
@@ -113,7 +127,7 @@ pnpm db:seed
 ✅ PostgreSQL: Iniciando...  
 ⏳ Migrations: Pendente  
 ⏳ Seed: Pendente  
-⏳ Login: Aguardando banco  
+⏳ Login: Aguardando banco
 
 ## Próximos Passos
 

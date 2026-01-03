@@ -44,24 +44,28 @@ Todos os componentes interativos devem ter `aria-label` ou `aria-labelledby`:
 ## 🎯 Checklist de Acessibilidade
 
 ### Formulários
+
 - [ ] Labels associados a inputs
 - [ ] Mensagens de erro acessíveis
 - [ ] Validação em tempo real com feedback
 - [ ] Agrupamento lógico de campos
 
 ### Navegação
+
 - [ ] Skip links para conteúdo principal
 - [ ] Breadcrumbs acessíveis
 - [ ] Menu navegável por teclado
 - [ ] Indicadores de página atual
 
 ### Conteúdo
+
 - [ ] Textos alternativos em imagens
 - [ ] Legendas em vídeos (quando aplicável)
 - [ ] Estrutura semântica (h1-h6)
 - [ ] Listas marcadas corretamente
 
 ### Interações
+
 - [ ] Botões com labels descritivos
 - [ ] Links com texto descritivo
 - [ ] Modais com foco gerenciado
@@ -70,6 +74,7 @@ Todos os componentes interativos devem ter `aria-label` ou `aria-labelledby`:
 ## 🔧 Utilitários
 
 ### useAriaLabel
+
 ```typescript
 const ariaLabel = useAriaLabel({
   action: "Criar",
@@ -79,6 +84,7 @@ const ariaLabel = useAriaLabel({
 ```
 
 ### useKeyboardNavigation
+
 ```typescript
 const { onKeyDown } = useKeyboardNavigation({
   onEnter: handleSubmit,
@@ -92,5 +98,3 @@ const { onKeyDown } = useKeyboardNavigation({
 - Validar com axe DevTools
 - Seguir WCAG 2.1 AA como mínimo
 - Considerar usuários com deficiência visual, auditiva, motora e cognitiva
-
-

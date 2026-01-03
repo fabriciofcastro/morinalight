@@ -28,6 +28,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 1. Cadastro de Fornecedores
 
 #### 1.1 Formulário de Cadastro
+
 - [x] Campo Nome/Razão Social (obrigatório)
 - [x] Campo Email (validação de formato)
 - [x] Campo Telefone (formatação automática)
@@ -44,6 +45,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Preenchimento automático via CNPJ
 
 #### 1.2 Formulário de Edição
+
 - [x] Carregamento de dados existentes
 - [x] Validação de formulário
 - [x] Atualização de dados
@@ -55,6 +57,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 2. Listagem de Fornecedores
 
 #### 2.1 Visualização
+
 - [x] Lista paginada
 - [x] Visualização em Grid
 - [x] Visualização em Lista
@@ -63,6 +66,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Estatísticas rápidas (Total, Ativos, Inativos)
 
 #### 2.2 Busca e Filtros
+
 - [x] Busca geral (nome, email, documento, etc)
 - [x] Filtro por status
 - [x] Filtro por documento (CPF/CNPJ)
@@ -76,6 +80,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Reset de filtros
 
 #### 2.3 Ordenação
+
 - [x] Ordenação por nome
 - [x] Ordenação por data de criação
 - [x] Ordenação por última atualização
@@ -84,6 +89,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Indicadores visuais de ordenação
 
 #### 2.4 Paginação
+
 - [x] Paginação server-side
 - [x] Controle de tamanho de página
 - [x] Navegação entre páginas
@@ -95,6 +101,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 3. Visualização Detalhada
 
 #### 3.1 Página de Detalhes
+
 - [x] Header com informações principais
 - [x] Badge de status
 - [x] Botões de ação (Editar, Compartilhar, Duplicar)
@@ -103,6 +110,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Sistema de tabs
 
 #### 3.2 Tab Informações
+
 - [x] Dados cadastrais completos
 - [x] Informações de contato
 - [x] Endereço completo
@@ -111,6 +119,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Observações
 
 #### 3.3 Tab Fichas de Custo
+
 - [x] Listagem de fichas de custo do fornecedor
 - [x] Filtro por status
 - [x] Paginação
@@ -121,6 +130,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Badges de status
 
 #### 3.4 Tab Insumos
+
 - [x] Agrupamento de insumos por descrição
 - [x] Estatísticas por insumo:
   - [x] Preço médio
@@ -132,6 +142,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Link para ficha mais recente
 
 #### 3.5 Tab Boletos
+
 - [x] Listagem de boletos do fornecedor
 - [x] Filtro por status
 - [x] Informações: Valor, Vencimento, Status
@@ -141,6 +152,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Linha digitável
 
 #### 3.6 Tab Histórico (Auditoria)
+
 - [x] Timeline de alterações
 - [x] Filtro por ação (criar, atualizar, deletar, restaurar)
 - [x] Informações: Ação, Campo alterado, Data, Usuário
@@ -149,6 +161,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Ícones por tipo de ação
 
 #### 3.7 Tab Versões
+
 - [x] Listagem de versões do fornecedor
 - [x] Versão atual destacada
 - [x] Snapshot completo de cada versão
@@ -158,6 +171,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Visualização de dados snapshot
 
 #### 3.8 Tab Documentos
+
 - [x] Listagem de documentos anexados
 - [x] Upload de documentos
 - [x] Tipos de documento: Foto da Peça, Nota Fiscal, Boleto, Comprovante, Outros
@@ -168,6 +182,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Descrição opcional
 
 #### 3.9 Tab Notas
+
 - [x] Placeholder para futuras implementações
 
 ---
@@ -175,12 +190,14 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 4. Integrações
 
 #### 4.1 ViaCEP
+
 - [x] Busca automática de endereço por CEP
 - [x] Preenchimento automático de campos
 - [x] Cache de resultados
 - [x] Tratamento de erros
 
 #### 4.2 BrasilAPI (CNPJ Lookup)
+
 - [x] API route `/api/integrations/cnpj`
 - [x] Hook `useCnpj()` para busca
 - [x] Validação de CNPJ
@@ -194,6 +211,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Tratamento de erros
 
 #### 4.3 Fichas de Custo
+
 - [x] Integração com módulo de fichas de custo
 - [x] Exibição de fornecedores de fichas de custo na listagem
 - [x] Diferenciação visual (badge "Ficha-Custo")
@@ -206,6 +224,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 5. Estatísticas e Relatórios
 
 #### 5.1 Estatísticas Rápidas
+
 - [x] Total de fichas de custo
 - [x] Total de insumos fornecidos
 - [x] Valor total em compras
@@ -215,6 +234,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Loading states
 
 #### 5.2 Endpoint de Estatísticas
+
 - [x] `GET /suppliers/:id/estatisticas`
 - [x] Cálculo de totais
 - [x] Agregação de dados
@@ -225,12 +245,14 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 6. Exportação
 
 #### 6.1 Formatos de Exportação
+
 - [x] Exportação CSV
 - [x] Exportação Excel (.xls)
 - [x] Exportação JSON
 - [x] Exportação PDF (HTML para impressão)
 
 #### 6.2 Funcionalidades de Exportação
+
 - [x] Exportação de lista completa
 - [x] Exportação de fornecedores filtrados
 - [x] Exportação de selecionados (lote)
@@ -244,6 +266,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 7. Ações em Lote
 
 #### 7.1 Seleção Múltipla
+
 - [x] Checkbox em cada fornecedor
 - [x] Seleção individual
 - [x] Seleção/deseleção em massa
@@ -251,6 +274,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Barra de ações quando há selecionados
 
 #### 7.2 Ações Disponíveis
+
 - [x] Ativar em lote
 - [x] Suspender em lote
 - [x] Desativar em lote
@@ -259,6 +283,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Limpar seleção
 
 #### 7.3 Confirmações
+
 - [x] Confirmação para deleção
 - [x] Notificações de sucesso/erro
 - [x] Atualização automática da lista
@@ -268,6 +293,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 8. Soft Delete e Recuperação
 
 #### 8.1 Soft Delete
+
 - [x] Campo `deletedAt` no modelo
 - [x] Campo `deletedBy` no modelo
 - [x] Exclusão lógica (não física)
@@ -276,12 +302,14 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Exclusão de listagens padrão
 
 #### 8.2 Recuperação
+
 - [x] Endpoint `POST /suppliers/:id/restore`
 - [x] Restauração de fornecedores deletados
 - [x] Auditoria de restauração
 - [x] Validação de acesso
 
 #### 8.3 Hard Delete
+
 - [x] Endpoint `DELETE /suppliers/:id/hard-delete`
 - [x] Exclusão permanente
 - [x] Validação de permissões
@@ -292,6 +320,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 9. Auditoria e Versionamento
 
 #### 9.1 Auditoria Automática
+
 - [x] Registro de todas as operações CRUD
 - [x] Tabela `AuditoriaSupplier`
 - [x] Campos: ação, campo alterado, estado anterior, estado novo
@@ -300,6 +329,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Timestamp automático
 
 #### 9.2 Versionamento Automático
+
 - [x] Snapshot automático em cada atualização
 - [x] Tabela `VersaoSupplier`
 - [x] Numeração sequencial de versões
@@ -309,6 +339,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Timestamp
 
 #### 9.3 Integração
+
 - [x] Auditoria integrada no repository
 - [x] Versionamento integrado no repository
 - [x] Não bloqueia operações se falhar
@@ -319,6 +350,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 10. Duplicação de Fornecedor
 
 #### 10.1 Funcionalidade
+
 - [x] Endpoint `POST /suppliers/:id/duplicate`
 - [x] Cópia de todos os campos (exceto ID, timestamps)
 - [x] Nome com sufixo "(Cópia)"
@@ -333,6 +365,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 11. Backend
 
 #### 11.1 Endpoints Implementados
+
 - [x] `GET /suppliers` - Listar com filtros
 - [x] `GET /suppliers/:id` - Buscar por ID
 - [x] `POST /suppliers` - Criar
@@ -352,6 +385,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] `DELETE /suppliers/:id/documentos/:docId` - Deletar documento
 
 #### 11.2 Validações
+
 - [x] Validação de entrada (Zod)
 - [x] Validação de acesso à organização
 - [x] Validação de autenticação
@@ -359,6 +393,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Validação de formato (email, CPF/CNPJ, CEP)
 
 #### 11.3 Segurança
+
 - [x] Verificação de autenticação
 - [x] Verificação de acesso à organização
 - [x] Tenant isolation
@@ -370,6 +405,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 12. Frontend
 
 #### 12.1 Hooks Implementados
+
 - [x] `useSuppliers` - Listagem e CRUD
 - [x] `useSupplier` - Operações individuais
 - [x] `useSupplierEstatisticas` - Estatísticas
@@ -383,6 +419,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] `useViaCep` - Busca de CEP
 
 #### 12.2 Componentes
+
 - [x] Formulário de cadastro
 - [x] Formulário de edição
 - [x] Lista de fornecedores
@@ -393,6 +430,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Barra de ações em lote
 
 #### 12.3 UI/UX
+
 - [x] Design futurista consistente
 - [x] Animações (Framer Motion)
 - [x] Loading states
@@ -407,6 +445,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 13. Banco de Dados
 
 #### 13.1 Modelos Prisma
+
 - [x] `Supplier` - Modelo principal
 - [x] `AuditoriaSupplier` - Auditoria
 - [x] `VersaoSupplier` - Versionamento
@@ -416,6 +455,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Soft delete implementado
 
 #### 13.2 Migrations
+
 - [x] Migration inicial
 - [x] Migration de soft delete
 - [x] Migration de auditoria
@@ -427,6 +467,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ### 14. Permissões
 
 #### 14.1 Permissões Implementadas
+
 - [x] `suppliers:create` - Criar fornecedor
 - [x] `suppliers:read` - Visualizar fornecedor
 - [x] `suppliers:update` - Atualizar fornecedor
@@ -440,6 +481,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ## 📋 RESUMO FINAL
 
 ### ✅ Funcionalidades Core: 100%
+
 - [x] Cadastro completo
 - [x] Listagem com busca e filtros
 - [x] Visualização detalhada
@@ -447,6 +489,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Exclusão (soft delete)
 
 ### ✅ Funcionalidades Avançadas: 100%
+
 - [x] Integração CNPJ Lookup
 - [x] Integração ViaCEP
 - [x] Estatísticas em tempo real
@@ -456,6 +499,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Duplicação de fornecedor
 
 ### ✅ Integrações: 100%
+
 - [x] Fichas de Custo
 - [x] Insumos
 - [x] Boletos
@@ -464,18 +508,21 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] ViaCEP
 
 ### ✅ Exportação: 100%
+
 - [x] CSV
 - [x] Excel
 - [x] JSON
 - [x] PDF
 
 ### ✅ Ações em Lote: 100%
+
 - [x] Seleção múltipla
 - [x] Mudança de status
 - [x] Exportação
 - [x] Deleção
 
 ### ✅ Busca e Filtros: 100%
+
 - [x] Busca geral
 - [x] Busca avançada (documento, cidade, estado, email, telefone)
 - [x] Filtros por data
@@ -483,6 +530,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - [x] Ordenação múltipla
 
 ### ✅ Tabs de Detalhes: 100%
+
 - [x] Informações
 - [x] Fichas de Custo
 - [x] Insumos
@@ -496,19 +544,20 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 
 ## 🎯 MÉTRICAS DE CONCLUSÃO
 
-| Categoria | Status | Progresso |
-|-----------|--------|-----------|
-| Backend | ✅ Completo | 100% |
-| Frontend | ✅ Completo | 100% |
-| Integrações | ✅ Completo | 100% |
-| Testes | ⚠️ Pendente | 0% |
-| Documentação | ✅ Completo | 100% |
+| Categoria    | Status      | Progresso |
+| ------------ | ----------- | --------- |
+| Backend      | ✅ Completo | 100%      |
+| Frontend     | ✅ Completo | 100%      |
+| Integrações  | ✅ Completo | 100%      |
+| Testes       | ⚠️ Pendente | 0%        |
+| Documentação | ✅ Completo | 100%      |
 
 ---
 
 ## 🚀 PRÓXIMOS PASSOS (Opcional)
 
 ### Melhorias Futuras
+
 - [ ] Testes unitários
 - [ ] Testes de integração
 - [ ] Testes E2E
@@ -525,6 +574,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 ## 📝 NOTAS TÉCNICAS
 
 ### Arquitetura
+
 - **Backend:** Fastify + Prisma + PostgreSQL
 - **Frontend:** Next.js + React + TypeScript
 - **UI:** Tailwind CSS + Framer Motion
@@ -532,6 +582,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - **Estado:** React Hooks
 
 ### Performance
+
 - Paginação server-side
 - Debounce em buscas
 - Cache de integrações (CNPJ, CEP)
@@ -539,6 +590,7 @@ O módulo de Fornecedores foi completamente implementado com todas as funcionali
 - Lazy loading de tabs
 
 ### Segurança
+
 - Autenticação obrigatória
 - Verificação de acesso à organização
 - Tenant isolation
@@ -555,6 +607,4 @@ O módulo de Fornecedores está **100% completo** e pronto para uso em produçã
 
 ---
 
-*Documento gerado automaticamente - Módulo de Fornecedores v1.0.0*
-
-
+_Documento gerado automaticamente - Módulo de Fornecedores v1.0.0_

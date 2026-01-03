@@ -7,6 +7,7 @@
 ## 🎯 Objetivo
 
 Fornecer um template reutilizável que garanta:
+
 - ✅ Consistência visual entre todas as telas
 - ✅ Funcionalidades padronizadas (auto-save, validação, etc)
 - ✅ Redução de código duplicado
@@ -24,6 +25,7 @@ Componente principal que encapsula toda a estrutura padrão de uma tela de formu
 **Localização:** `apps/web/src/components/templates/StandardFormPage.tsx`
 
 **Características:**
+
 - Header futurista com glass morphism
 - Indicador de auto-save
 - Atalhos de teclado (Ctrl+S, Escape)
@@ -73,23 +75,23 @@ export function DepartmentForm() {
 
 **Props:**
 
-| Prop | Tipo | Padrão | Descrição |
-|------|------|--------|-----------|
-| `title` | `string` | **obrigatório** | Título principal da página |
-| `subtitle` | `string?` | - | Subtítulo ou descrição |
-| `icon` | `ReactNode?` | `<FileText />` | Ícone do título |
-| `children` | `ReactNode` | **obrigatório** | Conteúdo do formulário |
-| `onSave` | `() => Promise<void>?` | - | Função de salvamento manual |
-| `onCancel` | `() => void?` | - | Função de cancelamento |
-| `backUrl` | `string?` | - | URL para voltar |
-| `isValid` | `boolean` | `true` | Se o formulário está válido |
-| `isLoading` | `boolean` | `false` | Se está carregando dados |
-| `loadingMessage` | `string` | `"Carregando..."` | Mensagem de loading |
-| `autoSaveStatus` | `"idle" \| "saving" \| "saved"` | `"idle"` | Status do auto-save |
-| `hasUnsavedChanges` | `boolean` | `false` | Se há alterações não salvas |
-| `headerActions` | `ReactNode?` | - | Ações adicionais no header |
-| `showSaveButton` | `boolean` | `true` | Se deve mostrar botão salvar |
-| `showCancelButton` | `boolean` | `true` | Se deve mostrar botão cancelar |
+| Prop                | Tipo                            | Padrão            | Descrição                      |
+| ------------------- | ------------------------------- | ----------------- | ------------------------------ |
+| `title`             | `string`                        | **obrigatório**   | Título principal da página     |
+| `subtitle`          | `string?`                       | -                 | Subtítulo ou descrição         |
+| `icon`              | `ReactNode?`                    | `<FileText />`    | Ícone do título                |
+| `children`          | `ReactNode`                     | **obrigatório**   | Conteúdo do formulário         |
+| `onSave`            | `() => Promise<void>?`          | -                 | Função de salvamento manual    |
+| `onCancel`          | `() => void?`                   | -                 | Função de cancelamento         |
+| `backUrl`           | `string?`                       | -                 | URL para voltar                |
+| `isValid`           | `boolean`                       | `true`            | Se o formulário está válido    |
+| `isLoading`         | `boolean`                       | `false`           | Se está carregando dados       |
+| `loadingMessage`    | `string`                        | `"Carregando..."` | Mensagem de loading            |
+| `autoSaveStatus`    | `"idle" \| "saving" \| "saved"` | `"idle"`          | Status do auto-save            |
+| `hasUnsavedChanges` | `boolean`                       | `false`           | Se há alterações não salvas    |
+| `headerActions`     | `ReactNode?`                    | -                 | Ações adicionais no header     |
+| `showSaveButton`    | `boolean`                       | `true`            | Se deve mostrar botão salvar   |
+| `showCancelButton`  | `boolean`                       | `true`            | Se deve mostrar botão cancelar |
 
 ---
 
@@ -100,6 +102,7 @@ Hook padronizado para gerenciar auto-save automático.
 **Localização:** `apps/web/src/hooks/useAutoSave.ts`
 
 **Características:**
+
 - Auto-save com intervalo configurável (padrão: 30s)
 - Debounce para evitar salvamentos excessivos
 - Indicadores visuais de status
@@ -116,20 +119,20 @@ export function MyForm() {
   const [formIsValid, setFormIsValid] = useState(false);
 
   const {
-    status,              // "idle" | "saving" | "saved" | "error"
-    hasUnsavedChanges,  // boolean
-    lastSavedAt,        // Date | null
-    error,              // Error | null
-    markDirty,          // () => void
-    markClean,          // () => void
-    manualSave,          // () => Promise<void>
-    reset,               // () => void
+    status, // "idle" | "saving" | "saved" | "error"
+    hasUnsavedChanges, // boolean
+    lastSavedAt, // Date | null
+    error, // Error | null
+    markDirty, // () => void
+    markClean, // () => void
+    manualSave, // () => Promise<void>
+    reset, // () => void
   } = useAutoSave({
     onSave: async () => {
       await api.update(formData);
     },
-    intervalMs: 30000,  // 30 segundos
-    debounceMs: 1000,   // 1 segundo
+    intervalMs: 30000, // 30 segundos
+    debounceMs: 1000, // 1 segundo
     requireValid: true,
     isValid: () => formIsValid,
     onAutoSaveComplete: () => {
@@ -154,14 +157,14 @@ export function MyForm() {
 
 **Opções:**
 
-| Opção | Tipo | Padrão | Descrição |
-|-------|------|--------|-----------|
-| `onSave` | `() => Promise<void>` | **obrigatório** | Função de salvamento |
-| `intervalMs` | `number` | `30000` | Intervalo em ms para auto-save |
-| `debounceMs` | `number` | `1000` | Debounce antes de marcar como alterado |
-| `enabled` | `boolean` | `true` | Se auto-save está habilitado |
-| `requireValid` | `boolean` | `false` | Se deve validar antes de salvar |
-| `isValid` | `() => boolean?` | - | Função para verificar validade |
+| Opção          | Tipo                  | Padrão          | Descrição                              |
+| -------------- | --------------------- | --------------- | -------------------------------------- |
+| `onSave`       | `() => Promise<void>` | **obrigatório** | Função de salvamento                   |
+| `intervalMs`   | `number`              | `30000`         | Intervalo em ms para auto-save         |
+| `debounceMs`   | `number`              | `1000`          | Debounce antes de marcar como alterado |
+| `enabled`      | `boolean`             | `true`          | Se auto-save está habilitado           |
+| `requireValid` | `boolean`             | `false`         | Se deve validar antes de salvar        |
+| `isValid`      | `() => boolean?`      | -               | Função para verificar validade         |
 
 ---
 
@@ -172,11 +175,13 @@ Componentes de input, select e textarea seguindo o padrão visual MORINA.
 **Localização:** `apps/web/src/components/templates/StandardFormFields.tsx`
 
 **Componentes:**
+
 - `FuturisticInput` - Input com glass morphism
 - `FuturisticSelect` - Select com glass morphism
 - `FuturisticTextarea` - Textarea com glass morphism
 
 **Características:**
+
 - Validação visual integrada
 - Mensagens de erro acessíveis
 - Efeitos hover e focus
@@ -227,12 +232,14 @@ import { FuturisticInput, FuturisticSelect, FuturisticTextarea } from "@/compone
 Ao criar uma nova tela, siga este checklist:
 
 ### ✅ Estrutura Base
+
 - [ ] Usar `StandardFormPage` como wrapper
 - [ ] Definir título e subtítulo apropriados
 - [ ] Adicionar ícone relevante
 - [ ] Configurar `backUrl` ou `onCancel`
 
 ### ✅ Auto-Save
+
 - [ ] Implementar `useAutoSave` hook
 - [ ] Marcar como `dirty` quando usuário edita
 - [ ] Passar `status` para `StandardFormPage`
@@ -240,18 +247,21 @@ Ao criar uma nova tela, siga este checklist:
 - [ ] Configurar validação se necessário
 
 ### ✅ Formulário
+
 - [ ] Usar componentes `FuturisticInput/Select/Textarea`
 - [ ] Implementar validação com Zod (ou similar)
 - [ ] Mostrar mensagens de erro apropriadas
 - [ ] Marcar campos obrigatórios com `required`
 
 ### ✅ Funcionalidades
+
 - [ ] Implementar função `onSave` para salvamento manual
 - [ ] Configurar atalhos de teclado (Ctrl+S já vem por padrão)
 - [ ] Implementar estados de loading
 - [ ] Tratar erros e mostrar notificações
 
 ### ✅ Validação
+
 - [ ] Validar formulário antes de salvar
 - [ ] Passar `isValid` para `StandardFormPage`
 - [ ] Mostrar feedback visual de validação
@@ -262,6 +272,7 @@ Ao criar uma nova tela, siga este checklist:
 ## 🎨 Padrão Visual
 
 ### Header
+
 - Glass morphism com backdrop blur
 - Tech corner accents (bordas nos cantos)
 - Gradiente sutil de fundo
@@ -270,6 +281,7 @@ Ao criar uma nova tela, siga este checklist:
 - Botões de ação (Salvar, Cancelar)
 
 ### Formulário
+
 - Inputs com glass morphism
 - Efeitos hover azul
 - Validação visual (borda vermelha)
@@ -277,6 +289,7 @@ Ao criar uma nova tela, siga este checklist:
 - Espaçamento consistente
 
 ### Animações
+
 - Fade in do header (0.6s)
 - Fade in do conteúdo (0.6s delay 0.2s)
 - Transições suaves em hover/focus
@@ -288,6 +301,7 @@ Ao criar uma nova tela, siga este checklist:
 Para migrar uma tela existente para o novo padrão:
 
 1. **Substituir estrutura manual por `StandardFormPage`**
+
    ```tsx
    // Antes
    <div className="min-h-screen p-6">
@@ -302,6 +316,7 @@ Para migrar uma tela existente para o novo padrão:
    ```
 
 2. **Substituir auto-save manual por `useAutoSave`**
+
    ```tsx
    // Antes
    useEffect(() => {
@@ -318,6 +333,7 @@ Para migrar uma tela existente para o novo padrão:
    ```
 
 3. **Substituir inputs por componentes padronizados**
+
    ```tsx
    // Antes
    <input className="..." />
@@ -338,11 +354,3 @@ Para migrar uma tela existente para o novo padrão:
 
 **Última atualização:** 2025-01-19  
 **Mantido por:** Equipe de Arquitetura MORINA
-
-
-
-
-
-
-
-

@@ -50,6 +50,7 @@ Garantir que cada usuário tenha acesso **apenas ao que precisa**, **apenas aos 
 ### 2.1 O Que É
 
 **RBAC** define **o que o usuário pode fazer** no sistema:
+
 - Quais módulos pode acessar
 - Quais telas pode visualizar
 - Quais ações pode executar (criar, editar, excluir, aprovar, etc.)
@@ -64,6 +65,7 @@ User
 ```
 
 **Exemplo:**
+
 ```
 Usuário: João Silva
   └── Role: Gerente de Vendas
@@ -82,7 +84,7 @@ model Role {
   name        String
   description String?
   orgId       String?
-  
+
   permissions RolePermission[]
   users       UserRole[]
 }
@@ -94,27 +96,27 @@ model Permission {
   description String?
   module      String   // CATALOGO, CRM, PCP
   level       String   // READ, WRITE, ADMIN
-  
+
   roles RolePermission[]
 }
 
 model RolePermission {
   roleId       String
   permissionId String
-  
+
   role       Role       @relation(fields: [roleId], references: [id])
   permission Permission @relation(fields: [permissionId], references: [id])
-  
+
   @@id([roleId, permissionId])
 }
 
 model UserRole {
   userId    String
   roleId    String
-  
+
   user User @relation(fields: [userId], references: [id])
   role Role @relation(fields: [roleId], references: [id])
-  
+
   @@id([userId, roleId])
 }
 ```
@@ -128,13 +130,14 @@ export class VerificarPermissionUseCase {
   async execute(userId: string, permissionCode: string): Promise<boolean> {
     // 1. Buscar roles do usuário
     const userRoles = await this.userRoleRepository.findByUserId(userId);
-    
+
     // 2. Buscar permissões de cada role
-    const permissions = await this.rolePermissionRepository
-      .findByRoleIds(userRoles.map(ur => ur.roleId));
-    
+    const permissions = await this.rolePermissionRepository.findByRoleIds(
+      userRoles.map((ur) => ur.roleId),
+    );
+
     // 3. Verificar se permissão existe
-    return permissions.some(p => p.code === permissionCode);
+    return permissions.some((p) => p.code === permissionCode);
   }
 }
 ```
@@ -145,11 +148,12 @@ export class VerificarPermissionUseCase {
 
 ```typescript
 // Verificar se usuário tem permissão
-app.get('/api/produtos', 
-  requirePermission('CATALOGO_PRODUTO_VIEW'),
+app.get(
+  "/api/produtos",
+  requirePermission("CATALOGO_PRODUTO_VIEW"),
   async (req, res) => {
     // Apenas usuários com permissão chegam aqui
-  }
+  },
 );
 ```
 
@@ -171,6 +175,7 @@ if (hasPermission('CATALOGO_PRODUTO_EDIT')) {
 ### 3.1 O Que É
 
 **ABAC** define **em quais dados o usuário pode atuar**:
+
 - Filtragem por organização (multi-tenant)
 - Filtragem por departamento
 - Filtragem por setor
@@ -188,13 +193,14 @@ User
 ```
 
 **Exemplo:**
+
 ```
 Usuário: Maria Santos
   └── Attributes:
        • orgId: "org-123"
        • departmentId: "dept-vendas"
        • sectorId: "sector-norte"
-       
+
   → Pode ver apenas dados da organização "org-123"
   → Pode editar apenas dados do departamento "dept-vendas"
   → Pode aprovar apenas dados do setor "sector-norte"
@@ -209,7 +215,7 @@ model User {
   id        String   @id @default(uuid())
   email     String
   orgId     String   // Filtro por organização
-  
+
   // Atributos organizacionais
   memberships OrganizationMembership[]
   departmentMemberships DepartmentMembership[]
@@ -220,10 +226,10 @@ model User {
 model OrganizationMembership {
   userId String
   orgId  String
-  
+
   user         User         @relation(fields: [userId], references: [id])
   organization Organization @relation(fields: [orgId], references: [id])
-  
+
   @@id([userId, orgId])
 }
 ```
@@ -236,16 +242,18 @@ model OrganizationMembership {
 export function requireTenantContext() {
   return async (req: FastifyRequest, reply: FastifyReply) => {
     const userId = req.user?.userId;
-    const orgId = req.headers['x-org-id'] as string;
-    
+    const orgId = req.headers["x-org-id"] as string;
+
     // Validar se usuário pertence à organização
-    const membership = await organizationMembershipRepository
-      .findByUserAndOrg(userId, orgId);
-    
+    const membership = await organizationMembershipRepository.findByUserAndOrg(
+      userId,
+      orgId,
+    );
+
     if (!membership) {
-      return reply.status(403).send({ error: 'Acesso negado' });
+      return reply.status(403).send({ error: "Acesso negado" });
     }
-    
+
     // Adicionar contexto ao request
     req.tenant = {
       orgId,
@@ -282,14 +290,11 @@ export class PrismaProdutoRepository {
 
 ```typescript
 // Todos os produtos retornados são automaticamente filtrados por orgId
-app.get('/api/produtos', 
-  requireTenantContext(),
-  async (req, res) => {
-    const produtos = await produtoRepository.findAll(req.tenant);
-    // Apenas produtos da organização do usuário
-    return res.send(produtos);
-  }
-);
+app.get("/api/produtos", requireTenantContext(), async (req, res) => {
+  const produtos = await produtoRepository.findAll(req.tenant);
+  // Apenas produtos da organização do usuário
+  return res.send(produtos);
+});
 ```
 
 #### **Frontend (Context Provider):**
@@ -299,7 +304,7 @@ app.get('/api/produtos',
 const { orgId, departmentId } = useTenant();
 
 // Todas as requisições incluem x-org-id no header
-const produtos = await api.get('/produtos');
+const produtos = await api.get("/produtos");
 // Retorna apenas produtos da organização atual
 ```
 
@@ -310,6 +315,7 @@ const produtos = await api.get('/produtos');
 ### 4.1 O Que É
 
 **PBAC** define **sob quais condições e aprovações** o usuário pode executar ações:
+
 - Workflows de aprovação
 - Regras de negócio condicionais
 - Políticas dinâmicas baseadas em contexto
@@ -326,6 +332,7 @@ Action
 ```
 
 **Exemplo:**
+
 ```
 Ação: Aprovar Ficha de Custo
   └── Policy:
@@ -345,17 +352,17 @@ model WorkflowPolicy {
   orgId       String
   name        String
   description String?
-  
+
   // Condições
   conditions  Json     // { valor: { $gt: 10000 }, status: "enviada" }
-  
+
   // Aprovações necessárias
   approvalsRequired Int @default(1)
   approverRoles     String[] // ["GERENTE", "SUPERVISOR"]
-  
+
   // Regras adicionais
   rules       Json?    // Regras customizadas
-  
+
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -368,10 +375,10 @@ model Approval {
   approverId    String
   status        ApprovalStatus @default(PENDING)
   comments      String?
-  
+
   approvedAt    DateTime?
   rejectedAt    DateTime?
-  
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -395,32 +402,32 @@ export class PolicyService {
   async canExecute(
     action: string,
     context: ActionContext,
-    tenant: TenantContext
+    tenant: TenantContext,
   ): Promise<{ allowed: boolean; reason?: string; approvalsNeeded?: number }> {
-    
     // 1. Buscar políticas aplicáveis
-    const policies = await this.workflowPolicyRepository
-      .findApplicable(action, context, tenant);
-    
+    const policies = await this.workflowPolicyRepository.findApplicable(
+      action,
+      context,
+      tenant,
+    );
+
     // 2. Avaliar condições
     for (const policy of policies) {
-      const conditionsMet = this.evaluateConditions(
-        policy.conditions,
-        context
-      );
-      
+      const conditionsMet = this.evaluateConditions(policy.conditions, context);
+
       if (!conditionsMet) {
         continue; // Política não aplicável
       }
-      
+
       // 3. Verificar aprovações necessárias
-      const approvals = await this.approvalRepository
-        .findByWorkflowId(context.workflowId);
-      
+      const approvals = await this.approvalRepository.findByWorkflowId(
+        context.workflowId,
+      );
+
       const approvalsCount = approvals.filter(
-        a => a.status === 'APPROVED'
+        (a) => a.status === "APPROVED",
       ).length;
-      
+
       if (approvalsCount < policy.approvalsRequired) {
         return {
           allowed: false,
@@ -429,28 +436,28 @@ export class PolicyService {
         };
       }
     }
-    
+
     return { allowed: true };
   }
-  
+
   /**
    * Avalia condições da política
    */
   private evaluateConditions(
     conditions: Record<string, any>,
-    context: ActionContext
+    context: ActionContext,
   ): boolean {
     // Exemplo: { valor: { $gt: 10000 }, status: "enviada" }
     for (const [key, value] of Object.entries(conditions)) {
       const contextValue = context[key];
-      
-      if (typeof value === 'object' && value.$gt) {
+
+      if (typeof value === "object" && value.$gt) {
         if (contextValue <= value.$gt) return false;
       } else if (contextValue !== value) {
         return false;
       }
     }
-    
+
     return true;
   }
 }
@@ -468,29 +475,29 @@ export class AprovarFichaCustoUseCase {
     private fichaRepository: FichaCustoRepository,
     private policyService: PolicyService,
   ) {}
-  
+
   async execute(input: AprovarFichaInput): Promise<void> {
     const ficha = await this.fichaRepository.findById(input.fichaId);
-    
+
     // Verificar política de aprovação
     const policyCheck = await this.policyService.canExecute(
-      'FICHA_CUSTO_APPROVE',
+      "FICHA_CUSTO_APPROVE",
       {
         workflowId: ficha.id,
         valor: ficha.totalCustos.toNumber(),
         status: ficha.status,
         departmentId: ficha.departmentId,
       },
-      input.tenant
+      input.tenant,
     );
-    
+
     if (!policyCheck.allowed) {
       throw new Error(
         `Aprovação não permitida: ${policyCheck.reason}. ` +
-        `Aprovações necessárias: ${policyCheck.approvalsNeeded}`
+          `Aprovações necessárias: ${policyCheck.approvalsNeeded}`,
       );
     }
-    
+
     // Aprovar ficha
     ficha.aprovar(input.userId);
     await this.fichaRepository.save(ficha);
@@ -563,10 +570,10 @@ if (canApprove.allowed) {
 // 1. RBAC: Verificar permissão
 const hasPermission = await verificarPermissionUseCase.execute(
   userId,
-  'FICHA_CUSTO_APPROVE'
+  "FICHA_CUSTO_APPROVE",
 );
 if (!hasPermission) {
-  throw new Error('Sem permissão para aprovar fichas');
+  throw new Error("Sem permissão para aprovar fichas");
 }
 
 // 2. ABAC: Filtrar dados (já aplicado automaticamente)
@@ -574,13 +581,13 @@ if (!hasPermission) {
 
 // 3. PBAC: Verificar condições e aprovações
 const policyCheck = await policyService.canExecute(
-  'FICHA_CUSTO_APPROVE',
+  "FICHA_CUSTO_APPROVE",
   {
     workflowId: fichaId,
     valor: ficha.totalCustos,
     status: ficha.status,
   },
-  tenant
+  tenant,
 );
 if (!policyCheck.allowed) {
   throw new Error(policyCheck.reason);
@@ -600,18 +607,18 @@ await aprovarFichaUseCase.execute({ fichaId, userId, tenant });
 // 1. Adicionar permissão no banco
 const permission = await prisma.permission.create({
   data: {
-    code: 'CATALOGO_PRODUTO_EDIT',
-    name: 'Editar Produtos',
-    description: 'Permite editar produtos do catálogo',
-    module: 'CATALOGO',
-    level: 'WRITE',
+    code: "CATALOGO_PRODUTO_EDIT",
+    name: "Editar Produtos",
+    description: "Permite editar produtos do catálogo",
+    module: "CATALOGO",
+    level: "WRITE",
   },
 });
 
 // 2. Associar a um role
 await prisma.rolePermission.create({
   data: {
-    roleId: 'role-gerente-vendas',
+    roleId: "role-gerente-vendas",
     permissionId: permission.id,
   },
 });
@@ -623,15 +630,15 @@ await prisma.rolePermission.create({
 // Criar política de aprovação
 const policy = await prisma.workflowPolicy.create({
   data: {
-    orgId: 'org-123',
-    name: 'Aprovação de Fichas de Custo',
-    description: 'Requer aprovações baseadas no valor',
+    orgId: "org-123",
+    name: "Aprovação de Fichas de Custo",
+    description: "Requer aprovações baseadas no valor",
     conditions: {
       valor: { $gt: 10000 },
-      status: 'enviada_para_conferencia',
+      status: "enviada_para_conferencia",
     },
     approvalsRequired: 2,
-    approverRoles: ['GERENTE', 'SUPERVISOR'],
+    approverRoles: ["GERENTE", "SUPERVISOR"],
     active: true,
   },
 });
@@ -681,4 +688,3 @@ const policy = await prisma.workflowPolicy.create({
 **Última atualização:** 2025-01-19  
 **Versão:** 1.0.0  
 **Status:** Implementação em andamento
-

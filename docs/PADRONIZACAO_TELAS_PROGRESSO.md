@@ -9,6 +9,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
 ## ✅ Telas Padronizadas
 
 ### 1. Departments (Departamentos) ✅
+
 - **Arquivo:** `apps/web/src/components/admin/departments/department-form-client.tsx`
 - **Status:** ✅ Já estava padronizado
 - **Funcionalidades:**
@@ -18,6 +19,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Indicador de auto-save
 
 ### 2. Sectors (Setores) ✅
+
 - **Arquivo:** `apps/web/src/components/admin/sectors/sector-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -29,6 +31,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Marcação automática de alterações (markDirty)
 
 ### 3. Positions (Cargos) ✅
+
 - **Arquivo:** `apps/web/src/components/admin/positions/position-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -41,6 +44,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Sistema de abas mantido (Geral, Detalhes, Salarial)
 
 ### 4. Branches (Filiais) ✅
+
 - **Arquivo:** `apps/web/src/components/admin/branches/branch-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -55,6 +59,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Integração ViaCEP com notificações
 
 ### 5. Roles (Funções/Perfis) ✅
+
 - **Arquivo:** `apps/web/src/components/admin/roles/role-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -66,6 +71,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Marcação automática de alterações (markDirty)
 
 ### 6. Workflow Policies ✅
+
 - **Arquivo:** `apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -78,6 +84,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Templates mantidos (com notificações)
 
 ### 7. Business Segments ✅
+
 - **Arquivo:** `apps/web/src/components/admin/business-segments/segment-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -89,6 +96,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
   - ✅ Marcação automática de alterações (markDirty)
 
 ### 8. Status Customizados ✅
+
 - **Arquivo:** `apps/web/src/components/admin/status-customizados-ficha-custo/status-customizado-form-client.tsx`
 - **Status:** ✅ Padronizado (2025-01-19)
 - **Funcionalidades implementadas:**
@@ -103,27 +111,33 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
 ---
 
 ## ✅ TODAS AS TELAS PADRONIZADAS!
+
 - **Arquivo:** `apps/web/src/components/admin/positions/position-form-client.tsx`
 - **Prioridade:** Alta
 - **Observações:** Formulário com abas (general, details, salary)
 
 ### 2. Branches (Filiais)
+
 - **Arquivo:** `apps/web/src/components/admin/branches/branch-form-client.tsx`
 - **Prioridade:** Alta
 
 ### 3. Roles (Funções)
+
 - **Arquivo:** `apps/web/src/components/admin/roles/role-form-client.tsx`
 - **Prioridade:** Média
 
 ### 4. Workflow Policies
+
 - **Arquivo:** `apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx`
 - **Prioridade:** Média
 
 ### 5. Business Segments
+
 - **Arquivo:** `apps/web/src/components/admin/business-segments/segment-form-client.tsx`
 - **Prioridade:** Média
 
 ### 6. Status Customizados (Ficha de Custo)
+
 - **Arquivo:** `apps/web/src/components/admin/status-customizados-ficha-custo/status-customizado-form-client.tsx`
 - **Prioridade:** Baixa
 
@@ -140,6 +154,7 @@ Padronizar todas as telas de formulário para usar o template `StandardFormPage`
 ## 🔧 Padrão de Padronização
 
 ### Estrutura Base
+
 ```typescript
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
@@ -227,14 +242,9 @@ Para cada tela, verificar:
 6. ✅ Padronizar Business Segments (CONCLUÍDO)
 7. ✅ Padronizar Status Customizados (CONCLUÍDO)
 
-**✅ TODAS AS 8 TELAS FORAM PADRONIZADAS COM SUCESSO!**
-4. ⏳ Padronizar Roles
-5. ⏳ Padronizar Workflow Policies
-6. ⏳ Padronizar Business Segments
-7. ⏳ Padronizar Status Customizados
+**✅ TODAS AS 8 TELAS FORAM PADRONIZADAS COM SUCESSO!** 4. ⏳ Padronizar Roles 5. ⏳ Padronizar Workflow Policies 6. ⏳ Padronizar Business Segments 7. ⏳ Padronizar Status Customizados
 
 ---
 
 **Última atualização:** 2025-01-19  
 **Próxima revisão:** Após padronizar 3 telas
-

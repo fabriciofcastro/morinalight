@@ -11,6 +11,7 @@ Este documento descreve as otimizações de performance implementadas no projeto
 Localização: `apps/web/src/hooks/use-debounce.ts`
 
 **Uso**: Debounce de valores (útil para buscas)
+
 ```typescript
 const [search, setSearch] = useState("");
 const debouncedSearch = useDebounce(search, 300);
@@ -26,6 +27,7 @@ useEffect(() => {
 Localização: `apps/web/src/hooks/use-throttle.ts`
 
 **Uso**: Throttle de funções (limita frequência de execução)
+
 ```typescript
 const handleScroll = useThrottle((event) => {
   // Executa no máximo a cada 300ms
@@ -40,6 +42,7 @@ const handleScroll = useThrottle((event) => {
 Localização: `apps/web/src/components/ui/EmptyState.tsx`
 
 **Uso**: Estado vazio informativo
+
 ```typescript
 <EmptyState
   icon={Users}
@@ -57,6 +60,7 @@ Localização: `apps/web/src/components/ui/EmptyState.tsx`
 Localização: `apps/web/src/components/ui/LoadingState.tsx`
 
 **Uso**: Estado de carregamento
+
 ```typescript
 <LoadingState message="Carregando usuários..." size="lg" />
 ```
@@ -66,6 +70,7 @@ Localização: `apps/web/src/components/ui/LoadingState.tsx`
 Localização: `apps/web/src/components/ui/ErrorState.tsx`
 
 **Uso**: Estado de erro com retry
+
 ```typescript
 <ErrorState
   title="Erro ao carregar"
@@ -79,7 +84,9 @@ Localização: `apps/web/src/components/ui/ErrorState.tsx`
 Localização: `apps/web/src/lib/utils/performance.ts`
 
 ### memoize
+
 Memoização de resultados de funções pesadas
+
 ```typescript
 const expensiveCalculation = memoize((input: number) => {
   // Cálculo pesado
@@ -88,7 +95,9 @@ const expensiveCalculation = memoize((input: number) => {
 ```
 
 ### debounce
+
 Debounce de funções
+
 ```typescript
 const debouncedSearch = debounce((query: string) => {
   performSearch(query);
@@ -96,7 +105,9 @@ const debouncedSearch = debounce((query: string) => {
 ```
 
 ### throttle
+
 Throttle de funções
+
 ```typescript
 const throttledScroll = throttle((event: Event) => {
   handleScroll(event);
@@ -104,7 +115,9 @@ const throttledScroll = throttle((event: Event) => {
 ```
 
 ### getVisibleRange
+
 Helper para virtualização de listas
+
 ```typescript
 const { start, end } = getVisibleRange(
   scrollTop,
@@ -117,35 +130,42 @@ const { start, end } = getVisibleRange(
 ## 📊 Boas Práticas Implementadas
 
 ### 1. Lazy Loading
+
 - Componentes pesados devem usar `React.lazy()`
 - Suspense boundaries para loading states
 
 ### 2. Memoização
+
 - `useMemo` para cálculos pesados
 - `useCallback` para funções passadas como props
 - `React.memo` para componentes que re-renderizam frequentemente
 
 ### 3. Debounce em Buscas
+
 - Todas as buscas devem usar `useDebounce`
 - Delay padrão: 300ms
 
 ### 4. Virtualização
+
 - Listas com mais de 100 itens devem usar virtualização
 - Helper `getVisibleRange` disponível
 
 ### 5. Code Splitting
+
 - Rotas devem usar lazy loading
 - Componentes pesados devem ser code-split
 
 ## 🎯 Métricas de Performance
 
 ### Objetivos
+
 - Carregamento inicial: < 3s
 - Interações: < 1s
 - Time to Interactive (TTI): < 3.5s
 - First Contentful Paint (FCP): < 1.8s
 
 ### Monitoramento
+
 - Usar React DevTools Profiler
 - Lighthouse para métricas gerais
 - Web Vitals para métricas reais
@@ -157,5 +177,3 @@ const { start, end } = getVisibleRange(
 3. Otimizar imagens (WebP, lazy loading)
 4. Implementar prefetching de rotas
 5. Adicionar bundle analysis
-
-

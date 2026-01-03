@@ -14,6 +14,7 @@
 ## ✅ Padronizações Implementadas
 
 ### 1. Design System ✅
+
 - **Localização:** `packages/ui/`
 - **Componentes:** Button, Input, Select, FormField, GlassCard, Alert, Badge, DataTable
 - **Tokens:** Cores, tipografia, espaçamento, animações
@@ -21,12 +22,14 @@
 - **Documentação:** `docs/DESIGN_SYSTEM_GUIA_COMPLETO.md`
 
 ### 2. Templates de Telas ✅
+
 - **StandardFormPage:** Template padrão para formulários
 - **Auto-save:** Hook `useAutoSave` padronizado
 - **Atalhos:** Ctrl+S, Esc padronizados
 - **Documentação:** `docs/Diretrizes/PADRAO-TEMPLATE-TELAS.md`
 
 ### 3. Código e Formatação ✅
+
 - **Linter:** Biome configurado
 - **Formatter:** Prettier + Biome
 - **TypeScript:** Strict mode
@@ -34,6 +37,7 @@
 - **Husky:** Pre-commit hooks
 
 ### 4. Arquitetura Backend ✅
+
 - **DDD:** Domain-Driven Design
 - **Estrutura:** Domain → Application → Infrastructure
 - **Eventos:** Domain events padronizados
@@ -41,6 +45,7 @@
 - **Use Cases:** Padrão de casos de uso
 
 ### 5. Tratamento de Erros ✅
+
 - **Classes:** Hierarquia completa de erros
 - **Códigos:** Códigos padronizados
 - **Handler:** Error handler global
@@ -48,6 +53,7 @@
 - **Documentação:** `docs/SISTEMA_TRATAMENTO_ERROS.md`
 
 ### 6. APIs e Rotas ✅
+
 - **Fastify:** Framework padronizado
 - **Validação:** Zod schemas
 - **Respostas:** Formato JSON padronizado
@@ -55,6 +61,7 @@
 - **OpenAPI:** Swagger configurado
 
 ### 7. Segurança ✅
+
 - **RBAC/ABAC/PBAC:** Controle de acesso multi-camadas
 - **Rate Limiting:** Redis com fallback
 - **CORS:** Configurado
@@ -70,6 +77,7 @@
 **Problema:** Estrutura inconsistente entre módulos
 
 **Padrão Proposto:**
+
 ```
 apps/web/src/
 ├── components/
@@ -96,6 +104,7 @@ apps/web/src/
 ### 2. Nomenclatura de Arquivos 🔴 CRÍTICO
 
 **Padrão:**
+
 - **Componentes:** `kebab-case.tsx` (ex: `user-form-client.tsx`)
 - **Hooks:** `use-kebab-case.ts` (ex: `use-auto-save.ts`)
 - **Utils:** `kebab-case.ts` (ex: `format-cpf.ts`)
@@ -110,22 +119,23 @@ apps/web/src/
 ### 3. Hooks Customizados 🟡 ALTA
 
 **Padrão:**
+
 ```typescript
 // Estrutura padrão de hook
 export function use[Feature](options: Use[Feature]Options) {
   // 1. Estados
   const [state, setState] = useState();
-  
+
   // 2. Efeitos
   useEffect(() => {
     // ...
   }, [deps]);
-  
+
   // 3. Callbacks
   const handleAction = useCallback(() => {
     // ...
   }, [deps]);
-  
+
   // 4. Retorno
   return {
     state,
@@ -136,6 +146,7 @@ export function use[Feature](options: Use[Feature]Options) {
 ```
 
 **Hooks Padronizados:**
+
 - ✅ `useAutoSave`
 - ✅ `useAriaLive`
 - ✅ `useKeyboardNavigation`
@@ -150,6 +161,7 @@ export function use[Feature](options: Use[Feature]Options) {
 ### 4. API Clients 🟡 ALTA
 
 **Padrão:**
+
 ```typescript
 // Estrutura padrão de API client
 export const [module]Api = {
@@ -157,22 +169,22 @@ export const [module]Api = {
   list: async (params?: ListParams): Promise<ListResponse<Type>> => {
     return api.get(`/[module]`, { params });
   },
-  
+
   // Buscar por ID
   get: async (id: string): Promise<Type> => {
     return api.get(`/[module]/${id}`);
   },
-  
+
   // Criar
   create: async (data: CreateInput): Promise<Type> => {
     return api.post(`/[module]`, data);
   },
-  
+
   // Atualizar
   update: async (data: UpdateInput): Promise<Type> => {
     return api.put(`/[module]/${data.id}`, data);
   },
-  
+
   // Deletar
   delete: async (id: string): Promise<void> => {
     return api.delete(`/[module]/${id}`);
@@ -187,6 +199,7 @@ export const [module]Api = {
 ### 5. Validação com Zod 🟡 ALTA
 
 **Padrão:**
+
 ```typescript
 // Schema base
 export const [entity]BaseSchema = z.object({
@@ -219,6 +232,7 @@ export const [entity]ViewSchema = [entity]BaseSchema.extend({
 ### 6. Constantes e Enums 🟢 MÉDIA
 
 **Padrão:**
+
 ```typescript
 // Constantes em arquivo separado
 export const [MODULE]_CONSTANTS = {
@@ -242,6 +256,7 @@ export enum [Entity]Status {
 ### 7. Utilitários 🟢 MÉDIA
 
 **Padrão:**
+
 ```typescript
 // Funções puras, bem testadas
 export function format[Feature](value: Type): string {
@@ -266,6 +281,7 @@ export function transform[Feature](data: Input): Output {
 ### 8. Testes 🟡 ALTA
 
 **Padrão:**
+
 ```typescript
 // Estrutura de teste
 describe("[Feature]", () => {
@@ -286,6 +302,7 @@ const mock[Entity] = {
 ```
 
 **Cobertura Mínima:**
+
 - Domain: > 90%
 - Application: > 80%
 - Infrastructure: > 70%
@@ -298,14 +315,15 @@ const mock[Entity] = {
 ### 9. Documentação de Código 🟢 MÉDIA
 
 **Padrão:**
-```typescript
+
+````typescript
 /**
  * [Descrição curta do que faz]
- * 
+ *
  * @param {Type} param - Descrição do parâmetro
  * @returns {Type} Descrição do retorno
  * @throws {ErrorType} Quando ocorre erro
- * 
+ *
  * @example
  * ```typescript
  * const result = functionName(param);
@@ -314,7 +332,7 @@ const mock[Entity] = {
 export function functionName(param: Type): ReturnType {
   // ...
 }
-```
+````
 
 **Ação:** Documentar funções complexas
 
@@ -323,10 +341,13 @@ export function functionName(param: Type): ReturnType {
 ### 10. Variáveis de Ambiente 🟡 ALTA
 
 **Padrão:**
+
 ```typescript
 // apps/api/src/core/config/env.ts
 export const env = {
-  NODE_ENV: z.enum(["development", "production", "test"]).parse(process.env.NODE_ENV),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .parse(process.env.NODE_ENV),
   DATABASE_URL: z.string().url().parse(process.env.DATABASE_URL),
   // ...
 } as const;
@@ -339,13 +360,16 @@ export const env = {
 ### 11. Logging 🟢 MÉDIA
 
 **Padrão:**
+
 ```typescript
 // Estrutura de log padronizada
 logger.info({
   action: "user.created",
   userId: user.id,
   orgId: org.id,
-  metadata: { /* contexto adicional */ },
+  metadata: {
+    /* contexto adicional */
+  },
 });
 ```
 
@@ -356,6 +380,7 @@ logger.info({
 ### 12. Configurações 🟢 MÉDIA
 
 **Padrão:**
+
 ```typescript
 // Configurações por módulo
 export const [module]Config = {
@@ -376,18 +401,21 @@ export const [module]Config = {
 ## 📋 Checklist de Aplicação
 
 ### Prioridade CRÍTICA (1-2 semanas)
+
 - [ ] Estrutura de pastas frontend padronizada
 - [ ] Nomenclatura de arquivos documentada
 - [ ] API clients padronizados
 - [ ] Variáveis de ambiente consolidadas
 
 ### Prioridade ALTA (1 mês)
+
 - [ ] Hooks customizados padronizados
 - [ ] Schemas Zod revisados
 - [ ] Templates de teste criados
 - [ ] Constantes consolidadas
 
 ### Prioridade MÉDIA (2-3 meses)
+
 - [ ] Utilitários organizados
 - [ ] Documentação de código
 - [ ] Logging padronizado
@@ -405,8 +433,3 @@ export const [module]Config = {
 ---
 
 **Última atualização:** 2025-01-19
-
-
-
-
-

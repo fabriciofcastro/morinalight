@@ -82,6 +82,7 @@ apps/api/src/
 ### Componentes de UI Genéricos
 
 #### `EmptyState`
+
 Exibe estado vazio quando não há dados.
 
 ```tsx
@@ -95,19 +96,21 @@ import { EmptyState } from "@/components/ui";
     label: "Criar usuário",
     onClick: () => handleCreate(),
   }}
-/>
+/>;
 ```
 
 #### `LoadingState`
+
 Exibe estado de carregamento.
 
 ```tsx
 import { LoadingState } from "@/components/ui";
 
-<LoadingState message="Carregando dados..." size="lg" />
+<LoadingState message="Carregando dados..." size="lg" />;
 ```
 
 #### `ErrorState`
+
 Exibe estado de erro com opção de retry.
 
 ```tsx
@@ -117,10 +120,11 @@ import { ErrorState } from "@/components/ui";
   title="Erro ao carregar"
   message="Não foi possível carregar os dados"
   onRetry={() => refetch()}
-/>
+/>;
 ```
 
 #### `HelpText` / `HelpTextWithTooltip`
+
 Exibe texto de ajuda contextual.
 
 ```tsx
@@ -138,6 +142,7 @@ import { HelpText, HelpTextWithTooltip } from "@/components/ui";
 ### Componentes de Layout
 
 #### `SettingsLayout`
+
 Layout base para páginas de configurações.
 
 ```tsx
@@ -150,10 +155,11 @@ import { SettingsLayout } from "@/components/settings/SettingsLayout";
   backHref="/settings"
 >
   {/* Conteúdo */}
-</SettingsLayout>
+</SettingsLayout>;
 ```
 
 #### `SettingsHeader`
+
 Header genérico para páginas de configurações.
 
 ```tsx
@@ -167,10 +173,11 @@ import { SettingsHeader } from "@/components/settings/SettingsHeader";
     { label: "Configurações", href: "/settings" },
   ]}
   actions={<Button>Criar</Button>}
-/>
+/>;
 ```
 
 #### `SettingsTabs`
+
 Tabs genéricas para páginas de configurações.
 
 ```tsx
@@ -183,12 +190,13 @@ import { SettingsTabs } from "@/components/settings/SettingsTabs";
   ]}
   activeTab="general"
   onTabChange={(tab) => setActiveTab(tab)}
-/>
+/>;
 ```
 
 ### Componentes de Formulário
 
 #### `UserPicker`
+
 Seletor genérico de usuários com busca.
 
 ```tsx
@@ -199,7 +207,7 @@ import { UserPicker } from "@/components/users/UserPicker";
   onChange={(userId) => setSelectedUserId(userId)}
   placeholder="Selecione um usuário..."
   filterByStatus="active"
-/>
+/>;
 ```
 
 ---
@@ -209,9 +217,11 @@ import { UserPicker } from "@/components/users/UserPicker";
 ### APIs de Usuários
 
 #### `GET /api/users`
+
 Lista usuários com filtros e paginação.
 
 **Query Params:**
+
 - `page`: número da página (padrão: 1)
 - `limit`: itens por página (padrão: 50)
 - `search`: busca por nome/email
@@ -221,6 +231,7 @@ Lista usuários com filtros e paginação.
 - `positionId`: filtro por cargo
 
 **Resposta:**
+
 ```json
 {
   "users": [...],
@@ -234,9 +245,11 @@ Lista usuários com filtros e paginação.
 ```
 
 #### `POST /api/users`
+
 Cria um novo usuário.
 
 **Body:**
+
 ```json
 {
   "name": "João Silva",
@@ -249,62 +262,81 @@ Cria um novo usuário.
 ```
 
 #### `GET /api/users/[userId]`
+
 Obtém detalhes de um usuário.
 
 #### `PUT /api/users/[userId]`
+
 Atualiza um usuário.
 
 #### `DELETE /api/users/[userId]`
+
 Exclui um usuário.
 
 #### `POST /api/users/import`
+
 Importa usuários em massa via CSV/Excel.
 
 #### `GET /api/users/export`
+
 Exporta usuários filtrados em CSV/JSON.
 
 #### `POST /api/users/bulk-action`
+
 Executa ações em massa (ativar, desativar, etc.).
 
 #### `GET /api/users/[userId]/permissions/effective`
+
 Obtém permissões efetivas de um usuário.
 
 #### `POST /api/users/[userId]/2fa/enable`
+
 Ativa autenticação de dois fatores.
 
 #### `GET /api/users/[userId]/2fa/qr-code`
+
 Obtém QR code para configuração de 2FA.
 
 #### `POST /api/users/[userId]/2fa/disable`
+
 Desativa autenticação de dois fatores.
 
 #### `GET /api/users/[userId]/trusted-devices`
+
 Lista dispositivos confiáveis.
 
 #### `POST /api/users/[userId]/trusted-devices`
+
 Adiciona dispositivo confiável.
 
 #### `DELETE /api/users/[userId]/trusted-devices/[deviceId]`
+
 Remove dispositivo confiável.
 
 #### `GET /api/users/[userId]/api-tokens`
+
 Lista tokens de API.
 
 #### `POST /api/users/[userId]/api-tokens`
+
 Cria novo token de API.
 
 #### `DELETE /api/users/[userId]/api-tokens/[tokenId]`
+
 Revoga token de API.
 
 #### `GET /api/users/[userId]/api-tokens/[tokenId]/history`
+
 Obtém histórico de uso de um token.
 
 ### APIs de Notificações
 
 #### `GET /api/notifications`
+
 Lista notificações do usuário.
 
 **Query Params:**
+
 - `page`: número da página
 - `limit`: itens por página
 - `status`: filtro por status (read/unread/archived)
@@ -312,36 +344,47 @@ Lista notificações do usuário.
 - `search`: busca textual
 
 #### `POST /api/notifications`
+
 Cria uma nova notificação.
 
 #### `PUT /api/notifications/[id]/read`
+
 Marca notificação como lida.
 
 #### `PUT /api/notifications/[id]/unread`
+
 Marca notificação como não lida.
 
 #### `DELETE /api/notifications/[id]`
+
 Exclui uma notificação.
 
 #### `POST /api/notifications/mark-all-read`
+
 Marca todas as notificações como lidas.
 
 #### `POST /api/notifications/bulk-action`
+
 Executa ações em massa em notificações.
 
 #### `GET /api/notifications/stats`
+
 Obtém estatísticas de notificações.
 
 #### `GET /api/notifications/history`
+
 Obtém histórico completo de notificações.
 
 #### `GET /api/notifications/preferences`
+
 Obtém preferências de notificação.
 
 #### `PUT /api/notifications/preferences`
+
 Atualiza preferências de notificação.
 
 #### `POST /api/notifications/test`
+
 Envia notificação de teste.
 
 ---
@@ -397,7 +440,11 @@ const userSchema = z.object({
 });
 
 // Usar com React Hook Form
-const { register, handleSubmit, formState: { errors } } = useForm({
+const {
+  register,
+  handleSubmit,
+  formState: { errors },
+} = useForm({
   resolver: zodResolver(userSchema),
 });
 ```
@@ -443,13 +490,10 @@ function MyComponent() {
 import dynamic from "next/dynamic";
 import { LoadingState } from "@/components/ui";
 
-const HeavyComponent = dynamic(
-  () => import("./HeavyComponent"),
-  {
-    loading: () => <LoadingState />,
-    ssr: false,
-  }
-);
+const HeavyComponent = dynamic(() => import("./HeavyComponent"), {
+  loading: () => <LoadingState />,
+  ssr: false,
+});
 ```
 
 ---
@@ -459,6 +503,7 @@ const HeavyComponent = dynamic(
 ### Problema: Validação de CPF não funciona
 
 **Solução:** Verifique se está usando o schema correto:
+
 ```tsx
 import { cpfSchema } from "@/lib/validators/zod-schemas";
 ```
@@ -466,17 +511,19 @@ import { cpfSchema } from "@/lib/validators/zod-schemas";
 ### Problema: Tooltip não aparece
 
 **Solução:** Certifique-se de que o `TooltipProvider` está envolvendo o componente:
+
 ```tsx
 import { TooltipProvider } from "@morina/ui";
 
 <TooltipProvider>
   <Tooltip>...</Tooltip>
-</TooltipProvider>
+</TooltipProvider>;
 ```
 
 ### Problema: Atalhos de teclado não funcionam
 
 **Solução:** Verifique se o `KeyboardShortcutsProvider` está no layout:
+
 ```tsx
 // apps/web/src/app/(app)/layout.tsx
 <KeyboardShortcutsProvider shortcuts={shortcuts}>
@@ -487,6 +534,7 @@ import { TooltipProvider } from "@morina/ui";
 ### Problema: Code splitting não reduz bundle size
 
 **Solução:** Verifique se está usando `ssr: false` para componentes client-side apenas:
+
 ```tsx
 const Component = dynamic(() => import("./Component"), {
   ssr: false, // Importante para componentes client-side
@@ -506,5 +554,3 @@ const Component = dynamic(() => import("./Component"), {
 
 **Última atualização:** 2025-12-11
 **Versão:** 1.8.0
-
-

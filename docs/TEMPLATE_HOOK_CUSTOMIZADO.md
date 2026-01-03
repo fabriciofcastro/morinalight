@@ -6,7 +6,7 @@
 
 ## 🎯 Estrutura Padrão
 
-```typescript
+````typescript
 import { useState, useEffect, useCallback, useRef } from "react";
 
 /**
@@ -37,10 +37,10 @@ export interface Use[Feature]Return {
 
 /**
  * [Descrição do que o hook faz]
- * 
+ *
  * @param options - Opções de configuração
  * @returns Objeto com estados, ações e status
- * 
+ *
  * @example
  * ```typescript
  * const { data, actions: { fetch }, status } = use[Feature]({
@@ -53,15 +53,15 @@ export function use[Feature](options: Use[Feature]Options): Use[Feature]Return {
   const [state, setState] = useState<[Type]>(initialValue);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<Error | null>(null);
-  
+
   // 2. Refs (se necessário)
   const ref = useRef<[Type]>(initialValue);
-  
+
   // 3. Efeitos
   useEffect(() => {
     // Lógica de efeito
   }, [deps]);
-  
+
   // 4. Callbacks
   const handleAction = useCallback(async () => {
     try {
@@ -74,7 +74,7 @@ export function use[Feature](options: Use[Feature]Options): Use[Feature]Return {
       setStatus("error");
     }
   }, [deps, options]);
-  
+
   // 5. Retorno
   return {
     [state]: state,
@@ -85,7 +85,7 @@ export function use[Feature](options: Use[Feature]Options): Use[Feature]Return {
     error,
   };
 }
-```
+````
 
 ---
 
@@ -107,6 +107,7 @@ export function use[Feature](options: Use[Feature]Options): Use[Feature]Return {
 ## ✅ Exemplos de Hooks Padronizados
 
 ### useAutoSave
+
 ```typescript
 export function useAutoSave(options: UseAutoSaveOptions): UseAutoSaveReturn {
   // ✅ Segue o padrão
@@ -114,6 +115,7 @@ export function useAutoSave(options: UseAutoSaveOptions): UseAutoSaveReturn {
 ```
 
 ### useDebounce
+
 ```typescript
 export function useDebounce<T>(value: T, delay: number): T {
   // ✅ Hook simples, mas padronizado
@@ -123,8 +125,3 @@ export function useDebounce<T>(value: T, delay: number): T {
 ---
 
 **Última atualização:** 2025-01-19
-
-
-
-
-

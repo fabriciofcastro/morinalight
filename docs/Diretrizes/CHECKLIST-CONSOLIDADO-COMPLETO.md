@@ -273,6 +273,7 @@
 ### 📋 Telas a Criar (14 telas principais + subitens)
 
 #### 1. Dados da Empresa (🚨 REBUILD TOTAL – UX/UI DO ZERO)
+
 - [ ] **Lista/Visualização:** `/admin/company` (se necessário)
 - [ ] **Edição:** `/admin/company/edit` - ✅ JÁ EXISTE (REFATORAR COMPLETAMENTE)
 - **Status atual:** Tela complexa/confusa – precisa ser recriada do zero com novo layout, nova hierarquia visual, skeletons dedicados, background exclusivo e tema recalibrado. Seguir `fornecedores/list` e `fornecedores/new` como referências.
@@ -283,6 +284,7 @@
   - Funcionalidades expandidas: histórico completo, exportação, importação, auditoria visual
 
 #### 2. Filiais
+
 - [ ] **Lista:** `/admin/branches` - Criar do zero
 - [ ] **Novo:** `/admin/branches/new` - Criar do zero
 - [ ] **Edição:** `/admin/branches/[id]/edit` - Criar do zero
@@ -296,6 +298,7 @@
   - Skeleton loaders em todas as telas
 
 #### 3. Departamentos
+
 - [ ] **Lista:** `/admin/departments` - Verificar se existe, padronizar se necessário
 - [ ] **Novo:** `/admin/departments/new` - Criar/verificar
 - [ ] **Edição:** `/admin/departments/[id]/edit` - Criar/verificar
@@ -307,6 +310,7 @@
   - Funcionalidades completas como fornecedores
 
 #### 4. Setores
+
 - [ ] **Lista:** `/admin/sectors` - Verificar se existe, padronizar se necessário
 - [ ] **Novo:** `/admin/sectors/new` - Criar/verificar
 - [ ] **Edição:** `/admin/sectors/[id]/edit` - Criar/verificar
@@ -318,6 +322,7 @@
   - Exportação/importação
 
 #### 5. Cargos (Positions)
+
 - [ ] **Lista:** `/admin/positions` - Verificar se existe, padronizar se necessário
 - [ ] **Novo:** `/admin/positions/new` - Criar/verificar
 - [ ] **Edição:** `/admin/positions/[id]/edit` - Criar/verificar
@@ -329,6 +334,7 @@
   - Hierarquia de cargos visual
 
 #### 6. Usuários (Adicionar ao sidebar Administração)
+
 - [x] **Lista:** `/admin/users` - ✅ JÁ EXISTE
 - [x] **Novo:** `/admin/users/new` - ✅ JÁ EXISTE
 - [x] **Checklist:** `/admin/users/checklist` - ✅ JÁ EXISTE
@@ -338,6 +344,7 @@
   - Padronizar se necessário seguindo fornecedores
 
 #### 7. Perfis de Acesso (Roles)
+
 - [ ] **Lista:** `/admin/roles` - Criar do zero
 - [ ] **Novo:** `/admin/roles/new` - Criar do zero
 - [ ] **Edição:** `/admin/roles/[id]/edit` - Criar do zero
@@ -351,6 +358,7 @@
   - Exportação/importação de perfis
 
 #### 8. Permissões
+
 - [ ] **Lista:** `/admin/permissions` - Criar do zero
 - [ ] **Novo:** `/admin/permissions/new` - Criar do zero
 - [ ] **Detalhes:** `/admin/permissions/[id]` - Criar do zero
@@ -361,6 +369,7 @@
   - Visualização hierárquica
 
 #### 9. Matriz de Permissões
+
 - [ ] **Visualização:** `/admin/permissions/matrix` - Criar do zero
 - **Requisitos:**
   - Background animado único: "realtime" ou "flow"
@@ -370,6 +379,7 @@
   - Exportação da matriz
 
 #### 10. Aprovações RBAC
+
 - [ ] **Lista:** `/admin/permissions/approvals` - Criar do zero
 - [ ] **Detalhes:** `/admin/permissions/approvals/[id]` - Criar do zero
 - **Requisitos:**
@@ -380,6 +390,7 @@
   - Dashboard de aprovações
 
 #### 11. Segmentos de Negócio
+
 - [ ] **Lista:** `/admin/business-segments` - Verificar se existe, padronizar
 - [ ] **Novo:** `/admin/business-segments/new` - Criar/verificar
 - [ ] **Edição:** `/admin/business-segments/[id]/edit` - Criar/verificar
@@ -391,6 +402,7 @@
   - Analytics por segmento
 
 #### 12. Workflows (Workflow Policies)
+
 - [ ] **Lista:** `/admin/workflow-policies` - Verificar se existe, padronizar
 - [ ] **Novo:** `/admin/workflow-policies/new` - Criar/verificar
 - [ ] **Edição:** `/admin/workflow-policies/[id]/edit` - Criar/verificar
@@ -403,6 +415,7 @@
   - Histórico de execuções
 
 #### 13. Realtime Lab
+
 - [ ] **Dashboard:** `/admin/realtime-lab` - Criar do zero
 - **Requisitos:**
   - Background animado único: "realtime" (já configurado)
@@ -413,6 +426,7 @@
   - Métricas e analytics
 
 #### 14. Fornecedores (Referência - Já existe)
+
 - [x] **Lista:** `/fornecedores/list` - ✅ REFERÊNCIA
 - [x] **Novo:** `/fornecedores/new` - ✅ REFERÊNCIA
 - **Nota:** Usar como padrão para todas as outras telas
@@ -420,6 +434,7 @@
 ### 🎨 Requisitos Visuais e Técnicos (Aplicar em TODAS as telas)
 
 #### Layout e Design
+
 - [ ] Header futurista com gradientes e tech corners (como fornecedores)
 - [ ] Cards com glass morphism e backdrop blur
 - [ ] Animações suaves com framer-motion
@@ -427,18 +442,21 @@
 - [ ] Responsive design completo (mobile, tablet, desktop)
 
 #### Backgrounds Animados
+
 - [ ] Background único e temático para cada tela
 - [ ] Integração com PageBackground component
 - [ ] Animações suaves e performáticas
 - [ ] Calibração de tema por tela
 
 #### Skeleton Loaders
+
 - [ ] Skeleton para lista (grid e list view)
 - [ ] Skeleton para formulários
 - [ ] Skeleton para cards de detalhes
 - [ ] Transições suaves skeleton → conteúdo
 
 #### Funcionalidades Comuns (Todas as telas)
+
 - [ ] Busca em tempo real com debounce
 - [ ] Filtros avançados (status, data, categoria, etc.)
 - [ ] Ordenação por múltiplas colunas
@@ -456,6 +474,7 @@
 - [ ] Auditoria visual
 
 #### Funcionalidades Avançadas
+
 - [ ] Duplicação de registros
 - [ ] Preview antes de salvar
 - [ ] Comparação de versões
@@ -477,21 +496,25 @@
 ### 🎯 Priorização de Implementação
 
 #### Sprint 1-2 (Alta Prioridade)
+
 1. Filiais (completo)
 2. Perfis de Acesso (completo)
 3. Permissões (lista e detalhes)
 
 #### Sprint 3-4 (Alta Prioridade)
+
 4. Matriz de Permissões
 5. Aprovações RBAC
 6. Realtime Lab
 
 #### Sprint 5-6 (Média Prioridade)
+
 7. Departamentos (padronizar/expandir)
 8. Setores (padronizar/expandir)
 9. Cargos (padronizar/expandir)
 
 #### Sprint 7-8 (Média Prioridade)
+
 10. Segmentos de Negócio
 11. Workflows
 12. Usuários (adicionar ao sidebar admin)

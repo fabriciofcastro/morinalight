@@ -10,6 +10,7 @@
 ## 1. Objetivo
 
 Criar um **mapa completo e atualizado** de:
+
 - O que existe no sistema
 - Onde cada coisa está localizada
 - Como se relacionam entre si
@@ -37,6 +38,7 @@ O mapeamento parte do código existente, não de suposições.
 **Objetivo:** Entender a organização física do código.
 
 **Ações:**
+
 1. Listar todas as pastas principais (`apps/`, `packages/`)
 2. Identificar cada módulo/pacote
 3. Documentar propósito de cada um
@@ -46,15 +48,16 @@ O mapeamento parte do código existente, não de suposições.
 ```markdown
 ## Estrutura de Módulos
 
-| Caminho | Nome | Tipo | Propósito | Status |
-|---------|------|------|-----------|--------|
-| apps/api | API Backend | Aplicação | Backend Fastify | ✅ Ativo |
-| apps/web | Frontend Web | Aplicação | Frontend Next.js | ✅ Ativo |
-| packages/catalogo-domain | Domínio Catálogo | Domínio | Regras de negócio do catálogo | ✅ Ativo |
-| packages/catalogo-application | Aplicação Catálogo | Aplicação | Casos de uso do catálogo | ✅ Ativo |
+| Caminho                       | Nome               | Tipo      | Propósito                     | Status   |
+| ----------------------------- | ------------------ | --------- | ----------------------------- | -------- |
+| apps/api                      | API Backend        | Aplicação | Backend Fastify               | ✅ Ativo |
+| apps/web                      | Frontend Web       | Aplicação | Frontend Next.js              | ✅ Ativo |
+| packages/catalogo-domain      | Domínio Catálogo   | Domínio   | Regras de negócio do catálogo | ✅ Ativo |
+| packages/catalogo-application | Aplicação Catálogo | Aplicação | Casos de uso do catálogo      | ✅ Ativo |
 ```
 
 **Ferramentas:**
+
 ```bash
 # Listar estrutura
 find . -type d -maxdepth 3 -not -path '*/node_modules/*' -not -path '*/.git/*'
@@ -69,6 +72,7 @@ find apps/web/src -name "*.tsx" | wc -l
 **Objetivo:** Descobrir todas as entidades principais do sistema.
 
 **Ações:**
+
 1. Buscar arquivos de schema (Prisma, Zod)
 2. Buscar classes de domínio (Entity, Aggregate)
 3. Listar todas as entidades encontradas
@@ -78,14 +82,15 @@ find apps/web/src -name "*.tsx" | wc -l
 ```markdown
 ## Entidades de Domínio
 
-| Entidade | Módulo | Contexto | Status | Relacionamentos |
-|----------|--------|----------|--------|------------------|
-| Company | organization-domain | Organization | ✅ Ativo | - |
-| Department | organization-domain | Organization | ✅ Ativo | Company |
-| User | user-domain | Security | ✅ Ativo | Company, Department |
+| Entidade   | Módulo              | Contexto     | Status   | Relacionamentos     |
+| ---------- | ------------------- | ------------ | -------- | ------------------- |
+| Company    | organization-domain | Organization | ✅ Ativo | -                   |
+| Department | organization-domain | Organization | ✅ Ativo | Company             |
+| User       | user-domain         | Security     | ✅ Ativo | Company, Department |
 ```
 
 **Ferramentas:**
+
 ```bash
 # Buscar schemas Prisma
 grep -r "model " apps/api/prisma/schema.prisma
@@ -102,6 +107,7 @@ find . -name "*.ts" -exec grep -l "z.object" {} \;
 **Objetivo:** Descobrir todas as rotas e contratos públicos.
 
 **Ações:**
+
 1. Buscar rotas no backend (Fastify routes)
 2. Buscar API routes no frontend (Next.js)
 3. Documentar cada endpoint
@@ -111,14 +117,15 @@ find . -name "*.ts" -exec grep -l "z.object" {} \;
 ```markdown
 ## Endpoints da API
 
-| Método | Rota | Módulo | Capacidade | Status |
-|--------|------|--------|-------------|--------|
-| GET | /api/organization/companies | organization-api | Listar empresas | ✅ Ativo |
-| POST | /api/organization/companies | organization-api | Criar empresa | ✅ Ativo |
-| GET | /api/users | user-api | Listar usuários | ✅ Ativo |
+| Método | Rota                        | Módulo           | Capacidade      | Status   |
+| ------ | --------------------------- | ---------------- | --------------- | -------- |
+| GET    | /api/organization/companies | organization-api | Listar empresas | ✅ Ativo |
+| POST   | /api/organization/companies | organization-api | Criar empresa   | ✅ Ativo |
+| GET    | /api/users                  | user-api         | Listar usuários | ✅ Ativo |
 ```
 
 **Ferramentas:**
+
 ```bash
 # Buscar rotas Fastify
 grep -r "\.get\|\.post\|\.put\|\.delete" apps/api/src
@@ -132,6 +139,7 @@ find apps/web/src/app/api -name "route.ts" -exec cat {} \;
 **Objetivo:** Descobrir todos os eventos publicados e consumidos.
 
 **Ações:**
+
 1. Buscar classes de eventos
 2. Buscar publicações de eventos
 3. Buscar handlers de eventos
@@ -141,14 +149,15 @@ find apps/web/src/app/api -name "route.ts" -exec cat {} \;
 ```markdown
 ## Eventos de Domínio
 
-| Evento | Publicado por | Consumido por | Payload | Status |
-|--------|---------------|---------------|---------|--------|
-| CompanyCreated | organization-domain | audit, notifications | { companyId, name } | ✅ Ativo |
-| UserCreated | user-domain | audit, notifications | { userId, email } | ✅ Ativo |
+| Evento            | Publicado por       | Consumido por           | Payload                   | Status   |
+| ----------------- | ------------------- | ----------------------- | ------------------------- | -------- |
+| CompanyCreated    | organization-domain | audit, notifications    | { companyId, name }       | ✅ Ativo |
+| UserCreated       | user-domain         | audit, notifications    | { userId, email }         | ✅ Ativo |
 | DepartmentUpdated | organization-domain | security, notifications | { departmentId, changes } | ✅ Ativo |
 ```
 
 **Ferramentas:**
+
 ```bash
 # Buscar classes de eventos
 grep -r "class.*Event" packages/*/src
@@ -169,6 +178,7 @@ grep -r "subscribe\|on(" packages/*/src
 **Objetivo:** Descobrir O QUE o sistema faz (não COMO).
 
 **Processo:**
+
 1. Analisar cada módulo e perguntar: "O que este módulo permite fazer?"
 2. Agrupar funcionalidades relacionadas
 3. Classificar como Core/Negócio/Suporte/Técnica
@@ -178,15 +188,16 @@ grep -r "subscribe\|on(" packages/*/src
 ```markdown
 ## Capacidades Identificadas
 
-| Capacidade | Classificação | Módulos Envolvidos | Status | Maturidade |
-|------------|---------------|-------------------|--------|------------|
-| Gerenciar Empresas | Core | organization-domain, organization-api | ✅ Ativo | Controlada |
-| Gerenciar Departamentos | Core | organization-domain, organization-api | ✅ Ativo | Controlada |
-| Gerenciar Usuários | Negócio | user-domain, user-api | ✅ Ativo | Inicial |
-| Autenticação | Técnica | auth-module | ✅ Ativo | Escalável |
+| Capacidade              | Classificação | Módulos Envolvidos                    | Status   | Maturidade |
+| ----------------------- | ------------- | ------------------------------------- | -------- | ---------- |
+| Gerenciar Empresas      | Core          | organization-domain, organization-api | ✅ Ativo | Controlada |
+| Gerenciar Departamentos | Core          | organization-domain, organization-api | ✅ Ativo | Controlada |
+| Gerenciar Usuários      | Negócio       | user-domain, user-api                 | ✅ Ativo | Inicial    |
+| Autenticação            | Técnica       | auth-module                           | ✅ Ativo | Escalável  |
 ```
 
 **Perguntas para Identificar:**
+
 - O que o usuário pode fazer com este módulo?
 - Qual problema de negócio este módulo resolve?
 - Esta funcionalidade diferencia o produto?
@@ -200,6 +211,7 @@ grep -r "subscribe\|on(" packages/*/src
 **Objetivo:** Descobrir os contextos delimitados do sistema.
 
 **Processo:**
+
 1. Agrupar módulos relacionados por domínio de negócio
 2. Identificar modelos únicos de cada contexto
 3. Mapear comunicação entre contextos
@@ -209,11 +221,11 @@ grep -r "subscribe\|on(" packages/*/src
 ```markdown
 ## Bounded Contexts
 
-| Contexto | Tipo | Módulos | Modelos Principais | Status |
-|----------|------|---------|-------------------|--------|
-| Organization | Core | organization-domain, organization-api | Company, Department, Sector | ✅ Ativo |
-| Security | Core | user-domain, auth-module | User, Role, Permission | ✅ Ativo |
-| Catalog | Negócio | catalogo-domain, catalogo-application | Product, Category | ✅ Ativo |
+| Contexto     | Tipo    | Módulos                               | Modelos Principais          | Status   |
+| ------------ | ------- | ------------------------------------- | --------------------------- | -------- |
+| Organization | Core    | organization-domain, organization-api | Company, Department, Sector | ✅ Ativo |
+| Security     | Core    | user-domain, auth-module              | User, Role, Permission      | ✅ Ativo |
+| Catalog      | Negócio | catalogo-domain, catalogo-application | Product, Category           | ✅ Ativo |
 ```
 
 #### 3.7 Mapear Dependências e Relacionamentos
@@ -221,6 +233,7 @@ grep -r "subscribe\|on(" packages/*/src
 **Objetivo:** Entender como os módulos se relacionam.
 
 **Processo:**
+
 1. Analisar imports entre módulos
 2. Identificar dependências diretas
 3. Mapear comunicação (eventos, APIs, contratos)
@@ -230,14 +243,15 @@ grep -r "subscribe\|on(" packages/*/src
 ```markdown
 ## Relacionamentos entre Módulos
 
-| Módulo A | Tipo de Relação | Módulo B | Método | Status |
-|----------|----------------|----------|--------|--------|
-| user-api | Depende de | organization-domain | Import direto | ⚠️ Revisar |
-| notifications | Consome | organization-domain | Eventos | ✅ OK |
-| security | Depende de | organization-domain | API interna | ✅ OK |
+| Módulo A      | Tipo de Relação | Módulo B            | Método        | Status     |
+| ------------- | --------------- | ------------------- | ------------- | ---------- |
+| user-api      | Depende de      | organization-domain | Import direto | ⚠️ Revisar |
+| notifications | Consome         | organization-domain | Eventos       | ✅ OK      |
+| security      | Depende de      | organization-domain | API interna   | ✅ OK      |
 ```
 
 **Ferramentas:**
+
 ```bash
 # Analisar imports
 grep -r "from.*organization" packages/user-domain/src
@@ -255,11 +269,13 @@ grep -r "\"@morina/" packages/*/package.json
 **Objetivo:** Encontrar código não utilizado.
 
 **Ações:**
+
 1. Buscar funções/componentes sem referências
 2. Identificar endpoints não documentados
 3. Encontrar módulos sem uso
 
 **Ferramentas:**
+
 ```bash
 # Usar ferramentas de análise estática
 npx depcheck
@@ -271,6 +287,7 @@ npx unimported
 **Objetivo:** Encontrar violações das diretrizes.
 
 **Checklist:**
+
 - [ ] Há módulos sem capacidade definida?
 - [ ] Há dependências circulares?
 - [ ] Há acesso direto entre contextos?
@@ -287,6 +304,7 @@ Use este template para documentar o inventário completo:
 # Inventário do Sistema - [Data]
 
 ## 1. Visão Geral
+
 - **Total de Módulos:** X
 - **Total de Capacidades:** Y
 - **Total de Contextos:** Z
@@ -392,6 +410,7 @@ find . -name "*Service.ts" -o -name "*service.ts"
 **Frequência:** Mensal ou a cada sprint
 
 **Checklist:**
+
 - [ ] Novo módulo criado? → Adicionar ao inventário
 - [ ] Nova entidade criada? → Adicionar ao mapeamento
 - [ ] Novo endpoint criado? → Documentar na API
@@ -401,6 +420,7 @@ find . -name "*Service.ts" -o -name "*service.ts"
 ### 6.2 Validação Automática
 
 **Integrar no CI/CD:**
+
 - Script que valida se novos módulos foram documentados
 - Verificação se novos endpoints têm documentação
 - Alerta se novo evento não está documentado
@@ -408,6 +428,7 @@ find . -name "*Service.ts" -o -name "*service.ts"
 ### 6.3 Revisão Trimestral
 
 **Ações:**
+
 1. Revisar inventário completo
 2. Validar se código reflete documentação
 3. Identificar gaps e inconsistências
@@ -455,6 +476,7 @@ npx madge --circular packages/ > docs/dependencias.txt
 ### Passo 2: Preencher Templates
 
 Usar os templates das seções anteriores para documentar:
+
 - Módulos encontrados
 - Entidades identificadas
 - APIs mapeadas
@@ -486,10 +508,10 @@ Usar os templates das seções anteriores para documentar:
 > **Sem saber o que existe, não é possível governar.**
 
 Este documento deve ser:
+
 - **Consultado antes de qualquer mapeamento**
 - **Atualizado continuamente**
 - **Usado como base para decisões arquiteturais**
 - **Revisado periodicamente**
 
 **Lembre-se:** O código é a fonte da verdade. O inventário reflete o código, não o contrário.
-

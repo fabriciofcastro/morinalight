@@ -3,26 +3,31 @@
 ## ✅ CONCLUÍDO
 
 ### 1. ID da Ficha Automático e Auto Incremento
+
 - ✅ ID gerado automaticamente baseado no último número sequencial
 - ✅ Campo em modo read-only
 - ✅ Placeholder "Gerado automaticamente"
 
 ### 2. Hover Background Sumir no Focus
+
 - ✅ Implementado `group-focus-within:hidden` nos componentes FuturisticInput, FuturisticSelect, FuturisticTextarea
 - ✅ Hover continua funcionando quando não está em focus
 
 ### 3. Referência Baseada no Ano
+
 - ✅ 2026-2029: 5 caracteres (ex: 56333, 57333, 58333, 59333)
 - ✅ 2030+: 6 caracteres (ex: 105036)
 - ✅ Validação dinâmica conforme o ano
 - ✅ Função `gerarReferenciaPorAno` implementada
 
 ### 4. Fornecedor Obrigatório
+
 - ✅ Validação adicionada nos insumos
-- ✅ Indicador visual (*) no campo
+- ✅ Indicador visual (\*) no campo
 - ✅ Mensagem de erro quando não preenchido
 
 ### 5. Footer Centralizado
+
 - ✅ Links "Termos", "Privacidade" e "LGPD" centralizados no footer
 
 ---
@@ -30,8 +35,10 @@
 ## ⚠️ PENDENTE / CORREÇÕES NECESSÁRIAS
 
 ### 1. Padrão Sofisticado para Inputs Obrigatórios
+
 **Status:** ✅ CONCLUÍDO
-- ✅ Asterisco vermelho (*) no label para campos obrigatórios
+
+- ✅ Asterisco vermelho (\*) no label para campos obrigatórios
 - ✅ Borda vermelha (2px) quando há erro E não está em focus
 - ✅ Quando em focus: sempre borda azul (mesmo com erro)
 - ✅ Tooltip aparece no focus quando há erro
@@ -39,7 +46,9 @@
 - ✅ Padrão aplicado em todos os inputs (FuturisticInput, FuturisticSelect, inputs customizados)
 
 ### 2. Hover Background em TODOS os Inputs
+
 **Status:** ✅ CONCLUÍDO
+
 - ✅ FuturisticInput: implementado com `group-focus-within:hidden`
 - ✅ FuturisticSelect: implementado com `group-focus-within:hidden`
 - ✅ FuturisticTextarea: implementado com `group-focus-within:hidden`
@@ -49,12 +58,16 @@
 - ✅ SupplierSearchField: implementado com `group-focus-within:hidden`
 
 ### 3. Input Anexar Foto Menor que os Demais
+
 **Status:** ✅ CONCLUÍDO
+
 - ✅ Input "Anexar Foto" usando `py-3` (mesmo padrão dos outros inputs)
 - ✅ Altura padronizada: `px-4 py-3` em todos os inputs
 
 ### 4. Varedura Padronizando
+
 **Status:** ✅ CONCLUÍDO
+
 - ✅ Componentes FuturisticInput, FuturisticSelect, FuturisticTextarea padronizados
 - ✅ Inputs customizados padronizados:
   - ✅ Anexar Foto: `px-4 py-3`, hover background, focus border azul
@@ -65,7 +78,9 @@
 - ✅ Padrão único aplicado: `px-4 py-3`, hover background com `group-focus-within:hidden`, focus border azul
 
 ### 5. Botão Status - Editar, Alterar Cor, Excluir
+
 **Status:** ✅ CONCLUÍDO E VERIFICADO
+
 - ✅ Modal completo com todas as funcionalidades:
   - ✅ Editar nome do status (botão e formulário implementados - linhas 1733-1745)
   - ✅ Alterar cor do status (color picker `w-12 h-12` + input hex - linhas 1610-1638)
@@ -78,7 +93,9 @@
   - ✅ Botão Cancelar no header (implementado - linhas 1566-1577)
 
 ### 6. Elevar Nível da Lista com Filtros Avançados
+
 **Status:** ✅ CONCLUÍDO
+
 - ✅ Implementado:
   - ✅ Toggle Grid/Lista (como no Catalog)
   - ✅ Filtros avançados (data início, data fim, coleção, status, busca)
@@ -89,7 +106,9 @@
   - ✅ Seleção múltipla para ações em lote
 
 ### 7. Verificar Cálculos por Unidade de Medida
+
 **Status:** ✅ CONCLUÍDO
+
 - ✅ Cálculos implementados e verificados:
   - ✅ Metros: cálculo direto (1 metro = 1 unidade base)
   - ✅ Jarda: conversão (1 jarda = 0.9144 metros)
@@ -108,6 +127,7 @@
 **Última Verificação:** 2025-12-15 - TODAS AS IMPLEMENTAÇÕES CONFIRMADAS NO CÓDIGO
 
 ### ✅ Concluído (9 itens)
+
 1. ✅ **ID da ficha automático e auto incremento**
    - ID gerado automaticamente baseado no último número sequencial
    - Campo read-only com placeholder "Gerado automaticamente"
@@ -123,14 +143,14 @@
 
 4. ✅ **Fornecedor obrigatório nos insumos**
    - Validação implementada
-   - Indicador visual (*) no campo
+   - Indicador visual (\*) no campo
    - Mensagem de erro e tooltip quando não preenchido
 
 5. ✅ **Footer centralizado**
    - Links "Termos", "Privacidade" e "LGPD" centralizados
 
 6. ✅ **Padrão sofisticado para inputs obrigatórios**
-   - Asterisco vermelho (*) no label
+   - Asterisco vermelho (\*) no label
    - Borda vermelha (2px) quando há erro E não está em focus
    - Borda azul quando em focus (mesmo com erro)
    - Tooltip aparece no focus quando há erro
@@ -180,23 +200,27 @@
 ## 📝 OBSERVAÇÕES
 
 ### Padrão de Inputs Obrigatórios (Implementado)
-- **Label:** Asterisco vermelho (*) para campos obrigatórios
+
+- **Label:** Asterisco vermelho (\*) para campos obrigatórios
 - **Estado Normal:** Borda branca/20, hover background azul
 - **Estado com Erro (sem focus):** Borda vermelha 2px, hover background azul
 - **Estado com Erro (com focus):** Borda azul, tooltip vermelho com mensagem
 - **Estado Normal (com focus):** Borda azul, hover background some
 
 ### Hover Background (Implementado)
+
 - Todos os inputs têm hover background azul
 - Hover background some quando em focus (`group-focus-within:hidden`)
 - Hover continua funcionando quando não está em focus
 
 ### Validação Visual (Implementado)
+
 - Borda vermelha 2px quando há erro
 - Tooltip vermelho aparece no focus quando há erro
 - Mensagens de erro específicas por campo
 
 ### Estilo dos Selects na Lista (Implementado)
+
 - ✅ Select de filtro de status com mesmo estilo do select de status da tela de criação
 - ✅ Blur shadow que desaparece no focus (`group-focus-within:hidden`)
 - ✅ Background escuro (`bg-[#1a1f3a]`) em todas as options
@@ -205,10 +229,10 @@
 - ✅ Aplicado também nos selects de Coleção e Ordenação para consistência
 
 ### Correções Finais de Padronização (Implementado)
+
 - ✅ **Hover background em inputs obrigatórios**: Removida condição que escondia blur shadow quando havia erro - agora todos os inputs têm hover background igual
 - ✅ **Altura dos inputs anexo**: Padronizado para `h-[48px]` igual aos demais inputs
 - ✅ **Botão Cancelar no modal de status**: Movido para o lugar do texto "Status Customizados" no cabeçalho
 - ✅ **Ocultar lista ao criar/editar status**: Lista de status customizados é ocultada quando está criando ou editando
 - ✅ **Tamanho do color picker**: Aumentado de `w-10 h-10` para `w-12 h-12` com `flex-shrink-0` para evitar compressão
 - ✅ **Estrutura JSX corrigida**: Removido `</div>` extra que causava erro de parsing
-

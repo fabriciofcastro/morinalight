@@ -31,6 +31,7 @@ working_hours:
 ```
 
 Regras:
+
 - Dentro do horário → acesso normal
 - Fora do horário → fluxo de exceção legal obrigatório
 
@@ -275,11 +276,12 @@ VISÃO GERAL DA ENGINE
 A engine NÃO é um if/else gigante.
 Ela é uma máquina de decisão em etapas, sempre na mesma ordem.
 
-INPUT  → Contexto
+INPUT → Contexto
 ENGINE → Avaliação em camadas
 OUTPUT → Decision Report
 
 1️⃣ Estrutura mental da engine (grave isso)
+
 1. Carregar política (PBAC)
 2. Validar RBAC (teto)
 3. Avaliar TBAC (tempo/jornada)
@@ -289,26 +291,25 @@ OUTPUT → Decision Report
 7. Gerar relatório
 8. Persistir auditoria / logs / backlog
 
-
 Essa ordem não é negociável.
 
 2️⃣ Tipos básicos (sem abstração excessiva)
 // decision.types.ts
 export type Decision =
-  | 'ALLOW'
-  | 'ALLOW_WITH_AUDIT'
-  | 'DENY'
-  | 'REQUIRE_MANAGER_APPROVAL';
+| 'ALLOW'
+| 'ALLOW_WITH_AUDIT'
+| 'DENY'
+| 'REQUIRE_MANAGER_APPROVAL';
 
 export interface AccessContext {
-  userId: string;
-  role: string;
-  screen: string;
-  action: string;
-  timestamp: Date;
-  ip: string;
-  location: string;
-  device: string;
+userId: string;
+role: string;
+screen: string;
+action: string;
+timestamp: Date;
+ip: string;
+location: string;
+device: string;
 }
 
 3️⃣ Carregador da política (.md → objeto)
@@ -321,9 +322,8 @@ Na prática:
 import policy from './access-governance.json';
 
 export function loadPolicy() {
-  return policy;
+return policy;
 }
-
 
 Regra dura:
 Markdown é contrato humano.
@@ -332,13 +332,12 @@ JSON é contrato da máquina.
 4️⃣ PBAC — política ativa governa tudo
 // pbac.ts
 export function applyPBAC(policy, context) {
-  if (!policy.pbac.active_policies.length) {
-    throw new Error('No active policies');
-  }
-
-  return policy.pbac.active_policies;
+if (!policy.pbac.active_policies.length) {
+throw new Error('No active policies');
 }
 
+return policy.pbac.active_policies;
+}
 
 Aqui você só declara quais políticas existem.
 Quem executa são os módulos abaixo.
@@ -346,15 +345,14 @@ Quem executa são os módulos abaixo.
 5️⃣ RBAC — teto máximo
 // rbac.ts
 export function checkRBAC(policy, context) {
-  const role = policy.roles[context.role];
-  if (!role) return false;
+const role = policy.roles[context.role];
+if (!role) return false;
 
-  return (
-    role.allowed_screens.includes('*') ||
-    role.allowed_screens.includes(context.screen)
-  );
+return (
+role.allowed_screens.includes('\*') ||
+role.allowed_screens.includes(context.screen)
+);
 }
-
 
 ❌ Falhou aqui → bloqueio imediato
 Sem auditoria “bonita”. Só negação.
@@ -364,39 +362,37 @@ Sem auditoria “bonita”. Só negação.
 import dayjs from 'dayjs';
 
 export function evaluateTBAC(policy, context) {
-  const now = dayjs(context.timestamp);
-  const shift = policy.tbac.shifts.REGULAR;
+const now = dayjs(context.timestamp);
+const shift = policy.tbac.shifts.REGULAR;
 
-  const day = now.format('ddd').toUpperCase();
-  const hour = now.format('HH:mm');
+const day = now.format('ddd').toUpperCase();
+const hour = now.format('HH:mm');
 
-  const insideShift =
-    shift.days.includes(day) &&
-    hour >= shift.start &&
-    hour <= shift.end;
+const insideShift =
+shift.days.includes(day) &&
+hour >= shift.start &&
+hour <= shift.end;
 
-  return {
-    insideShift,
-    requiresLegalAck: !insideShift,
-  };
+return {
+insideShift,
+requiresLegalAck: !insideShift,
+};
 }
-
 
 👉 Aqui nasce a hora extra.
 
 7️⃣ ABAC — contexto imediato
 // abac.ts
 export function evaluateABAC(policy, context, tbacResult) {
-  if (tbacResult.requiresLegalAck) {
-    return {
-      decision: 'ALLOW_WITH_AUDIT',
-      requireLegalAck: true,
-    };
-  }
-
-  return { decision: 'ALLOW' };
+if (tbacResult.requiresLegalAck) {
+return {
+decision: 'ALLOW_WITH_AUDIT',
+requireLegalAck: true,
+};
 }
 
+return { decision: 'ALLOW' };
+}
 
 ABAC não manda.
 Ele recomenda com base no contexto.
@@ -404,66 +400,63 @@ Ele recomenda com base no contexto.
 8️⃣ AuBAC — histórico e risco (peso real)
 // aubac.ts
 export function evaluateAuBAC(policy, userHistory) {
-  let score = 0;
+let score = 0;
 
-  if (userHistory.outsideHoursCount > 3) score += 5;
-  if (userHistory.foreignIpCount > 1) score += 7;
+if (userHistory.outsideHoursCount > 3) score += 5;
+if (userHistory.foreignIpCount > 1) score += 7;
 
-  if (score >= 20) return 'REQUIRE_MANAGER_APPROVAL';
-  if (score >= 10) return 'ALLOW_WITH_AUDIT';
+if (score >= 20) return 'REQUIRE_MANAGER_APPROVAL';
+if (score >= 10) return 'ALLOW_WITH_AUDIT';
 
-  return 'ALLOW';
+return 'ALLOW';
 }
-
 
 Histórico só aumenta fricção, nunca reduz.
 
 9️⃣ Engine principal (o coração)
 // access-engine.ts
 export function evaluateAccess(policy, context, userHistory) {
-  // 1. RBAC
-  if (!checkRBAC(policy, context)) {
-    return { decision: 'DENY', reason: 'RBAC' };
-  }
-
-  // 2. TBAC
-  const tbac = evaluateTBAC(policy, context);
-
-  // 3. ABAC
-  const abac = evaluateABAC(policy, context, tbac);
-
-  // 4. AuBAC
-  const aubacDecision = evaluateAuBAC(policy, userHistory);
-
-  // 5. Decisão final (prioridade)
-  const decision =
-    aubacDecision !== 'ALLOW'
-      ? aubacDecision
-      : abac.decision;
-
-  return {
-    decision,
-    requireLegalAck: tbac.requiresLegalAck,
-    audit: decision !== 'ALLOW',
-  };
+// 1. RBAC
+if (!checkRBAC(policy, context)) {
+return { decision: 'DENY', reason: 'RBAC' };
 }
 
+// 2. TBAC
+const tbac = evaluateTBAC(policy, context);
+
+// 3. ABAC
+const abac = evaluateABAC(policy, context, tbac);
+
+// 4. AuBAC
+const aubacDecision = evaluateAuBAC(policy, userHistory);
+
+// 5. Decisão final (prioridade)
+const decision =
+aubacDecision !== 'ALLOW'
+? aubacDecision
+: abac.decision;
+
+return {
+decision,
+requireLegalAck: tbac.requiresLegalAck,
+audit: decision !== 'ALLOW',
+};
+}
 
 Isso é determinístico, auditável e explicável.
 
 🔟 Decision Report (prova jurídica)
 export function buildDecisionReport(context, result) {
-  return {
-    event_id: crypto.randomUUID(),
-    user: context.userId,
-    screen: context.screen,
-    action: context.action,
-    decision: result.decision,
-    timestamp: new Date().toISOString(),
-    outside_working_hours: result.requireLegalAck,
-  };
+return {
+event_id: crypto.randomUUID(),
+user: context.userId,
+screen: context.screen,
+action: context.action,
+decision: result.decision,
+timestamp: new Date().toISOString(),
+outside_working_hours: result.requireLegalAck,
+};
 }
-
 
 Esse objeto:
 
@@ -514,13 +507,13 @@ Interceptor → registra O QUE aconteceu
 Engine → decide COM BASE EM POLÍTICA
 
 Request
-  ↓
+↓
 Guard (AccessGuard)
-  ↓ (ALLOW / DENY / REQUIRE_ACK)
+↓ (ALLOW / DENY / REQUIRE_ACK)
 Controller
-  ↓
+↓
 Interceptor (AuditInterceptor)
-  ↓
+↓
 Response
 
 1️⃣ DECORATORS (sem isso vira bagunça)
@@ -534,11 +527,10 @@ export const SCREEN_KEY = 'screen';
 export const ACTION_KEY = 'action';
 
 export const Screen = (screen: string) =>
-  SetMetadata(SCREEN_KEY, screen);
+SetMetadata(SCREEN_KEY, screen);
 
 export const Action = (action: string) =>
-  SetMetadata(ACTION_KEY, action);
-
+SetMetadata(ACTION_KEY, action);
 
 Uso no controller fica explícito e auditável.
 
@@ -549,21 +541,21 @@ Ele decide ou bloqueia. Ponto.
 
 // access.guard.ts
 import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  ForbiddenException,
+CanActivate,
+ExecutionContext,
+Injectable,
+ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { evaluateAccess } from './access-engine';
 
 @Injectable()
 export class AccessGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+constructor(private reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
+canActivate(context: ExecutionContext): boolean {
+const request = context.switchToHttp().getRequest();
+const user = request.user;
 
     const screen = this.reflector.get<string>(
       'screen',
@@ -605,9 +597,9 @@ export class AccessGuard implements CanActivate {
     }
 
     return true;
-  }
-}
 
+}
+}
 
 📌 Regra importante
 O Guard nunca escreve em banco.
@@ -620,17 +612,17 @@ Tudo passa por ele depois da decisão.
 
 // audit.interceptor.ts
 import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
+CallHandler,
+ExecutionContext,
+Injectable,
+NestInterceptor,
 } from '@nestjs/common';
 import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler) {
-    const request = context.switchToHttp().getRequest();
+intercept(context: ExecutionContext, next: CallHandler) {
+const request = context.switchToHttp().getRequest();
 
     const decision = request.accessDecision;
     const accessContext = request.accessContext;
@@ -662,17 +654,17 @@ export class AuditInterceptor implements NestInterceptor {
         }
       }),
     );
-  }
 
-  private persistAudit(event: any) {
-    // grava em banco append-only / stream / fila
-  }
-
-  private createBacklogEvent(event: any) {
-    // cria evento para compliance / RH / segurança
-  }
 }
 
+private persistAudit(event: any) {
+// grava em banco append-only / stream / fila
+}
+
+private createBacklogEvent(event: any) {
+// cria evento para compliance / RH / segurança
+}
+}
 
 Aqui você garante:
 
@@ -688,21 +680,20 @@ Defesa jurídica
 @UseInterceptors(AuditInterceptor)
 @Controller('payroll')
 export class PayrollController {
-  @Get()
-  @Screen('FIN_PAYROLL_VIEW')
-  @Action('VIEW')
-  findAll() {
-    return [];
-  }
-
-  @Post()
-  @Screen('FIN_PAYROLL_EDIT')
-  @Action('UPDATE')
-  update() {
-    return { ok: true };
-  }
+@Get()
+@Screen('FIN_PAYROLL_VIEW')
+@Action('VIEW')
+findAll() {
+return [];
 }
 
+@Post()
+@Screen('FIN_PAYROLL_EDIT')
+@Action('UPDATE')
+update() {
+return { ok: true };
+}
+}
 
 Nada implícito.
 Nada escondido.
@@ -714,12 +705,12 @@ A política é global e imutável.
 
 // main.ts
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+const app = await NestFactory.create(AppModule);
 
-  const policy = loadPolicy(); // JSON compilado do .md
-  app.set('ACCESS_POLICY', policy);
+const policy = loadPolicy(); // JSON compilado do .md
+app.set('ACCESS_POLICY', policy);
 
-  await app.listen(3000);
+await app.listen(3000);
 }
 
 6️⃣ O QUE VOCÊ GANHOU COM ISSO
@@ -768,8 +759,8 @@ working_hours:
 
 Regras:
 
-* Dentro do horário → acesso normal
-* Fora do horário → fluxo de exceção legal obrigatório
+- Dentro do horário → acesso normal
+- Fora do horário → fluxo de exceção legal obrigatório
 
 ---
 
@@ -1000,12 +991,12 @@ backlog:
 
 ## Princípios de Governança
 
-* Fonte única da verdade
-* Nada implícito
-* Nada hardcoded
-* Auditoria acima de performance
-* Legal acima de conveniência
-* Transparência total
+- Fonte única da verdade
+- Nada implícito
+- Nada hardcoded
+- Auditoria acima de performance
+- Legal acima de conveniência
+- Transparência total
 
 ---
 
@@ -1032,9 +1023,9 @@ audit_storage:
 
 Regras:
 
-* Nenhum UPDATE
-* Nenhum DELETE
-* Cada evento é definitivo
+- Nenhum UPDATE
+- Nenhum DELETE
+- Cada evento é definitivo
 
 ---
 
@@ -1126,7 +1117,6 @@ Nenhuma política entra em produção sem aprovação formal.
 
 Este sistema deixa de ser apenas um controle de acesso e passa a ser um **mecanismo de governança corporativa**, pronto para auditorias, fiscalização e crescimento organizacional.
 
-
 # Access Governance Specification
 
 > Documento institucional único para controle de acesso, compliance, auditoria e rastreabilidade.
@@ -1161,8 +1151,8 @@ working_hours:
 
 Regras:
 
-* Dentro do horário → acesso normal
-* Fora do horário → fluxo de exceção legal obrigatório
+- Dentro do horário → acesso normal
+- Fora do horário → fluxo de exceção legal obrigatório
 
 ---
 
@@ -1393,12 +1383,12 @@ backlog:
 
 ## Princípios de Governança
 
-* Fonte única da verdade
-* Nada implícito
-* Nada hardcoded
-* Auditoria acima de performance
-* Legal acima de conveniência
-* Transparência total
+- Fonte única da verdade
+- Nada implícito
+- Nada hardcoded
+- Auditoria acima de performance
+- Legal acima de conveniência
+- Transparência total
 
 ---
 
@@ -1425,9 +1415,9 @@ audit_storage:
 
 Regras:
 
-* Nenhum UPDATE
-* Nenhum DELETE
-* Cada evento é definitivo
+- Nenhum UPDATE
+- Nenhum DELETE
+- Cada evento é definitivo
 
 ---
 
@@ -1559,10 +1549,10 @@ REVOKE UPDATE, DELETE ON audit_event FROM PUBLIC;
 
 Princípios:
 
-* Nunca atualizar
-* Nunca apagar
-* Banco isolado
-* Retenção configurável
+- Nunca atualizar
+- Nunca apagar
+- Banco isolado
+- Retenção configurável
 
 ---
 
@@ -1578,13 +1568,13 @@ HASH(event_n) = SHA256(
 
 Campos incluídos no hash:
 
-* id
-* user_id
-* screen_code
-* action_code
-* decision
-* occurred_at_utc
-* previous_event_hash
+- id
+- user_id
+- screen_code
+- action_code
+- decision
+- occurred_at_utc
+- previous_event_hash
 
 Qualquer alteração invalida toda a cadeia posterior.
 
@@ -1615,10 +1605,10 @@ CREATE TABLE decision_trace (
 
 Conteúdo mínimo:
 
-* Quais políticas foram avaliadas
-* Resultados intermediários
-* Pontuação de risco
-* Motivo da decisão final
+- Quais políticas foram avaliadas
+- Resultados intermediários
+- Pontuação de risco
+- Motivo da decisão final
 
 ---
 
@@ -1630,9 +1620,9 @@ audit_event.decision_trace_id → decision_trace.id
 
 Isso permite:
 
-* Reconstrução completa do evento
-* Explicação técnica e institucional
-* Evidência formal em auditorias
+- Reconstrução completa do evento
+- Explicação técnica e institucional
+- Evidência formal em auditorias
 
 ---
 
@@ -1654,10 +1644,10 @@ Armazenamento imutável
 
 ### 12.6 Princípios Operacionais Avançados
 
-* Separação total entre banco operacional e banco de auditoria
-* Credenciais distintas
-* Acesso somente leitura para auditores
-* Exportação somente a partir de views controladas
+- Separação total entre banco operacional e banco de auditoria
+- Credenciais distintas
+- Acesso somente leitura para auditores
+- Exportação somente a partir de views controladas
 
 ---
 
@@ -1665,12 +1655,12 @@ Armazenamento imutável
 
 Este sistema estabelece um **nível máximo de controle, transparência e rastreabilidade**, permitindo provar:
 
-* Quem acessou
-* Quando acessou
-* De onde acessou
-* O que fez
-* Por qual política
-* Com qual justificativa
+- Quem acessou
+- Quando acessou
+- De onde acessou
+- O que fez
+- Por qual política
+- Com qual justificativa
 
 O resultado é um mecanismo de governança completo, preparado para ambientes críticos, fiscalização rigorosa e crescimento sustentável.
 
@@ -1708,8 +1698,8 @@ working_hours:
 
 Regras:
 
-* Dentro do horário → acesso normal
-* Fora do horário → fluxo de exceção legal obrigatório
+- Dentro do horário → acesso normal
+- Fora do horário → fluxo de exceção legal obrigatório
 
 ---
 
@@ -1940,12 +1930,12 @@ backlog:
 
 ## Princípios de Governança
 
-* Fonte única da verdade
-* Nada implícito
-* Nada hardcoded
-* Auditoria acima de performance
-* Legal acima de conveniência
-* Transparência total
+- Fonte única da verdade
+- Nada implícito
+- Nada hardcoded
+- Auditoria acima de performance
+- Legal acima de conveniência
+- Transparência total
 
 ---
 
@@ -1972,9 +1962,9 @@ audit_storage:
 
 Regras:
 
-* Nenhum UPDATE
-* Nenhum DELETE
-* Cada evento é definitivo
+- Nenhum UPDATE
+- Nenhum DELETE
+- Cada evento é definitivo
 
 ---
 
@@ -2106,10 +2096,10 @@ REVOKE UPDATE, DELETE ON audit_event FROM PUBLIC;
 
 Princípios:
 
-* Nunca atualizar
-* Nunca apagar
-* Banco isolado
-* Retenção configurável
+- Nunca atualizar
+- Nunca apagar
+- Banco isolado
+- Retenção configurável
 
 ---
 
@@ -2125,13 +2115,13 @@ HASH(event_n) = SHA256(
 
 Campos incluídos no hash:
 
-* id
-* user_id
-* screen_code
-* action_code
-* decision
-* occurred_at_utc
-* previous_event_hash
+- id
+- user_id
+- screen_code
+- action_code
+- decision
+- occurred_at_utc
+- previous_event_hash
 
 Qualquer alteração invalida toda a cadeia posterior.
 
@@ -2162,10 +2152,10 @@ CREATE TABLE decision_trace (
 
 Conteúdo mínimo:
 
-* Quais políticas foram avaliadas
-* Resultados intermediários
-* Pontuação de risco
-* Motivo da decisão final
+- Quais políticas foram avaliadas
+- Resultados intermediários
+- Pontuação de risco
+- Motivo da decisão final
 
 ---
 
@@ -2177,9 +2167,9 @@ audit_event.decision_trace_id → decision_trace.id
 
 Isso permite:
 
-* Reconstrução completa do evento
-* Explicação técnica e institucional
-* Evidência formal em auditorias
+- Reconstrução completa do evento
+- Explicação técnica e institucional
+- Evidência formal em auditorias
 
 ---
 
@@ -2201,10 +2191,10 @@ Armazenamento imutável
 
 ### 12.6 Princípios Operacionais Avançados
 
-* Separação total entre banco operacional e banco de auditoria
-* Credenciais distintas
-* Acesso somente leitura para auditores
-* Exportação somente a partir de views controladas
+- Separação total entre banco operacional e banco de auditoria
+- Credenciais distintas
+- Acesso somente leitura para auditores
+- Exportação somente a partir de views controladas
 
 ---
 
@@ -2236,9 +2226,9 @@ GRANT SELECT ON audit_external_view TO auditor_role;
 
 Regras:
 
-* Somente leitura
-* Sem dados pessoais sensíveis
-* Sem joins dinâmicos
+- Somente leitura
+- Sem dados pessoais sensíveis
+- Sem joins dinâmicos
 
 ---
 
@@ -2280,9 +2270,9 @@ offsite_replication:
 
 Princípios:
 
-* Replicação unidirecional
-* Sem possibilidade de sobrescrita
-* Verificação periódica de integridade
+- Replicação unidirecional
+- Sem possibilidade de sobrescrita
+- Verificação periódica de integridade
 
 ---
 
@@ -2305,14 +2295,14 @@ decision_simulator:
 
 Uso permitido:
 
-* Compliance
-* Jurídico
-* Segurança
+- Compliance
+- Jurídico
+- Segurança
 
 Uso proibido:
 
-* Produção
-* Alteração de políticas ativas
+- Produção
+- Alteração de políticas ativas
 
 ---
 
@@ -2320,9 +2310,9 @@ Uso proibido:
 
 Com estes componentes, o sistema atinge um **estado final de maturidade**, no qual:
 
-* Toda decisão é explicável
-* Toda ação é rastreável
-* Toda evidência é íntegra
-* Toda política é verificável
+- Toda decisão é explicável
+- Toda ação é rastreável
+- Toda evidência é íntegra
+- Toda política é verificável
 
 A partir deste ponto, o foco passa a ser **disciplina operacional, revisão periódica e evolução controlada**, não mais arquitetura.

@@ -5,6 +5,7 @@
 ### ✅ O que já está implementado
 
 #### 1. **Estrutura Base**
+
 - ✅ Fastify como framework HTTP
 - ✅ Prisma + PostgreSQL para persistência
 - ✅ Redis para eventos (Streams)
@@ -17,6 +18,7 @@
 - ✅ Validação Zod em todas as rotas
 
 #### 2. **Autenticação e Autorização**
+
 - ✅ Login com JWT (HS256)
 - ✅ Registro de usuários
 - ✅ Hash de senha com bcrypt
@@ -29,6 +31,7 @@
 - ⚠️ **FALTA**: OAuth2/Social login
 
 #### 3. **Organizações (Multi-tenant)**
+
 - ✅ CRUD de organizações
 - ✅ Membros (OrganizationMembership)
 - ✅ Roles: owner, admin, manager, member, viewer
@@ -42,6 +45,7 @@
 - ⚠️ **FALTA**: Limites por organização (quota)
 
 #### 4. **Catálogo (Produtos)**
+
 - ✅ CRUD de produtos
 - ✅ Status: rascunho, aguardando_aprovacao, ativo, inativo
 - ✅ Aprovação/Rejeição de produtos
@@ -56,6 +60,7 @@
 - ⚠️ **FALTA**: Upload de imagens (S3/MinIO)
 
 #### 5. **Company Settings (Personalização)**
+
 - ✅ CRUD de configurações da empresa
 - ✅ Logo, cores (primary, secondary), theme mode, video link
 - ✅ Cache em Redis
@@ -63,6 +68,7 @@
 - ✅ Auditoria de alterações
 
 #### 6. **Notificações**
+
 - ✅ Feed de notificações unificado
 - ✅ Cursor-based pagination
 - ✅ Filtros por ação, data, organização
@@ -73,6 +79,7 @@
 - ⚠️ **FALTA**: Notificações push
 
 #### 7. **Realtime**
+
 - ✅ Servidor WebSocket separado
 - ✅ Geração de token para conexão
 - ✅ Hub de realtime
@@ -82,6 +89,7 @@
 - ⚠️ **FALTA**: Métricas de conexões ativas
 
 #### 8. **Testes**
+
 - ✅ Testes unitários (Vitest)
 - ✅ Testes de rotas HTTP
 - ✅ Testes de contratos (Zod schemas)
@@ -90,6 +98,7 @@
 - ⚠️ **FALTA**: Testes de carga
 
 #### 9. **Documentação**
+
 - ✅ OpenAPI schema parcial
 - ⚠️ **FALTA**: Documentação completa das rotas
 - ⚠️ **FALTA**: Exemplos de requisições/respostas
@@ -104,6 +113,7 @@
 #### Prioridade: ALTA
 
 **Problemas atuais:**
+
 - JWT não é verificado em rotas protegidas
 - Não há middleware de autenticação
 - Não há validação de roles/permissões
@@ -115,31 +125,35 @@
 ```typescript
 // apps/api/src/core/auth/jwt.middleware.ts
 export async function verifyJWT(request: FastifyRequest, reply: FastifyReply) {
-  const token = request.headers.authorization?.replace('Bearer ', '');
+  const token = request.headers.authorization?.replace("Bearer ", "");
   if (!token) {
-    return reply.status(401).send({ message: 'Token não fornecido' });
+    return reply.status(401).send({ message: "Token não fornecido" });
   }
-  
+
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET);
     request.user = decoded; // Adicionar tipo ao FastifyRequest
   } catch (error) {
-    return reply.status(401).send({ message: 'Token inválido' });
+    return reply.status(401).send({ message: "Token inválido" });
   }
 }
 
 // apps/api/src/core/auth/role.guard.ts
 export function requireRole(...roles: OrganizationRole[]) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
-    const membership = await getMembership(request.user.userId, request.params.orgId);
+    const membership = await getMembership(
+      request.user.userId,
+      request.params.orgId,
+    );
     if (!membership || !roles.includes(membership.role)) {
-      return reply.status(403).send({ message: 'Sem permissão' });
+      return reply.status(403).send({ message: "Sem permissão" });
     }
   };
 }
 ```
 
 **Tarefas:**
+
 - [ ] Criar middleware de autenticação JWT
 - [ ] Criar guards para RBAC
 - [ ] Adicionar decorators para rotas protegidas
@@ -153,6 +167,7 @@ export function requireRole(...roles: OrganizationRole[]) {
 #### Prioridade: ALTA
 
 **Problemas atuais:**
+
 - `orgId` é passado via header sem validação
 - Não há garantia de isolamento de dados
 - Usuários podem acessar dados de outras organizações
@@ -163,16 +178,19 @@ export function requireRole(...roles: OrganizationRole[]) {
 // apps/api/src/core/tenant/tenant.middleware.ts
 export async function validateTenantAccess(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
-  const orgId = request.params.orgId || request.headers['x-org-id'];
+  const orgId = request.params.orgId || request.headers["x-org-id"];
   const userId = request.user.userId;
-  
-  const membership = await organizationRepository.encontrarMembership(orgId, userId);
+
+  const membership = await organizationRepository.encontrarMembership(
+    orgId,
+    userId,
+  );
   if (!membership) {
-    return reply.status(403).send({ message: 'Sem acesso à organização' });
+    return reply.status(403).send({ message: "Sem acesso à organização" });
   }
-  
+
   request.tenant = { orgId, role: membership.role };
 }
 
@@ -180,6 +198,7 @@ export async function validateTenantAccess(
 ```
 
 **Tarefas:**
+
 - [ ] Criar middleware de validação de tenant
 - [ ] Adicionar filtro automático de `orgId` em repositórios
 - [ ] Validar acesso a recursos por organização
@@ -190,6 +209,7 @@ export async function validateTenantAccess(
 #### Prioridade: MÉDIA
 
 **Problemas atuais:**
+
 - Erros não são padronizados
 - Não há códigos de erro consistentes
 - Stack traces podem vazar em produção
@@ -203,7 +223,7 @@ export class AppError extends Error {
     public statusCode: number,
     public code: string,
     message: string,
-    public details?: unknown
+    public details?: unknown,
   ) {
     super(message);
   }
@@ -213,7 +233,7 @@ export class AppError extends Error {
 export async function errorHandler(
   error: Error,
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   if (error instanceof AppError) {
     return reply.status(error.statusCode).send({
@@ -224,19 +244,20 @@ export async function errorHandler(
       },
     });
   }
-  
+
   // Erro não tratado
   request.log.error(error);
   return reply.status(500).send({
     error: {
-      code: 'INTERNAL_ERROR',
-      message: 'Erro interno do servidor',
+      code: "INTERNAL_ERROR",
+      message: "Erro interno do servidor",
     },
   });
 }
 ```
 
 **Tarefas:**
+
 - [ ] Criar hierarquia de erros (AppError, ValidationError, etc.)
 - [ ] Implementar handler global de erros
 - [ ] Padronizar códigos de erro
@@ -248,6 +269,7 @@ export async function errorHandler(
 #### Prioridade: MÉDIA
 
 **Problemas atuais:**
+
 - Não há migrações versionadas
 - Não há seeds para dados de teste
 - Schema pode estar desatualizado
@@ -263,6 +285,7 @@ pnpm --filter @morina/api prisma migrate dev --name init
 ```
 
 **Tarefas:**
+
 - [ ] Criar migração inicial do schema
 - [ ] Adicionar seeds para dados de teste
 - [ ] Configurar script de migração no package.json
@@ -274,6 +297,7 @@ pnpm --filter @morina/api prisma migrate dev --name init
 #### Prioridade: MÉDIA
 
 **Problemas atuais:**
+
 - OpenAPI schema está incompleto
 - Não há exemplos de requisições/respostas
 - Não há documentação de eventos
@@ -282,26 +306,27 @@ pnpm --filter @morina/api prisma migrate dev --name init
 
 ```typescript
 // apps/api/src/core/docs/openapi.ts
-import { fastifySwagger } from '@fastify/swagger';
-import { fastifySwaggerUi } from '@fastify/swagger-ui';
+import { fastifySwagger } from "@fastify/swagger";
+import { fastifySwaggerUi } from "@fastify/swagger-ui";
 
 export async function registerOpenAPI(app: FastifyInstance) {
   await app.register(fastifySwagger, {
     openapi: {
       info: {
-        title: 'Morina Light API',
-        version: '0.1.0',
+        title: "Morina Light API",
+        version: "0.1.0",
       },
     },
   });
-  
+
   await app.register(fastifySwaggerUi, {
-    routePrefix: '/docs',
+    routePrefix: "/docs",
   });
 }
 ```
 
 **Tarefas:**
+
 - [ ] Completar OpenAPI schema
 - [ ] Adicionar exemplos de requisições/respostas
 - [ ] Documentar eventos de domínio
@@ -317,6 +342,7 @@ export async function registerOpenAPI(app: FastifyInstance) {
 #### Prioridade: ALTA
 
 **Funcionalidades:**
+
 - Workflow de aprovação com etapas
 - Aprovadores por organização
 - Comentários e feedback
@@ -355,6 +381,7 @@ enum PrefichaStatus {
 ```
 
 **Tarefas:**
+
 - [ ] Criar módulo Preficha
 - [ ] Criar modelos Prisma
 - [ ] Implementar use cases
@@ -367,6 +394,7 @@ enum PrefichaStatus {
 #### Prioridade: MÉDIA
 
 **Funcionalidades:**
+
 - CRUD de fornecedores
 - CRUD de oficinas
 - Associação com produtos
@@ -401,6 +429,7 @@ model Oficina {
 ```
 
 **Tarefas:**
+
 - [ ] Criar módulo Fornecedores
 - [ ] Criar módulo Oficinas
 - [ ] Criar modelos Prisma
@@ -413,6 +442,7 @@ model Oficina {
 #### Prioridade: ALTA
 
 **Funcionalidades:**
+
 - SKU e variações (tamanho, cor)
 - Categorias hierárquicas
 - Ficha técnica
@@ -458,6 +488,7 @@ model ProductAttachment {
 ```
 
 **Tarefas:**
+
 - [ ] Adicionar variações de produtos
 - [ ] Implementar categorias hierárquicas
 - [ ] Adicionar ficha técnica
@@ -471,6 +502,7 @@ model ProductAttachment {
 #### Prioridade: MÉDIA
 
 **Funcionalidades:**
+
 - Upload de imagens
 - Upload de documentos
 - Gerenciamento de buckets
@@ -486,6 +518,7 @@ model ProductAttachment {
 ```
 
 **Tarefas:**
+
 - [ ] Criar módulo Storage
 - [ ] Integrar com MinIO/S3
 - [ ] Implementar upload de arquivos
@@ -498,6 +531,7 @@ model ProductAttachment {
 #### Prioridade: MÉDIA
 
 **Funcionalidades:**
+
 - Envio de emails transacionais
 - Templates de email
 - Fila de emails
@@ -512,6 +546,7 @@ model ProductAttachment {
 ```
 
 **Tarefas:**
+
 - [ ] Criar módulo Email
 - [ ] Integrar com serviço de email (SendGrid, SES, etc.)
 - [ ] Criar templates de email
@@ -524,6 +559,7 @@ model ProductAttachment {
 #### Prioridade: ALTA
 
 **Funcionalidades:**
+
 - Testes automáticos
 - Build e deploy
 - Migrações automáticas
@@ -562,6 +598,7 @@ jobs:
 ```
 
 **Tarefas:**
+
 - [ ] Criar workflow GitHub Actions
 - [ ] Configurar testes automáticos
 - [ ] Configurar build e deploy
@@ -578,6 +615,7 @@ jobs:
 #### Prioridade: ALTA
 
 **Funcionalidades:**
+
 - Auditoria de todas as ações
 - Versionamento de entidades
 - Histórico de alterações
@@ -585,6 +623,7 @@ jobs:
 - Exportação de logs
 
 **Tarefas:**
+
 - [ ] Adicionar auditoria em todas as rotas
 - [ ] Implementar versionamento de entidades
 - [ ] Criar histórico de alterações
@@ -596,6 +635,7 @@ jobs:
 #### Prioridade: MÉDIA
 
 **Funcionalidades:**
+
 - Métricas de performance
 - Métricas de negócio
 - Alertas
@@ -603,6 +643,7 @@ jobs:
 - Tracing distribuído
 
 **Tarefas:**
+
 - [ ] Adicionar mais métricas Prometheus
 - [ ] Integrar com Grafana
 - [ ] Configurar alertas
@@ -614,12 +655,14 @@ jobs:
 #### Prioridade: MÉDIA
 
 **Funcionalidades:**
+
 - Cache de consultas frequentes
 - Cache de configurações
 - Invalidação de cache
 - CDN para assets estáticos
 
 **Tarefas:**
+
 - [ ] Implementar cache Redis
 - [ ] Adicionar invalidação de cache
 - [ ] Configurar CDN
@@ -631,12 +674,14 @@ jobs:
 #### Prioridade: ALTA
 
 **Funcionalidades:**
+
 - Testes E2E
 - Testes de integração
 - Testes de carga
 - Testes de segurança
 
 **Tarefas:**
+
 - [ ] Criar testes E2E
 - [ ] Adicionar testes de integração
 - [ ] Implementar testes de carga
@@ -648,6 +693,7 @@ jobs:
 #### Prioridade: ALTA
 
 **Funcionalidades:**
+
 - Rate limiting
 - CORS configurado
 - Validação de entrada
@@ -657,6 +703,7 @@ jobs:
 - Proteção contra CSRF
 
 **Tarefas:**
+
 - [ ] Implementar rate limiting
 - [ ] Configurar CORS corretamente
 - [ ] Adicionar validação de entrada
@@ -670,6 +717,7 @@ jobs:
 ## 📋 Prioridades Resumidas
 
 ### 🔴 Prioridade ALTA (Fazer primeiro)
+
 1. ✅ Middleware de autenticação JWT
 2. ✅ Guards para RBAC
 3. ✅ Validação de tenant/multi-tenant
@@ -680,6 +728,7 @@ jobs:
 8. ✅ Segurança (rate limiting, validações)
 
 ### 🟡 Prioridade MÉDIA (Fazer depois)
+
 1. ✅ Fornecedores e Oficinas
 2. ✅ Sistema de Upload (S3/MinIO)
 3. ✅ Sistema de Email
@@ -689,6 +738,7 @@ jobs:
 7. ✅ Cache e Performance
 
 ### 🟢 Prioridade BAIXA (Fazer por último)
+
 1. ✅ OAuth2/Social login
 2. ✅ Refresh tokens
 3. ✅ Notificações push
@@ -740,4 +790,3 @@ jobs:
 
 **Última atualização**: 2024-01-XX
 **Versão**: 0.1.0
-

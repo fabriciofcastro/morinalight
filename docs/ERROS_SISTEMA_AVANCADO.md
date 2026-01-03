@@ -7,6 +7,7 @@
 Recuperação inteligente de erros com múltiplas estratégias:
 
 #### Estratégias de Recuperação:
+
 - **RETRY** - Retry automático com exponential backoff
 - **FALLBACK** - Usar valor fallback quando disponível
 - **CACHE** - Retornar dados do cache
@@ -29,14 +30,14 @@ const result = await ErrorRecoveryManager.recover(
     fallbackValue: [],
     useCache: true,
     cacheKey: "data-cache",
-  }
+  },
 );
 
 // Decorator para recuperação automática
-const fetchDataWithRecovery = withRecovery(
-  async () => await fetchData(),
-  { maxRetries: 3, fallbackValue: [] }
-);
+const fetchDataWithRecovery = withRecovery(async () => await fetchData(), {
+  maxRetries: 3,
+  fallbackValue: [],
+});
 ```
 
 ### 2. **Sistema de Analytics e Agrupamento** (`error-analytics.ts`)
@@ -44,6 +45,7 @@ const fetchDataWithRecovery = withRecovery(
 Análise avançada e agrupamento inteligente de erros:
 
 #### Funcionalidades:
+
 - ✅ **Agrupamento Automático** - Erros similares são agrupados
 - ✅ **Fingerprinting** - Identificação única de padrões de erro
 - ✅ **Estatísticas em Tempo Real** - Métricas atualizadas constantemente
@@ -51,6 +53,7 @@ Análise avançada e agrupamento inteligente de erros:
 - ✅ **Erros Similares** - Encontrar erros relacionados
 
 #### Métricas Disponíveis:
+
 - Total de erros
 - Erros por categoria
 - Erros por código
@@ -80,6 +83,7 @@ const similar = ErrorAnalyticsManager.getSimilarGroups(error);
 Captura de contexto completo para debug avançado:
 
 #### Contexto Capturado:
+
 - **Request Context** - Método, URL, query, params, headers, body
 - **User Context** - ID, email, role, permissions
 - **Application Context** - Versão, ambiente, serviço, região
@@ -89,6 +93,7 @@ Captura de contexto completo para debug avançado:
 - **Stack Trace** - Stack completo do erro
 
 #### Breadcrumbs:
+
 Rastreamento de ações do usuário que levaram ao erro:
 
 ```typescript
@@ -99,7 +104,7 @@ ErrorContextManager.addBreadcrumb(
   correlationId,
   "user_action",
   "User clicked submit button",
-  { formId: "123" }
+  { formId: "123" },
 );
 ```
 
@@ -108,12 +113,14 @@ ErrorContextManager.addBreadcrumb(
 Detecção preditiva e prevenção proativa:
 
 #### Funcionalidades:
+
 - ✅ **Detecção de Padrões** - Identificar padrões de erro
 - ✅ **Thresholds Configuráveis** - Alertar após X ocorrências
 - ✅ **Ações Automáticas** - Alert, throttle, block, degrade
 - ✅ **Regras Customizáveis** - Criar regras específicas
 
 #### Ações de Prevenção:
+
 - **alert** - Apenas alertar
 - **throttle** - Reduzir taxa de requisições
 - **block** - Bloquear requisições
@@ -132,9 +139,7 @@ ErrorPreventionManager.registerRule({
   triggerCount: 0,
   pattern: {
     code: "VALIDATION_ERROR",
-    conditions: [
-      { field: "url", operator: "contains", value: "/api/users" }
-    ],
+    conditions: [{ field: "url", operator: "contains", value: "/api/users" }],
     threshold: 10,
     timeWindow: 60000,
     action: "throttle",
@@ -153,6 +158,7 @@ if (prevention.prevent) {
 Interface visual para análise de erros:
 
 #### Features:
+
 - 📊 **Métricas em Tempo Real** - Atualização automática
 - 📈 **Gráficos Interativos** - Visualização de tendências
 - 🔍 **Top Erros** - Ranking dos erros mais frequentes
@@ -161,6 +167,7 @@ Interface visual para análise de erros:
 - ⚡ **Filtros de Tempo** - Última hora, 24h, semana
 
 #### Acesso:
+
 ```
 /admin/error-analytics
 ```
@@ -171,15 +178,12 @@ Interface visual para análise de erros:
 
 ```typescript
 // Sistema tenta recuperar automaticamente
-const data = await withRecovery(
-  async () => await fetchUserData(userId),
-  {
-    maxRetries: 3,
-    useCache: true,
-    cacheKey: `user-${userId}`,
-    fallbackValue: { id: userId, name: "Usuário" },
-  }
-)();
+const data = await withRecovery(async () => await fetchUserData(userId), {
+  maxRetries: 3,
+  useCache: true,
+  cacheKey: `user-${userId}`,
+  fallbackValue: { id: userId, name: "Usuário" },
+})();
 ```
 
 ### 2. Detecção de Anomalias
@@ -210,18 +214,24 @@ if (prevention.prevent && prevention.action === "throttle") {
 // Contexto rico para debug
 const richContext = ErrorContextManager.enrichError(error, request, context);
 console.log("Breadcrumbs:", richContext.breadcrumbs);
-console.log("User actions:", richContext.breadcrumbs.map(b => b.message));
+console.log(
+  "User actions:",
+  richContext.breadcrumbs.map((b) => b.message),
+);
 ```
 
 ## 📊 API Endpoints
 
 ### GET `/errors/analytics/stats`
+
 Obter estatísticas de erros
 
 **Query Params:**
+
 - `timeWindow` - Janela de tempo em ms (padrão: 3600000)
 
 **Response:**
+
 ```json
 {
   "totalErrors": 150,
@@ -232,25 +242,32 @@ Obter estatísticas de erros
 ```
 
 ### GET `/errors/analytics/top-errors`
+
 Obter top erros
 
 **Query Params:**
+
 - `limit` - Número de erros (padrão: 10)
 - `timeWindow` - Janela de tempo
 
 ### GET `/errors/analytics/groups/:fingerprint`
+
 Obter grupo de erro específico
 
 ### GET `/errors/analytics/similar/:fingerprint`
+
 Obter erros similares
 
 ### GET `/errors/analytics/prevention-rules`
+
 Obter regras de prevenção ativas
 
 ### POST `/errors/analytics/cleanup`
+
 Limpar analytics antigos
 
 **Body:**
+
 ```json
 {
   "maxAge": 86400000
@@ -260,26 +277,31 @@ Limpar analytics antigos
 ## 🔥 Funcionalidades "Insanas"
 
 ### 1. **Agrupamento Inteligente**
+
 - Erros similares são automaticamente agrupados
 - Fingerprinting baseado em código, mensagem e stack trace
 - Reduz ruído e facilita análise
 
 ### 2. **Recuperação Multi-Estratégia**
+
 - Tenta múltiplas estratégias automaticamente
 - Fallback inteligente
 - Cache automático
 
 ### 3. **Prevenção Preditiva**
+
 - Detecta padrões antes que se tornem problemas
 - Ações automáticas (throttle, block, degrade)
 - Regras customizáveis
 
 ### 4. **Contexto Rico**
+
 - Breadcrumbs de ações do usuário
 - Contexto completo da requisição
 - Performance metrics
 
 ### 5. **Analytics em Tempo Real**
+
 - Dashboard atualizado automaticamente
 - Gráficos interativos
 - Métricas detalhadas
@@ -287,6 +309,7 @@ Limpar analytics antigos
 ## 🎨 Dashboard Visual
 
 O dashboard inclui:
+
 - 📊 Cards de métricas principais
 - 📈 Gráfico de erros por hora
 - 🏆 Top 10 erros mais frequentes
@@ -311,15 +334,6 @@ O sistema agora possui funcionalidades de **nível enterprise**:
 ✅ Contextualização rica para debug  
 ✅ Prevenção preditiva de erros  
 ✅ Dashboard visual em tempo real  
-✅ API completa para integração  
+✅ API completa para integração
 
 **O sistema está verdadeiramente "insano"!** 🔥🚀
-
-
-
-
-
-
-
-
-

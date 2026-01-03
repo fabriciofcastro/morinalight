@@ -36,6 +36,7 @@ Este documento fornece:
 ### ✅ Telas e Padrões
 
 **Telas Implementadas:**
+
 - Fichas de Custo de Aviamentos (padrão de referência)
 - Gestão de Usuários
 - Gestão de Organizações
@@ -61,15 +62,15 @@ Este documento fornece:
 
 **Última Atualização:** [Atualizar mensalmente]
 
-| Métrica | Valor | Status | Tendência |
-|---------|-------|--------|-----------|
-| **Total de Módulos** | X | ✅ | ↗️ |
-| **Total de Capacidades** | Y | ✅ | ↗️ |
-| **Total de Contextos** | Z | ✅ | → |
-| **Capacidades Core** | W | ✅ | → |
-| **Maturidade Média (Core)** | [Inicial/Controlada/Escalável/Estratégica] | ⚠️ | ↗️ |
-| **Cobertura de Testes** | X% | ✅ | ↗️ |
-| **Dívida Técnica** | [Baixa/Média/Alta] | ⚠️ | ↘️ |
+| Métrica                     | Valor                                      | Status | Tendência |
+| --------------------------- | ------------------------------------------ | ------ | --------- |
+| **Total de Módulos**        | X                                          | ✅     | ↗️        |
+| **Total de Capacidades**    | Y                                          | ✅     | ↗️        |
+| **Total de Contextos**      | Z                                          | ✅     | →         |
+| **Capacidades Core**        | W                                          | ✅     | →         |
+| **Maturidade Média (Core)** | [Inicial/Controlada/Escalável/Estratégica] | ⚠️     | ↗️        |
+| **Cobertura de Testes**     | X%                                         | ✅     | ↗️        |
+| **Dívida Técnica**          | [Baixa/Média/Alta]                         | ⚠️     | ↘️        |
 
 ### 2.2 Mapa Rápido do Sistema
 
@@ -97,15 +98,16 @@ Este documento fornece:
 
 ### 2.3 Status por Módulo
 
-| Módulo | Status | Saúde | Última Atualização | Responsável |
-|--------|--------|-------|-------------------|-------------|
-| organization-domain | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD | [Nome] |
-| user-domain | ✅ Ativo | 🟡 Atenção | YYYY-MM-DD | [Nome] |
-| catalogo-domain | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD | [Nome] |
-| api-backend | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD | [Nome] |
-| web-frontend | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD | [Nome] |
+| Módulo              | Status   | Saúde       | Última Atualização | Responsável |
+| ------------------- | -------- | ----------- | ------------------ | ----------- |
+| organization-domain | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD         | [Nome]      |
+| user-domain         | ✅ Ativo | 🟡 Atenção  | YYYY-MM-DD         | [Nome]      |
+| catalogo-domain     | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD         | [Nome]      |
+| api-backend         | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD         | [Nome]      |
+| web-frontend        | ✅ Ativo | 🟢 Saudável | YYYY-MM-DD         | [Nome]      |
 
 **Legenda:**
+
 - 🟢 Saudável: Funcionando perfeitamente
 - 🟡 Atenção: Requer monitoramento
 - 🔴 Crítico: Ação imediata necessária
@@ -116,16 +118,16 @@ Este documento fornece:
 
 ### 3.1 Matriz de Autoridade
 
-| Decisão | Autoridade | Aprovação Necessária |
-|---------|------------|---------------------|
-| Criar novo módulo | Tech Lead | ✅ Sim (ADR obrigatório) |
-| Criar novo contexto | Arquiteto | ✅ Sim (ADR + revisão) |
-| Modificar Core Domain | Arquiteto + PO | ✅ Sim (ADR + aprovação) |
-| Adicionar capacidade Core | Arquiteto + PO | ✅ Sim (ADR + aprovação) |
-| Modificar API pública | Tech Lead | ✅ Sim (Versionamento) |
-| Criar novo evento | Tech Lead | ⚠️ Documentar (ADR se significativo) |
-| Refatoração estrutural | Tech Lead | ✅ Sim (ADR obrigatório) |
-| Remover código | Desenvolvedor | ⚠️ Validar impacto |
+| Decisão                   | Autoridade     | Aprovação Necessária                 |
+| ------------------------- | -------------- | ------------------------------------ |
+| Criar novo módulo         | Tech Lead      | ✅ Sim (ADR obrigatório)             |
+| Criar novo contexto       | Arquiteto      | ✅ Sim (ADR + revisão)               |
+| Modificar Core Domain     | Arquiteto + PO | ✅ Sim (ADR + aprovação)             |
+| Adicionar capacidade Core | Arquiteto + PO | ✅ Sim (ADR + aprovação)             |
+| Modificar API pública     | Tech Lead      | ✅ Sim (Versionamento)               |
+| Criar novo evento         | Tech Lead      | ⚠️ Documentar (ADR se significativo) |
+| Refatoração estrutural    | Tech Lead      | ✅ Sim (ADR obrigatório)             |
+| Remover código            | Desenvolvedor  | ⚠️ Validar impacto                   |
 
 ### 3.2 Processo de Decisão Rápida
 
@@ -165,13 +167,13 @@ Este documento fornece:
 
 ### 4.1 Mapa de Documentos
 
-| Documento | Propósito | Quando Consultar |
-|-----------|-----------|------------------|
-| **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)** | Mapear ONDE cada capacidade vive | Antes de criar/modificar módulo |
-| **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)** | Definir O QUE o sistema faz | Antes de criar nova feature |
-| **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)** | Definir limites e relacionamentos | Antes de criar novo contexto |
-| **[Diretiva de Governanoça](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)** | COMO implementar mudanças | Antes de qualquer mudança |
-| **[Guia de Inventário](./Guia-Inventário-Mapeamento-Sistema.md)** | Descobrir o que existe | Para mapeamento inicial/atualização |
+| Documento                                                                              | Propósito                         | Quando Consultar                    |
+| -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------- |
+| **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**    | Mapear ONDE cada capacidade vive  | Antes de criar/modificar módulo     |
+| **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)**              | Definir O QUE o sistema faz       | Antes de criar nova feature         |
+| **[Mapa de Contextos](./Mapa de Contextos-Núcleo-Domínio-Governança-Dependências.md)** | Definir limites e relacionamentos | Antes de criar novo contexto        |
+| **[Diretiva de Governanoça](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)** | COMO implementar mudanças         | Antes de qualquer mudança           |
+| **[Guia de Inventário](./Guia-Inventário-Mapeamento-Sistema.md)**                      | Descobrir o que existe            | Para mapeamento inicial/atualização |
 
 ### 4.2 Fluxo de Uso dos Documentos
 
@@ -234,16 +236,17 @@ Este documento fornece:
 
 ### 5.1 Classificação de Severidade
 
-| Severidade | Descrição | Tempo de Resposta | Ação |
-|------------|-----------|-------------------|------|
-| **🔴 CRÍTICO** | Sistema inoperante, dados em risco | Imediato (< 15 min) | Seção 5.2 |
-| **🟠 ALTO** | Funcionalidade crítica quebrada | Urgente (< 1 hora) | Seção 5.3 |
-| **🟡 MÉDIO** | Funcionalidade importante afetada | Importante (< 4 horas) | Seção 5.4 |
-| **🟢 BAIXO** | Problema não crítico | Normal (< 1 dia) | Seção 5.5 |
+| Severidade     | Descrição                          | Tempo de Resposta      | Ação      |
+| -------------- | ---------------------------------- | ---------------------- | --------- |
+| **🔴 CRÍTICO** | Sistema inoperante, dados em risco | Imediato (< 15 min)    | Seção 5.2 |
+| **🟠 ALTO**    | Funcionalidade crítica quebrada    | Urgente (< 1 hora)     | Seção 5.3 |
+| **🟡 MÉDIO**   | Funcionalidade importante afetada  | Importante (< 4 horas) | Seção 5.4 |
+| **🟢 BAIXO**   | Problema não crítico               | Normal (< 1 dia)       | Seção 5.5 |
 
 ### 5.2 Procedimento CRÍTICO (Sistema Inoperante)
 
 **Sintomas:**
+
 - Sistema não responde
 - Banco de dados inacessível
 - Erro 500 em massa
@@ -253,6 +256,7 @@ Este documento fornece:
 **Ações Imediatas (Ordem de Execução):**
 
 #### Passo 1: Isolar o Problema (2 minutos)
+
 ```bash
 # 1. Verificar health checks
 curl http://localhost:3000/health
@@ -267,6 +271,7 @@ docker-compose ps
 ```
 
 #### Passo 2: Contenção (5 minutos)
+
 ```bash
 # Se necessário, isolar serviço problemático
 docker-compose stop [servico-problema]
@@ -276,6 +281,7 @@ docker-compose stop [servico-problema]
 ```
 
 #### Passo 3: Diagnóstico (5 minutos)
+
 ```bash
 # Verificar métricas
 # - CPU, Memória, Disco
@@ -292,6 +298,7 @@ git log --oneline -5
 #### Passo 4: Decisão (3 minutos)
 
 **Opção A: Rollback Imediato**
+
 ```bash
 # Se problema foi causado por deploy recente
 ./deploy/rollback.sh
@@ -302,12 +309,14 @@ docker-compose up -d --build
 ```
 
 **Opção B: Hotfix**
+
 ```bash
 # Se problema é conhecido e tem solução rápida
 # Aplicar hotfix e fazer deploy de emergência
 ```
 
 **Opção C: Escalação**
+
 ```bash
 # Se problema é complexo e requer investigação
 # Notificar equipe completa
@@ -315,11 +324,13 @@ docker-compose up -d --build
 ```
 
 #### Passo 5: Comunicação
+
 - [ ] Notificar equipe (Slack/Email)
 - [ ] Atualizar status page (se houver)
 - [ ] Documentar incidente
 
 #### Passo 6: Pós-Incidente
+
 - [ ] Criar ADR documentando o problema
 - [ ] Implementar prevenção
 - [ ] Atualizar procedimentos
@@ -328,6 +339,7 @@ docker-compose up -d --build
 ### 5.3 Procedimento ALTO (Funcionalidade Crítica Quebrada)
 
 **Sintomas:**
+
 - Feature crítica não funciona
 - Performance degradada significativamente
 - Erros frequentes em funcionalidade específica
@@ -346,6 +358,7 @@ docker-compose up -d --build
 ### 5.4 Procedimento MÉDIO (Funcionalidade Importante Afetada)
 
 **Ações:**
+
 1. Documentar problema
 2. Priorizar na sprint
 3. Investigar em horário comercial
@@ -355,6 +368,7 @@ docker-compose up -d --build
 ### 5.5 Procedimento BAIXO (Problema Não Crítico)
 
 **Ações:**
+
 1. Adicionar ao backlog
 2. Priorizar normalmente
 3. Corrigir em ciclo regular
@@ -480,15 +494,15 @@ Para processo completo de desenvolvimento:
 
 Use esta matriz para decisões comuns:
 
-| Situação | Ação | Documento de Referência |
-|----------|------|------------------------|
-| Preciso criar novo módulo | 1. Verificar se já existe<br>2. Identificar capacidade<br>3. Mapear para contexto<br>4. Criar ADR<br>5. Obter aprovação | Matriz, Mapa de Contextos |
+| Situação                      | Ação                                                                                                                      | Documento de Referência     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| Preciso criar novo módulo     | 1. Verificar se já existe<br>2. Identificar capacidade<br>3. Mapear para contexto<br>4. Criar ADR<br>5. Obter aprovação   | Matriz, Mapa de Contextos   |
 | Preciso modificar Core Domain | 1. Criar ADR obrigatório<br>2. Obter aprovação Arquiteto+PO<br>3. Validar impacto completo<br>4. Implementar gradualmente | Mapa de Contextos, Diretiva |
-| Preciso criar nova API | 1. Verificar se já existe<br>2. Versionar corretamente<br>3. Documentar contrato<br>4. Implementar | Diretiva de Governança |
-| Encontrei código órfão | 1. Verificar uso real<br>2. Se não usado, remover<br>3. Se usado, documentar | Diretiva de Governança |
-| Preciso integrar módulos | 1. Preferir eventos<br>2. Se síncrono, usar casos de uso<br>3. Nunca import direto | Mapa de Contextos |
-| Sistema está lento | 1. Verificar health checks<br>2. Analisar logs<br>3. Verificar recursos<br>4. Seguir procedimento ALTO | Seção 5.3 |
-| Sistema está fora do ar | 1. Seguir procedimento CRÍTICO<br>2. Isolar problema<br>3. Rollback se necessário | Seção 5.2 |
+| Preciso criar nova API        | 1. Verificar se já existe<br>2. Versionar corretamente<br>3. Documentar contrato<br>4. Implementar                        | Diretiva de Governança      |
+| Encontrei código órfão        | 1. Verificar uso real<br>2. Se não usado, remover<br>3. Se usado, documentar                                              | Diretiva de Governança      |
+| Preciso integrar módulos      | 1. Preferir eventos<br>2. Se síncrono, usar casos de uso<br>3. Nunca import direto                                        | Mapa de Contextos           |
+| Sistema está lento            | 1. Verificar health checks<br>2. Analisar logs<br>3. Verificar recursos<br>4. Seguir procedimento ALTO                    | Seção 5.3                   |
+| Sistema está fora do ar       | 1. Seguir procedimento CRÍTICO<br>2. Isolar problema<br>3. Rollback se necessário                                         | Seção 5.2                   |
 
 ---
 
@@ -496,12 +510,12 @@ Use esta matriz para decisões comuns:
 
 ### 9.1 Equipe de Emergência
 
-| Papel | Responsabilidade | Contato |
-|------|------------------|---------|
-| **Arquiteto** | Decisões arquiteturais críticas | [Contato] |
-| **Tech Lead** | Decisões técnicas, rollbacks | [Contato] |
-| **DevOps** | Infraestrutura, deploy | [Contato] |
-| **Product Owner** | Priorização, aprovações | [Contato] |
+| Papel             | Responsabilidade                | Contato   |
+| ----------------- | ------------------------------- | --------- |
+| **Arquiteto**     | Decisões arquiteturais críticas | [Contato] |
+| **Tech Lead**     | Decisões técnicas, rollbacks    | [Contato] |
+| **DevOps**        | Infraestrutura, deploy          | [Contato] |
+| **Product Owner** | Priorização, aprovações         | [Contato] |
 
 ### 9.2 Canais de Comunicação
 
@@ -525,12 +539,12 @@ Este documento deve ser atualizado:
 
 ### 10.2 Responsabilidades
 
-| Item | Responsável | Frequência |
-|------|-------------|------------|
-| Dashboard Executivo | Tech Lead | Mensal |
-| Status de Módulos | Cada dono de módulo | Semanal |
-| Procedimentos de Emergência | DevOps + Tech Lead | Quando necessário |
-| Matriz de Autoridade | Arquiteto | Trimestral |
+| Item                        | Responsável         | Frequência        |
+| --------------------------- | ------------------- | ----------------- |
+| Dashboard Executivo         | Tech Lead           | Mensal            |
+| Status de Módulos           | Cada dono de módulo | Semanal           |
+| Procedimentos de Emergência | DevOps + Tech Lead  | Quando necessário |
+| Matriz de Autoridade        | Arquiteto           | Trimestral        |
 
 ---
 
@@ -541,10 +555,10 @@ Este documento deve ser atualizado:
 > **Mantenha atualizado para ter controle absoluto.**
 
 **Lembre-se:**
+
 - ✅ Visão geral → Consulte seção 2
 - ✅ Controle → Consulte seção 3
 - ✅ Erro grave → Consulte seção 5
 - ✅ Decisão rápida → Consulte seção 8
 
 **Qualquer dúvida, este documento deve ser o primeiro ponto de consulta.**
-

@@ -11,6 +11,7 @@
 O sistema MORINA atende **dois perfis distintos**:
 
 #### 👔 **Usuários da Empresa (Funcionários)**
+
 - Acessam o sistema como parte da organização
 - Têm vínculo empregatício ou contratual
 - Precisam selecionar organização (multiempresa)
@@ -18,6 +19,7 @@ O sistema MORINA atende **dois perfis distintos**:
 - RBAC baseado em cargo/departamento/setor
 
 #### 🤝 **Representantes (Externos)**
+
 - **NÃO fazem parte da empresa**
 - Acessam para **lançar suas comissões**
 - Baseado em pedidos de venda (como na imagem)
@@ -34,6 +36,7 @@ O sistema MORINA atende **dois perfis distintos**:
 ### 1.2 Objetivo da Análise
 
 Melhorar a experiência de login e autenticação para:
+
 - ✅ Identificar claramente o tipo de usuário
 - ✅ Facilitar acesso para representantes
 - ✅ Manter segurança e auditoria
@@ -47,18 +50,21 @@ Melhorar a experiência de login e autenticação para:
 ### 2.1 Pontos Fortes
 
 ✅ **Design Moderno e Profissional**
+
 - Glassmorphism bem implementado
 - Animações sutis e elegantes
 - Feedback visual claro
 - Responsivo
 
 ✅ **Segurança**
+
 - Validação robusta
 - Mensagens de erro claras
 - Tratamento de tentativas
 - Termos e políticas
 
 ✅ **Acessibilidade**
+
 - Labels descritivos
 - Feedback de força de senha
 - Estados de loading claros
@@ -68,11 +74,13 @@ Melhorar a experiência de login e autenticação para:
 #### 🔴 **CRÍTICO: Falta Identificação de Tipo de Usuário**
 
 **Problema:**
+
 - Não há distinção entre funcionário e representante
 - Representantes podem não saber como acessar
 - Fluxo único não atende necessidades diferentes
 
 **Impacto:**
+
 - Representantes podem desistir por não entenderem
 - Funcionários podem confundir com portal externo
 - Suporte recebe mais chamados
@@ -80,11 +88,13 @@ Melhorar a experiência de login e autenticação para:
 #### 🟠 **ALTO: Falta Contexto para Representantes**
 
 **Problema:**
+
 - Representantes não sabem que podem acessar
 - Não há informação sobre o que podem fazer
 - Falta orientação sobre cadastro inicial
 
 **Impacto:**
+
 - Baixa adesão de representantes
 - Representantes não completam cadastro
 - Perda de comissões não lançadas
@@ -92,11 +102,13 @@ Melhorar a experiência de login e autenticação para:
 #### 🟡 **MÉDIO: Experiência de Primeiro Acesso**
 
 **Problema:**
+
 - Não há onboarding para novos usuários
 - Representantes não sabem o que esperar
 - Falta guia rápido
 
 **Impacto:**
+
 - Curva de aprendizado maior
 - Abandono no primeiro uso
 
@@ -120,11 +132,13 @@ Melhorar a experiência de login e autenticação para:
 ```
 
 **Vantagens:**
+
 - Separação clara
 - Um formulário, contexto diferente
 - Fácil implementação
 
 **Desvantagens:**
+
 - Pode confundir usuários que não sabem qual escolher
 
 #### **Opção B: Dois Botões de Acesso (Recomendado)**
@@ -150,6 +164,7 @@ Melhorar a experiência de login e autenticação para:
 ```
 
 **Vantagens:**
+
 - ✅ Muito claro qual é qual
 - ✅ Representantes sabem exatamente o que fazer
 - ✅ Reduz confusão
@@ -164,13 +179,13 @@ Melhorar a experiência de login e autenticação para:
 ```
 1. Tela Inicial
    └─> Clica em "Portal Representante"
-   
+
 2. Tela de Login Representante
    ├─> Email/CPF
    ├─> Senha
    ├─> Link: "Não tenho cadastro"
    └─> Botão: "Acessar Portal"
-   
+
 3. Se não tem cadastro
    └─> Formulário de Cadastro
        ├─> Dados pessoais
@@ -205,9 +220,11 @@ Melhorar a experiência de login e autenticação para:
 #### **A. Identificação por Email ou CPF (Representantes)**
 
 **Problema Atual:**
+
 - Apenas email
 
 **Solução:**
+
 - Aceitar email OU CPF para representantes
 - Detectar automaticamente o formato
 - Validação específica para cada tipo
@@ -227,16 +244,19 @@ if (isCPF) {
 #### **B. Placeholder Contextual**
 
 **Atual:**
+
 ```
 placeholder="USUARIO@MORINA.COM"
 ```
 
 **Melhorado (Funcionário):**
+
 ```
 placeholder="seu.email@empresa.com"
 ```
 
 **Melhorado (Representante):**
+
 ```
 placeholder="email@exemplo.com ou 000.000.000-00"
 ```
@@ -244,9 +264,11 @@ placeholder="email@exemplo.com ou 000.000.000-00"
 #### **C. Link de Recuperação de Senha Específico**
 
 **Atual:**
+
 - Link genérico
 
 **Melhorado:**
+
 - Para funcionários: "Esqueci minha senha corporativa"
 - Para representantes: "Esqueci minha senha" + opção de recuperar por CPF
 
@@ -294,11 +316,13 @@ placeholder="email@exemplo.com ou 000.000.000-00"
 ### 4.1 Visual Distinto por Tipo de Usuário
 
 #### **Funcionário (Corporativo)**
+
 - Cores: Azul corporativo, mais formal
 - Ícone: 👔 ou 🏢
 - Tom: Profissional, corporativo
 
 #### **Representante (Portal Externo)**
+
 - Cores: Verde/Amarelo (comissões), mais amigável
 - Ícone: 🤝 ou 💰
 - Tom: Amigável, orientativo
@@ -306,6 +330,7 @@ placeholder="email@exemplo.com ou 000.000.000-00"
 ### 4.2 Mensagens Contextuais
 
 #### **Erro de Login - Funcionário**
+
 ```
 🔐 Acesso Negado
 Verifique suas credenciais corporativas.
@@ -313,6 +338,7 @@ Entre em contato com o RH se necessário.
 ```
 
 #### **Erro de Login - Representante**
+
 ```
 🔐 Acesso Negado
 Verifique email/CPF e senha.
@@ -391,6 +417,7 @@ Baseado na imagem fornecida, o formulário deve ter:
 ### 5.3 Busca de Cliente
 
 **Funcionalidade Importante:**
+
 - Busca por nome
 - Busca por CNPJ
 - Sugestões enquanto digita
@@ -417,7 +444,7 @@ Baseado na imagem fornecida, o formulário deve ter:
 
 ```typescript
 // Tipos de usuário
-type UserType = 'employee' | 'representative';
+type UserType = "employee" | "representative";
 
 // Login request
 type LoginRequest = {
@@ -599,4 +626,3 @@ type LoginResponse = {
 **Última atualização:** 2025-01-19  
 **Versão:** 1.0.0  
 **Status:** Proposta para implementação
-

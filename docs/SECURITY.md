@@ -49,6 +49,7 @@ As configurações de rate limiting estão em `deploy/security/rate-limiting.con
 ### RBAC (Role-Based Access Control)
 
 Sistema de permissões baseado em roles:
+
 - Admin
 - Manager
 - User
@@ -166,6 +167,7 @@ make backup
 ```
 
 Os backups incluem:
+
 - Banco de dados PostgreSQL
 - Volumes Docker
 - Configurações
@@ -191,6 +193,7 @@ make restore BACKUP=./backups/20241201_120000.tar.gz
 ### Dependências
 
 Use ferramentas como:
+
 - `npm audit` / `pnpm audit`
 - Snyk
 - Dependabot (GitHub)
@@ -208,6 +211,7 @@ Use ferramentas como:
 ### Contatos
 
 Mantenha uma lista de contatos de emergência:
+
 - Equipe de segurança
 - Administradores de sistema
 - Fornecedores de serviços
@@ -233,5 +237,3 @@ Mantenha uma lista de contatos de emergência:
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [CWE Top 25](https://cwe.mitre.org/top25/)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
-
-

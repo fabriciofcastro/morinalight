@@ -9,6 +9,7 @@ Este documento descreve as estratégias de deploy implementadas para garantir ze
 Deploy sem downtime usando dois ambientes idênticos (blue e green).
 
 **Como usar:**
+
 ```bash
 make deploy:blue-green
 # ou
@@ -16,6 +17,7 @@ make deploy:blue-green
 ```
 
 **Fluxo:**
+
 1. Build da nova versão
 2. Inicialização do ambiente green em paralelo
 3. Health checks do ambiente green
@@ -25,11 +27,13 @@ make deploy:blue-green
 7. Manutenção do ambiente blue por 24h para rollback
 
 **Vantagens:**
+
 - Zero downtime
 - Rollback instantâneo
 - Testes completos antes do switch
 
 **Desvantagens:**
+
 - Requer recursos duplicados temporariamente
 - Mais complexo de gerenciar
 
@@ -38,6 +42,7 @@ make deploy:blue-green
 Deploy gradual com aumento progressivo de tráfego.
 
 **Como usar:**
+
 ```bash
 make deploy:canary
 # ou
@@ -45,6 +50,7 @@ make deploy:canary
 ```
 
 **Fluxo:**
+
 1. Build da nova versão
 2. Deploy de instância canary (1 réplica)
 3. Health checks
@@ -56,11 +62,13 @@ make deploy:canary
 6. Completação do deploy
 
 **Vantagens:**
+
 - Detecção precoce de problemas
 - Impacto limitado em caso de falha
 - Rollback automático em caso de problemas
 
 **Desvantagens:**
+
 - Deploy mais lento
 - Requer monitoramento ativo
 
@@ -69,6 +77,7 @@ make deploy:canary
 Rollback automático em caso de falha no deploy.
 
 **Como usar:**
+
 ```bash
 make rollback
 # ou
@@ -76,6 +85,7 @@ make rollback
 ```
 
 **Fluxo:**
+
 1. Detecção de falha (health check ou smoke test)
 2. Parada dos serviços atuais
 3. Restauração da versão anterior
@@ -83,6 +93,7 @@ make rollback
 5. Notificação de rollback
 
 **Quando é acionado:**
+
 - Health checks falharem
 - Smoke tests falharem
 - Erros críticos detectados
@@ -92,6 +103,7 @@ make rollback
 Testes rápidos executados após cada deploy para validar funcionalidades essenciais.
 
 **O que é testado:**
+
 - Health endpoint
 - API health
 - Web application carrega
@@ -99,6 +111,7 @@ Testes rápidos executados após cada deploy para validar funcionalidades essenc
 - Conectividade com Redis
 
 **Como executar manualmente:**
+
 ```bash
 ./deploy/strategies/smoke-tests.sh
 ```
@@ -113,6 +126,7 @@ Testes rápidos executados após cada deploy para validar funcionalidades essenc
 ### Configuração
 
 Health checks são executados:
+
 - A cada 60 segundos quando tudo está OK
 - A cada 15 segundos quando há problemas
 - Imediatamente após deploy
@@ -120,6 +134,7 @@ Health checks são executados:
 ### Critérios de Saúde
 
 Um serviço é considerado saudável quando:
+
 - Responde HTTP 200 no endpoint `/health`
 - Tempo de resposta < 1 segundo
 - Sem erros críticos nos logs
@@ -202,6 +217,7 @@ make health
 ### Semantic Versioning
 
 O sistema usa versionamento semântico (SemVer):
+
 - **MAJOR**: Mudanças incompatíveis
 - **MINOR**: Novas funcionalidades compatíveis
 - **PATCH**: Correções de bugs
@@ -254,5 +270,3 @@ Todas as mudanças são documentadas em `CHANGELOG.md` seguindo o padrão [Keep 
 - [Blue-Green Deployment](https://martinfowler.com/bliki/BlueGreenDeployment.html)
 - [Canary Releases](https://martinfowler.com/bliki/CanaryRelease.html)
 - [Semantic Versioning](https://semver.org/)
-
-

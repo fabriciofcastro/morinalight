@@ -13,17 +13,20 @@ Este documento apresenta um plano robusto e avançado para criar do zero **TODAS
 ### Todas as Telas do Sidebar Administrativo
 
 #### 1. **Dados da Empresa** (`/admin/company/edit`)
+
 - Edição de dados cadastrais e fiscais
 - Configurações da empresa
 - Tema e branding
 
 #### 2. **Filiais** (`/admin/branches`)
+
 - Lista de filiais
 - Criar/Editar/Visualizar filiais
 - Gerenciar membros
 - Configurações por filial
 
 #### 3. **Departamentos** (`/admin/departments`)
+
 - Lista de departamentos
 - Criar/Editar/Visualizar departamentos
 - Gerenciar membros
@@ -31,6 +34,7 @@ Este documento apresenta um plano robusto e avançado para criar do zero **TODAS
 - Hierarquia organizacional
 
 #### 4. **Setores** (`/admin/sectors`)
+
 - Lista de setores
 - Criar/Editar/Visualizar setores
 - Gerenciar membros
@@ -38,6 +42,7 @@ Este documento apresenta um plano robusto e avançado para criar do zero **TODAS
 - Relacionamento com departamentos
 
 #### 5. **Cargos** (`/admin/positions`)
+
 - Lista de cargos
 - Criar/Editar/Visualizar cargos
 - Gerenciar membros
@@ -45,48 +50,56 @@ Este documento apresenta um plano robusto e avançado para criar do zero **TODAS
 - Relacionamento com setores
 
 #### 6. **Perfis de Acesso** (`/admin/roles`)
+
 - Lista de perfis
 - Criar/Editar/Visualizar perfis
 - Gerenciar permissões por perfil
 - Templates de perfis
 
 #### 7. **Permissões** (`/admin/permissions`)
+
 - Lista de permissões
 - Criar/Editar permissões
 - Categorização por módulo
 - Gerenciamento granular
 
 #### 8. **Matriz de Permissões** (`/admin/permissions/matrix`)
+
 - Visão completa de permissões
 - Trace por usuário
 - Ações por camada
 - Visualização matricial
 
 #### 9. **Aprovações RBAC** (`/admin/permissions/approvals`)
+
 - Fila de mudanças sensíveis
 - Workflow de aprovação
 - Histórico de aprovações
 - Notificações
 
 #### 10. **Segmentos** (`/admin/business-segments`)
+
 - Lista de segmentos de negócio
 - Criar/Editar/Visualizar segmentos
 - Ativar/Desativar segmentos
 - Configurações por segmento
 
 #### 11. **Workflows** (`/admin/workflow-policies`)
+
 - Lista de políticas de aprovação
 - Criar/Editar/Visualizar workflows
 - Configurar regras
 - Histórico de execuções
 
 #### 12. **Realtime Lab** (`/admin/realtime-lab`)
+
 - Diagnóstico de mensageria
 - Eventos em tempo real
 - RBAC em tempo real
 - Monitoramento avançado
 
 #### 13. **Usuários** (`/admin/users`)
+
 - Lista de usuários
 - Criar/Editar/Visualizar usuários
 - Gerenciar permissões
@@ -307,6 +320,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 1: INFRAESTRUTURA BASE
 
 ### 1.1 Setup Inicial Global
+
 - [ ] Criar estrutura de diretórios completa para todas as telas
 - [ ] Criar arquivos base (page.tsx) para todas as rotas
 - [ ] Configurar metadata e SEO para cada página
@@ -316,6 +330,7 @@ apps/web/src/hooks/
 - [ ] Configurar PageBackground em todas as telas
 
 ### 1.2 Hooks Customizados Globais
+
 - [ ] Criar hooks para cada entidade (branches, departments, sectors, positions, roles, permissions, etc.)
 - [ ] Padronizar estrutura de hooks (list, get, create, update, delete)
 - [ ] Implementar paginação padrão
@@ -325,6 +340,7 @@ apps/web/src/hooks/
 - [ ] Implementar cache/refetch
 
 ### 1.3 Componentes Base Reutilizáveis
+
 - [ ] `FuturisticInput` (já existe em fichas-custo, extrair para componente global)
 - [ ] `FuturisticSelect` (já existe em fichas-custo, extrair para componente global)
 - [ ] `FuturisticTextarea` (já existe em fichas-custo, extrair para componente global)
@@ -343,12 +359,14 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 2: DADOS DA EMPRESA (`/admin/company/edit`)
 
 ### 2.1 Estrutura Base
+
 - [ ] Criar `apps/web/src/app/(app)/admin/company/edit/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/company/company-edit-client.tsx`
 - [ ] Implementar layout com PageBackground
 - [ ] Adicionar metadata
 
 ### 2.2 Header Futurista
+
 - [ ] Ícone Building2
 - [ ] Título "Dados da Empresa"
 - [ ] Subtítulo "Configurações cadastrais e fiscais"
@@ -356,6 +374,7 @@ apps/web/src/hooks/
 - [ ] Background com gradiente
 
 ### 2.3 Formulário de Dados Cadastrais
+
 - [ ] Seção "Dados Cadastrais"
   - [ ] Razão Social (FuturisticInput, obrigatório)
   - [ ] Nome Fantasia (FuturisticInput, opcional)
@@ -377,6 +396,7 @@ apps/web/src/hooks/
   - [ ] Website (FuturisticInput, opcional)
 
 ### 2.4 Formulário de Dados Fiscais
+
 - [ ] Seção "Dados Fiscais"
   - [ ] Regime Tributário (FuturisticSelect)
   - [ ] CNAE Principal (FuturisticInput, máscara)
@@ -386,6 +406,7 @@ apps/web/src/hooks/
   - [ ] Capital Social (FuturisticInput, máscara monetária)
 
 ### 2.5 Configurações de Tema
+
 - [ ] Seção "Branding"
   - [ ] Upload de Logo
   - [ ] Preview do logo
@@ -394,6 +415,7 @@ apps/web/src/hooks/
   - [ ] Upload de vídeo de apresentação (opcional)
 
 ### 2.6 Validação e Ações
+
 - [ ] Validação de CNPJ (algoritmo)
 - [ ] Busca automática de CEP
 - [ ] Validação de email
@@ -406,6 +428,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 3: FILIAIS (`/admin/branches`)
 
 ### 3.1 Lista de Filiais
+
 - [ ] Criar `apps/web/src/app/(app)/admin/branches/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/branches/branches-list-client.tsx`
 - [ ] Header futurista com stats
@@ -434,6 +457,7 @@ apps/web/src/hooks/
 - [ ] Botão "Nova Filial"
 
 ### 3.2 Criar/Editar Filial
+
 - [ ] Criar `apps/web/src/app/(app)/admin/branches/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/branches/branch-form-client.tsx`
 - [ ] Formulário completo:
@@ -448,6 +472,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 3.3 Detalhes da Filial
+
 - [ ] Criar `apps/web/src/app/(app)/admin/branches/[branchId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/branches/branch-detail-client.tsx`
 - [ ] Tabs:
@@ -458,6 +483,7 @@ apps/web/src/hooks/
 - [ ] Histórico de mudanças
 
 ### 3.4 Gerenciar Membros
+
 - [ ] Criar `apps/web/src/app/(app)/admin/branches/[branchId]/members/page.tsx`
 - [ ] Lista de membros
 - [ ] Adicionar membro
@@ -469,6 +495,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 4: DEPARTAMENTOS (`/admin/departments`)
 
 ### 4.1 Lista de Departamentos
+
 - [ ] Criar `apps/web/src/app/(app)/admin/departments/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/departments/departments-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -497,6 +524,7 @@ apps/web/src/hooks/
 - [ ] Botão "Novo Departamento"
 
 ### 4.2 Criar/Editar Departamento
+
 - [ ] Criar `apps/web/src/app/(app)/admin/departments/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/departments/department-form-client.tsx`
 - [ ] Formulário:
@@ -509,6 +537,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 4.3 Detalhes do Departamento
+
 - [ ] Criar `apps/web/src/app/(app)/admin/departments/[departmentId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/departments/department-detail-client.tsx`
 - [ ] Tabs:
@@ -520,6 +549,7 @@ apps/web/src/hooks/
 - [ ] Ações rápidas
 
 ### 4.4 Gerenciar Membros do Departamento
+
 - [ ] Criar `apps/web/src/app/(app)/admin/departments/[departmentId]/members/page.tsx`
 - [ ] Lista de membros
 - [ ] Adicionar membro (busca de usuários)
@@ -527,6 +557,7 @@ apps/web/src/hooks/
 - [ ] Atribuir cargo no departamento
 
 ### 4.5 Gerenciar Permissões do Departamento
+
 - [ ] Criar `apps/web/src/app/(app)/admin/departments/[departmentId]/permissions/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/departments/department-permissions-manager.tsx`
 - [ ] Lista de permissões agrupadas por módulo
@@ -539,6 +570,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 5: SETORES (`/admin/sectors`)
 
 ### 5.1 Lista de Setores
+
 - [ ] Criar `apps/web/src/app/(app)/admin/sectors/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/sectors/sectors-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -567,6 +599,7 @@ apps/web/src/hooks/
 - [ ] Botão "Novo Setor"
 
 ### 5.2 Criar/Editar Setor
+
 - [ ] Criar `apps/web/src/app/(app)/admin/sectors/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/sectors/sector-form-client.tsx`
 - [ ] Formulário:
@@ -580,6 +613,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 5.3 Detalhes do Setor
+
 - [ ] Criar `apps/web/src/app/(app)/admin/sectors/[sectorId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/sectors/sector-detail-client.tsx`
 - [ ] Tabs:
@@ -592,6 +626,7 @@ apps/web/src/hooks/
 - [ ] Ações rápidas
 
 ### 5.4 Gerenciar Membros do Setor
+
 - [ ] Criar `apps/web/src/app/(app)/admin/sectors/[sectorId]/members/page.tsx`
 - [ ] Lista de membros
 - [ ] Adicionar membro
@@ -599,6 +634,7 @@ apps/web/src/hooks/
 - [ ] Atribuir cargo no setor
 
 ### 5.5 Gerenciar Permissões do Setor
+
 - [ ] Criar `apps/web/src/app/(app)/admin/sectors/[sectorId]/permissions/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/sectors/sector-permissions-manager.tsx`
 - [ ] Mesma estrutura do gerenciador de permissões de departamento
@@ -608,6 +644,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 6: CARGOS (`/admin/positions`)
 
 ### 6.1 Lista de Cargos
+
 - [ ] Criar `apps/web/src/app/(app)/admin/positions/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/positions/positions-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -635,6 +672,7 @@ apps/web/src/hooks/
 - [ ] Botão "Novo Cargo"
 
 ### 6.2 Criar/Editar Cargo
+
 - [ ] Criar `apps/web/src/app/(app)/admin/positions/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/positions/position-form-client.tsx`
 - [ ] Formulário:
@@ -648,6 +686,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 6.3 Detalhes do Cargo
+
 - [ ] Criar `apps/web/src/app/(app)/admin/positions/[positionId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/positions/position-detail-client.tsx`
 - [ ] Tabs:
@@ -659,12 +698,14 @@ apps/web/src/hooks/
 - [ ] Ações rápidas
 
 ### 6.4 Gerenciar Membros do Cargo
+
 - [ ] Criar `apps/web/src/app/(app)/admin/positions/[positionId]/members/page.tsx`
 - [ ] Lista de membros
 - [ ] Adicionar membro
 - [ ] Remover membro
 
 ### 6.5 Gerenciar Permissões do Cargo
+
 - [ ] Criar `apps/web/src/app/(app)/admin/positions/[positionId]/permissions/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/positions/position-permissions-manager.tsx`
 - [ ] Mesma estrutura dos outros gerenciadores
@@ -674,6 +715,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 7: PERFIS DE ACESSO (`/admin/roles`)
 
 ### 7.1 Lista de Perfis
+
 - [ ] Criar `apps/web/src/app/(app)/admin/roles/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/roles/roles-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -700,6 +742,7 @@ apps/web/src/hooks/
 - [ ] Botão "Novo Perfil"
 
 ### 7.2 Criar/Editar Perfil
+
 - [ ] Criar `apps/web/src/app/(app)/admin/roles/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/roles/role-form-client.tsx`
 - [ ] Formulário:
@@ -715,6 +758,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 7.3 Detalhes do Perfil
+
 - [ ] Criar `apps/web/src/app/(app)/admin/roles/[roleId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/roles/role-detail-client.tsx`
 - [ ] Tabs:
@@ -725,6 +769,7 @@ apps/web/src/hooks/
 - [ ] Ações rápidas
 
 ### 7.4 Gerenciar Permissões do Perfil
+
 - [ ] Criar `apps/web/src/app/(app)/admin/roles/[roleId]/permissions/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/roles/role-permissions-manager.tsx`
 - [ ] Interface completa de permissões
@@ -734,6 +779,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 8: PERMISSÕES (`/admin/permissions`)
 
 ### 8.1 Lista de Permissões
+
 - [ ] Criar `apps/web/src/app/(app)/admin/permissions/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/permissions/permissions-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -760,6 +806,7 @@ apps/web/src/hooks/
 - [ ] Botão "Nova Permissão"
 
 ### 8.2 Criar/Editar Permissão
+
 - [ ] Criar `apps/web/src/app/(app)/admin/permissions/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/permissions/permission-form-client.tsx`
 - [ ] Formulário:
@@ -773,6 +820,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 8.3 Detalhes da Permissão
+
 - [ ] Criar `apps/web/src/app/(app)/admin/permissions/[permissionId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/permissions/permission-detail-client.tsx`
 - [ ] Informações completas
@@ -785,11 +833,13 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 9: MATRIZ DE PERMISSÕES (`/admin/permissions/matrix`)
 
 ### 9.1 Estrutura Base
+
 - [ ] Criar `apps/web/src/app/(app)/admin/permissions/matrix/page.tsx`
 - [ ] Verificar se já existe `permission-matrix-client.tsx`
 - [ ] Melhorar conforme necessário
 
 ### 9.2 Visualização Matricial
+
 - [ ] Tabela com usuários nas linhas
 - [ ] Permissões nas colunas
 - [ ] Indicadores visuais (concedida/negada/herdada)
@@ -799,12 +849,14 @@ apps/web/src/hooks/
 - [ ] Exportação da matriz
 
 ### 9.3 Trace de Permissões
+
 - [ ] Visualização de origem (direta, cargo, setor, departamento)
 - [ ] Cores diferentes por origem
 - [ ] Tooltips com detalhes
 - [ ] Visualização hierárquica
 
 ### 9.4 Ações por Camada
+
 - [ ] Atribuir permissão direta
 - [ ] Remover permissão
 - [ ] Visualizar herança completa
@@ -814,11 +866,13 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 10: APROVAÇÕES RBAC (`/admin/permissions/approvals`)
 
 ### 10.1 Estrutura Base
+
 - [ ] Criar `apps/web/src/app/(app)/admin/permissions/approvals/page.tsx`
 - [ ] Verificar se já existe `permission-approvals-client.tsx`
 - [ ] Melhorar conforme necessário
 
 ### 10.2 Fila de Aprovações
+
 - [ ] Lista de solicitações pendentes
 - [ ] Informações da solicitação:
   - [ ] Usuário/Entidade
@@ -837,6 +891,7 @@ apps/web/src/hooks/
   - [ ] Ver detalhes
 
 ### 10.3 Workflow de Aprovação
+
 - [ ] Modal de aprovação/rejeição
 - [ ] Campo de motivo (obrigatório)
 - [ ] Notificações automáticas
@@ -847,6 +902,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 11: SEGMENTOS (`/admin/business-segments`)
 
 ### 11.1 Lista de Segmentos
+
 - [ ] Criar `apps/web/src/app/(app)/admin/business-segments/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/business-segments/segments-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -871,6 +927,7 @@ apps/web/src/hooks/
 - [ ] Botão "Novo Segmento"
 
 ### 11.2 Criar/Editar Segmento
+
 - [ ] Criar `apps/web/src/app/(app)/admin/business-segments/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/business-segments/segment-form-client.tsx`
 - [ ] Formulário:
@@ -883,6 +940,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 11.3 Detalhes do Segmento
+
 - [ ] Criar `apps/web/src/app/(app)/admin/business-segments/[segmentId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/business-segments/segment-detail-client.tsx`
 - [ ] Informações completas
@@ -894,6 +952,7 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 12: WORKFLOWS (`/admin/workflow-policies`)
 
 ### 12.1 Lista de Workflows
+
 - [ ] Criar `apps/web/src/app/(app)/admin/workflow-policies/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/workflow-policies/workflows-list-client.tsx`
 - [ ] Header futurista com stats:
@@ -920,6 +979,7 @@ apps/web/src/hooks/
 - [ ] Botão "Nova Política"
 
 ### 12.2 Criar/Editar Workflow
+
 - [ ] Criar `apps/web/src/app/(app)/admin/workflow-policies/new/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/workflow-policies/workflow-form-client.tsx`
 - [ ] Formulário:
@@ -935,6 +995,7 @@ apps/web/src/hooks/
 - [ ] Botões de ação
 
 ### 12.3 Detalhes do Workflow
+
 - [ ] Criar `apps/web/src/app/(app)/admin/workflow-policies/[policyId]/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/workflow-policies/workflow-detail-client.tsx`
 - [ ] Tabs:
@@ -949,11 +1010,13 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 13: REALTIME LAB (`/admin/realtime-lab`)
 
 ### 13.1 Estrutura Base
+
 - [ ] Criar `apps/web/src/app/(app)/admin/realtime-lab/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/realtime-lab/realtime-lab-client.tsx`
 - [ ] Layout com múltiplas seções
 
 ### 13.2 Diagnóstico de Mensageria
+
 - [ ] Monitor de eventos em tempo real
 - [ ] Lista de eventos recentes
 - [ ] Filtros por tipo de evento
@@ -961,6 +1024,7 @@ apps/web/src/hooks/
 - [ ] Estatísticas de mensageria
 
 ### 13.3 Eventos em Tempo Real
+
 - [ ] Stream de eventos
 - [ ] Filtros avançados
 - [ ] Pausar/Retomar stream
@@ -968,12 +1032,14 @@ apps/web/src/hooks/
 - [ ] Busca de eventos
 
 ### 13.4 RBAC em Tempo Real
+
 - [ ] Monitor de mudanças de permissões
 - [ ] Eventos de RBAC
 - [ ] Trace de permissões
 - [ ] Alertas de mudanças sensíveis
 
 ### 13.5 Monitoramento Avançado
+
 - [ ] Métricas de performance
 - [ ] Gráficos em tempo real
 - [ ] Alertas e notificações
@@ -984,17 +1050,21 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 14: USUÁRIOS (`/admin/users`)
 
 ### 14.1 Lista de Usuários
+
 - [ ] Criar `apps/web/src/app/(app)/admin/users/page.tsx`
 - [ ] Criar `apps/web/src/components/admin/users/users-list-client.tsx`
 - [ ] **TODOS os itens da FASE 2 do plano anterior** (já detalhado)
 
 ### 14.2 Criar/Editar Usuário
+
 - [ ] **TODOS os itens da FASE 3 do plano anterior** (já detalhado)
 
 ### 14.3 Detalhes do Usuário
+
 - [ ] **TODOS os itens da FASE 4 do plano anterior** (já detalhado)
 
 ### 14.4 Funcionalidades Adicionais
+
 - [ ] **TODOS os itens das FASES 5-11 do plano anterior** (já detalhado)
 
 ---
@@ -1002,12 +1072,14 @@ apps/web/src/hooks/
 ## ✅ CHECKLIST COMPLETO - FASE 15: INTEGRAÇÃO E POLISH FINAL
 
 ### 15.1 Integração com Sidebar
+
 - [ ] Verificar todas as rotas no sidebar
 - [ ] Adicionar ícones apropriados
 - [ ] Verificar permissões de acesso
 - [ ] Testar navegação entre telas
 
 ### 15.2 Consistência Visual
+
 - [ ] Padronizar headers em todas as telas
 - [ ] Padronizar formulários
 - [ ] Padronizar cards
@@ -1016,6 +1088,7 @@ apps/web/src/hooks/
 - [ ] Padronizar filtros
 
 ### 15.3 Performance
+
 - [ ] Lazy loading de componentes
 - [ ] Virtualização de listas grandes
 - [ ] Debounce em buscas
@@ -1024,6 +1097,7 @@ apps/web/src/hooks/
 - [ ] Code splitting
 
 ### 15.4 Acessibilidade
+
 - [ ] ARIA labels em todos os elementos
 - [ ] Navegação por teclado
 - [ ] Foco visível
@@ -1032,6 +1106,7 @@ apps/web/src/hooks/
 - [ ] Testes com leitores de tela
 
 ### 15.5 Responsividade
+
 - [ ] Mobile first approach
 - [ ] Breakpoints (sm, md, lg, xl, 2xl)
 - [ ] Layout adaptativo
@@ -1039,6 +1114,7 @@ apps/web/src/hooks/
 - [ ] Testes em diferentes dispositivos
 
 ### 15.6 Testes
+
 - [ ] Testes unitários dos hooks
 - [ ] Testes de componentes
 - [ ] Testes de integração
@@ -1046,6 +1122,7 @@ apps/web/src/hooks/
 - [ ] Testes de acessibilidade
 
 ### 15.7 Documentação
+
 - [ ] Comentários no código
 - [ ] README específico para cada módulo
 - [ ] Documentação de APIs
@@ -1057,6 +1134,7 @@ apps/web/src/hooks/
 ## 🎨 Design Tokens e Estilos Globais
 
 ### Cores Padrão
+
 - Primary: `hsl(var(--primary))`
 - Accent: `hsl(var(--accent))`
 - Success: `green-400`
@@ -1065,11 +1143,13 @@ apps/web/src/hooks/
 - Info: `blue-400`
 
 ### Espaçamentos Padrão
+
 - Container padding: `p-6` ou `p-8`
 - Gap entre elementos: `gap-4` ou `gap-6`
 - Border radius: `rounded-xl` ou `rounded-2xl`
 
 ### Efeitos Padrão
+
 - Glass morphism: `bg-white/5 backdrop-blur-sm`
 - Hover glow: `bg-linear-to-r from-blue-500/30 to-blue-400/30 blur-sm`
 - Shadow: `shadow-2xl`
@@ -1080,6 +1160,7 @@ apps/web/src/hooks/
 ## 📊 Padrões de Stats Cards (Header)
 
 Todas as telas de lista devem ter stats cards no header:
+
 - Total de registros
 - Registros ativos
 - Registros inativos (quando aplicável)
@@ -1090,6 +1171,7 @@ Todas as telas de lista devem ter stats cards no header:
 ## 🔄 Fluxos Principais Padronizados
 
 ### Fluxo de Criação (Todas as Entidades)
+
 1. Usuário clica em "Novo [Entidade]"
 2. Formulário é exibido
 3. Preenchimento dos dados
@@ -1099,6 +1181,7 @@ Todas as telas de lista devem ter stats cards no header:
 7. Redirecionamento para detalhes
 
 ### Fluxo de Edição (Todas as Entidades)
+
 1. Usuário clica em "Editar" na lista ou detalhes
 2. Formulário pré-preenchido
 3. Modificações
@@ -1108,6 +1191,7 @@ Todas as telas de lista devem ter stats cards no header:
 7. Atualização da lista
 
 ### Fluxo de Listagem (Todas as Entidades)
+
 1. Carregamento inicial
 2. Aplicação de filtros
 3. Busca
@@ -1121,24 +1205,28 @@ Todas as telas de lista devem ter stats cards no header:
 ## 🚀 Priorização de Implementação
 
 ### Fase 1 (Crítico) - MVP Core
+
 1. ✅ Usuários (lista, criar, editar, detalhes)
 2. ✅ Departamentos (lista, criar, editar, detalhes)
 3. ✅ Setores (lista, criar, editar, detalhes)
 4. ✅ Cargos (lista, criar, editar, detalhes)
 
 ### Fase 2 (Importante) - Estrutura Organizacional
+
 5. ✅ Filiais (lista, criar, editar, detalhes)
 6. ✅ Dados da Empresa (edição)
 7. ✅ Gerenciamento de Membros (todas as entidades)
 8. ✅ Gerenciamento de Permissões (todas as entidades)
 
 ### Fase 3 (Essencial) - RBAC Completo
+
 9. ✅ Perfis de Acesso (lista, criar, editar, detalhes)
 10. ✅ Permissões (lista, criar, editar, detalhes)
 11. ✅ Matriz de Permissões
 12. ✅ Aprovações RBAC
 
 ### Fase 4 (Desejável) - Recursos Avançados
+
 13. ✅ Segmentos
 14. ✅ Workflows
 15. ✅ Realtime Lab
@@ -1148,6 +1236,7 @@ Todas as telas de lista devem ter stats cards no header:
 ## 📝 Notas de Implementação
 
 ### Padrões Obrigatórios
+
 - ✅ Sempre usar componentes futuristas (FuturisticInput, FuturisticSelect)
 - ✅ Sempre usar motion.div para animações
 - ✅ Sempre usar glass morphism nos cards
@@ -1158,6 +1247,7 @@ Todas as telas de lista devem ter stats cards no header:
 - ✅ Sempre verificar permissões
 
 ### Boas Práticas
+
 - Componentes reutilizáveis
 - Hooks customizados para lógica
 - Separação de concerns
@@ -1213,10 +1303,3 @@ Antes de considerar completo, verificar para TODAS as telas:
 **Última Atualização:** 2025-12-11  
 **Status:** 📋 Plano Completo - Pronto para Implementação  
 **Escopo:** Todas as telas do Sidebar Administrativo
-
-
-
-
-
-
-

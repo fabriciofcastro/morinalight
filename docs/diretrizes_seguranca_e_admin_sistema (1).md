@@ -127,8 +127,6 @@ Usuário
 - Animações devem ser:
   - único para cada tela
 
-
-
 ---
 
 ## 6. Core do Sistema – Estrutura Organizacional (FOCO PRINCIPAL)
@@ -150,6 +148,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.1 Empresa
+
 - Objetivo: Entidade raiz do sistema
 - Funcionalidades:
   - Dados legais
@@ -162,6 +161,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.2 Filiais
+
 - Objetivo: Separação operacional
 - Funcionalidades:
   - Vínculo com empresa
@@ -173,6 +173,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.3 Departamentos
+
 - Objetivo: Organização macro
 - Funcionalidades:
   - Vínculo com filial
@@ -183,6 +184,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.4 Setores
+
 - Objetivo: Organização operacional
 - Funcionalidades:
   - Vínculo com departamento
@@ -193,6 +195,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.5 Cargos
+
 - Objetivo: Estrutura funcional
 - Funcionalidades:
   - Vínculo com setor
@@ -203,6 +206,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.6 Fornecedores
+
 - Objetivo: Cadeia de suprimentos
 - Funcionalidades:
   - Dados fiscais
@@ -214,6 +218,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.7 Usuários
+
 - Objetivo: Pessoas do sistema
 - Funcionalidades:
   - Vínculo organizacional (empresa → filial → setor → cargo)
@@ -225,6 +230,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.8 Perfis de Acesso
+
 - Objetivo: Papel do usuário
 - Funcionalidades:
   - Associação com permissões
@@ -234,6 +240,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.9 Permissões
+
 - Objetivo: Ações do sistema
 - Funcionalidades:
   - CRUD de permissões
@@ -243,6 +250,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.10 Matriz de Permissões
+
 - Objetivo: Visão administrativa
 - Funcionalidades:
   - Perfil × Permissão
@@ -253,6 +261,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.11 Aprovação RBAC
+
 - Objetivo: Governança
 - Funcionalidades:
   - Fluxos de aprovação
@@ -263,6 +272,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.12 Segmentos
+
 - Objetivo: Classificação de negócio
 - Funcionalidades:
   - Vínculo com fornecedores, produtos e clientes
@@ -272,6 +282,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.13 Categorias
+
 - Objetivo: Taxonomia do sistema
 - Funcionalidades:
   - Uso transversal
@@ -281,6 +292,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.14 Workflow
+
 - Objetivo: Automatização de processos
 - Funcionalidades:
   - Estados
@@ -292,6 +304,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ---
 
 #### 6.1.15 Realtime Lib
+
 - Objetivo: Comunicação em tempo real
 - Funcionalidades:
   - Notificações
@@ -304,6 +317,7 @@ As telas abaixo **devem ser implementadas, refatoradas e detalhadas no plano**, 
 ## 6.2 Regra de Documentação de Reaproveitamento
 
 Para **cada item acima**, deve ser registrado:
+
 - Origem no `erp-textil`
 - Arquivos ou componentes copiados
 - Ajustes realizados
@@ -316,11 +330,13 @@ Sem isso, **não há aceite da entrega**.
 ## 6.3 Análise de Documentos em @docs
 
 Os documentos em `@docs` devem ser analisados para:
+
 - Extrair regras de negócio
 - Validar nomenclaturas
 - Identificar fluxos existentes
 
 Todo item aproveitado deve ser:
+
 - Referenciado
 - Adaptado
 - Documentado
@@ -338,8 +354,6 @@ Para **cada tela criada ou refatorada**, deve existir uma seção clara document
 - Sem esse detalhamento, a tela **não é considerada concluída**.
 
 ---
-
-
 
 O plano deve contemplar explicitamente:
 
@@ -429,8 +443,6 @@ Sempre que houver reaproveitamento de código, layout, UX ou lógica do projeto 
 
 Commits genéricos ou sem contexto são **inaceitáveis**.
 
-
-
 - Nunca reverter commits sem consulta prévia
 - Histórico é patrimônio do projeto
 - Decisões arquiteturais devem ser documentadas
@@ -449,4 +461,3 @@ As decisões aqui documentadas colocam o sistema no nível de:
 - Segurança auditável
 
 **Seguir este documento não é opção. É diretriz estratégica.**
-

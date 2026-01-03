@@ -25,28 +25,32 @@ O **Core Domain** é onde vive aquilo que, se quebrar ou estiver errado, o produ
 ### Neste sistema, o Core Domain é composto por:
 
 #### 2.1 Estrutura Organizacional
-* Hierarquia: Empresa → Departamento → Subdepartamento → Setor → Cargo
-* Regras de negócio específicas da organização
-* Suporte multiempresa com isolamento completo
-* **Bounded Context:** `Organization`
+
+- Hierarquia: Empresa → Departamento → Subdepartamento → Setor → Cargo
+- Regras de negócio específicas da organização
+- Suporte multiempresa com isolamento completo
+- **Bounded Context:** `Organization`
 
 #### 2.2 Controle de Acesso Contextual
-* Autorização baseada em empresa, unidade, papel e contexto
-* RBAC granular e contextual
-* Isolamento de dados por organização
-* **Bounded Context:** `Security` / `AccessControl`
+
+- Autorização baseada em empresa, unidade, papel e contexto
+- RBAC granular e contextual
+- Isolamento de dados por organização
+- **Bounded Context:** `Security` / `AccessControl`
 
 #### 2.3 Regras de Hierarquia e Autoridade
-* Aplicação de subordinação
-* Validação de fluxos hierárquicos
-* Regras de aprovação baseadas em posição
-* **Bounded Context:** `Organization` (parte do core)
+
+- Aplicação de subordinação
+- Validação de fluxos hierárquicos
+- Regras de aprovação baseadas em posição
+- **Bounded Context:** `Organization` (parte do core)
 
 #### 2.4 Auditoria e Rastreamento de Ações
-* Rastreamento completo de ações
-* Histórico imutável
-* Suporte a compliance
-* **Bounded Context:** `Governance` / `Audit`
+
+- Rastreamento completo de ações
+- Histórico imutável
+- Suporte a compliance
+- **Bounded Context:** `Governance` / `Audit`
 
 > **Regra absoluta:** Nada depende do Core Domain exceto ele mesmo. Core Domain não depende de nada externo (exceto infraestrutura técnica básica).
 
@@ -58,16 +62,16 @@ São domínios necessários, mas não estratégicos.
 
 ### Exemplos:
 
-* Notificações
-* Relatórios
-* Integrações externas
-* Exportações
+- Notificações
+- Relatórios
+- Integrações externas
+- Exportações
 
 ### Regras
 
-* Nunca contêm regra central de negócio
-* Podem ser substituídos sem reescrever o sistema
-* Dependem do Core Domain, nunca o contrário
+- Nunca contêm regra central de negócio
+- Podem ser substituídos sem reescrever o sistema
+- Dependem do Core Domain, nunca o contrário
 
 ---
 
@@ -77,10 +81,10 @@ Domínios comuns a qualquer sistema.
 
 ### Exemplos:
 
-* Autenticação técnica
-* Envio de e-mail
-* Upload de arquivos
-* Logs técnicos
+- Autenticação técnica
+- Envio de e-mail
+- Upload de arquivos
+- Logs técnicos
 
 > Se esse domínio existir em qualquer empresa, ele não é Core.
 
@@ -92,18 +96,18 @@ Cada domínio vive em um **Bounded Context** próprio. **Cada contexto é um mun
 
 ### Regras obrigatórias:
 
-* **Cada contexto tem seu próprio modelo**
-  * Mesmo conceito pode ter nomes diferentes em contextos diferentes
-  * Exemplo: "User" em Security ≠ "Employee" em Organization
+- **Cada contexto tem seu próprio modelo**
+  - Mesmo conceito pode ter nomes diferentes em contextos diferentes
+  - Exemplo: "User" em Security ≠ "Employee" em Organization
 
-* **Nenhum contexto acessa diretamente o banco de outro**
-  * Não há JOINs entre bancos de contextos diferentes
-  * Não há acesso direto a tabelas de outro contexto
+- **Nenhum contexto acessa diretamente o banco de outro**
+  - Não há JOINs entre bancos de contextos diferentes
+  - Não há acesso direto a tabelas de outro contexto
 
-* **Comunicação ocorre via:**
-  * **Eventos de domínio** (preferencial)
-  * **Contratos explícitos** (APIs versionadas)
-  * **Shared Kernel** (apenas quando absolutamente necessário e documentado)
+- **Comunicação ocorre via:**
+  - **Eventos de domínio** (preferencial)
+  - **Contratos explícitos** (APIs versionadas)
+  - **Shared Kernel** (apenas quando absolutamente necessário e documentado)
 
 ### Exemplo de Isolamento:
 
@@ -130,9 +134,10 @@ Comunicação: Eventos (UserCreated, DepartmentUpdated)
 ### Tipos permitidos de relacionamento:
 
 #### 6.1 Upstream / Downstream
-* **Upstream**: Contexto que fornece dados/regras
-* **Downstream**: Contexto que consome dados/regras
-* **Direção:** Downstream → Upstream (dependência)
+
+- **Upstream**: Contexto que fornece dados/regras
+- **Downstream**: Contexto que consome dados/regras
+- **Direção:** Downstream → Upstream (dependência)
 
 ```
 Organization (Upstream)
@@ -141,9 +146,10 @@ Security (Downstream) - precisa de dados de Organization
 ```
 
 #### 6.2 Customer / Supplier
-* **Supplier**: Fornece serviço/contrato
-* **Customer**: Consome serviço/contrato
-* **Contrato explícito** entre ambos
+
+- **Supplier**: Fornece serviço/contrato
+- **Customer**: Consome serviço/contrato
+- **Contrato explícito** entre ambos
 
 ```
 Audit (Supplier)
@@ -152,9 +158,10 @@ Notifications (Customer) - consome serviço de auditoria
 ```
 
 #### 6.3 Event-driven
-* Comunicação assíncrona via eventos
-* Baixo acoplamento
-* **Preferencial** para comunicação entre contextos
+
+- Comunicação assíncrona via eventos
+- Baixo acoplamento
+- **Preferencial** para comunicação entre contextos
 
 ```
 Organization → [DepartmentCreated event] → Security
@@ -163,14 +170,14 @@ Organization → [DepartmentUpdated event] → Notifications
 
 ### Tipos proibidos:
 
-* **Dependência circular**
-  * Contexto A depende de B, B depende de A
-  * **Solução:** Extrair dependência comum ou usar eventos
+- **Dependência circular**
+  - Contexto A depende de B, B depende de A
+  - **Solução:** Extrair dependência comum ou usar eventos
 
-* **Acesso direto a modelos internos**
-  * Importar entidade de outro contexto
-  * Acessar banco de outro contexto diretamente
-  * **Solução:** Usar eventos ou contratos explícitos
+- **Acesso direto a modelos internos**
+  - Importar entidade de outro contexto
+  - Acessar banco de outro contexto diretamente
+  - **Solução:** Usar eventos ou contratos explícitos
 
 ### Exemplo de Mapa Completo:
 
@@ -207,30 +214,30 @@ Infrastructure (DB, External Services)
 
 ### Regras detalhadas:
 
-* **Camadas externas dependem das internas**
-  * Interface pode usar Application
-  * Application pode usar Domain
-  * Infrastructure pode usar Domain
-  * **Nunca o contrário**
+- **Camadas externas dependem das internas**
+  - Interface pode usar Application
+  - Application pode usar Domain
+  - Infrastructure pode usar Domain
+  - **Nunca o contrário**
 
-* **Domínio não conhece framework**
-  * Domain não importa Express, React, Prisma
-  * Domain não conhece HTTP, REST, GraphQL
-  * Domain é puro TypeScript/JavaScript
+- **Domínio não conhece framework**
+  - Domain não importa Express, React, Prisma
+  - Domain não conhece HTTP, REST, GraphQL
+  - Domain é puro TypeScript/JavaScript
 
-* **Infra conhece domínio, nunca o contrário**
-  * Infrastructure implementa interfaces do Domain
-  * Domain define contratos, Infrastructure implementa
-  * Domain não sabe se usa PostgreSQL, MongoDB ou arquivo
+- **Infra conhece domínio, nunca o contrário**
+  - Infrastructure implementa interfaces do Domain
+  - Domain define contratos, Infrastructure implementa
+  - Domain não sabe se usa PostgreSQL, MongoDB ou arquivo
 
 ### Exemplo de Violação (ERRADO):
 
 ```typescript
 // ❌ ERRADO: Domain importando Infrastructure
-import { PrismaClient } from '@prisma/client'; // Domain não deve conhecer Prisma
+import { PrismaClient } from "@prisma/client"; // Domain não deve conhecer Prisma
 
 // ❌ ERRADO: Domain importando Application
-import { CreateUserUseCase } from '../application'; // Domain não deve conhecer Use Cases
+import { CreateUserUseCase } from "../application"; // Domain não deve conhecer Use Cases
 ```
 
 ### Exemplo Correto:
@@ -245,8 +252,8 @@ export interface IUserRepository {
 
 // ✅ CORRETO: Infrastructure implementa
 // infrastructure/repositories/UserRepository.ts
-import { IUserRepository } from '@/domain/repositories';
-import { PrismaClient } from '@prisma/client'; // OK aqui
+import { IUserRepository } from "@/domain/repositories";
+import { PrismaClient } from "@prisma/client"; // OK aqui
 
 export class UserRepository implements IUserRepository {
   // implementação usando Prisma
@@ -262,9 +269,10 @@ export class UserRepository implements IUserRepository {
 ### Preferência de comunicação (ordem de prioridade):
 
 #### 8.1 Eventos (Preferencial)
-* Comunicação assíncrona
-* Baixo acoplamento
-* Fácil escalabilidade
+
+- Comunicação assíncrona
+- Baixo acoplamento
+- Fácil escalabilidade
 
 ```typescript
 // Módulo A publica evento
@@ -277,9 +285,10 @@ eventBus.subscribe(DepartmentCreatedEvent, (event) => {
 ```
 
 #### 8.2 Casos de uso explícitos
-* Quando precisa de resposta síncrona
-* Contrato bem definido
-* Versionamento explícito
+
+- Quando precisa de resposta síncrona
+- Contrato bem definido
+- Versionamento explícito
 
 ```typescript
 // Módulo B expõe caso de uso
@@ -294,9 +303,10 @@ const hasAccess = await validateUserAccessUseCase.execute(userId, resource);
 ```
 
 #### 8.3 APIs internas versionadas
-* Última opção
-* Quando eventos não são suficientes
-* Sempre versionadas
+
+- Última opção
+- Quando eventos não são suficientes
+- Sempre versionadas
 
 ```typescript
 // API interna versionada
@@ -305,19 +315,21 @@ GET /api/v1/internal/security/validate-access?userId=123&resource=departments
 
 ### Proibido:
 
-* **Importar service de outro módulo diretamente**
+- **Importar service de outro módulo diretamente**
+
   ```typescript
   // ❌ ERRADO
-  import { UserService } from '@/modules/security/services';
+  import { UserService } from "@/modules/security/services";
   ```
 
-* **Compartilhar estado**
+- **Compartilhar estado**
+
   ```typescript
   // ❌ ERRADO: Estado compartilhado
   export const sharedState = { users: [] };
   ```
 
-* **Acesso direto a banco de outro módulo**
+- **Acesso direto a banco de outro módulo**
   ```typescript
   // ❌ ERRADO
   const users = await prisma.user.findMany(); // de outro módulo
@@ -331,9 +343,9 @@ GET /api/v1/internal/security/validate-access?userId=123&resource=departments
 
 ### Qualquer mudança estrutural exige:
 
-* Avaliação de impacto no mapa de contextos
-* Verificação de contratos afetados
-* Plano de compatibilidade
+- Avaliação de impacto no mapa de contextos
+- Verificação de contratos afetados
+- Plano de compatibilidade
 
 > Evolução sem mapa é aposta, não engenharia.
 
@@ -341,17 +353,17 @@ GET /api/v1/internal/security/validate-access?userId=123&resource=departments
 
 Criar novo contexto quando:
 
-* **Responsabilidades distintas**: O novo domínio tem regras de negócio próprias e independentes
-* **Modelos diferentes**: O mesmo conceito precisa de representação diferente
-* **Evolução independente**: Precisa evoluir em ritmo diferente de outros contextos
-* **Equipes diferentes**: Times diferentes trabalham no domínio
-* **Escalabilidade**: Precisa escalar independentemente
+- **Responsabilidades distintas**: O novo domínio tem regras de negócio próprias e independentes
+- **Modelos diferentes**: O mesmo conceito precisa de representação diferente
+- **Evolução independente**: Precisa evoluir em ritmo diferente de outros contextos
+- **Equipes diferentes**: Times diferentes trabalham no domínio
+- **Escalabilidade**: Precisa escalar independentemente
 
 **NÃO criar novo contexto quando:**
 
-* Apenas por organização de código (use módulos)
-* Por questões técnicas (performance, etc.)
-* Sem responsabilidades de negócio distintas
+- Apenas por organização de código (use módulos)
+- Por questões técnicas (performance, etc.)
+- Sem responsabilidades de negócio distintas
 
 ### 9.2 Template para Documentar Novo Contexto
 
@@ -363,24 +375,29 @@ Criar novo contexto quando:
 **Responsável:** [Nome/Role]
 
 ### Responsabilidades
+
 - Responsabilidade 1
 - Responsabilidade 2
 
 ### Modelos Principais
+
 - Entidade1: [descrição]
 - Entidade2: [descrição]
 
 ### Relacionamentos
+
 - **Upstream de:** [contextos que dependem deste]
 - **Downstream de:** [contextos dos quais depende]
 - **Comunica via:** Eventos / APIs / Contratos
 
 ### Contratos Públicos
+
 - API: `/api/[contexto]/*`
 - Eventos: [Lista de eventos publicados]
 - Eventos consumidos: [Lista de eventos consumidos]
 
 ### Regras de Isolamento
+
 [Regras específicas deste contexto]
 ```
 
@@ -402,9 +419,9 @@ Criar novo contexto quando:
 
 Este documento garante que o crescimento seja:
 
-* Modular
-* Controlado
-* Reversível
+- Modular
+- Controlado
+- Reversível
 
 ---
 
@@ -412,9 +429,9 @@ Este documento garante que o crescimento seja:
 
 Este mapa se relaciona com:
 
-* **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)**: Define O QUE o sistema faz
-* **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**: Conecta capacidades com contextos
-* **[Diretiva de Governança](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)**: Define COMO implementar respeitando limites
+- **[Mapa de Capacidades](./Mapa-Capacidades-Sistema-(Capability Map).md)**: Define O QUE o sistema faz
+- **[Matriz Capacidade × Contexto × Módulo](./Matriz-Capacidade×Contexto×Módulo.md)**: Conecta capacidades com contextos
+- **[Diretiva de Governança](./Diretiva-Autoanálise-Governança-Técnica-do-Sistema.md)**: Define COMO implementar respeitando limites
 
 ### Fluxo de Uso:
 
@@ -445,10 +462,10 @@ Este mapa não é teórico. **É a fundação arquitetural do sistema.**
 
 Ele deve ser:
 
-* **Revisado periodicamente** (mensal ou a cada sprint)
-* **Usado para validar decisões** (antes de criar novo módulo)
-* **Respeitado antes de qualquer nova feature** (validar limites)
-* **Consultado em refatorações** (evitar quebrar isolamento)
+- **Revisado periodicamente** (mensal ou a cada sprint)
+- **Usado para validar decisões** (antes de criar novo módulo)
+- **Respeitado antes de qualquer nova feature** (validar limites)
+- **Consultado em refatorações** (evitar quebrar isolamento)
 
 ### Checklist Antes de Criar Novo Módulo:
 

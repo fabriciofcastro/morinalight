@@ -1,16 +1,16 @@
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - CONFIG/CONSTS
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   const FOLDER_MIME = "application/vnd.google-apps.folder";
   const SHEET_MIME = "application/vnd.google-apps.spreadsheet";
   const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
   const MORINA_FOLDER_ID = "13yGkzX8srQjoHY0OSaNeori-Z0hFHQlZ"; // raiz preferencial
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - MENU
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function onOpen() {
   SpreadsheetApp.getUi()
   .createMenu("🧾 Salva")
@@ -18,10 +18,10 @@
   .addToUi();
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - MODAL
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function abrirModalSalvar() {
   const html = HtmlService.createHtmlOutputFromFile("modalSalvar")
   .setWidth(560)
@@ -29,10 +29,10 @@
   SpreadsheetApp.getUi().showModalDialog(html, "💾 Morina");
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - UTIL (Planilha)
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function mesExtensoPtBrMaiusculo*(d) {
   try {
   return d.toLocaleDateString("pt-BR", { month: "long" }).toUpperCase();
@@ -47,10 +47,10 @@
   return String(val || "").trim();
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - NOME PADRÃO (para o modal)
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function getNomePadraoArquivo() {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   const ref = getValor\_(sh, "C5:E5");
@@ -58,10 +58,10 @@
   return ref ? `${ref} - ${data}` : `- ${data}`;
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - DRIVE (v3) – helpers
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function driveGetFolderSafe*(id) {
   return Drive.Files.get(id, { fields: "id,name" }); // lança se sem acesso
   }
@@ -101,10 +101,10 @@
   return created;
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - LISTAGEM DE PASTAS (Nível 1 e 2) para o modal
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function listarPastasRaiz() {
   let raiz;
   try { raiz = driveGetFolderSafe*(MORINA_FOLDER_ID); }
@@ -127,11 +127,11 @@ try { return driveListFolders*(folderId); }
 catch (*) { return []; }
 }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - ON EDIT → carimbo inicial + destaque obrigatórios
 - NÃO toca em A35:L48 (área de correções)
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function onEdit(e){
   try {
   if (!e || !e.range) return;
@@ -150,10 +150,10 @@ catch (*) { return []; }
   } catch(\_) {}
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - Validações (NÃO marca A35:L48 como obrigatório)
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function validarObrigatorios*(sh) {
   const campos = [
   "C2:E2","C3:E3","C4:E4","C5:E5",
@@ -184,10 +184,10 @@ catch (*) { return []; }
   return erros;
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - LOG / ID
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function prepararControleArquivos*(controle) {
   if (controle.getLastRow() === 0) {
   controle.appendRow(["Data Registro","Referência","Link","Data de Liberação","ID","Categoria","Usuário","Revisão"]);
@@ -216,12 +216,12 @@ catch (*) { return []; }
   return maxId + 1;
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - EXPORT + CREATE (FALLBACK SEM SpreadsheetApp.create)
 - - Exporta a planilha atual para XLSX (Drive export)
 - - Faz upload como Google Sheet (conversão) com Drive.Files.create
-    **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+    ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
     function fallbackExportAndCreate\_(srcFileId, targetFolderId, nomeArquivo) {
     // Exporta via HTTP (evita limitações do método bound em Advanced Drive)
     const url = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(srcFileId)}/export?mimeType=${encodeURIComponent(XLSX_MIME)}`;
@@ -241,10 +241,10 @@ xlsxBlob,
 return { fileId: file.id, url: file.webViewLink || `https://docs.google.com/spreadsheets/d/${file.id}/edit` };
 }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - CÓPIA COM FALLBACK
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function copySpreadsheetWithFallback*(srcSpreadsheet, targetFolderId, nomeArquivo) {
   // 1) Tenta copy nativo (se o usuário puder copiar o arquivo)
   try {
@@ -260,10 +260,10 @@ return { fileId: file.id, url: file.webViewLink || `https://docs.google.com/spre
   }
   }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - CRIAR CAMINHO ano/mês/ref
-  **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+  ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
   function ensurePath*(baseFolderId, agora, refBase) {
   const tz = Session.getScriptTimeZone();
   const anoNome = Utilities.formatDate(agora, tz, "yyyy");
@@ -276,11 +276,11 @@ const pastaRef = driveFindOrCreateFolder\_(mes.id, refBase);
 return { ano, mes, pastaRef };
 }
 
-/**********\*\*\*\***********\*\*\***********\*\*\*\***********
+/****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****
 
 - SALVAR (chamado pelo modal)
 - - A35:L48 permanece editável; limpa ao salvar
-    **********\*\*\*\***********\*\*\***********\*\*\*\***********/
+    ****\*\*****\*\*\*\*****\*\*****\*\*\*****\*\*****\*\*\*\*****\*\*****/
     function salvarCopia(folderId) {
     try {
     const ss = SpreadsheetApp.getActive();
@@ -288,109 +288,110 @@ return { ano, mes, pastaRef };
     if (!sh) return "⚠️ Abra a aba 'Modelagem'.";
     if (!folderId) return "⚠️ Selecione uma pasta de destino.";
 
-          const tz = Session.getScriptTimeZone();
-          const agora = new Date();
+              const tz = Session.getScriptTimeZone();
+              const agora = new Date();
 
-          // Timestamp garantido
-          sh.getRange("C2:E2").setValue(Utilities.formatDate(agora, tz, "dd/MM/yyyy HH:mm:ss"));
+              // Timestamp garantido
+              sh.getRange("C2:E2").setValue(Utilities.formatDate(agora, tz, "dd/MM/yyyy HH:mm:ss"));
 
-          // Validações
-          const faltando = validarObrigatorios_(sh);
-          if (faltando.length) return `⚠️ Preencha:\n- ${faltando.join("\n- ")}`;
-          const errosN = validarNumericos_(sh);
-          if (errosN.length) return `⚠️ Ajuste:\n- ${errosN.join("\n- ")}`;
+              // Validações
+              const faltando = validarObrigatorios_(sh);
+              if (faltando.length) return `⚠️ Preencha:\n- ${faltando.join("\n- ")}`;
+              const errosN = validarNumericos_(sh);
+              if (errosN.length) return `⚠️ Ajuste:\n- ${errosN.join("\n- ")}`;
 
-          // Base
-          const refBase  = getValor_(sh, "C5:E5").replace(/\D/g, "").slice(0,5);
-          const categoria= getValor_(sh, "C3:E3");
-          const dataLib  = getValor_(sh, "C2:E2");
-          const usuario  = Session.getActiveUser().getEmail() || "Usuário";
+              // Base
+              const refBase  = getValor_(sh, "C5:E5").replace(/\D/g, "").slice(0,5);
+              const categoria= getValor_(sh, "C3:E3");
+              const dataLib  = getValor_(sh, "C2:E2");
+              const usuario  = Session.getActiveUser().getEmail() || "Usuário";
 
-          // Correção? (SOMENTE A35:L48)
-          const temCorrecao = sh.getRange("A35:L48").getDisplayValues()
-            .flat()
-            .some(v => String(v).trim() !== "");
+              // Correção? (SOMENTE A35:L48)
+              const temCorrecao = sh.getRange("A35:L48").getDisplayValues()
+                .flat()
+                .some(v => String(v).trim() !== "");
 
-          // LOG
-          const controle = ss.getSheetByName("Controle de Arquivos") || ss.insertSheet("Controle de Arquivos");
-          prepararControleArquivos_(controle);
+              // LOG
+              const controle = ss.getSheetByName("Controle de Arquivos") || ss.insertSheet("Controle de Arquivos");
+              prepararControleArquivos_(controle);
 
-          // Checar referência existente
-          let linhaExistente = null;
-          const lr = controle.getLastRow();
-          if (lr > 1) {
-            const vals = controle.getRange(2, 2, lr - 1, 1).getValues();
-            for (let i = 0; i < vals.length; i++) {
-              if (String(vals[i][0] || "").trim() === refBase) { linhaExistente = 2 + i; break; }
-            }
-          }
+              // Checar referência existente
+              let linhaExistente = null;
+              const lr = controle.getLastRow();
+              if (lr > 1) {
+                const vals = controle.getRange(2, 2, lr - 1, 1).getValues();
+                for (let i = 0; i < vals.length; i++) {
+                  if (String(vals[i][0] || "").trim() === refBase) { linhaExistente = 2 + i; break; }
+                }
+              }
 
-          if (linhaExistente && !temCorrecao) return "⚠️ Já existe uma ficha com esta Referência no log.";
+              if (linhaExistente && !temCorrecao) return "⚠️ Já existe uma ficha com esta Referência no log.";
 
-          // ID
-          const idRange = sh.getRange("J2:J3");
-          let idFinal;
-          if (linhaExistente) {
-            const colId = findHeaderColumn_(controle, "ID") || 5;
-            idFinal = Number(controle.getRange(linhaExistente, colId).getValue()) || 0;
-          } else {
-            idFinal = getProximoId_(controle);
-          }
-          idRange.setValues([[idFinal],[idFinal]]).setBackground("#FFFFFF").setFontColor("#000000");
+              // ID
+              const idRange = sh.getRange("J2:J3");
+              let idFinal;
+              if (linhaExistente) {
+                const colId = findHeaderColumn_(controle, "ID") || 5;
+                idFinal = Number(controle.getRange(linhaExistente, colId).getValue()) || 0;
+              } else {
+                idFinal = getProximoId_(controle);
+              }
+              idRange.setValues([[idFinal],[idFinal]]).setBackground("#FFFFFF").setFontColor("#000000");
 
-          // Revisão
-          let revisao = 0;
-          if (linhaExistente) {
-            const colRev = findHeaderColumn_(controle, "Revisão") || 8;
-            const v = Number(controle.getRange(linhaExistente, colRev).getValue()) || 0;
-            revisao = temCorrecao ? (v + 1) : v;
-          }
+              // Revisão
+              let revisao = 0;
+              if (linhaExistente) {
+                const colRev = findHeaderColumn_(controle, "Revisão") || 8;
+                const v = Number(controle.getRange(linhaExistente, colRev).getValue()) || 0;
+                revisao = temCorrecao ? (v + 1) : v;
+              }
 
-          const refDisplay = (temCorrecao && revisao > 0) ? `${refBase}-R${revisao}` : refBase;
-          const nomeArquivo = `${refDisplay} - ${Utilities.formatDate(agora, tz, "dd-MM-yyyy")}`;
+              const refDisplay = (temCorrecao && revisao > 0) ? `${refBase}-R${revisao}` : refBase;
+              const nomeArquivo = `${refDisplay} - ${Utilities.formatDate(agora, tz, "dd-MM-yyyy")}`;
 
-          // Pasta destino base (valida ID; se inválido, cai para root)
-          let baseFolderId = folderId;
-          try { driveGetFolderSafe_(folderId); } catch (_) { baseFolderId = "root"; }
+              // Pasta destino base (valida ID; se inválido, cai para root)
+              let baseFolderId = folderId;
+              try { driveGetFolderSafe_(folderId); } catch (_) { baseFolderId = "root"; }
 
-          // Caminho ano/mês/ref
-          const { ano, mes, pastaRef } = ensurePath_(baseFolderId, agora, refBase);
+              // Caminho ano/mês/ref
+              const { ano, mes, pastaRef } = ensurePath_(baseFolderId, agora, refBase);
 
-          // Copiar com fallback (sem SpreadsheetApp.create)
-          const { fileId, url } = copySpreadsheetWithFallback_(ss, pastaRef.id, nomeArquivo);
+              // Copiar com fallback (sem SpreadsheetApp.create)
+              const { fileId, url } = copySpreadsheetWithFallback_(ss, pastaRef.id, nomeArquivo);
 
-          // Atualiza LOG
-          const dataRegistro = Utilities.formatDate(agora, tz, "dd/MM/yyyy HH:mm");
-          if (linhaExistente && temCorrecao) {
-            controle.getRange(linhaExistente, 1, 1, 8).setValues([[
-              dataRegistro, refBase, "", dataLib, String(idFinal), categoria, usuario, revisao
-            ]]);
-            controle.getRange(linhaExistente, 3).setFormula(`=HYPERLINK("${url}";"Abrir Ficha")`);
-          } else {
-            controle.appendRow([dataRegistro, refBase, "", dataLib, String(idFinal), categoria, usuario, revisao]);
-            const lr2 = controle.getLastRow();
-            controle.getRange(lr2, 3).setFormula(`=HYPERLINK("${url}";"Abrir Ficha")`);
-          }
+              // Atualiza LOG
+              const dataRegistro = Utilities.formatDate(agora, tz, "dd/MM/yyyy HH:mm");
+              if (linhaExistente && temCorrecao) {
+                controle.getRange(linhaExistente, 1, 1, 8).setValues([[
+                  dataRegistro, refBase, "", dataLib, String(idFinal), categoria, usuario, revisao
+                ]]);
+                controle.getRange(linhaExistente, 3).setFormula(`=HYPERLINK("${url}";"Abrir Ficha")`);
+              } else {
+                controle.appendRow([dataRegistro, refBase, "", dataLib, String(idFinal), categoria, usuario, revisao]);
+                const lr2 = controle.getLastRow();
+                controle.getRange(lr2, 3).setFormula(`=HYPERLINK("${url}";"Abrir Ficha")`);
+              }
 
-          /******** Limpeza pós-salvar ********/
-          const limparCamposObrig = [
-            "C2:E2","C3:E3","C4:E4","C5:E5",
-            "F3","G3","H3",
-            "C7:E7","C8:E8","C9:E9","C10:E10","C11:E11","C12:E12",
-            "I5:J5","I4:J4","C13:E13"
-          ];
-          limparCamposObrig.forEach(a1 => sh.getRange(a1).clearContent().setBackground("#FFFFFF"));
-          sh.getRange("A17:L32").clearContent();
-          sh.getRange("A35:L48").clearContent(); // limpa a área de correções ao salvar
-          sh.getRange("K3:L13").clearContent().setBackground("#FFFFFF");
+              /******** Limpeza pós-salvar ********/
+              const limparCamposObrig = [
+                "C2:E2","C3:E3","C4:E4","C5:E5",
+                "F3","G3","H3",
+                "C7:E7","C8:E8","C9:E9","C10:E10","C11:E11","C12:E12",
+                "I5:J5","I4:J4","C13:E13"
+              ];
+              limparCamposObrig.forEach(a1 => sh.getRange(a1).clearContent().setBackground("#FFFFFF"));
+              sh.getRange("A17:L32").clearContent();
+              sh.getRange("A35:L48").clearContent(); // limpa a área de correções ao salvar
+              sh.getRange("K3:L13").clearContent().setBackground("#FFFFFF");
 
-          return `✅ Ficha salva com sucesso!
+              return `✅ Ficha salva com sucesso!
 
-    🔢 ID: ${idFinal}${revisao>0?` (R${revisao})`:""}
-    📁 Pasta: ${ano.name}/${mes.name}/${refBase}
-    🔗 Abrir Ficha`;
-} catch (e) {
-  return `❌ Erro: ${e.message}`;
+        🔢 ID: ${idFinal}${revisao>0?` (R${revisao})`:""}
+        📁 Pasta: ${ano.name}/${mes.name}/${refBase}
+        🔗 Abrir Ficha`;
+
+    } catch (e) {
+    return `❌ Erro: ${e.message}`;
     }
     }
 
