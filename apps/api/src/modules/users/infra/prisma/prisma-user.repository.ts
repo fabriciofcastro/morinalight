@@ -141,5 +141,7 @@ function mapUser(user: {
     admissionDate: user.admissionDate ?? undefined,
     observations: user.observations ?? undefined,
     mustChangePassword: user.mustChangePassword ?? false,
+    branchId: user.branchId,
+    positionId: user.positionId,
   };
 }

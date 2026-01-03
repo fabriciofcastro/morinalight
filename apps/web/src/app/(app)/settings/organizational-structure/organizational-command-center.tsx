@@ -27,72 +27,26 @@ import { notificationCenter } from "@/components/notifications/notification-cent
 import {
   OrganizationTree,
   type DepartmentNode,
+  type SubdepartmentNode,
   type PositionNode,
   type SectorNode,
 } from "@/components/organizational-structure/organization-tree";
 import { OrganizationalToolbar } from "@/components/organizational-structure/OrganizationalToolbar";
-import { OrganizationalAuditPanel } from "@/components/organizational-structure/OrganizationalAuditPanel";
-import { ImportExportPanel } from "@/components/organizational-structure/ImportExportPanel";
+import { OrganizationalAuditPanel } from "@/features/organizational-structure/components/Panels/AuditPanel";
+import { ImportExportPanel } from "@/features/organizational-structure/components/Panels/ImportExportPanel";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { OrgTree } from "@/features/organizational-structure/components/Tree/OrgTree";
+import { DepartmentForm } from "@/features/organizational-structure/components/Forms/DepartmentForm";
+import { SectorForm } from "@/features/organizational-structure/components/Forms/SectorForm";
+import { PositionForm } from "@/features/organizational-structure/components/Forms/PositionForm";
+import { Department, Sector, Subdepartment, Position } from "@morina/organizational-structure-domain";
+import { organizationalService } from "@/features/organizational-structure/services/OrganizationalService";
+import { OverviewPanel } from "@/features/organizational-structure/components/Panels/OverviewPanel";
+import { AdvancedMetricsPanel } from "@/features/organizational-structure/components/Panels/AdvancedMetricsPanel";
+import { DateRangePicker, type DateRangePreset } from "@/components/dashboard/DateRangePicker";
 
-type Department = {
-  departmentId: string;
-  orgId: string;
-  name: string;
-  code: string;
-  description: string | null;
-  parentId: string | null;
-  status: "ativo" | "inativo" | "arquivado";
-  ordem: number;
-  createdAt: string;
-  updatedAt: string;
-};
+// Local types removed in favor of Domain types
 
-type Subdepartment = {
-  subdepartmentId: string;
-  orgId: string;
-  departmentId: string;
-  name: string;
-  code: string;
-  description: string | null;
-  parentId: string | null;
-  status: "ativo" | "inativo" | "arquivado";
-  ordem: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type Sector = {
-  id: string;
-  orgId: string;
-  departmentId: string;
-  subdepartmentId?: string | null; // Setor pode pertencer a um subdepartamento
-  name: string;
-  code: string;
-  description: string | null;
-  parentId: string | null;
-  status: "ativo" | "inativo" | "arquivado";
-  ordem: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type Position = {
-  id: string;
-  orgId: string;
-  sectorId: string;
-  name: string;
-  code: string;
-  description: string | null;
-  responsabilidades: string | null;
-  requisitos: string | null;
-  salarioMin: number | null;
-  salarioMax: number | null;
-  status: "ativo" | "inativo" | "arquivado";
-  ordem: number;
-  createdAt: string;
-  updatedAt: string;
-};
 
 type ListResponse<T> = {
   itens: T[];
@@ -101,6 +55,7 @@ type ListResponse<T> = {
 
 type SelectedNode =
   | { type: "department"; id: string; data: DepartmentNode }
+  | { type: "subdepartment"; id: string; data: SubdepartmentNode }
   | { type: "sector"; id: string; data: SectorNode }
   | { type: "position"; id: string; data: PositionNode };
 
@@ -205,60 +160,17 @@ export function OrganizationalCommandCenter() {
   const [organogramView, setOrganogramView] = useState(false);
 
   const [tab, setTab] = useState<DetailsTab>("overview");
+  const [dateRange, setDateRange] = useState<DateRangePreset>("30d");
 
   // Drawer CRUD
+
+  // Drawer CRUD - Refactored to use Smart Forms
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<DrawerMode>("create");
   const [drawerType, setDrawerType] = useState<DrawerEntityType>("department");
   const [drawerBusy, setDrawerBusy] = useState(false);
-  const [drawerErrors, setDrawerErrors] = useState<Record<string, string>>({});
+  // Drafts removed in favor of Smart Forms
 
-  const [deptDraft, setDeptDraft] = useState<{
-    departmentId?: string;
-    name: string;
-    code: string;
-    description: string;
-    parentId: string;
-    status: Department["status"];
-  }>({
-    name: "",
-    code: "",
-    description: "",
-    parentId: "",
-    status: "ativo",
-  });
-
-  const [sectorDraft, setSectorDraft] = useState<{
-    id?: string;
-    name: string;
-    code: string;
-    description: string;
-    departmentId: string;
-    parentId: string;
-    status: Sector["status"];
-  }>({
-    name: "",
-    code: "",
-    description: "",
-    departmentId: "",
-    parentId: "",
-    status: "ativo",
-  });
-
-  const [positionDraft, setPositionDraft] = useState<{
-    id?: string;
-    name: string;
-    code: string;
-    description: string;
-    sectorId: string;
-    status: Position["status"];
-  }>({
-    name: "",
-    code: "",
-    description: "",
-    sectorId: "",
-    status: "ativo",
-  });
 
   // members
   const [membersLoading, setMembersLoading] = useState(false);
@@ -285,21 +197,29 @@ export function OrganizationalCommandCenter() {
   const [pendingApprovalInfo, setPendingApprovalInfo] = useState<PendingApprovalInfo | null>(null);
 
   const tree = useMemo<DepartmentNode[]>(() => {
+    // Helper for status match
+    const matchStatus = (active: boolean, filter: string) => {
+      if (filter === 'all') return true;
+      if (filter === 'ativo') return active;
+      if (filter === 'inativo') return !active;
+      return false;
+    };
+
     // Organizar setores por departamento e subdepartamento
     const sectorsByDepartment = new Map<string, Sector[]>();
     const sectorsBySubdepartment = new Map<string, Sector[]>();
-    
+
     for (const s of sectors) {
-      if (s.subdepartmentId) {
+      if ((s as any).subdepartmentId) {
         // Setor pertence a um subdepartamento
-        const list = sectorsBySubdepartment.get(s.subdepartmentId) ?? [];
+        const list = sectorsBySubdepartment.get((s as any).subdepartmentId) ?? [];
         list.push(s);
-        sectorsBySubdepartment.set(s.subdepartmentId, list);
+        sectorsBySubdepartment.set((s as any).subdepartmentId, list);
       } else {
         // Setor pertence diretamente ao departamento
-        const list = sectorsByDepartment.get(s.departmentId) ?? [];
+        const list = sectorsByDepartment.get(s.departmentId || "") ?? [];
         list.push(s);
-        sectorsByDepartment.set(s.departmentId, list);
+        sectorsByDepartment.set(s.departmentId || "", list);
       }
     }
 
@@ -313,6 +233,7 @@ export function OrganizationalCommandCenter() {
 
     const positionsBySector = new Map<string, Position[]>();
     for (const p of positions) {
+      if (!p.sectorId) continue;
       const list = positionsBySector.get(p.sectorId) ?? [];
       list.push(p);
       positionsBySector.set(p.sectorId, list);
@@ -321,26 +242,28 @@ export function OrganizationalCommandCenter() {
     const depts = departments
       .map((d) => {
         // Subdepartamentos do departamento
-        const subdepts = (subdepartmentsByDepartment.get(d.departmentId) ?? []).map((sd) => ({
-          id: sd.subdepartmentId,
+        const subdepts = (subdepartmentsByDepartment.get((d.id || "")) ?? []).map((sd) => ({
+          id: (sd.subdepartmentId || ""),
           name: sd.name,
           code: sd.code,
           status: sd.status,
-          sectors: (sectorsBySubdepartment.get(sd.subdepartmentId) ?? [])
+          active: sd.status === 'ativo',
+          sectors: (sectorsBySubdepartment.get((sd.subdepartmentId || "")) ?? [])
             .map((s) => {
               const secNode: SectorNode = {
-                id: s.id,
-                departmentId: s.departmentId,
+                id: s.id || "",
+                departmentId: s.departmentId || "",
                 name: s.name,
                 code: s.code,
-                status: s.status,
-                positions: (positionsBySector.get(s.id) ?? []).map((p) => {
+                active: !!s.active,
+                positions: (positionsBySector.get(s.id || "") ?? []).map((p) => {
+
                   const posNode: PositionNode = {
-                    id: p.id,
-                    sectorId: p.sectorId,
+                    id: p.id || "",
+                    sectorId: p.sectorId || "",
                     name: p.name,
                     code: p.code,
-                    status: p.status,
+                    active: !!p.active,
                   };
                   return posNode;
                 }),
@@ -351,21 +274,21 @@ export function OrganizationalCommandCenter() {
         }));
 
         // Setores diretos do departamento (quando não há subdepartamentos)
-        const directSectors = (sectorsByDepartment.get(d.departmentId) ?? [])
+        const directSectors = (sectorsByDepartment.get((d.id || "")) ?? [])
           .map((s) => {
             const secNode: SectorNode = {
-              id: s.id,
-              departmentId: s.departmentId,
+              id: s.id || "",
+              departmentId: s.departmentId || "",
               name: s.name,
               code: s.code,
-              status: s.status,
-              positions: (positionsBySector.get(s.id) ?? []).map((p) => {
+              active: !!s.active,
+              positions: (positionsBySector.get(s.id || "") ?? []).map((p) => {
                 const posNode: PositionNode = {
-                  id: p.id,
-                  sectorId: p.sectorId,
+                  id: p.id || "",
+                  sectorId: p.sectorId || "",
                   name: p.name,
                   code: p.code,
-                  status: p.status,
+                  active: !!p.active,
                 };
                 return posNode;
               }),
@@ -375,10 +298,10 @@ export function OrganizationalCommandCenter() {
           .sort((a, b) => a.name.localeCompare(b.name));
 
         const deptNode: DepartmentNode = {
-          id: d.departmentId,
+          id: (d.id || ""),
           name: d.name,
           code: d.code,
-          status: d.status,
+          active: d.active,
           subdepartments: subdepts.length > 0 ? subdepts : undefined,
           sectors: subdepts.length === 0 ? directSectors : undefined, // Só mostra setores diretos se não houver subdepartamentos
         };
@@ -402,39 +325,40 @@ export function OrganizationalCommandCenter() {
       } else if (filters.type === "sector") {
         filteredDepts = filteredDepts.map((d) => ({
           ...d,
-          sectors: d.sectors.map((s) => ({ ...s, positions: [] })),
+          sectors: d.sectors?.map((s) => ({ ...s, positions: [] })) ?? [],
         }));
       } else if (filters.type === "position") {
         // Keep all but only show positions
         filteredDepts = filteredDepts.map((d) => ({
           ...d,
-          sectors: d.sectors.map((s) => ({ ...s, positions: s.positions })),
+          sectors: d.sectors?.map((s) => ({ ...s, positions: s.positions })) ?? [],
         }));
       }
     }
 
+
     // Filter by status
     if (filters.status !== "all") {
       filteredDepts = filteredDepts
-        .filter((d) => d.status === filters.status)
+        .filter((d) => matchStatus(d.active, filters.status))
         .map((d) => ({
           ...d,
           subdepartments: d.subdepartments
-            ?.filter((sd) => sd.status === filters.status)
+            ?.filter((sd) => matchStatus(sd.active, filters.status))
             .map((sd) => ({
               ...sd,
               sectors: sd.sectors
-                ?.filter((s) => s.status === filters.status)
+                ?.filter((s) => matchStatus(s.active, filters.status))
                 .map((s) => ({
                   ...s,
-                  positions: s.positions?.filter((p) => p.status === filters.status) ?? [],
+                  positions: s.positions?.filter((p) => matchStatus(p.active, filters.status)) ?? [],
                 })),
             })),
           sectors: d.sectors
-            ?.filter((s) => s.status === filters.status)
+            ?.filter((s) => matchStatus(s.active, filters.status))
             .map((s) => ({
               ...s,
-              positions: s.positions?.filter((p) => p.status === filters.status) ?? [],
+              positions: s.positions?.filter((p) => matchStatus(p.active, filters.status)) ?? [],
             })),
         }));
     }
@@ -454,13 +378,13 @@ export function OrganizationalCommandCenter() {
                 if (!keepSector) return null;
                 return { ...s, positions: positionsFiltered };
               })
-              .filter((s): s is SectorNode => Boolean(s));
-            
+              .filter((s) => s !== null) as SectorNode[];
+
             const keepSubdept = match(sd.name) || match(sd.code) || sectorsFiltered.length > 0;
             if (!keepSubdept) return null;
             return { ...sd, sectors: sectorsFiltered };
           })
-          .filter((sd): sd is SubdepartmentNode => Boolean(sd));
+          .filter((sd) => sd !== null) as SubdepartmentNode[];
 
         // Filtrar setores diretos
         const sectorsFiltered = (d.sectors ?? [])
@@ -470,53 +394,33 @@ export function OrganizationalCommandCenter() {
             if (!keepSector) return null;
             return { ...s, positions: positionsFiltered };
           })
-          .filter((s): s is SectorNode => Boolean(s));
+          .filter((s) => s !== null) as SectorNode[];
 
         const keepDept = match(d.name) || match(d.code) || subdeptsFiltered.length > 0 || sectorsFiltered.length > 0;
         if (!keepDept) return null;
-        return { 
-          ...d, 
+        return {
+          ...d,
           subdepartments: subdeptsFiltered.length > 0 ? subdeptsFiltered : undefined,
           sectors: subdeptsFiltered.length === 0 ? sectorsFiltered : undefined,
         };
       })
-      .filter((d): d is DepartmentNode => Boolean(d));
+      .filter((d) => d !== null) as DepartmentNode[];
   }, [departments, subdepartments, positions, search, sectors, filters]);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const headers = {
-        ...getAuthHeadersWithTenant(),
-        "Content-Type": "application/json",
-      };
-
-      // Obter orgId do tenant
-      const orgId = localStorage.getItem("selected_org_id") || "";
-      
-      const [dRes, sdRes, sRes, pRes] = await Promise.all([
-        fetch("/api/departments", { headers, cache: "no-store" }),
-        orgId ? fetch(`/api/subdepartments?orgId=${orgId}&status=ativo&limite=1000`, { headers, cache: "no-store" }) : Promise.resolve({ ok: false }),
-        fetch("/api/sectors", { headers, cache: "no-store" }),
-        fetch("/api/positions", { headers, cache: "no-store" }),
+      const [depts, subdepts, sects, pos] = await Promise.all([
+        organizationalService.getDepartments(),
+        organizationalService.getSubdepartments(),
+        organizationalService.getSectors(),
+        organizationalService.getPositions(),
       ]);
 
-      if (dRes.ok) {
-        const data = (await dRes.json()) as ListResponse<Department>;
-        setDepartments(data.itens ?? []);
-      }
-      if (sdRes.ok) {
-        const data = (await sdRes.json()) as ListResponse<Subdepartment>;
-        setSubdepartments(data.itens ?? []);
-      }
-      if (sRes.ok) {
-        const data = (await sRes.json()) as ListResponse<Sector>;
-        setSectors(data.itens ?? []);
-      }
-      if (pRes.ok) {
-        const data = (await pRes.json()) as ListResponse<Position>;
-        setPositions(data.itens ?? []);
-      }
+      setDepartments(depts);
+      setSubdepartments(subdepts);
+      setSectors(sects);
+      setPositions(pos);
     } catch (e) {
       console.error(e);
       notificationCenter.add({
@@ -529,304 +433,41 @@ export function OrganizationalCommandCenter() {
     }
   }, []);
 
-  const resetDrawer = useCallback(() => {
-    setDrawerErrors({});
-    setDrawerBusy(false);
-  }, []);
-
+  /* Drawer Functions - Simplified for Smart Forms */
   const openCreateDepartment = useCallback(() => {
-    resetDrawer();
     setDrawerMode("create");
     setDrawerType("department");
-    setDeptDraft({
-      name: "",
-      code: "",
-      description: "",
-      parentId: "",
-      status: "ativo",
-    });
     setDrawerOpen(true);
-  }, [resetDrawer]);
+  }, []);
 
-  const openCreateSector = useCallback(
-    (departmentId: string) => {
-      resetDrawer();
-      setDrawerMode("create");
-      setDrawerType("sector");
-      setSectorDraft({
-        name: "",
-        code: "",
-        description: "",
-        departmentId,
-        parentId: "",
-        status: "ativo",
-      });
-      setDrawerOpen(true);
-    },
-    [resetDrawer],
-  );
+  const openCreateSector = useCallback((departmentId: string) => {
+    // For sector, we might need to pre-select department. 
+    // Ideally we pass this to the form as initialData or context.
+    // For now we just open. The form will handle selection or we pass data later.
+    setDrawerMode("create");
+    setDrawerType("sector");
+    setDrawerOpen(true);
+  }, []);
 
-  const openCreatePosition = useCallback(
-    (sectorId: string) => {
-      resetDrawer();
-      setDrawerMode("create");
-      setDrawerType("position");
-      setPositionDraft({
-        name: "",
-        code: "",
-        description: "",
-        sectorId,
-        status: "ativo",
-      });
-      setDrawerOpen(true);
-    },
-    [resetDrawer],
-  );
+  const openCreatePosition = useCallback((sectorId: string) => {
+    setDrawerMode("create");
+    setDrawerType("position");
+    setDrawerOpen(true);
+  }, []);
 
-  const openEditNode = useCallback(
-    (node: SelectedNode) => {
-      resetDrawer();
-      setDrawerMode("edit");
-      setDrawerType(node.type);
-
-      if (node.type === "department") {
-        const d = departments.find((x) => x.departmentId === node.id);
-        setDeptDraft({
-          departmentId: node.id,
-          name: d?.name ?? node.data.name,
-          code: d?.code ?? node.data.code,
-          description: d?.description ?? "",
-          parentId: d?.parentId ?? "",
-          status: d?.status ?? node.data.status,
-        });
-      } else if (node.type === "sector") {
-        const s = sectors.find((x) => x.id === node.id);
-        setSectorDraft({
-          id: node.id,
-          name: s?.name ?? node.data.name,
-          code: s?.code ?? node.data.code,
-          description: s?.description ?? "",
-          departmentId: s?.departmentId ?? node.data.departmentId,
-          parentId: s?.parentId ?? "",
-          status: s?.status ?? node.data.status,
-        });
-      } else {
-        const p = positions.find((x) => x.id === node.id);
-        setPositionDraft({
-          id: node.id,
-          name: p?.name ?? node.data.name,
-          code: p?.code ?? node.data.code,
-          description: p?.description ?? "",
-          sectorId: p?.sectorId ?? node.data.sectorId,
-          status: p?.status ?? node.data.status,
-        });
-      }
-
-      setDrawerOpen(true);
-    },
-    [departments, positions, resetDrawer, sectors],
-  );
-
-  const validateDrawer = useCallback(() => {
-    const errors: Record<string, string> = {};
-
-    if (drawerType === "department") {
-      if (deptDraft.name.trim().length < 2) errors.name = "Nome mínimo: 2 caracteres";
-      if (deptDraft.code.trim().length < 1) errors.code = "Código obrigatório";
-    }
-
-    if (drawerType === "sector") {
-      if (!sectorDraft.departmentId) errors.departmentId = "Departamento obrigatório";
-      if (sectorDraft.name.trim().length < 3) errors.name = "Nome mínimo: 3 caracteres";
-      if (sectorDraft.code.trim().length < 2) errors.code = "Código mínimo: 2 caracteres";
-    }
-
-    if (drawerType === "position") {
-      if (!positionDraft.sectorId) errors.sectorId = "Setor obrigatório";
-      if (positionDraft.name.trim().length < 3) errors.name = "Nome mínimo: 3 caracteres";
-      if (positionDraft.code.trim().length < 2) errors.code = "Código mínimo: 2 caracteres";
-    }
-
-    setDrawerErrors(errors);
-    return Object.keys(errors).length === 0;
-  }, [deptDraft, drawerType, positionDraft, sectorDraft]);
-
-  const saveDrawer = useCallback(async () => {
-    if (!validateDrawer()) return;
-
-    // reforço: ações “sensíveis” (create/edit) em ARMED pedem motivo
-    if (armedMode && !reason.trim()) {
-      notificationCenter.add({
-        type: "error",
-        title: "ARMED MODE",
-        message: "Informe um motivo para executar create/edit (ação auditável).",
-      });
+  const openEditNode = useCallback((node: SelectedNode) => {
+    if (node.type === "subdepartment") {
+      console.warn("Edit subdepartment not implemented");
       return;
     }
+    setDrawerMode("edit");
+    setDrawerType(node.type);
+    setSelected(node); // Ensure selected is set
+    setDrawerOpen(true);
+  }, []);
 
-    setDrawerBusy(true);
-    try {
-      if (drawerType === "department") {
-        const body =
-          drawerMode === "create"
-            ? {
-                name: deptDraft.name.trim(),
-                code: deptDraft.code.trim(),
-                description: deptDraft.description.trim() || null,
-                parentId: deptDraft.parentId || null,
-                status: deptDraft.status,
-                metadata: {
-                  ui: "orgcc",
-                  reason: reason.trim() || undefined,
-                },
-              }
-            : {
-                name: deptDraft.name.trim(),
-                code: deptDraft.code.trim(),
-                description: deptDraft.description.trim() || null,
-                parentId: deptDraft.parentId || null,
-                status: deptDraft.status,
-                metadata: {
-                  ui: "orgcc",
-                  reason: reason.trim() || undefined,
-                },
-              };
 
-        const url =
-          drawerMode === "create"
-            ? "/api/departments"
-            : `/api/departments/${deptDraft.departmentId}`;
-        const method = drawerMode === "create" ? "POST" : "PUT";
 
-        const res = await fetch(url, {
-          method,
-          headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-
-        if (!res.ok) {
-          const msg = await res.json().catch(() => ({ message: "Erro ao salvar departamento" }));
-          notificationCenter.add({
-            type: "error",
-            title: "Falha ao salvar departamento",
-            message: String(msg.message ?? "Erro"),
-          });
-          return;
-        }
-      } else if (drawerType === "sector") {
-        const body =
-          drawerMode === "create"
-            ? {
-                name: sectorDraft.name.trim(),
-                code: sectorDraft.code.trim(),
-                description: sectorDraft.description.trim() || null,
-                departmentId: sectorDraft.departmentId,
-                parentId: sectorDraft.parentId || null,
-                metadata: {
-                  ui: "orgcc",
-                  reason: reason.trim() || undefined,
-                },
-              }
-            : {
-                name: sectorDraft.name.trim(),
-                code: sectorDraft.code.trim(),
-                description: sectorDraft.description.trim() || null,
-                parentId: sectorDraft.parentId || null,
-                status: sectorDraft.status,
-                metadata: {
-                  ui: "orgcc",
-                  reason: reason.trim() || undefined,
-                },
-              };
-
-        const url =
-          drawerMode === "create" ? "/api/sectors" : `/api/sectors/${sectorDraft.id}`;
-        const method = drawerMode === "create" ? "POST" : "PUT";
-
-        const res = await fetch(url, {
-          method,
-          headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-
-        if (!res.ok) {
-          const msg = await res.json().catch(() => ({ message: "Erro ao salvar setor" }));
-          notificationCenter.add({
-            type: "error",
-            title: "Falha ao salvar setor",
-            message: String(msg.message ?? "Erro"),
-          });
-          return;
-        }
-      } else {
-        const body =
-          drawerMode === "create"
-            ? {
-                name: positionDraft.name.trim(),
-                code: positionDraft.code.trim(),
-                description: positionDraft.description.trim() || null,
-                sectorId: positionDraft.sectorId,
-                metadata: {
-                  ui: "orgcc",
-                  reason: reason.trim() || undefined,
-                },
-              }
-            : {
-                name: positionDraft.name.trim(),
-                code: positionDraft.code.trim(),
-                description: positionDraft.description.trim() || null,
-                status: positionDraft.status,
-                metadata: {
-                  ui: "orgcc",
-                  reason: reason.trim() || undefined,
-                },
-              };
-
-        const url =
-          drawerMode === "create"
-            ? "/api/positions"
-            : `/api/positions/${positionDraft.id}`;
-        const method = drawerMode === "create" ? "POST" : "PUT";
-
-        const res = await fetch(url, {
-          method,
-          headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-
-        if (!res.ok) {
-          const msg = await res.json().catch(() => ({ message: "Erro ao salvar cargo" }));
-          notificationCenter.add({
-            type: "error",
-            title: "Falha ao salvar cargo",
-            message: String(msg.message ?? "Erro"),
-          });
-          return;
-        }
-      }
-
-      notificationCenter.add({
-        type: "success",
-        title: "Alteração aplicada",
-        message: "Estrutura atualizada e auditável.",
-      });
-
-      setDrawerOpen(false);
-      await loadAll();
-    } finally {
-      setDrawerBusy(false);
-    }
-  }, [
-    armedMode,
-    deptDraft,
-    drawerMode,
-    drawerType,
-    loadAll,
-    positionDraft,
-    reason,
-    sectorDraft,
-    validateDrawer,
-  ]);
 
   const deleteNode = useCallback(
     async (node: SelectedNode) => {
@@ -844,26 +485,18 @@ export function OrganizationalCommandCenter() {
 
       setDrawerBusy(true);
       try {
-        const url =
-          node.type === "department"
-            ? `/api/departments/${node.id}`
-            : node.type === "sector"
-              ? `/api/sectors/${node.id}`
-              : `/api/positions/${node.id}`;
-
-        const res = await fetch(url, {
-          method: "DELETE",
-          headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
-        });
-
-        if (!res.ok && res.status !== 204) {
-          const msg = await res.json().catch(() => ({ message: "Erro ao deletar" }));
-          notificationCenter.add({
-            type: "error",
-            title: "Falha ao deletar",
-            message: String(msg.message ?? "Erro"),
+        if (node.type === "department") {
+          await organizationalService.deleteDepartment.execute(node.id);
+        } else if (node.type === "sector") {
+          await organizationalService.deleteSector.execute(node.id);
+        } else if (node.type === "position") {
+          await organizationalService.deletePosition.execute(node.id);
+        } else if (node.type === "subdepartment") {
+          // Subdepartment delete not yet in service, but let's add it or keep legacy for now
+          await fetch(`/api/subdepartments/${node.id}`, {
+            method: "DELETE",
+            headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
           });
-          return;
         }
 
         notificationCenter.add({
@@ -875,6 +508,13 @@ export function OrganizationalCommandCenter() {
         setSelected(null);
         setTab("overview");
         await loadAll();
+      } catch (err) {
+        console.error(err);
+        notificationCenter.add({
+          type: "error",
+          title: "Falha ao deletar",
+          message: err instanceof Error ? err.message : "Erro desconhecido",
+        });
       } finally {
         setDrawerBusy(false);
       }
@@ -905,35 +545,35 @@ export function OrganizationalCommandCenter() {
 
       // Adicionar departamentos
       for (const dept of departments) {
-        const parentDept = departments.find((d) => d.departmentId === dept.parentId);
+        const parentDept = departments.find((d) => (d.id || "") === dept.parentId);
         exportData.push({
           Tipo: "Departamento",
-          ID: dept.departmentId,
+          ID: dept.id || "",
           Nome: dept.name,
           Código: dept.code,
-          Descrição: dept.description,
-          Status: dept.status,
+          Descrição: dept.description || null,
+          Status: dept.active ? "Ativo" : "Inativo",
           "Departamento Pai": parentDept ? `${parentDept.name} (${parentDept.code})` : undefined,
-          "Criado Em": new Date(dept.createdAt).toLocaleString("pt-BR"),
-          "Atualizado Em": new Date(dept.updatedAt).toLocaleString("pt-BR"),
+          "Criado Em": dept.createdAt ? new Date(dept.createdAt).toLocaleString("pt-BR") : "",
+          "Atualizado Em": dept.updatedAt ? new Date(dept.updatedAt).toLocaleString("pt-BR") : "",
         });
       }
 
       // Adicionar setores
       for (const sector of sectors) {
-        const dept = departments.find((d) => d.departmentId === sector.departmentId);
+        const dept = departments.find((d) => (d.id || "") === sector.departmentId);
         const parentSector = sectors.find((s) => s.id === sector.parentId);
         exportData.push({
           Tipo: "Setor",
-          ID: sector.id,
+          ID: sector.id || "",
           Nome: sector.name,
           Código: sector.code,
-          Descrição: sector.description,
-          Status: sector.status,
+          Descrição: sector.description || null,
+          Status: sector.active ? "Ativo" : "Inativo",
           "Setor Vinculado": dept ? `${dept.name} (${dept.code})` : undefined,
           "Setor Pai": parentSector ? `${parentSector.name} (${parentSector.code})` : undefined,
-          "Criado Em": new Date(sector.createdAt).toLocaleString("pt-BR"),
-          "Atualizado Em": new Date(sector.updatedAt).toLocaleString("pt-BR"),
+          "Criado Em": sector.createdAt ? new Date(sector.createdAt).toLocaleString("pt-BR") : "",
+          "Atualizado Em": sector.updatedAt ? new Date(sector.updatedAt).toLocaleString("pt-BR") : "",
         });
       }
 
@@ -942,14 +582,14 @@ export function OrganizationalCommandCenter() {
         const sector = sectors.find((s) => s.id === position.sectorId);
         exportData.push({
           Tipo: "Cargo",
-          ID: position.id,
+          ID: position.id || "",
           Nome: position.name,
           Código: position.code,
-          Descrição: position.description,
-          Status: position.status,
+          Descrição: position.description || null,
+          Status: position.active ? "Ativo" : "Inativo",
           "Setor Vinculado": sector ? `${sector.name} (${sector.code})` : undefined,
-          "Criado Em": new Date(position.createdAt).toLocaleString("pt-BR"),
-          "Atualizado Em": new Date(position.updatedAt).toLocaleString("pt-BR"),
+          "Criado Em": position.createdAt ? new Date(position.createdAt).toLocaleString("pt-BR") : "",
+          "Atualizado Em": position.updatedAt ? new Date(position.updatedAt).toLocaleString("pt-BR") : "",
         });
       }
 
@@ -1040,7 +680,7 @@ export function OrganizationalCommandCenter() {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
+
         notificationCenter.add({
           type: "info",
           title: "Exportação PDF",
@@ -1407,12 +1047,12 @@ export function OrganizationalCommandCenter() {
         const data = (await res.json().catch(() => null)) as
           | null
           | {
-              pending?: boolean;
-              requestId?: string;
-              permissionId?: string;
-              permissionKey?: string;
-              status?: string;
-            };
+            pending?: boolean;
+            requestId?: string;
+            permissionId?: string;
+            permissionKey?: string;
+            status?: string;
+          };
 
         if (data?.pending && typeof data.requestId === "string") {
           setPendingApproval({
@@ -1471,7 +1111,7 @@ export function OrganizationalCommandCenter() {
   ]);
 
   const handleSelectNode = useCallback(
-    (node: { type: "department" | "sector" | "position"; id: string; data: DepartmentNode | SectorNode | PositionNode }) => {
+    (node: { type: "department" | "subdepartment" | "sector" | "position"; id: string; data: DepartmentNode | SubdepartmentNode | SectorNode | PositionNode }) => {
       setSelected(node as SelectedNode);
       setTab("overview");
     },
@@ -1485,24 +1125,35 @@ export function OrganizationalCommandCenter() {
       return [{ label: selected.data.name, code: selected.data.code }];
     }
 
-    if (selected.type === "sector") {
-      const dept = departments.find((d) => d.departmentId === selected.data.departmentId);
+    if (selected.type === "subdepartment") {
+      const sd = subdepartments.find(s => (s.subdepartmentId || "") === selected.id);
+      const dept = sd ? departments.find(d => (d.id || "") === (sd.departmentId || "")) : null;
       return [
         { label: dept?.name ?? "Departamento", code: dept?.code },
         { label: selected.data.name, code: selected.data.code },
       ];
     }
 
-    // position
-    const sector = sectors.find((s) => s.id === selected.data.sectorId);
-    const dept = sector ? departments.find((d) => d.departmentId === sector.departmentId) : null;
+    if (selected.type === "sector") {
+      const dept = departments.find((d) => (d.id || "") === selected.data.departmentId);
+      return [
+        { label: dept?.name ?? "Departamento", code: dept?.code },
+        { label: selected.data.name, code: selected.data.code },
+      ];
+    }
 
-    return [
-      { label: dept?.name ?? "Departamento", code: dept?.code },
-      { label: sector?.name ?? "Setor", code: sector?.code },
-      { label: selected.data.name, code: selected.data.code },
-    ];
-  }, [departments, sectors, selected]);
+    if (selected.type === "position") {
+      const sector = sectors.find((s) => s.id === selected.data.sectorId);
+      const dept = sector ? departments.find((d) => (d.id || "") === (sector.departmentId || "")) : null;
+      return [
+        { label: dept?.name ?? "Departamento", code: dept?.code },
+        { label: sector?.name ?? "Setor", code: sector?.code },
+        { label: selected.data.name, code: selected.data.code },
+      ];
+    }
+
+    return [];
+  }, [departments, subdepartments, sectors, selected]);
 
   return (
     <div className="relative">
@@ -1527,6 +1178,7 @@ export function OrganizationalCommandCenter() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <DateRangePicker value={dateRange} onChange={setDateRange} />
             <Button variant="secondary" type="button" onClick={() => void loadAll()} disabled={loading}>
               <RefreshCw className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
               Recarregar
@@ -1751,27 +1403,19 @@ export function OrganizationalCommandCenter() {
                   Selecione um nó para abrir o painel operacional.
                 </div>
               ) : tab === "overview" ? (
-                <div className="grid gap-3 md:grid-cols-3">
-                  <div className="border border-white/10 bg-black/20 p-3">
-                    <div className="text-xs text-white/50">Tipo</div>
-                    <div className="mt-1 text-sm text-white/80 font-mono">{selected.type}</div>
-                  </div>
-                  <div className="border border-white/10 bg-black/20 p-3">
-                    <div className="text-xs text-white/50">Código</div>
-                    <div className="mt-1 text-sm text-white/80 font-mono">{selected.data.code}</div>
-                  </div>
-                  <div className="border border-white/10 bg-black/20 p-3">
-                    <div className="text-xs text-white/50">Status</div>
-                    <div className="mt-1 text-sm text-white/80 font-mono">{selected.data.status}</div>
-                  </div>
-
-                  <div className="md:col-span-3 border border-white/10 bg-black/20 p-3">
-                    <div className="text-xs text-white/50">Camada Subdepartamento</div>
-                    <div className="mt-2 text-sm text-white/60">
-                      Esta camada será inserida entre Departamento e Setor. O Command Center já está
-                      preparado para a migração sem retrabalho.
-                    </div>
-                  </div>
+                <div className="space-y-8">
+                  <AdvancedMetricsPanel
+                    departments={departments}
+                    sectors={sectors}
+                    positions={positions}
+                  />
+                  <OverviewPanel
+                    departments={departments}
+                    sectors={sectors}
+                    positions={positions}
+                    membersCount={members.length} // Note: This might be 0 if members tab wasn't loaded. Ideally force load or use separate count.
+                    dateRange={dateRange}
+                  />
                 </div>
               ) : tab === "members" ? (
                 <div className="space-y-3">
@@ -2086,59 +1730,59 @@ export function OrganizationalCommandCenter() {
               ) : tab === "import-export" ? (
                 <ImportExportPanel
                   departments={departments.map((d) => ({
-                    id: d.departmentId,
-                    departmentId: d.departmentId,
-                    orgId: d.orgId,
+                    id: d.id || "",
+                    departmentId: d.id || "",
+                    orgId: (d as any).orgId || "",
                     name: d.name,
                     code: d.code,
-                    description: d.description,
+                    description: d.description ?? undefined,
                     type: "CORE" as const,
-                    filialId: null,
-                    parentId: d.parentId,
-                    active: d.status === "ativo",
+                    filialId: undefined,
+                    parentId: d.parentId ?? undefined,
+                    active: !!d.active,
                     createdAt: d.createdAt,
                     updatedAt: d.updatedAt,
                   }))}
                   subdepartments={subdepartments.map((sd) => ({
-                    id: sd.subdepartmentId,
                     subdepartmentId: sd.subdepartmentId,
-                    orgId: sd.orgId,
+                    orgId: (sd as any).orgId || "",
                     departmentId: sd.departmentId,
                     name: sd.name,
                     code: sd.code,
-                    description: sd.description,
+                    description: sd.description ?? undefined,
                     status: sd.status,
+                    ordem: sd.ordem,
                     createdAt: sd.createdAt,
                     updatedAt: sd.updatedAt,
                   }))}
                   sectors={sectors.map((s) => ({
                     id: s.id,
-                    orgId: s.orgId,
                     departmentId: s.departmentId,
-                    subdepartmentId: s.subdepartmentId,
                     name: s.name,
                     code: s.code,
-                    description: s.description,
-                    status: s.status,
+                    description: s.description ?? undefined,
+                    type: "CORE" as const,
+                    active: !!s.active,
+                    filialId: undefined,
+                    parentId: s.parentId ?? undefined,
                     createdAt: s.createdAt,
                     updatedAt: s.updatedAt,
                   }))}
                   positions={positions.map((p) => ({
                     id: p.id,
-                    orgId: p.orgId,
-                    sectorId: p.sectorId,
                     name: p.name,
                     code: p.code,
-                    description: p.description,
-                    responsabilidades: p.responsabilidades,
-                    requisitos: p.requisitos,
-                    salarioMin: p.salarioMin,
-                    salarioMax: p.salarioMax,
-                    status: p.status,
+                    description: p.description ?? undefined,
+                    seniority: "Junior",
+                    active: !!p.active,
+                    responsabilidades: (p as any).responsabilidades ?? undefined,
+                    requisitos: (p as any).requisitos ?? undefined,
+                    salarioMin: (p as any).salarioMin ?? undefined,
+                    salarioMax: (p as any).salarioMax ?? undefined,
                     createdAt: p.createdAt,
                     updatedAt: p.updatedAt,
                   }))}
-                  orgId={departments[0]?.orgId || ""}
+                  orgId={(departments[0] as any)?.orgId || ""}
                   onImportComplete={async () => {
                     await loadAll();
                   }}
@@ -2166,277 +1810,68 @@ export function OrganizationalCommandCenter() {
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               aria-hidden="true"
               onClick={() => {
-                if (!drawerBusy) setDrawerOpen(false);
+                setDrawerOpen(false);
               }}
             />
             <div className="absolute right-0 top-0 h-full w-full max-w-[520px] border-l border-white/10 bg-[color-mix(in_oklab,hsl(var(--surface))_78%,black_22%)] shadow-[0_28px_140px_-45px_rgba(0,0,0,0.95)]">
               <div className="pointer-events-none absolute inset-0 holo-grid opacity-10" />
-              <div className="relative flex h-full flex-col">
-                <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
-                  <div>
-                    <div className="text-[10px] font-mono tracking-[0.28em] text-white/40">
-                      {drawerMode === "create" ? "CREATE" : "EDIT"} • {drawerType.toUpperCase()}
-                    </div>
-                    <div className="mt-1 text-lg font-semibold text-white/85">
-                      {drawerMode === "create" ? "Nova entidade" : "Editar entidade"}
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="border border-white/10 bg-white/5 px-3 py-2 text-xs font-mono tracking-[0.2em] text-white/70 hover:bg-white/8 hover:text-white transition"
-                    onClick={() => {
-                      if (!drawerBusy) setDrawerOpen(false);
+              <div className="relative flex h-full flex-col p-6 overflow-y-auto">
+                {drawerType === "department" && (
+                  <DepartmentForm
+                    initialData={drawerMode === 'edit' && selected?.type === 'department' ?
+                      departments.find(d => (d.id || "") === selected.id) : undefined}
+                    onSubmit={async (data) => {
+                      if (drawerMode === 'edit' && selected?.id) {
+                        await organizationalService.updateDepartment.execute(selected.id, data);
+                      } else {
+                        await organizationalService.createDepartment.execute(data);
+                      }
                     }}
-                  >
-                    FECHAR
-                  </button>
-                </div>
-
-                <div className="flex-1 overflow-auto px-6 py-5 space-y-4">
-                  {drawerType === "department" ? (
-                    <div className="space-y-3">
-                      <div>
-                        <div className="text-xs text-white/50">Nome</div>
-                        <Input
-                          value={deptDraft.name}
-                          onChange={(e) => setDeptDraft((p) => ({ ...p, name: e.target.value }))}
-                          className="font-mono"
-                        />
-                        {drawerErrors.name ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.name}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Código</div>
-                        <Input
-                          value={deptDraft.code}
-                          onChange={(e) => setDeptDraft((p) => ({ ...p, code: e.target.value }))}
-                          className="font-mono"
-                        />
-                        {drawerErrors.code ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.code}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Descrição</div>
-                        <Input
-                          value={deptDraft.description}
-                          onChange={(e) => setDeptDraft((p) => ({ ...p, description: e.target.value }))}
-                          className="font-mono"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Parent (department)</div>
-                        <select
-                          value={deptDraft.parentId}
-                          onChange={(e) => setDeptDraft((p) => ({ ...p, parentId: e.target.value }))}
-                          className="h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono"
-                        >
-                          <option value="">(sem pai)</option>
-                          {departments
-                            .filter((d) => d.departmentId !== deptDraft.departmentId)
-                            .map((d) => (
-                              <option key={d.departmentId} value={d.departmentId}>
-                                {d.name} • {d.code}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Status</div>
-                        <select
-                          value={deptDraft.status}
-                          onChange={(e) =>
-                            setDeptDraft((p) => ({ ...p, status: e.target.value as Department["status"] }))
-                          }
-                          className="h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono"
-                        >
-                          <option value="ativo">ativo</option>
-                          <option value="inativo">inativo</option>
-                          <option value="arquivado">arquivado</option>
-                        </select>
-                      </div>
-                    </div>
-                  ) : drawerType === "sector" ? (
-                    <div className="space-y-3">
-                      <div>
-                        <div className="text-xs text-white/50">Departamento</div>
-                        <select
-                          value={sectorDraft.departmentId}
-                          onChange={(e) => setSectorDraft((p) => ({ ...p, departmentId: e.target.value }))}
-                          disabled={drawerMode === "edit"}
-                          className={cn(
-                            "h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono",
-                            drawerMode === "edit" && "opacity-60 cursor-not-allowed",
-                          )}
-                        >
-                          <option value="">Selecione…</option>
-                          {departments.map((d) => (
-                            <option key={d.departmentId} value={d.departmentId}>
-                              {d.name} • {d.code}
-                            </option>
-                          ))}
-                        </select>
-                        {drawerMode === "edit" ? (
-                          <div className="mt-1 text-[11px] text-white/40">
-                            (Regras atuais: não é possível trocar departmentId em update. Move entre departamentos será um endpoint dedicado.)
-                          </div>
-                        ) : null}
-                        {drawerErrors.departmentId ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.departmentId}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Nome</div>
-                        <Input
-                          value={sectorDraft.name}
-                          onChange={(e) => setSectorDraft((p) => ({ ...p, name: e.target.value }))}
-                          className="font-mono"
-                        />
-                        {drawerErrors.name ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.name}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Código</div>
-                        <Input
-                          value={sectorDraft.code}
-                          onChange={(e) => setSectorDraft((p) => ({ ...p, code: e.target.value }))}
-                          className="font-mono"
-                        />
-                        {drawerErrors.code ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.code}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Descrição</div>
-                        <Input
-                          value={sectorDraft.description}
-                          onChange={(e) => setSectorDraft((p) => ({ ...p, description: e.target.value }))}
-                          className="font-mono"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Parent (sector)</div>
-                        <select
-                          value={sectorDraft.parentId}
-                          onChange={(e) => setSectorDraft((p) => ({ ...p, parentId: e.target.value }))}
-                          className="h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono"
-                        >
-                          <option value="">(sem pai)</option>
-                          {sectors
-                            .filter((s) => s.departmentId === sectorDraft.departmentId)
-                            .filter((s) => s.id !== sectorDraft.id)
-                            .map((s) => (
-                              <option key={s.id} value={s.id}>
-                                {s.name} • {s.code}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Status</div>
-                        <select
-                          value={sectorDraft.status}
-                          onChange={(e) =>
-                            setSectorDraft((p) => ({ ...p, status: e.target.value as Sector["status"] }))
-                          }
-                          className="h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono"
-                        >
-                          <option value="ativo">ativo</option>
-                          <option value="inativo">inativo</option>
-                          <option value="arquivado">arquivado</option>
-                        </select>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div>
-                        <div className="text-xs text-white/50">Setor</div>
-                        <select
-                          value={positionDraft.sectorId}
-                          onChange={(e) => setPositionDraft((p) => ({ ...p, sectorId: e.target.value }))}
-                          disabled={drawerMode === "edit"}
-                          className={cn(
-                            "h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono",
-                            drawerMode === "edit" && "opacity-60 cursor-not-allowed",
-                          )}
-                        >
-                          <option value="">Selecione…</option>
-                          {sectors.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name} • {s.code}
-                            </option>
-                          ))}
-                        </select>
-                        {drawerMode === "edit" ? (
-                          <div className="mt-1 text-[11px] text-white/40">
-                            (Regras atuais: não é possível trocar sectorId em update. Move de cargo será um endpoint dedicado.)
-                          </div>
-                        ) : null}
-                        {drawerErrors.sectorId ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.sectorId}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Nome</div>
-                        <Input
-                          value={positionDraft.name}
-                          onChange={(e) => setPositionDraft((p) => ({ ...p, name: e.target.value }))}
-                          className="font-mono"
-                        />
-                        {drawerErrors.name ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.name}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Código</div>
-                        <Input
-                          value={positionDraft.code}
-                          onChange={(e) => setPositionDraft((p) => ({ ...p, code: e.target.value }))}
-                          className="font-mono"
-                        />
-                        {drawerErrors.code ? <div className="mt-1 text-[11px] text-[hsl(var(--danger))]">{drawerErrors.code}</div> : null}
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Descrição</div>
-                        <Input
-                          value={positionDraft.description}
-                          onChange={(e) => setPositionDraft((p) => ({ ...p, description: e.target.value }))}
-                          className="font-mono"
-                        />
-                      </div>
-                      <div>
-                        <div className="text-xs text-white/50">Status</div>
-                        <select
-                          value={positionDraft.status}
-                          onChange={(e) =>
-                            setPositionDraft((p) => ({ ...p, status: e.target.value as Position["status"] }))
-                          }
-                          className="h-12 w-full border border-white/10 bg-black/30 px-3 text-sm text-white/80 outline-none font-mono"
-                        >
-                          <option value="ativo">ativo</option>
-                          <option value="inativo">inativo</option>
-                          <option value="arquivado">arquivado</option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="border-t border-white/10 px-6 py-5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="text-[11px] text-white/40">
-                      {armedMode ? "ARMED: audit + motivo" : "SAFE: motivo opcional"}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => setDrawerOpen(false)}
-                        disabled={drawerBusy}
-                      >
-                        Cancelar
-                      </Button>
-                      <Button type="button" onClick={() => void saveDrawer()} disabled={drawerBusy}>
-                        {drawerBusy ? (
-                          <>
-                            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                            Salvando…
-                          </>
-                        ) : (
-                          "Salvar"
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                    onSuccess={() => {
+                      setDrawerOpen(false);
+                      void loadAll();
+                    }}
+                    onCancel={() => setDrawerOpen(false)}
+                  />
+                )}
+                {drawerType === "sector" && (
+                  <SectorForm
+                    initialData={drawerMode === 'edit' && selected?.type === 'sector' ?
+                      sectors.find(s => s.id === selected.id) : undefined}
+                    onSubmit={async (data) => {
+                      if (drawerMode === 'edit' && selected?.id) {
+                        await organizationalService.updateSector.execute(selected.id, data);
+                      } else {
+                        await organizationalService.createSector.execute(data);
+                      }
+                    }}
+                    onSuccess={() => {
+                      setDrawerOpen(false);
+                      void loadAll();
+                    }}
+                    onCancel={() => setDrawerOpen(false)}
+                    departmentId={drawerMode === 'create' && selected?.type === 'department' ? selected.id : undefined}
+                  />
+                )}
+                {drawerType === "position" && (
+                  <PositionForm
+                    initialData={drawerMode === 'edit' && selected?.type === 'position' ?
+                      positions.find(p => p.id === selected.id) : undefined}
+                    onSubmit={async (data) => {
+                      if (drawerMode === 'edit' && selected?.id) {
+                        await organizationalService.updatePosition.execute(selected.id, data);
+                      } else {
+                        await organizationalService.createPosition.execute(data);
+                      }
+                    }}
+                    onSuccess={() => {
+                      setDrawerOpen(false);
+                      void loadAll();
+                    }}
+                    onCancel={() => setDrawerOpen(false)}
+                    sectorId={drawerMode === 'create' && selected?.type === 'sector' ? selected.id : undefined}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -2445,7 +1880,7 @@ export function OrganizationalCommandCenter() {
         {/* Organogram View */}
         <AnimatePresence>
           {organogramView && (
-            <OrganogramView
+            <OrgTree
               departments={tree}
               onClose={() => setOrganogramView(false)}
             />
@@ -2476,7 +1911,7 @@ function MovePanel({
 
   useEffect(() => {
     if (selected.type === "department") {
-      const d = departments.find((x) => x.departmentId === selected.id);
+      const d = departments.find((x) => (x.id || "") === selected.id);
       setParentId(d?.parentId ?? "");
     } else if (selected.type === "sector") {
       const s = sectors.find((x) => x.id === selected.id);
@@ -2492,7 +1927,7 @@ function MovePanel({
     for (const d of departments) {
       if (!d.parentId) continue;
       const list = byParent.get(d.parentId) ?? [];
-      list.push(d.departmentId);
+      list.push(d.id || "");
       byParent.set(d.parentId, list);
     }
     const out = new Set<string>();
@@ -2521,41 +1956,9 @@ function MovePanel({
     setBusy(true);
     try {
       if (selected.type === "department") {
-        const res = await fetch(`/api/departments/${selected.id}`, {
-          method: "PUT",
-          headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
-          body: JSON.stringify({
-            parentId: parentId || null,
-            metadata: { ui: "orgcc", reason: reason.trim() || undefined },
-          }),
-        });
-        if (!res.ok) {
-          const msg = await res.json().catch(() => ({ message: "Erro ao mover departamento" }));
-          notificationCenter.add({
-            type: "error",
-            title: "Falha ao mover",
-            message: String(msg.message ?? "Erro"),
-          });
-          return;
-        }
+        await organizationalService.moveDepartment.execute(selected.id, parentId || null, reason.trim());
       } else if (selected.type === "sector") {
-        const res = await fetch(`/api/sectors/${selected.id}`, {
-          method: "PUT",
-          headers: { ...getAuthHeadersWithTenant(), "Content-Type": "application/json" },
-          body: JSON.stringify({
-            parentId: parentId || null,
-            metadata: { ui: "orgcc", reason: reason.trim() || undefined },
-          }),
-        });
-        if (!res.ok) {
-          const msg = await res.json().catch(() => ({ message: "Erro ao mover setor" }));
-          notificationCenter.add({
-            type: "error",
-            title: "Falha ao mover",
-            message: String(msg.message ?? "Erro"),
-          });
-          return;
-        }
+        await organizationalService.moveSector.execute(selected.id, parentId || null, reason.trim());
       } else {
         notificationCenter.add({
           type: "info",
@@ -2572,6 +1975,13 @@ function MovePanel({
         message: "Reparent atualizado (auditável).",
       });
       await onApplied();
+    } catch (err) {
+      console.error(err);
+      notificationCenter.add({
+        type: "error",
+        title: "Falha ao mover",
+        message: err instanceof Error ? err.message : "Erro desconhecido",
+      });
     } finally {
       setBusy(false);
     }
@@ -2588,12 +1998,12 @@ function MovePanel({
   const options =
     selected.type === "department"
       ? departments
-          .filter((d) => d.departmentId !== selected.id)
-          .filter((d) => !departmentDescendants.has(d.departmentId))
-          .map((d) => ({ id: d.departmentId, label: `${d.name} • ${d.code}` }))
+        .filter((d) => (d.id || "") !== selected.id)
+        .filter((d) => !departmentDescendants.has(d.id || ""))
+        .map((d) => ({ id: d.id || "", label: `${d.name} • ${d.code}` }))
       : sectors
-          .filter((s) => s.id !== selected.id)
-          .map((s) => ({ id: s.id, label: `${s.name} • ${s.code}` }));
+        .filter((s) => s.id !== selected.id)
+        .map((s) => ({ id: s.id, label: `${s.name} • ${s.code}` }));
 
   return (
     <div className="space-y-3">

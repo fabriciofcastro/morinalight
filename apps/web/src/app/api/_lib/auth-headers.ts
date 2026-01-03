@@ -11,7 +11,7 @@ export async function buildAuthHeaders(extra?: HeadersInit): Promise<HeadersInit
   const token = cookieStore.get("auth_token")?.value;
   const orgId = cookieStore.get("selected_org_id")?.value;
 
-  const headers: HeadersInit = { ...(extra ?? {}) };
+  const headers: any = { ...(extra ?? {}) };
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;

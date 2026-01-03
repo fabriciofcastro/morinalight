@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { adminRouteMiddleware } from "@/lib/middleware/security-middleware";
 
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../_lib/auth-headers";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest, context: any) {
+  // Aplicar middleware de segurança admin
+  const middlewareResult = await adminRouteMiddleware(request, context);
+  if (middlewareResult) return middlewareResult;
+
   const { searchParams } = new URL(request.url);
   const qs = searchParams.toString();
   const url = qs ? `${apiUrl}/permissions?${qs}` : `${apiUrl}/permissions`;
@@ -21,7 +26,11 @@ export async function GET(request: Request) {
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest, context: any) {
+  // Aplicar middleware de segurança admin
+  const middlewareResult = await adminRouteMiddleware(request, context);
+  if (middlewareResult) return middlewareResult;
+
   const body = await request.json().catch(() => ({}));
 
   const response = await fetch(`${apiUrl}/permissions`, {

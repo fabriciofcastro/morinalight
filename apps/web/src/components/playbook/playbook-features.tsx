@@ -189,8 +189,11 @@ export function PlaybookFeatures() {
                                 }}
                                 whileHover={{
                                     y: -8,
-                                    transition: { duration: 0.2 }
+                                    rotateY: 5,
+                                    rotateX: 5,
+                                    transition: { duration: 0.3, type: "spring", stiffness: 300 }
                                 }}
+                                style={{ perspective: "1000px" }}
                             >
                                 <GlassCard className="relative h-full p-6 group overflow-hidden">
                                     <AnimatedTechCorners variant="gradient" />
@@ -199,13 +202,22 @@ export function PlaybookFeatures() {
                                     {/* Glow effect */}
                                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(14,165,233,0.15),transparent_60%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
+                                    {/* Scanline sweep effect */}
+                                    <motion.div
+                                        className="absolute inset-0 bg-linear-to-b from-transparent via-[hsl(var(--primary))]/20 to-transparent pointer-events-none"
+                                        initial={{ y: "-100%", opacity: 0 }}
+                                        whileHover={{ y: "100%", opacity: 1 }}
+                                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                                    />
+
                                     <div className="relative z-10">
                                         {/* Icon */}
                                         <motion.div
                                             className={`w-14 h-14 border border-white/10 bg-white/5 flex items-center justify-center mb-4 group-hover:border-[hsl(var(--primary))]/30 group-hover:bg-[hsl(var(--primary))]/10 transition-all duration-300`}
                                             whileHover={{
-                                                rotate: 360,
-                                                transition: { duration: 0.6 }
+                                                rotate: [0, -10, 10, -10, 0],
+                                                scale: [1, 1.1, 1.1, 1.1, 1],
+                                                transition: { duration: 0.5 }
                                             }}
                                         >
                                             <Icon className={`w-7 h-7 ${feature.color}`} />

@@ -5,6 +5,18 @@
 
 export type PolicyEffect = "ALLOW" | "DENY";
 
+// ===== ROLES =====
+export const ROLES = {
+    SUPER_ADMIN: 'super_admin',
+    ADMIN: 'admin',
+    MANAGER: 'manager',
+    SUPERVISOR: 'supervisor',
+    USER: 'user',
+    GUEST: 'guest',
+} as const;
+
+export type Role = typeof ROLES[keyof typeof ROLES];
+
 export type LogicalOperator = "and" | "or" | "not";
 
 export type ComparisonOperator =
@@ -39,18 +51,30 @@ export interface SecurityPolicy {
     subject: string | string[];
     conditions?: ComplexCondition;
     priority: number; // For conflict resolution (Deny wins usually)
+    orgId?: string;
+    active?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 // TBAC: Time-Based Access Control
+// TBAC: Time-Based Access Control
 export interface TimeWindow {
+    id?: string;
+    orgId?: string;
+    name?: string;
     startTime: string; // ISO format "HH:mm"
     endTime: string;   // ISO format "HH:mm"
     daysOfWeek: number[]; // 0-6 (Sunday-Saturday)
     timezone?: string;
+    active?: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 // ACL: Access Control List (Instance-based)
 export interface ObjectAccessEntry {
+    id?: string;
     subject: string;
     subjectId: string;
     userId?: string;
@@ -69,6 +93,7 @@ export interface SecurityContext {
     };
     environment: {
         time: Date;
+        timeWindows?: TimeWindow[]; // TBAC Per-request context
         ip?: string;
         userAgent?: string;
         mfaVerified: boolean;

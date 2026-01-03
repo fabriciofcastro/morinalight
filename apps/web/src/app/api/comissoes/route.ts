@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   });
 
   const response = await fetch(`${apiUrl}/comissoes?${params.toString()}`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 

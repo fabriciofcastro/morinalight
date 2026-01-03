@@ -6,6 +6,7 @@ import { ConnectionProviders } from "@/components/connection-providers";
 import { ThemeShell } from "@/components/theme-shell";
 import { QueryProvider } from "@/lib/query/provider";
 import { AdvancedErrorBoundary } from "@/lib/errors";
+import { CookieConsent } from "@/components/legal/cookie-consent";
 
 import "./globals.css";
 
@@ -44,9 +45,10 @@ export default function RootLayout({
             disableTransitionOnChange
             enableColorScheme={false}
           >
-            <AdvancedErrorBoundary module="root" autoResetAfter={5000}>
+            <AdvancedErrorBoundary module="root" autoResetDelay={5000}>
               <ThemeShell>{children}</ThemeShell>
               <ConnectionProviders />
+              <CookieConsent />
             </AdvancedErrorBoundary>
           </ThemeProvider>
         </QueryProvider>

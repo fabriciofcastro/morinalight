@@ -15,7 +15,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   const response = await fetch(
     `${apiUrl}/users/${userId}/permissions/check?permission=${encodeURIComponent(permission)}`,
     {
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
       cache: "no-store",
     },
   );

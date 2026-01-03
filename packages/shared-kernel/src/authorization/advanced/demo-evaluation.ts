@@ -56,7 +56,7 @@ export function runSecurityCheckDemo() {
             subject: "Product",
             priority: 10,
             conditions: {
-                field: "resource.status", operator: "equals", value: "active"
+                and: [{ field: "resource.status", operator: "equals", value: "active" }]
             }
         }
     ];

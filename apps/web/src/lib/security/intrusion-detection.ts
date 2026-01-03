@@ -6,7 +6,10 @@
 
 import { auditService } from "@/lib/audit/audit-service";
 import { logger } from "@/lib/observability";
-import { notificationService } from "@/lib/patterns";
+import { securityNotificationService } from "@/lib/security/notifications";
+import { getPrismaClient } from "@/lib/prisma";
+import type { GeolocationData } from "@/lib/services/geolocation-service";
+import { siemExporter } from "@/lib/siem/siem-exporter";
 
 export interface SecurityAlert {
     userId: string;
@@ -15,6 +18,11 @@ export interface SecurityAlert {
     description: string;
     metadata?: Record<string, any>;
     timestamp: Date;
+    ipAddress?: string;
+    country?: string;
+    city?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 export class IntrusionDetector {
@@ -28,9 +36,11 @@ export class IntrusionDetector {
             startDate: new Date(Date.now() - 3600000), // 1 hora
         });
 
-        const failedLogins = recentLogs.filter((l) => !l.success);
+        const failedLogins = recentLogs.filter((l) => l.status === 'FAILURE');
 
-        if (failedLogins.length >= 5) {
+        const maxFailedLogins = parseInt(process.env.IDS_MAX_FAILED_LOGINS || "5");
+
+        if (failedLogins.length >= maxFailedLogins) {
             await this.createAlert({
                 userId,
                 alertType: "multiple_failed_logins",
@@ -41,7 +51,8 @@ export class IntrusionDetector {
             });
 
             // Bloquear usuário temporariamente
-            await this.blockUser(userId, 30); // 30 minutos
+            const blockDuration = parseInt(process.env.IDS_BLOCK_DURATION_MINUTES || "30");
+            await this.blockUser(userId, blockDuration);
         }
     }
 
@@ -65,6 +76,115 @@ export class IntrusionDetector {
                 metadata: { ips: Array.from(ips) },
                 timestamp: new Date(),
             });
+        }
+    }
+
+    /**
+     * Detecta viagem impossível (impossible travel)
+     */
+    async detectImpossibleTravel(userId: string, currentIP: string): Promise<void> {
+        try {
+            const { geolocationService } = await import('@/lib/services/geolocation-service');
+
+            // Get current location
+            const currentLocation = await geolocationService.getLocation(currentIP);
+            if (!currentLocation || currentLocation.countryCode === 'LOCAL') {
+                return; // Skip for local IPs
+            }
+
+            // Get recent logins
+            const prisma = await getPrismaClient();
+            if (!prisma) return;
+
+            const recentLogins = await prisma.securityAlert.findMany({
+                where: {
+                    userId,
+                    alertType: 'login_location',
+                    latitude: { not: null },
+                    createdAt: {
+                        gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
+                    },
+                },
+                orderBy: {
+                    createdAt: 'desc',
+                },
+                take: 1,
+            });
+
+            if (recentLogins.length === 0) {
+                // First login, just record location
+                await this.createAlert({
+                    userId,
+                    alertType: 'login_location',
+                    severity: 'low',
+                    description: `Login from ${geolocationService.getLocationSummary(currentLocation)}`,
+                    ipAddress: currentIP,
+                    timestamp: new Date(),
+                });
+                return;
+            }
+
+            const lastLogin = recentLogins[0];
+
+            if (!lastLogin.latitude || !lastLogin.longitude) {
+                return; // No location data to compare
+            }
+
+            const lastLocation = {
+                latitude: lastLogin.latitude,
+                longitude: lastLogin.longitude,
+                city: lastLogin.city,
+                country: lastLogin.country,
+            };
+
+            // Calculate time difference in minutes
+            const timeDiff = (new Date().getTime() - lastLogin.createdAt.getTime()) / (1000 * 60);
+
+            // Check for impossible travel
+            const isImpossible = geolocationService.detectImpossibleTravel(
+                { ...currentLocation, ip: currentIP },
+                { ...currentLocation, ...lastLocation, ip: lastLogin.ipAddress || '' } as any,
+                timeDiff
+            );
+
+            if (isImpossible) {
+                const distance = geolocationService.calculateDistance(
+                    lastLocation.latitude,
+                    lastLocation.longitude,
+                    currentLocation.latitude,
+                    currentLocation.longitude
+                );
+
+                await this.createAlert({
+                    userId,
+                    alertType: 'impossible_travel',
+                    severity: 'critical',
+                    description: `Impossible travel detected: ${Math.round(distance)}km in ${Math.round(timeDiff)} minutes`,
+                    ipAddress: currentIP,
+                    metadata: {
+                        currentLocation: geolocationService.getLocationSummary(currentLocation),
+                        previousLocation: `${lastLocation.city}, ${lastLocation.country}`,
+                        distance: Math.round(distance),
+                        timeMinutes: Math.round(timeDiff),
+                    },
+                    timestamp: new Date(),
+                });
+
+                // Auto-block for impossible travel
+                await this.blockUser(userId, 60); // 1 hour
+            } else {
+                // Normal login, record location
+                await this.createAlert({
+                    userId,
+                    alertType: 'login_location',
+                    severity: 'low',
+                    description: `Login from ${geolocationService.getLocationSummary(currentLocation)}`,
+                    ipAddress: currentIP,
+                    timestamp: new Date(),
+                });
+            }
+        } catch (error) {
+            console.error('[IDS] Impossible travel detection error:', error);
         }
     }
 
@@ -99,10 +219,12 @@ export class IntrusionDetector {
                 timestamp: new Date(),
             });
 
-            // Notificar equipe de segurança
-            await notificationService.sendMultiple(["email", "sms"], {
+            // Notificar equipe de segurança via múltiplos canais
+            await securityNotificationService.sendMultiple(["email", "slack"], {
                 to: "security-team",
-                message: `ALERT: User ${userId} accessed sensitive data at ${hour}:00`,
+                subject: `ALERT: Suspicious After-Hours Access`,
+                message: `User ${userId} accessed sensitive data (${sensitiveAccess.length} times) outside of business hours at ${hour}:00.`,
+                priority: "high"
             });
         }
     }
@@ -142,7 +264,7 @@ export class IntrusionDetector {
         });
 
         const deniedAccess = recentLogs.filter(
-            (l) => l.action === "access_denied" && !l.success,
+            (l) => l.action === "access_denied" && l.status === 'FAILURE',
         );
 
         // Múltiplas tentativas de acesso negado
@@ -158,10 +280,11 @@ export class IntrusionDetector {
 
             // Bloquear e notificar
             await this.blockUser(userId, 120); // 2 horas
-            await notificationService.send("email", {
+            await securityNotificationService.sendMultiple(["email", "slack"], {
                 to: "security-team",
                 subject: "CRITICAL: Privilege Escalation Attempt",
-                message: `User ${userId} attempted privilege escalation`,
+                message: `User ${userId} attempted privilege escalation with ${deniedAccess.length} denied access attempts in the last hour. User has been blocked for 2 hours.`,
+                priority: "critical"
             });
         }
     }
@@ -180,21 +303,72 @@ export class IntrusionDetector {
     }
 
     /**
-     * Helpers privados
+     * Helpers
      */
 
-    private async createAlert(alert: SecurityAlert): Promise<void> {
+    public async createAlert(alert: SecurityAlert): Promise<void> {
         logger.warn("Security alert created", alert);
 
-        // Salvar alerta
-        // await prisma.securityAlert.create({ data: alert });
+        // Export to SIEM if enabled
+        try {
+            await siemExporter.exportSecurityAlert(alert);
+        } catch (siemError) {
+            logger.error("Failed to export security alert to SIEM", siemError as Error);
+        }
+
+        try {
+            const prisma = await getPrismaClient();
+            if (prisma) {
+                // Tentar obter geolocalização se houver IP e os campos não estiverem preenchidos
+                if (alert.ipAddress && (!alert.country || !alert.latitude)) {
+                    try {
+                        const { geolocationService } = await import('@/lib/services/geolocation-service');
+                        const location = await geolocationService.getLocation(alert.ipAddress);
+                        if (location) {
+                            alert.country = location.country;
+                            alert.city = location.city;
+                            alert.latitude = location.latitude;
+                            alert.longitude = location.longitude;
+                        }
+                    } catch (geoError) {
+                        console.error('[IDS] Geolocation resolution failed for alert', geoError);
+                    }
+                }
+
+                // Remover timestamp da interface para usar createdAt do banco ou mapear
+                const { timestamp, ...alertData } = alert;
+                const createdAlert = await prisma.securityAlert.create({
+                    data: {
+                        ...alertData,
+                        createdAt: timestamp
+                    }
+                });
+
+                // Trigger automated threat response
+                try {
+                    const { threatResponseEngine } = await import('@/lib/security/threat-response-engine');
+                    await threatResponseEngine.processAlert({
+                        id: createdAlert.id,
+                        userId: alert.userId,
+                        alertType: alert.alertType,
+                        severity: alert.severity,
+                        metadata: alert.metadata,
+                    });
+                } catch (engineError) {
+                    console.error('[IDS] Threat response engine error:', engineError);
+                }
+            }
+        } catch (error) {
+            logger.error("Failed to persist security alert", error as Error);
+        }
 
         // Notificar se crítico
         if (alert.severity === "critical") {
-            await notificationService.send("email", {
+            await securityNotificationService.sendMultiple(["email", "slack"], {
                 to: "security-team",
                 subject: `CRITICAL SECURITY ALERT: ${alert.alertType}`,
-                message: alert.description,
+                message: `${alert.description}. Time: ${alert.timestamp.toISOString()}. IP: ${alert.ipAddress || 'Unknown'}.`,
+                priority: "critical"
             });
         }
     }
@@ -204,11 +378,17 @@ export class IntrusionDetector {
 
         logger.warn("User blocked", { userId, minutes, unblockAt });
 
-        // Bloquear usuário
-        // await prisma.user.update({
-        //   where: { id: userId },
-        //   data: { blockedUntil: unblockAt },
-        // });
+        try {
+            const prisma = await getPrismaClient();
+            if (prisma) {
+                await prisma.user.update({
+                    where: { id: userId },
+                    data: { blockedUntil: unblockAt },
+                });
+            }
+        } catch (error) {
+            logger.error("Failed to block user in database", error as Error);
+        }
 
         // Audit log
         await auditService.log({
@@ -217,7 +397,8 @@ export class IntrusionDetector {
             resource: "user",
             resourceId: userId,
             metadata: { minutes, reason: "Security alert" },
-            success: true,
+            status: "SUCCESS",
+            userRole: "system",
         });
     }
 }

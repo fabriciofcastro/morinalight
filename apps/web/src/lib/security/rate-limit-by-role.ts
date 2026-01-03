@@ -4,7 +4,7 @@
  * Rate limiting diferenciado por papel do usuário
  */
 
-import { type Role, ROLES } from "@/lib/auth/rbac";
+import { type Role, ROLES } from "@morina/shared-kernel";
 
 export interface RateLimitConfig {
     windowMs: number; // Janela de tempo em ms

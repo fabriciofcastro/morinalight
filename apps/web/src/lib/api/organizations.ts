@@ -3,6 +3,7 @@ import { apiClient } from "./base";
 export interface Organization {
   organizationId: string;
   name: string; // Nome Fantasia
+  code?: string | null;
   slug: string;
   description?: string | null;
   legalName?: string | null; // Razão Social
@@ -77,10 +78,26 @@ export interface Organization {
   updatedAt?: string;
 }
 
+export type CreateOrganizationDto = Partial<Organization>;
+export type UpdateOrganizationDto = Partial<Organization>;
+
 export class OrganizationsApi {
   async getOrganization(organizationId: string): Promise<Organization> {
     const response = await apiClient.get<{ organization: Organization }>(
       `/organizations/${organizationId}`,
+    );
+    return response.organization;
+  }
+
+  // Alias for legacy component compatibility
+  async findOne(organizationId: string): Promise<Organization> {
+    return this.getOrganization(organizationId);
+  }
+
+  async create(data: CreateOrganizationDto): Promise<Organization> {
+    const response = await apiClient.post<{ organization: Organization }>(
+      `/organizations`,
+      data,
     );
     return response.organization;
   }
@@ -94,6 +111,22 @@ export class OrganizationsApi {
       data,
     );
     return response.organization;
+  }
+
+  // Alias for legacy component compatibility
+  async update(organizationId: string, data: UpdateOrganizationDto): Promise<Organization> {
+    return this.updateOrganization(organizationId, data);
+  }
+
+  async findAll(): Promise<Organization[]> {
+    const response = await apiClient.get<{ organizations: Organization[] }>(
+      `/organizations`,
+    );
+    return response.organizations || [];
+  }
+
+  async remove(organizationId: string): Promise<void> {
+    await apiClient.delete(`/organizations/${organizationId}`);
   }
 }
 

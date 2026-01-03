@@ -7,6 +7,7 @@ import type { PermissionRepository } from "../../domain/repositories/permission-
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../../domain/repositories/user-permission-repository";
+import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
 import type { PermissionInheritanceService } from "../../domain/services/permission-inheritance.service";
 import {
@@ -26,6 +27,7 @@ type Dependencies = {
   positionRepository?: PositionRepository;
   permissionCacheService?: PermissionCacheService;
   permissionInheritanceService?: PermissionInheritanceService;
+  userRepository?: UserRepository;
 };
 
 export class ResolverPermissoesEfetivasUseCase {
@@ -62,6 +64,8 @@ export class ResolverPermissoesEfetivasUseCase {
       input.orgId,
       input.userId,
     );
+
+    const user = this.deps.userRepository ? await this.deps.userRepository.findById(input.userId) : null;
 
     if (!membership) {
       return resolverPermissoesEfetivasResultadoSchema.parse({
@@ -359,10 +363,16 @@ export class ResolverPermissoesEfetivasUseCase {
         })),
       },
       context: {
-        departmentId: departmentGrants[0]?.sourceEntityId,
-        sectorId: sectorGrants[0]?.sourceEntityId,
-        positionId: positionGrants[0]?.sourceEntityId,
-        attributes: {}, // TODO: Mapear atributos adicionais do usuário se necessário
+        departmentId: departmentGrants[0]?.sourceEntityId || user?.branchId || undefined,
+        sectorId: sectorGrants[0]?.sourceEntityId || undefined,
+        positionId: user?.positionId || positionGrants[0]?.sourceEntityId || undefined,
+        attributes: {
+          admissionDate: user?.admissionDate,
+          status: user?.status,
+          branchId: user?.branchId,
+          cpf: user?.cpf,
+          lastLoginAt: user?.lastLoginAt,
+        },
       },
     });
 

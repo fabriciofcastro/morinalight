@@ -20,7 +20,7 @@ import { productsApi, Product, ListProductsQuery } from "@/lib/api/products";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { FuturisticSelect } from "@/components/ui/futuristic-ui";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { ViewModeToggle, ViewMode } from "@/components/ui/view-mode-toggle";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Can } from "@/lib/auth";
 
@@ -33,7 +33,7 @@ const ProductCard = ({
     product: Product;
     onEdit: () => void;
     onDelete: () => void;
-    viewMode?: "grid" | "list";
+    viewMode?: ViewMode;
 }) => {
     const isLowStock = product.currentStock <= product.minStock;
 
@@ -211,7 +211,7 @@ export function ProductsListClient() {
     const [search, setSearch] = useState("");
 
     const [statusFilter, setStatusFilter] = useState("ACTIVE");
-    const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+    const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
     // Delete dialog state
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -227,8 +227,8 @@ export function ProductsListClient() {
                 limit: 100 // Cap for now
             };
 
-            const res = await productsApi.list(orgId, query);
-            setProducts(res.items || []);
+            const res = await productsApi.list(query);
+            setProducts(res || []);
         } catch (error) {
             console.error("Erro ao carregar produtos:", error);
             notificationCenter.add({ type: "error", title: "Erro", message: "Falha ao carregar produtos." });
@@ -254,7 +254,7 @@ export function ProductsListClient() {
 
         setDeleteLoading(true);
         try {
-            await productsApi.delete(orgId, productToDelete.id);
+            await productsApi.delete(productToDelete.id);
             notificationCenter.add({ type: "success", title: "Sucesso", message: "Produto excluído." });
             loadProducts();
             setDeleteDialogOpen(false);

@@ -244,6 +244,10 @@ model Organization {
   securityPolicies  SecurityPolicy[]
   timeWindows       TimeWindow[]
   acls              AccessControlList[]
+  accessDecisionLogs AccessDecisionLog[]
+
+  // Certificações
+  certifications       OrganizationCertification[] @relation("OrganizationCertifications")
 }
 
 model User {
@@ -261,8 +265,8 @@ model User {
   usageLogs    UsageLog[]
 
   // Personal Information Fields
-  cpf           String?   @db.VarChar(14) // CPF formatado (000.000.000-00)
-  phone         String?   @db.VarChar(20) // Telefone formatado
+  cpf           String?   @db.Text // CPF formatado (000.000.000-00)
+  phone         String?   @db.Text // Telefone formatado
   birthDate     DateTime? // Data de nascimento
   admissionDate DateTime? // Data de admissão
   observations  String?   @db.Text // Observações sobre o usuário
@@ -272,6 +276,10 @@ model User {
   twoFactorSecret      String?   @db.VarChar(255)
   twoFactorBackupCodes String?   @db.Text // JSON array de códigos de backup
   twoFactorEnabledAt   DateTime?
+
+  // Security Fields
+  blockedUntil DateTime? // Bloqueio temporário por IDS
+  lastLoginIp  String?   @db.VarChar(45) // Último IP de login
 
   // Organizational Fields
   branchId   String?
@@ -312,6 +320,7 @@ model User {
   mustChangePassword Boolean @default(false)
   tokenVersion       Int     @default(1) // Para revogação de sessões (Kill Switch)
   passwordResetTokens PasswordResetToken[]
+  securityAlerts     SecurityAlert[] @relation("UserSecurityAlerts")
 
   // Advanced Security
   acls               AccessControlList[]
@@ -617,8 +626,8 @@ model Supplier {
   orgId     String
   name      String
   email     String?
-  phone     String?
-  document  String?   @db.VarChar(20)
+  phone     String?   @db.Text
+  document  String?   @db.Text
   address   String?   @db.VarChar(512)
   city      String?   @db.VarChar(100)
   state     String?   @db.VarChar(2)
@@ -917,8 +926,8 @@ model Cliente {
   razaoSocial        String?       @db.VarChar(255)
   nomeFantasia       String?       @db.VarChar(255) // Nome Fantasia separado (especialmente para PJ)
   tipo               String        @default("fisica") // fisica, juridica
-  documento          String        @db.VarChar(20) // CPF ou CNPJ
-  rg                 String?       @db.VarChar(20) // RG para PF
+  documento          String        @db.Text // CPF ou CNPJ
+  rg                 String?       @db.Text // RG para PF
   orgaoEmissor       String?       @db.VarChar(10) // Órgão Emissor do RG (SSP, IFP, etc)
   dataNascimento     DateTime? // Data de Nascimento (PF) / Data de Fundação (PJ)
   sexo               String?       @db.VarChar(20) // Sexo/Gênero (PF): masculino, feminino, outro, nao_informar
@@ -934,8 +943,8 @@ model Cliente {
   inscricaoEstadual  String?       @db.VarChar(50) // IE para PJ
   inscricaoMunicipal String?       @db.VarChar(50) // IM para PJ
   email              String?       @db.VarChar(255)
-  telefone           String?       @db.VarChar(20)
-  celular            String?       @db.VarChar(20)
+  telefone           String?       @db.Text
+  celular            String?       @db.Text
   website            String?       @db.VarChar(512) // Website do cliente
   endereco           String?       @db.VarChar(512) // Logradouro
   numero             String?       @db.VarChar(20) // Número do endereço
@@ -2752,4 +2761,218 @@ model AccessDecisionLog {
     @@index([userId, createdAt])
 }
 
+// Security Alert Model: Tracks security incidents and threats
+model SecurityAlert {
+  id          String   @id @default(uuid())
+  userId      String
+  alertType   String   @db.VarChar(100) // multiple_failed_logins, multiple_ips, etc
+  severity    String   @db.VarChar(20) // low, medium, high, critical
+  description String   @db.Text
+  metadata    Json? // Dados adicionais do alerta
+  
+  acknowledged Boolean  @default(false)
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
 
+  // Location Data
+  ipAddress   String?  @db.VarChar(45)
+  country     String?  @db.VarChar(100)
+  city        String?  @db.VarChar(100)
+  latitude    Float?
+  longitude   Float?
+  
+  createdAt   DateTime @default(now())
+  
+  user        User     @relation("UserSecurityAlerts", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([createdAt])
+  @@index([severity])
+  @@index([alertType])
+  @@index([acknowledged])
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique
+  customerId      String
+  customerName    String
+  customerEmail   String
+  status          String      @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus   String      @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  paymentMethod   String
+  subtotal        Decimal     @db.Decimal(10, 2)
+  discount        Decimal     @db.Decimal(10, 2)
+  tax             Decimal     @db.Decimal(10, 2)
+  shipping        Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  shippingAddress Json
+  billingAddress  Json
+  notes           String?     @db.Text
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  confirmedAt     DateTime?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+
+  items           OrderItem[]
+  
+  // Optional relations
+  // organization Organization @relation(...)
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String
+  productName String
+  sku         String
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(10, 2)
+  discount    Decimal  @db.Decimal(10, 2)
+  total       Decimal  @db.Decimal(10, 2)
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// CONFORMIDADE E CERTIFICAÇÕES (DINÂMICAS)
+// ============================================
+
+model Certification {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  category    String   @db.VarChar(100)
+  icon        String   @db.VarChar(50) // Nome do ícone do lucide-react
+  
+  // Detalhes base
+  benefits    Json?    // ["Benefit 1", "Benefit 2"]
+  evidence    Json?    // ["Evidence 1", "Evidence 2"]
+  baseScore   Int      @default(0)
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organizations OrganizationCertification[] @relation("CertificationOrganizations")
+}
+
+model OrganizationCertification {
+  id              String   @id @default(uuid())
+  orgId           String
+  certificationId String
+  status          String   @default("pending") // incomplete, in_progress, complete, prepared
+  progress        Int      @default(0)
+  score           Int      @default(0)
+  
+  // Evidências específicas da organização
+  evidenceLinks   Json?    // Array de URLs/Keys para storage
+  
+  lastAuditedAt   DateTime?
+  nextAuditDate   DateTime?
+
+  organization    Organization @relation("OrganizationCertifications", fields: [orgId], references: [id], onDelete: Cascade)
+  certification   Certification @relation("CertificationOrganizations", fields: [certificationId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@unique([orgId, certificationId])
+  @@index([orgId, status])
+  @@index([certificationId])
+}
+
+model BlockedIP {
+  id        String   @id @default(uuid())
+  ip        String   @unique @db.VarChar(45)
+  reason    String?  @db.Text
+  blockedAt DateTime @default(now())
+  expiresAt DateTime?
+  createdBy String?
+
+  @@index([expiresAt])
+}
+
+// ============================================
+// ANALYTICS & REPORTING
+// ============================================
+
+enum FilterType {
+  date_range
+  category
+  region
+  status
+  custom
+}
+
+enum ReportFrequency {
+  daily
+  weekly
+  monthly
+  quarterly
+}
+
+enum ReportFormat {
+  pdf
+  excel
+  csv
+}
+
+model FilterConfiguration {
+  id          String     @id @default(uuid())
+  orgId       String
+  userId      String
+  name        String     @db.VarChar(255)
+  description String?    @db.Text
+  
+  // Filter data stored as JSON
+  // Example: { "dateRange": { "from": "2024-01-01", "to": "2024-12-31" }, "category": ["electronics"], "region": ["SP", "RJ"] }
+  filterData  Json
+  
+  // Metadata
+  isDefault   Boolean    @default(false)
+  isShared    Boolean    @default(false) // Se compartilhado com toda organização
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([orgId, userId])
+  @@index([orgId, isShared])
+}
+
+model ReportSchedule {
+  id          String          @id @default(uuid())
+  orgId       String
+  userId      String
+  
+  // Report configuration
+  name        String          @db.VarChar(255)
+  description String?         @db.Text
+  reportType  String          @db.VarChar(100) // sales, inventory, analytics, etc
+  
+  // Schedule configuration
+  frequency   ReportFrequency
+  dayOfWeek   Int?            // 0-6 for weekly (0 = Sunday)
+  dayOfMonth  Int?            // 1-31 for monthly
+  timeOfDay   String?         @db.VarChar(5) // HH:MM format (e.g., "09:00")
+  
+  // Report parameters (filters, date ranges, etc)
+  parameters  Json?
+  
+  // Delivery configuration
+  format      ReportFormat    @default(pdf)
+  recipients  Json            // Array of email addresses
+  
+  // Status
+  isActive    Boolean         @default(true)
+  lastRunAt   DateTime?
+  nextRunAt   DateTime?
+  
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([orgId, userId])
+  @@index([isActive, nextRunAt])
+  @@index([orgId, isActive])
+}

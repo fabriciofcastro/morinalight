@@ -367,7 +367,14 @@ export function ClientsListClient() {
                             <Button variant="outline" size="icon" onClick={loadClients} className="border-white/10 text-white/60 hover:text-white">
                                 <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
                             </Button>
-                            <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+                            <ViewModeToggle
+                                viewMode={viewMode}
+                                onChange={(mode) => {
+                                    if (mode === "grid" || mode === "list") {
+                                        setViewMode(mode);
+                                    }
+                                }}
+                            />
                         </div>
                     </div>
 

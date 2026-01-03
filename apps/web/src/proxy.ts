@@ -1,79 +1,156 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { redisRateLimiter } from '@/lib/rate-limit/redis-rate-limiter';
+import { getRateLimitConfig, getRateLimitKey } from '@/lib/rate-limit/rate-limit-config';
+import { threatFeedAggregator } from '@/lib/threat-intel/threat-feed-aggregator';
+import { siemExporter } from '@/lib/siem/siem-exporter';
+import { proxy as authProxy } from './auth-proxy';
 
-const publicRoutes = [
-  "/login",
-  "/register",
-  "/invite",
-  "/forgot-password",
-  "/reset-password",
-  // Legal pages - accessible without login
-  "/lgpd",
-  "/termos",
-  "/privacidade",
-  "/cookies",
-  "/antifraude",
-  "/retencao-logs",
-  "/lei-representante",
-  "/vinculo-empregaticio",
-];
-const apiPublicRoutes = ["/api/auth/login", "/api/auth/register", "/api/realtime/token"];
+/**
+ * Global Middleware for MorinaLight
+ * 
+ * Integrates:
+ * 1. Authentication & Routing (Proxy)
+ * 2. Security Headers (Proxy)
+ * 3. Threat Intelligence (IP Reputation)
+ * 4. Attack Pattern Detection (SQLi, XSS, etc)
+ * 5. Distributed Rate Limiting (Redis)
+ * 6. SIEM Logging
+ */
+export default async function (request: NextRequest) {
+    const path = request.nextUrl.pathname;
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const token = request.cookies.get("auth_token")?.value;
-
-  // Debug logging (apenas em desenvolvimento e para rotas não estáticas)
-  if (
-    process.env.NODE_ENV === "development" &&
-    !pathname.startsWith("/_next/") &&
-    !pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|css|js|map)$/) &&
-    !publicRoutes.some((route) => pathname.startsWith(route))
-  ) {
-    // Log apenas quando não há token E não é rota pública (situação que requer atenção)
-    if (!token) {
-      console.log('🔍 [PROXY] Pathname:', pathname, '- Token não encontrado');
+    // Skip security checks for public assets and internal Next.js paths
+    if (
+        path.startsWith('/_next/') ||
+        path.startsWith('/static/') ||
+        path.startsWith('/favicon.ico') ||
+        path.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|css|js|map)$/)
+    ) {
+        return NextResponse.next();
     }
-  }
 
-  // Permitir arquivos estáticos do Next.js e outros recursos estáticos
-  if (
-    pathname.startsWith("/_next/") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.startsWith("/_vercel") ||
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|eot|css|js|map)$/)
-  ) {
-    return NextResponse.next();
-  }
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+        request.headers.get('x-real-ip') ||
+        '127.0.0.1';
 
-  // Permitir rotas públicas
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
+    // 1. THREAT INTELLIGENCE - Check IP reputation
+    if (process.env.THREAT_INTEL_ENABLED === 'true') {
+        try {
+            const ipCheck = await threatFeedAggregator.shouldBlockIP(ip);
 
-  // Permitir rotas de API públicas
-  if (apiPublicRoutes.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
+            if (ipCheck.shouldBlock) {
+                // Log to SIEM
+                await siemExporter.exportEvent({
+                    timestamp: new Date(),
+                    eventType: 'threat_blocked',
+                    severity: 'high',
+                    ipAddress: ip,
+                    action: 'ip_blocked',
+                    status: 'success',
+                    message: `Blocked malicious IP: ${ipCheck.reason}`,
+                    metadata: { riskScore: ipCheck.riskScore },
+                });
 
-  // Se não tem token e não é rota pública, redirecionar para login
-  if (!token && !pathname.startsWith("/api")) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Para rotas de API do Next.js (server-side), permitir sempre
-  // Elas podem ter fallback ou lógica própria de autenticação
-  if (pathname.startsWith("/api") && !token) {
-    // Se é rota pública de API, permitir
-    if (apiPublicRoutes.some((route) => pathname.startsWith(route))) {
-      return NextResponse.next();
+                return NextResponse.json(
+                    { error: 'Access denied' },
+                    { status: 403 }
+                );
+            }
+        } catch (error) {
+            console.error('Threat intelligence check failed:', error);
+        }
     }
-    // Para outras rotas de API, permitir também (elas têm fallback ou verificam auth internamente)
-    return NextResponse.next();
-  }
 
-  // Se chegou aqui, tem token ou é rota pública
-  return NextResponse.next();
+    // 2. ATTACK PATTERN DETECTION
+    if (process.env.THREAT_INTEL_ENABLED === 'true') {
+        try {
+            // Only check API routes or specific inputs to minimize overhead
+            if (path.startsWith('/api/')) {
+                const requestCheck = threatFeedAggregator.checkRequest({
+                    url: request.url,
+                    headers: Object.fromEntries(request.headers),
+                });
+
+                if (requestCheck.isMalicious) {
+                    // Log to SIEM
+                    await siemExporter.exportEvent({
+                        timestamp: new Date(),
+                        eventType: 'attack_detected',
+                        severity: requestCheck.severity || 'high',
+                        ipAddress: ip,
+                        action: 'attack_blocked',
+                        status: 'success',
+                        message: 'Malicious request pattern detected',
+                        metadata: {
+                            patterns: requestCheck.patterns.map(p => p.type),
+                        },
+                    });
+
+                    return NextResponse.json(
+                        { error: 'Malicious request detected' },
+                        { status: 400 }
+                    );
+                }
+            }
+        } catch (error) {
+            console.error('Attack pattern detection failed:', error);
+        }
+    }
+
+    // 3. REDIS RATE LIMITING - Distributed protection for API routes
+    if (path.startsWith('/api/') && process.env.RATE_LIMIT_ENABLED === 'true') {
+        try {
+            const config = getRateLimitConfig(path);
+            const key = getRateLimitKey(ip, path, 'ip');
+
+            const result = await redisRateLimiter.checkLimit(key, config);
+
+            if (!result.allowed) {
+                // Log to SIEM
+                await siemExporter.exportEvent({
+                    timestamp: new Date(),
+                    eventType: 'rate_limit_exceeded',
+                    severity: 'medium',
+                    ipAddress: ip,
+                    action: 'rate_limit',
+                    status: 'failure',
+                    message: `Rate limit exceeded for ${path}`,
+                    metadata: {
+                        limit: result.limit,
+                        retryAfter: result.retryAfter,
+                    },
+                });
+
+                return NextResponse.json(
+                    { error: 'Rate limit exceeded' },
+                    {
+                        status: 429,
+                        headers: {
+                            'X-RateLimit-Limit': result.limit.toString(),
+                            'X-RateLimit-Remaining': '0',
+                            'X-RateLimit-Reset': result.resetAt.toISOString(),
+                            'Retry-After': result.retryAfter?.toString() || '60',
+                        }
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Rate limiting failed:', error);
+        }
+    }
+
+    // 4. AUTHENTICATION & ROUTING (Delegated to auth-proxy.ts)
+    return authProxy(request);
 }
+
+export const config = {
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         */
+        '/((?!_next/static|_next/image|favicon.ico).*)',
+    ],
+};

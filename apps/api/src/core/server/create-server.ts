@@ -93,6 +93,18 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
     allowedHeaders: ["Content-Type", "Authorization", "X-Organization-Id"],
   });
 
+  // Register cookie plugin for secure token storage
+  const cookie = await import("@fastify/cookie");
+  await app.register(cookie.default, {
+    secret: env.JWT_SECRET, // Use JWT secret for cookie signing
+    parseOptions: {
+      httpOnly: true,
+      secure: env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    },
+  });
+
   // Configuração avançada de segurança com Helmet
   await app.register(helmet, {
     contentSecurityPolicy: {

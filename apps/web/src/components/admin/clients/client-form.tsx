@@ -180,13 +180,13 @@ export function ClientForm({ mode, clientId }: ClientFormProps) {
                                     value={formData.email || ""}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     type="email"
-                                    icon={<Mail className="w-4 h-4" />}
+                                    startIcon={<Mail className="w-4 h-4" />}
                                 />
                                 <FuturisticInput
                                     label="Telefone / Celular"
                                     value={formData.phone || ""}
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                    icon={<Phone className="w-4 h-4" />}
+                                    startIcon={<Phone className="w-4 h-4" />}
                                 />
                             </div>
                         </div>
@@ -253,7 +253,7 @@ export function ClientForm({ mode, clientId }: ClientFormProps) {
                                     onChange={e => setFormData({ ...formData, creditLimit: parseFloat(e.target.value) || 0 })}
                                     type="number"
                                     step="0.01"
-                                    icon={<DollarSign className="w-4 h-4" />}
+                                    startIcon={<DollarSign className="w-4 h-4" />}
                                 />
                             </div>
 

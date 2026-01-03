@@ -9,8 +9,6 @@ export {
     ACTIONS,
     ROLE_PERMISSIONS,
     ROLE_HIERARCHY,
-    hasPermission,
-    can,
     getPermissions,
     hasAnyPermission,
     hasAllPermissions,
@@ -38,7 +36,7 @@ export {
 } from './ability-helpers';
 
 // Legacy exports (deprecated)
-export { usePermission, useCan, Can as LegacyCan, withPermission } from "./hooks";
+export { withPermission } from "./hooks";
 export { hasPermission, can } from "./rbac";
 
 // ABAC
@@ -63,7 +61,6 @@ export {
     usePermission,
     useCan,
     usePermissions,
-    Can,
 } from "./hooks";
 
 // JWT

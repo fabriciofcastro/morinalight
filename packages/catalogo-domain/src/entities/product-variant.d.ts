@@ -18,7 +18,7 @@ export declare class ProductVariant {
     private readonly props;
     private readonly id;
     constructor(props: ProductVariantProps, id?: ProductVariantId);
-    static criar(input: Omit<ProductVariantProps, "criadoEm" | "atualizadoEm" | "ativo"> & {
+    static criar(input: Omit<ProductVariantProps, "createdAt" | "updatedAt" | "ativo"> & {
         ativo?: boolean;
     }): ProductVariant;
     static restaurar(props: ProductVariantProps, id: string): ProductVariant;

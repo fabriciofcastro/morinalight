@@ -3,7 +3,7 @@
 import { useState, useId } from "react";
 
 export interface FuturisticSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label: string;
+  label?: string;
   required?: boolean;
   error?: boolean;
   errorMessage?: string;
@@ -25,9 +25,11 @@ export function FuturisticSelect({
 
   return (
     <div className="group relative">
-      <label htmlFor={selectId} className="block text-sm font-semibold text-white/90 mb-2">
-        {label} {required && <span className="text-red-400">*</span>}
-      </label>
+      {label && (
+        <label htmlFor={selectId} className="block text-sm font-semibold text-white/90 mb-2">
+          {label} {required && <span className="text-red-400">*</span>}
+        </label>
+      )}
       <div className="relative">
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <select

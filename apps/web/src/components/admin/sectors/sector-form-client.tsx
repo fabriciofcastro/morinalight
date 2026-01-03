@@ -123,7 +123,7 @@ export function SectorFormClient({ sectorId }: SectorFormClientProps) {
           filialId: form.filialId || undefined,
           parentId: form.parentId || undefined,
           active: form.active,
-          description: form.description.trim() || undefined,
+          description: (form.description || "").trim() || undefined,
         };
         await organizationalStructureApi.updateSector(updateData);
         markClean();

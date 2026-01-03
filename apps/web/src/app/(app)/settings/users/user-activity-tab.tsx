@@ -178,14 +178,7 @@ export function UserActivityTab({ userId }: UserActivityTabProps) {
     }
   };
 
-  const filteredActivities = activities.filter((act) => {
-    const matchesSearch =
-      act.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      act.module.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      act.resource.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesAction = actionFilter === "all" || act.action === actionFilter;
-    return matchesSearch && matchesAction;
-  });
+
 
   return (
     <div className="space-y-6">

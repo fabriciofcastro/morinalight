@@ -295,7 +295,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
       formData.append("file", file);
       formData.append("documentType", documentType);
 
-      const headers = getAuthHeadersWithTenant();
+      const headers = getAuthHeadersWithTenant() as any;
       delete headers["Content-Type"]; // Permitir que o browser defina o boundary
 
       const response = await fetch(`/api/users/${userId}/documents/upload`, {
@@ -379,13 +379,13 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               className={cn(
                 "inline-flex rounded px-2 py-1 text-xs font-mono uppercase tracking-wider",
                 user.status === "active" &&
-                  "bg-green-500/20 text-green-400 border border-green-500/30",
+                "bg-green-500/20 text-green-400 border border-green-500/30",
                 user.status === "pending" &&
-                  "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+                "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
                 user.status === "suspended" &&
-                  "bg-red-500/20 text-red-400 border border-red-500/30",
+                "bg-red-500/20 text-red-400 border border-red-500/30",
                 user.status === "inactive" &&
-                  "bg-gray-500/20 text-gray-400 border border-gray-500/30",
+                "bg-gray-500/20 text-gray-400 border border-gray-500/30",
               )}
             >
               {user.status === "active"
@@ -628,7 +628,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Emails Secundários</Label>
+                <Label htmlFor="emails-secundarios">Emails Secundários</Label>
                 <div className="space-y-2">
                   {contactData.emailsSecundarios.map((email, idx) => (
                     <div key={idx} className="flex gap-2">
@@ -832,7 +832,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
             <h5 className="text-sm font-semibold uppercase tracking-wider text-white/70">Documentos</h5>
             <div className="space-y-4">
               <div>
-                <Label>RG (Frente e Verso)</Label>
+                <Label htmlFor="rg-files">RG (Frente e Verso)</Label>
                 <div className="mt-2 grid gap-2 md:grid-cols-2">
                   <div className="flex items-center gap-2 border border-white/10 bg-white/5 p-3">
                     <FileText className="h-5 w-5 text-white/40" />
@@ -908,7 +908,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div>
-                <Label>CPF</Label>
+                <Label htmlFor="cpf-file">CPF</Label>
                 <div className="mt-2 flex items-center gap-2 border border-white/10 bg-white/5 p-3">
                   <FileText className="h-5 w-5 text-white/40" />
                   <div className="flex-1">
@@ -947,7 +947,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div>
-                <Label>CTPS</Label>
+                <Label htmlFor="ctps-file">CTPS</Label>
                 <div className="mt-2 flex items-center gap-2 border border-white/10 bg-white/5 p-3">
                   <FileText className="h-5 w-5 text-white/40" />
                   <div className="flex-1">
@@ -986,7 +986,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div>
-                <Label>Comprovante de Residência</Label>
+                <Label htmlFor="comprovante-residencia">Comprovante de Residência</Label>
                 <div className="mt-2 flex items-center gap-2 border border-white/10 bg-white/5 p-3">
                   <FileText className="h-5 w-5 text-white/40" />
                   <div className="flex-1">
@@ -1025,7 +1025,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div>
-                <Label>Certidões</Label>
+                <Label htmlFor="certidoes-list">Certidões</Label>
                 <div className="mt-2 space-y-2">
                   <div className="flex items-center gap-2 border border-white/10 bg-white/5 p-3">
                     <FileText className="h-5 w-5 text-white/40" />
@@ -1102,7 +1102,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
 
               <div className="pt-4 border-t border-white/10">
                 <div className="mb-4 flex items-center justify-between">
-                  <Label>Histórico de Documentos</Label>
+                  <Label htmlFor="document-history">Histórico de Documentos</Label>
                   <Button
                     type="button"
                     variant="outline"
@@ -1401,7 +1401,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Instituições de Ensino</Label>
+                <Label htmlFor="ensino-list">Instituições de Ensino</Label>
                 <div className="space-y-2">
                   {academicData.instituicoes.map((inst, idx) => (
                     <div key={idx} className="grid gap-2 md:grid-cols-3">
@@ -1463,7 +1463,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Cursos/Especializações</Label>
+                <Label htmlFor="cursos-list">Cursos/Especializações</Label>
                 <div className="space-y-2">
                   {academicData.cursos.map((curso, idx) => (
                     <div key={idx} className="flex gap-2">
@@ -1501,7 +1501,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Certificações</Label>
+                <Label htmlFor="certifications-list">Certificações</Label>
                 <div className="space-y-2">
                   {academicData.certificacoes.map((cert, idx) => (
                     <div key={idx} className="flex gap-2 items-center">
@@ -1576,7 +1576,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Idiomas</Label>
+                <Label htmlFor="languages-list">Idiomas</Label>
                 <div className="space-y-2">
                   {academicData.idiomas.map((idioma, idx) => (
                     <div key={idx} className="grid gap-2 md:grid-cols-2">
@@ -1756,7 +1756,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Dispositivos Conectados</Label>
+                <Label htmlFor="connected-devices">Dispositivos Conectados</Label>
                 <div className="space-y-2">
                   {securityData.dispositivos.length === 0 ? (
                     <p className="text-sm text-white/50">Nenhum dispositivo conectado</p>
@@ -1783,7 +1783,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Sessões Ativas</Label>
+                <Label htmlFor="active-sessions">Sessões Ativas</Label>
                 <div className="space-y-2">
                   {securityData.sessoesAtivas.length === 0 ? (
                     <p className="text-sm text-white/50">Nenhuma sessão ativa</p>
@@ -1810,7 +1810,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Histórico de Senhas</Label>
+                <Label htmlFor="password-history">Histórico de Senhas</Label>
                 <div className="space-y-2">
                   {securityData.historicoSenhas.length === 0 ? (
                     <p className="text-sm text-white/50">Nenhum histórico disponível</p>
@@ -1851,7 +1851,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Tokens de API</Label>
+                <Label htmlFor="api-tokens">Tokens de API</Label>
                 <div className="space-y-2">
                   {securityData.apiTokens.length === 0 ? (
                     <p className="text-sm text-white/50">Nenhum token de API criado</p>
@@ -1957,7 +1957,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
               </div>
 
               <div className="md:col-span-2">
-                <Label>Notificações</Label>
+                <Label htmlFor="notification-settings">Notificações</Label>
                 <div className="space-y-3">
                   <label className="flex items-center justify-between border border-white/10 bg-white/5 p-3">
                     <div>
@@ -2024,7 +2024,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
       {/* Actions */}
       <div className="flex flex-col gap-3 border-t border-white/10 pt-6">
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" onClick={() => {}}>
+          <Button type="button" variant="outline" onClick={() => { }}>
             Descartar Alterações
           </Button>
           <Button type="button" onClick={handleSave} disabled={saving}>
@@ -2201,7 +2201,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
 
           <Button
             type="button"
-            variant="destructive"
+            variant="danger"
             onClick={async () => {
               const reason = prompt("Digite o motivo da exclusão (obrigatório):");
               if (!reason || reason.trim() === "") {

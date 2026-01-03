@@ -21,11 +21,11 @@ export async function POST(request: NextRequest) {
                 path: data.path,
                 method: data.method,
                 attemptedAction: data.action,
+                errorMessage: "Access denied - insufficient permissions",
             },
             ipAddress: data.ip,
             userAgent: data.userAgent,
-            success: false,
-            errorMessage: "Access denied - insufficient permissions",
+            status: "FAILURE",
         });
 
         return NextResponse.json({ success: true });

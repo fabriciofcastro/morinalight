@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { authApi } from "@/lib/api/auth";
+import { MFALogin } from "./mfa-login";
 
 type LoginNoticePayload = {
   message: string;
@@ -38,6 +39,7 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [mfaRequired, setMfaRequired] = useState(false);
 
   function emitNotice(payload: LoginNoticePayload) {
     onNotice?.(payload);
@@ -85,13 +87,19 @@ export function LoginForm({
     try {
       const response = await authApi.login({ email: trimmedEmail, password: trimmedPassword });
 
+      if (response.requiresTwoFactor) {
+        setMfaRequired(true);
+        setIsLoading(false);
+        return;
+      }
+
       // Pequeno delay para garantir que o cookie seja salvo
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Usar window.location.href para garantir redirecionamento completo
       if (response.user.mustChangePassword) {
         window.location.href = "/auth/force-change";
-      } else if (response.organizations.length > 1) {
+      } else if (response.organizations && response.organizations.length > 1) { // Check existence before length
         window.location.href = "/select-organization";
       } else {
         window.location.href = "/dashboard";
@@ -126,7 +134,6 @@ export function LoginForm({
       const errorMessage = errorData?.error || errorData?.message;
       const errorCode = errorData?.code;
 
-      // Erro de rede/conexão
       // Erro de rede/conexão
       if (
         error.code === "ERR_NETWORK" ||
@@ -324,7 +331,9 @@ export function LoginForm({
           }
       }
     } finally {
-      setIsLoading(false);
+      if (!mfaRequired) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -339,6 +348,16 @@ export function LoginForm({
   };
 
   const strength = calculatePasswordStrength(password);
+
+  if (mfaRequired) {
+    return (
+      <MFALogin
+        email={email}
+        onCancel={() => setMfaRequired(false)}
+      // O próprio MFALogin lida com o redirecionamento ou podemos passar um callback customizado
+      />
+    );
+  }
 
   return (
     <TooltipProvider>

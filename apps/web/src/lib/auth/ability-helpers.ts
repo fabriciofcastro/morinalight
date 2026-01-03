@@ -1,6 +1,6 @@
 import { useAbility } from './CaslContext';
 import { AppActions, AppSubjects } from '@morina/shared-kernel';
-import { useCurrentUser } from '@/hooks/use-current-user';
+import { useCurrentUser } from '@/hooks/queries/use-auth';
 
 /**
  * Verifica se o usuário tem QUALQUER uma das permissões

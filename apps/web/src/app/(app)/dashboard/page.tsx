@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -16,6 +18,13 @@ import { JarvisAssistantPanel } from "@/components/dashboard/JarvisAssistantPane
 import { FuturisticAreaChart } from "@/components/charts/FuturisticAreaChart";
 import { FuturisticBarChart } from "@/components/charts/FuturisticBarChart";
 import { FuturisticPieChart } from "@/components/charts/FuturisticPieChart";
+import { FuturisticLineChart } from "@/components/charts/FuturisticLineChart";
+import { FuturisticRadarChart } from "@/components/charts/FuturisticRadarChart";
+import { FuturisticScatterChart } from "@/components/charts/FuturisticScatterChart";
+import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
+import { DateRangePreset } from "@/components/dashboard/DateRangePicker";
+import { useDashboardData } from "@/hooks/use-dashboard-data";
+import { getCurrentOrgId } from "@/lib/auth-client";
 
 // Stat Card Component
 function StatCard({
@@ -118,6 +127,80 @@ function QuickAction({
 }
 
 export default function DashboardPage() {
+  const orgId = getCurrentOrgId() || "";
+
+  // Filter state with URL persistence
+  const [dateRange, setDateRange] = useState<DateRangePreset>("30d");
+
+  // Load filter from URL on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const period = params.get("period") as DateRangePreset;
+      if (period && ["7d", "30d", "90d", "12m"].includes(period)) {
+        setDateRange(period);
+      }
+    }
+  }, []);
+
+  // Update URL when filter changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      params.set("period", dateRange);
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [dateRange]);
+
+  const { data, isLoading, error } = useDashboardData(orgId, { period: dateRange });
+
+  const handleResetFilters = () => {
+    setDateRange("30d");
+  };
+
+  // Mock data for new charts (TODO: Replace with real API data)
+  const lineChartData = [
+    { name: "Jan", vendas: 4000, lucro: 2400, custos: 1600 },
+    { name: "Fev", vendas: 3000, lucro: 1398, custos: 1602 },
+    { name: "Mar", vendas: 5000, lucro: 3800, custos: 1200 },
+    { name: "Abr", vendas: 2780, lucro: 3908, custos: -1128 },
+    { name: "Mai", vendas: 1890, lucro: 4800, custos: -2910 },
+    { name: "Jun", vendas: 2390, lucro: 3800, custos: -1410 },
+  ];
+
+  const radarChartData = [
+    { metric: "Qualidade", value: 85, fullMark: 100 },
+    { metric: "Velocidade", value: 75, fullMark: 100 },
+    { metric: "Eficiência", value: 90, fullMark: 100 },
+    { metric: "Satisfação", value: 80, fullMark: 100 },
+    { metric: "Inovação", value: 70, fullMark: 100 },
+    { metric: "Custo", value: 65, fullMark: 100 },
+  ];
+
+  const scatterChartData = [
+    {
+      name: "Categoria A",
+      data: [
+        { x: 100, y: 200, z: 200, category: "A" },
+        { x: 120, y: 100, z: 260, category: "A" },
+        { x: 170, y: 300, z: 400, category: "A" },
+        { x: 140, y: 250, z: 280, category: "A" },
+      ],
+      color: "#3b82f6",
+    },
+    {
+      name: "Categoria B",
+      data: [
+        { x: 200, y: 260, z: 240, category: "B" },
+        { x: 240, y: 290, z: 220, category: "B" },
+        { x: 190, y: 290, z: 250, category: "B" },
+        { x: 198, y: 250, z: 210, category: "B" },
+      ],
+      color: "#10b981",
+    },
+  ];
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
       <div className="space-y-6">
@@ -127,16 +210,11 @@ export default function DashboardPage() {
             <h1 className="text-3xl font-bold text-white">Dashboard</h1>
             <p className="mt-1 text-sm text-white/50">Visão geral do sistema Morina</p>
           </div>
-          <div className="flex items-center gap-2 rounded-none border border-white/10 bg-white/5 px-4 py-2">
-            <Calendar className="h-4 w-4 text-white/50" />
-            <span className="text-sm text-white/70">
-              {new Date().toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-          </div>
+          <DashboardFilters
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+            onReset={handleResetFilters}
+          />
         </div>
 
         {/* Stats Grid */}
@@ -182,17 +260,29 @@ export default function DashboardPage() {
         {/* Charts Section - Row 1 */}
         <div className="grid gap-6 lg:grid-cols-3 h-[400px]">
           <div className="lg:col-span-2 h-full">
-            <FuturisticAreaChart />
+            <FuturisticAreaChart
+              data={data?.revenue}
+              isLoading={isLoading}
+              error={error}
+            />
           </div>
           <div className="h-full">
-            <FuturisticPieChart />
+            <FuturisticPieChart
+              data={data?.deviceDistribution}
+              isLoading={isLoading}
+              error={error}
+            />
           </div>
         </div>
 
         {/* Charts Section - Row 2 */}
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="h-[400px]">
-            <FuturisticBarChart />
+            <FuturisticBarChart
+              data={data?.salesByCategory}
+              isLoading={isLoading}
+              error={error}
+            />
           </div>
 
           <div className="grid gap-6">
@@ -271,6 +361,22 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Advanced Analytics Section */}
+        <div>
+          <h2 className="mb-4 text-xl font-semibold text-white">Análises Avançadas</h2>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="h-[400px]">
+              <FuturisticLineChart data={lineChartData} />
+            </div>
+            <div className="h-[400px]">
+              <FuturisticRadarChart data={radarChartData} />
+            </div>
+            <div className="h-[400px]">
+              <FuturisticScatterChart series={scatterChartData} />
             </div>
           </div>
         </div>

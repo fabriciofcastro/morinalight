@@ -38,7 +38,10 @@ export class UnifiedPolicyEngine {
      */
     evaluate(action: string, subject: string, context: SecurityContext, resource?: any): boolean {
         // 1. TBAC Check (Time-Based)
-        if (!TemporalEvaluator.isWithinAllowedWindows(context.environment.time, this.timeWindows)) {
+        // Check per-request windows (e.g. user shift) or fallback to global system windows
+        const activeTimeWindows = context.environment.timeWindows ?? this.timeWindows;
+
+        if (activeTimeWindows.length > 0 && !TemporalEvaluator.isWithinAllowedWindows(context.environment.time, activeTimeWindows)) {
             return false; // Denied by time
         }
 

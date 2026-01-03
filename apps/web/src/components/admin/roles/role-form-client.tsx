@@ -101,7 +101,7 @@ export function RoleFormClient({ roleId }: RoleFormClientProps) {
           code: form.code.trim(),
           scope: form.scope,
           active: form.active,
-          description: form.description.trim() || undefined,
+          description: (form.description || "").trim() || undefined,
         };
         await permissionsApi.updateRole(updateData);
         markClean();

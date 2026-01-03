@@ -18,12 +18,16 @@ interface SensitiveActionConfirmDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onConfirm: () => void;
+    title?: string;
+    description?: string;
 }
 
 export function SensitiveActionConfirmDialog({
     open,
     onOpenChange,
     onConfirm,
+    title = "Confirmação de Segurança",
+    description = "Esta é uma alteração crítica. Por favor, confirme sua identidade inserindo o código de autenticação de dois fatores (2FA).",
 }: SensitiveActionConfirmDialogProps) {
     const [code, setCode] = useState("");
     const [error, setError] = useState(false);
@@ -46,13 +50,12 @@ export function SensitiveActionConfirmDialog({
                             <Lock className="w-6 h-6 text-[hsl(var(--primary))]" />
                         </div>
                         <AlertDialogTitle className="text-xl font-bold text-white">
-                            Confirmação de Segurança
+                            {title}
                         </AlertDialogTitle>
                     </div>
                     <AlertDialogDescription className="text-white/70 space-y-4 pt-2">
                         <p>
-                            Esta é uma alteração crítica. Por favor, confirme sua identidade
-                            inserindo o código de autenticação de dois fatores (2FA).
+                            {description}
                         </p>
 
                         <div className="space-y-3 pt-2">

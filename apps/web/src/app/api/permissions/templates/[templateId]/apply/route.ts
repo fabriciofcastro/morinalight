@@ -14,7 +14,7 @@ export async function POST(request: Request, { params }: RouteParams) {
 
   const response = await fetch(`${apiUrl}/permissions/templates/${templateId}/apply`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
     cache: "no-store",
   });

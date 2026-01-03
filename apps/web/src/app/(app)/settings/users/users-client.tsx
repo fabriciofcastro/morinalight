@@ -813,7 +813,7 @@ export function UsersClient() {
                           const formData = new FormData();
                           formData.append("file", file);
 
-                          const headers = getAuthHeadersWithTenant();
+                          const headers = getAuthHeadersWithTenant() as any;
                           // Remover Content-Type para permitir que o browser defina com boundary
                           delete headers["Content-Type"];
 
@@ -1303,49 +1303,49 @@ export function UsersClient() {
                           }}
                           className="w-full text-left"
                         >
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            {user.avatarUrl ? (
-                              <img
-                                src={user.avatarUrl}
-                                alt={user.displayName || user.email}
-                                className="h-10 w-10 rounded-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] text-sm font-semibold text-white">
-                                {(user.displayName || user.email).charAt(0).toUpperCase()}
-                              </div>
-                            )}
-                            {/* Indicador online/offline */}
-                            <div
-                              className={cn(
-                                "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[hsl(var(--surface))]",
-                                // TODO: Verificar status real do usuário
-                                Math.random() > 0.5
-                                  ? "bg-green-500"
-                                  : "bg-gray-400",
+                          <div className="flex items-center gap-3">
+                            <div className="relative">
+                              {user.avatarUrl ? (
+                                <img
+                                  src={user.avatarUrl}
+                                  alt={user.displayName || user.email}
+                                  className="h-10 w-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--secondary))] text-sm font-semibold text-white">
+                                  {(user.displayName || user.email).charAt(0).toUpperCase()}
+                                </div>
                               )}
-                              title={Math.random() > 0.5 ? "Online" : "Offline"}
-                            />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-white">
-                                {user.displayName || "Sem nome"}
-                              </span>
-                              {/* Badge "Novo" (últimos 7 dias) */}
-                              {user.createdAt &&
-                                new Date(user.createdAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000 && (
-                                  <span className="rounded px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-[hsl(var(--primary)/0.2)] text-[hsl(var(--primary))] border border-[hsl(var(--primary)/0.3)]">
-                                    Novo
-                                  </span>
+                              {/* Indicador online/offline */}
+                              <div
+                                className={cn(
+                                  "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[hsl(var(--surface))]",
+                                  // TODO: Verificar status real do usuário
+                                  Math.random() > 0.5
+                                    ? "bg-green-500"
+                                    : "bg-gray-400",
                                 )}
+                                title={Math.random() > 0.5 ? "Online" : "Offline"}
+                              />
                             </div>
-                            {user.displayName && (
-                              <div className="text-xs text-white/50">{user.email}</div>
-                            )}
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-white">
+                                  {user.displayName || "Sem nome"}
+                                </span>
+                                {/* Badge "Novo" (últimos 7 dias) */}
+                                {user.createdAt &&
+                                  new Date(user.createdAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000 && (
+                                    <span className="rounded px-1.5 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-[hsl(var(--primary)/0.2)] text-[hsl(var(--primary))] border border-[hsl(var(--primary)/0.3)]">
+                                      Novo
+                                    </span>
+                                  )}
+                              </div>
+                              {user.displayName && (
+                                <div className="text-xs text-white/50">{user.email}</div>
+                              )}
+                            </div>
                           </div>
-                        </div>
                         </button>
                       </td>
                       <td className="px-4 py-3 text-sm text-white/70">{user.email}</td>
@@ -1364,19 +1364,19 @@ export function UsersClient() {
                       <td className="px-4 py-3 text-sm text-white/70">
                         {user.lastLogin
                           ? new Date(user.lastLogin).toLocaleDateString("pt-BR", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
                           : "Nunca"}
                       </td>
                       <td className="px-4 py-3 text-sm text-white/70">
                         {user.createdAt
                           ? new Date(user.createdAt).toLocaleDateString("pt-BR", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                            })
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          })
                           : "—"}
                       </td>
                       <td className="px-4 py-3">
@@ -1384,13 +1384,13 @@ export function UsersClient() {
                           className={cn(
                             "inline-flex rounded px-2 py-1 text-xs font-mono uppercase tracking-wider",
                             user.status === "active" &&
-                              "bg-green-500/20 text-green-400 border border-green-500/30",
+                            "bg-green-500/20 text-green-400 border border-green-500/30",
                             user.status === "pending" &&
-                              "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+                            "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
                             user.status === "suspended" &&
-                              "bg-red-500/20 text-red-400 border border-red-500/30",
+                            "bg-red-500/20 text-red-400 border border-red-500/30",
                             user.status === "inactive" &&
-                              "bg-gray-500/20 text-gray-400 border border-gray-500/30",
+                            "bg-gray-500/20 text-gray-400 border border-gray-500/30",
                           )}
                         >
                           {user.status === "active"

@@ -43,6 +43,7 @@ type PermissionsHttpDeps = {
   departmentMembershipRepository?: DepartmentMembershipRepository;
   auditLogRepository?: PermissionAuditLogRepository;
   templateRepository?: PermissionTemplateRepository;
+  userRepository?: UserRepository;
   eventBus?: DomainEventBus;
 };
 
@@ -73,6 +74,7 @@ export async function registerPermissionsHttpRoutes(
     positionRepository: deps.positionRepository,
     permissionCacheService: deps.permissionCacheService,
     permissionInheritanceService: deps.permissionInheritanceService,
+    userRepository: deps.userRepository,
   });
 
   if (deps.userPermissionRepository) {

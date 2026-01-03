@@ -119,9 +119,9 @@ export function PositionFormClient({ positionId }: PositionFormClientProps) {
           seniority: form.seniority,
           baseSalary: form.baseSalary,
           active: form.active,
-          description: form.description.trim() || undefined,
-          responsabilidades: form.responsabilidades.trim() || undefined,
-          requisitos: form.requisitos.trim() || undefined,
+          description: (form.description || "").trim() || undefined,
+          responsabilidades: (form.responsabilidades || "").trim() || undefined,
+          requisitos: (form.requisitos || "").trim() || undefined,
           salarioMin: form.salarioMin,
           salarioMax: form.salarioMax,
         };
@@ -194,11 +194,10 @@ export function PositionFormClient({ positionId }: PositionFormClientProps) {
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
-                  : "border-transparent text-white/60 hover:text-white/80"
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${activeTab === tab.id
+                ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]"
+                : "border-transparent text-white/60 hover:text-white/80"
+                }`}
             >
               <Icon className="h-4 w-4" />
               <span className="font-medium">{tab.label}</span>
@@ -208,152 +207,152 @@ export function PositionFormClient({ positionId }: PositionFormClientProps) {
       </div>
 
       <form onSubmit={onSubmit} className="space-y-6">
-          {activeTab === "general" && (
-            <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
+        {activeTab === "general" && (
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <FuturisticInput
+                label="Nome do Cargo"
+                required
+                value={form.name}
+                onChange={(e) => {
+                  setForm((p) => ({ ...p, name: e.target.value }));
+                  if (errors.name) setErrors((e) => ({ ...e, name: "" }));
+                  markDirty();
+                }}
+                error={!!errors.name}
+                errorMessage={errors.name}
+                placeholder="Ex: Desenvolvedor Full Stack"
+              />
+              <FuturisticInput
+                label="Código"
+                required
+                value={form.code}
+                onChange={(e) => {
+                  setForm((p) => ({ ...p, code: e.target.value }));
+                  if (errors.code) setErrors((e) => ({ ...e, code: "" }));
+                  markDirty();
+                }}
+                error={!!errors.code}
+                errorMessage={errors.code}
+                placeholder="Ex: DEV-FS"
+              />
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <FuturisticSelect
+                label="Senioridade"
+                value={form.seniority}
+                onChange={(e) => {
+                  setForm((p) => ({ ...p, seniority: e.target.value }));
+                  markDirty();
+                }}
+              >
+                <option value="JUNIOR" className="bg-slate-900">Júnior</option>
+                <option value="PLENO" className="bg-slate-900">Pleno</option>
+                <option value="SENIOR" className="bg-slate-900">Sênior</option>
+                <option value="ESPECIALISTA" className="bg-slate-900">Especialista</option>
+                <option value="GERENTE" className="bg-slate-900">Gerente</option>
+                <option value="DIRETOR" className="bg-slate-900">Diretor</option>
+              </FuturisticSelect>
+
+              <div className="flex items-center pt-6">
+                <div className="flex items-center gap-2 p-4 rounded-lg border border-white/10 bg-white/[0.02]">
+                  <input
+                    type="checkbox"
+                    id="active"
+                    checked={form.active}
+                    onChange={(e) => {
+                      setForm((p) => ({ ...p, active: e.target.checked }));
+                      markDirty();
+                    }}
+                    className="rounded border-white/10 bg-black/20 text-[hsl(var(--primary))] focus:ring-[hsl(var(--primary))]"
+                  />
+                  <label htmlFor="active" className="text-sm font-medium text-white/70 cursor-pointer">
+                    Cargo Ativo
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "details" && (
+          <div className="space-y-6">
+            <FuturisticTextarea
+              label="Descrição"
+              value={form.description}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, description: e.target.value }));
+                markDirty();
+              }}
+              placeholder="Breve descrição do cargo..."
+              rows={4}
+            />
+            <FuturisticTextarea
+              label="Responsabilidades"
+              value={form.responsabilidades}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, responsabilidades: e.target.value }));
+                markDirty();
+              }}
+              placeholder="Liste as principais responsabilidades..."
+              rows={6}
+            />
+            <FuturisticTextarea
+              label="Requisitos"
+              value={form.requisitos}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, requisitos: e.target.value }));
+                markDirty();
+              }}
+              placeholder="Liste os requisitos necessários..."
+              rows={6}
+            />
+          </div>
+        )}
+
+        {activeTab === "salary" && (
+          <div className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-3">
+              <div>
                 <FuturisticInput
-                  label="Nome do Cargo"
-                  required
-                  value={form.name}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, name: e.target.value }));
-                    if (errors.name) setErrors((e) => ({ ...e, name: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.name}
-                  errorMessage={errors.name}
-                  placeholder="Ex: Desenvolvedor Full Stack"
+                  label="Salário Mínimo"
+                  type="number"
+                  step="0.01"
+                  value={form.salarioMin || ""}
+                  onChange={(e) => handleNumberChange("salarioMin", e.target.value)}
+                  placeholder="0,00"
                 />
+                <p className="mt-1 text-xs text-white/30">Valor mínimo da faixa salarial</p>
+              </div>
+              <div>
                 <FuturisticInput
-                  label="Código"
-                  required
-                  value={form.code}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, code: e.target.value }));
-                    if (errors.code) setErrors((e) => ({ ...e, code: "" }));
-                    markDirty();
-                  }}
-                  error={!!errors.code}
-                  errorMessage={errors.code}
-                  placeholder="Ex: DEV-FS"
+                  label="Salário Base"
+                  type="number"
+                  step="0.01"
+                  value={form.baseSalary || ""}
+                  onChange={(e) => handleNumberChange("baseSalary", e.target.value)}
+                  placeholder="0,00"
                 />
+                <p className="mt-1 text-xs text-white/30">Valor de referência do cargo</p>
               </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <FuturisticSelect
-                  label="Senioridade"
-                  value={form.seniority}
-                  onChange={(e) => {
-                    setForm((p) => ({ ...p, seniority: e.target.value }));
-                    markDirty();
-                  }}
-                >
-                  <option value="JUNIOR" className="bg-slate-900">Júnior</option>
-                  <option value="PLENO" className="bg-slate-900">Pleno</option>
-                  <option value="SENIOR" className="bg-slate-900">Sênior</option>
-                  <option value="ESPECIALISTA" className="bg-slate-900">Especialista</option>
-                  <option value="GERENTE" className="bg-slate-900">Gerente</option>
-                  <option value="DIRETOR" className="bg-slate-900">Diretor</option>
-                </FuturisticSelect>
-
-                <div className="flex items-center pt-6">
-                  <div className="flex items-center gap-2 p-4 rounded-lg border border-white/10 bg-white/[0.02]">
-                    <input
-                      type="checkbox"
-                      id="active"
-                      checked={form.active}
-                      onChange={(e) => {
-                        setForm((p) => ({ ...p, active: e.target.checked }));
-                        markDirty();
-                      }}
-                      className="rounded border-white/10 bg-black/20 text-[hsl(var(--primary))] focus:ring-[hsl(var(--primary))]"
-                    />
-                    <label htmlFor="active" className="text-sm font-medium text-white/70 cursor-pointer">
-                      Cargo Ativo
-                    </label>
-                  </div>
-                </div>
+              <div>
+                <FuturisticInput
+                  label="Salário Máximo"
+                  type="number"
+                  step="0.01"
+                  value={form.salarioMax || ""}
+                  onChange={(e) => handleNumberChange("salarioMax", e.target.value)}
+                  placeholder="0,00"
+                />
+                <p className="mt-1 text-xs text-white/30">Valor máximo da faixa salarial</p>
               </div>
             </div>
-          )}
-
-          {activeTab === "details" && (
-            <div className="space-y-6">
-              <FuturisticTextarea
-                label="Descrição"
-                value={form.description}
-                onChange={(e) => {
-                  setForm((p) => ({ ...p, description: e.target.value }));
-                  markDirty();
-                }}
-                placeholder="Breve descrição do cargo..."
-                rows={4}
-              />
-              <FuturisticTextarea
-                label="Responsabilidades"
-                value={form.responsabilidades}
-                onChange={(e) => {
-                  setForm((p) => ({ ...p, responsabilidades: e.target.value }));
-                  markDirty();
-                }}
-                placeholder="Liste as principais responsabilidades..."
-                rows={6}
-              />
-              <FuturisticTextarea
-                label="Requisitos"
-                value={form.requisitos}
-                onChange={(e) => {
-                  setForm((p) => ({ ...p, requisitos: e.target.value }));
-                  markDirty();
-                }}
-                placeholder="Liste os requisitos necessários..."
-                rows={6}
-              />
-            </div>
-          )}
-
-          {activeTab === "salary" && (
-            <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-3">
-                <div>
-                  <FuturisticInput
-                    label="Salário Mínimo"
-                    type="number"
-                    step="0.01"
-                    value={form.salarioMin || ""}
-                    onChange={(e) => handleNumberChange("salarioMin", e.target.value)}
-                    placeholder="0,00"
-                  />
-                  <p className="mt-1 text-xs text-white/30">Valor mínimo da faixa salarial</p>
-                </div>
-                <div>
-                  <FuturisticInput
-                    label="Salário Base"
-                    type="number"
-                    step="0.01"
-                    value={form.baseSalary || ""}
-                    onChange={(e) => handleNumberChange("baseSalary", e.target.value)}
-                    placeholder="0,00"
-                  />
-                  <p className="mt-1 text-xs text-white/30">Valor de referência do cargo</p>
-                </div>
-                <div>
-                  <FuturisticInput
-                    label="Salário Máximo"
-                    type="number"
-                    step="0.01"
-                    value={form.salarioMax || ""}
-                    onChange={(e) => handleNumberChange("salarioMax", e.target.value)}
-                    placeholder="0,00"
-                  />
-                  <p className="mt-1 text-xs text-white/30">Valor máximo da faixa salarial</p>
-                </div>
-              </div>
-              <p className="text-sm text-white/50">
-                Defina a faixa salarial para este cargo. O salário base é o valor de referência.
-              </p>
-            </div>
-          )}
+            <p className="text-sm text-white/50">
+              Defina a faixa salarial para este cargo. O salário base é o valor de referência.
+            </p>
+          </div>
+        )}
 
         <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
           {isEditing && position && (
@@ -366,4 +365,3 @@ export function PositionFormClient({ positionId }: PositionFormClientProps) {
     </StandardFormPage>
   );
 }
-

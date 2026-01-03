@@ -5,7 +5,7 @@
  * e acionáveis para o usuário final.
  */
 
-import { ErrorCode, type AppError } from "./types";
+import { ErrorCode, AppError } from "./types";
 
 /**
  * Mapeamento de códigos de erro para mensagens amigáveis em português

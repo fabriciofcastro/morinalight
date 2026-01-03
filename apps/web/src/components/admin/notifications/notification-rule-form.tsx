@@ -144,9 +144,8 @@ export function NotificationRuleForm({ mode, ruleId }: NotificationRuleFormProps
                             <FuturisticSelect
                                 label="Evento Gatilho"
                                 value={formData.eventType}
-                                onChange={val => setFormData({ ...formData, eventType: val })}
-                                options={events.map(e => ({ value: e, label: e }))}
-                                placeholder="Selecione o evento..."
+                                onChange={e => setFormData({ ...formData, eventType: e.target.value })}
+                                options={[{ value: "", label: "Selecione o evento..." }, ...events.map(e => ({ value: e, label: e }))]}
                             />
                         </div>
 
@@ -154,9 +153,8 @@ export function NotificationRuleForm({ mode, ruleId }: NotificationRuleFormProps
                             <FuturisticSelect
                                 label="Escopo"
                                 value={formData.scope}
-                                onChange={val => setFormData({ ...formData, scope: val as RuleScope })}
-                                options={SCOPE_OPTIONS}
-                                placeholder="Selecione o escopo..."
+                                onChange={e => setFormData({ ...formData, scope: e.target.value as RuleScope })}
+                                options={[{ value: "", label: "Selecione o escopo..." }, ...SCOPE_OPTIONS]}
                             />
                             <FuturisticInput
                                 label="Prioridade (0-100)"

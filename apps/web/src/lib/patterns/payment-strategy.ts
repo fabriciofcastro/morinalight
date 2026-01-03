@@ -311,6 +311,17 @@ paymentService.registerStrategy(new PixStrategy());
 paymentService.registerStrategy(new BoletoStrategy());
 paymentService.registerStrategy(new PayPalStrategy());
 
+// Integration of Adapter Pattern
+import { LegacyPaymentSystem, LegacyPaymentAdapter } from "./adapter-pattern";
+import { AdapterWrapperStrategy } from "./adapter-wrapper-strategy";
+
+const legacySystem = new LegacyPaymentSystem();
+// Em um caso real, o userId viria do contexto, mas para o Singleton service precisamos
+// de uma abordagem de Factory ou passar o userId no processPayment. 
+// Para simplificar este exemplo de integração estrutural:
+const legacyAdapter = new LegacyPaymentAdapter(legacySystem, "system-user");
+paymentService.registerStrategy(new AdapterWrapperStrategy(legacyAdapter));
+
 /**
  * EXEMPLO DE USO:
  * 

@@ -731,7 +731,7 @@ export function SecurityTab() {
 
             {twoFactorBackupCodes.length > 0 && (
               <div>
-                <Label>Códigos de Backup</Label>
+                <Label htmlFor="backup-codes">Códigos de Backup</Label>
                 <div className="mt-2 rounded border border-white/10 bg-white/5 p-4">
                   <p className="mb-2 text-xs text-white/50">
                     Guarde estes códigos em local seguro. Eles podem ser usados para acessar sua conta

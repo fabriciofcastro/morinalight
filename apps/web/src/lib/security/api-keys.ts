@@ -75,10 +75,11 @@ export class APIKeyService {
         await auditService.log({
             action: "api_key_created",
             userId,
+            userRole: "user", // Defaulting to user, could be fetched if needed
             resource: "api_key",
             resourceId: apiKey.id,
             metadata: { name, permissions, rateLimit },
-            success: true,
+            status: "SUCCESS",
         });
 
         return { key, apiKey };
@@ -121,9 +122,10 @@ export class APIKeyService {
                 await auditService.log({
                     action: "api_key_used",
                     userId: key.userId,
+                    userRole: "user",
                     resource: "api",
                     resourceId: key.id,
-                    success: true,
+                    status: "SUCCESS",
                 });
 
                 return key;
@@ -134,9 +136,10 @@ export class APIKeyService {
         await auditService.log({
             action: "api_key_invalid",
             userId: "system",
+            userRole: "system",
             resource: "api",
             metadata: { providedKey: providedKey.substring(0, 10) + "..." },
-            success: false,
+            status: "FAILURE",
         });
 
         return null;
@@ -154,9 +157,10 @@ export class APIKeyService {
         await auditService.log({
             action: "api_key_revoked",
             userId,
+            userRole: "user",
             resource: "api_key",
             resourceId: keyId,
-            success: true,
+            status: "SUCCESS",
         });
     }
 

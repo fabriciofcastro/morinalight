@@ -1,5 +1,7 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+
 import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {
@@ -77,45 +79,47 @@ export function CategoriesListClient() {
     }, [categories, search]);
 
     return (
-        <div className="p-8 space-y-8 min-h-screen text-white pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-200 to-pink-500">
-                        Categorias de Produtos
-                    </h1>
-                    <p className="text-white/60 mt-1">Catálogo geral de categorias (Modo Leitura)</p>
-                </div>
-                <div className="bg-pink-500/10 border border-pink-500/20 px-3 py-1 rounded text-xs text-pink-400 font-mono">
-                    READ ONLY
-                </div>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                        <input
-                            type="text"
-                            placeholder="Buscar categoria..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 transition-all"
-                        />
+        <AllowedGuard I="read" a="Category" redirectTo="/admin">
+            <div className="p-8 space-y-8 min-h-screen text-white pb-20">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-200 to-pink-500">
+                            Categorias de Produtos
+                        </h1>
+                        <p className="text-white/60 mt-1">Catálogo geral de categorias (Modo Leitura)</p>
+                    </div>
+                    <div className="bg-pink-500/10 border border-pink-500/20 px-3 py-1 rounded text-xs text-pink-400 font-mono">
+                        READ ONLY
                     </div>
                 </div>
 
-                {loading ? (
-                    <div className="text-center py-20 text-white/40">Carregando categorias...</div>
-                ) : filtered.length === 0 ? (
-                    <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhuma categoria encontrada.</div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filtered.map(cat => (
-                            <CategoryCard key={cat.categoryId} category={cat} />
-                        ))}
+                <div className="space-y-4">
+                    <div className="flex gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                            <input
+                                type="text"
+                                placeholder="Buscar categoria..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-pink-500/50 transition-all"
+                            />
+                        </div>
                     </div>
-                )}
+
+                    {loading ? (
+                        <div className="text-center py-20 text-white/40">Carregando categorias...</div>
+                    ) : filtered.length === 0 ? (
+                        <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhuma categoria encontrada.</div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {filtered.map(cat => (
+                                <CategoryCard key={cat.categoryId} category={cat} />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </AllowedGuard>
     );
 }

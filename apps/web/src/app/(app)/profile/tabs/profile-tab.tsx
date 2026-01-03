@@ -370,9 +370,9 @@ export function ProfileTab() {
         <div className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>Cargo Atual</Label>
+              <Label htmlFor="position">Cargo Atual</Label>
               <div className="flex items-center gap-2">
-                <Input value={formData.position} readOnly className="bg-white/5" />
+                <Input id="position" value={formData.position} readOnly className="bg-white/5" />
                 <Button type="button" variant="outline" size="sm" onClick={handleRequestPositionChange}>
                   <Send className="h-4 w-4" />
                   Solicitar Mudança
@@ -381,19 +381,19 @@ export function ProfileTab() {
             </div>
 
             <div>
-              <Label>Setor</Label>
-              <Input value={formData.sector} readOnly className="bg-white/5" />
+              <Label htmlFor="sector">Setor</Label>
+              <Input id="sector" value={formData.sector} readOnly className="bg-white/5" />
             </div>
 
             <div>
-              <Label>Departamento</Label>
-              <Input value={formData.department} readOnly className="bg-white/5" />
+              <Label htmlFor="department">Departamento</Label>
+              <Input id="department" value={formData.department} readOnly className="bg-white/5" />
             </div>
 
             <div>
-              <Label>Supervisor</Label>
+              <Label htmlFor="supervisor">Supervisor</Label>
               <div className="flex items-center gap-2">
-                <Input value={formData.supervisor || "Não definido"} readOnly className="bg-white/5" />
+                <Input id="supervisor" value={formData.supervisor || "Não definido"} readOnly className="bg-white/5" />
                 {formData.supervisor && (
                   <Button type="button" variant="outline" size="sm">
                     Ver Perfil
@@ -403,8 +403,9 @@ export function ProfileTab() {
             </div>
 
             <div className="md:col-span-2">
-              <Label>Equipe/Grupo</Label>
+              <Label htmlFor="team">Equipe/Grupo</Label>
               <Input
+                id="team"
                 value={formData.team}
                 onChange={(e) => setFormData((prev) => ({ ...prev, team: e.target.value }))}
                 placeholder="Nome da equipe ou grupo"
@@ -413,7 +414,7 @@ export function ProfileTab() {
           </div>
 
           <div>
-            <Label>Competências/Habilidades</Label>
+            <Label htmlFor="skills-new">Competências/Habilidades</Label>
             <div className="mt-2 flex flex-wrap gap-2">
               {formData.skills.map((skill, idx) => (
                 <span
@@ -438,6 +439,7 @@ export function ProfileTab() {
             </div>
             <div className="mt-2 flex gap-2">
               <Input
+                id="skills-new"
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
                 placeholder="Adicionar habilidade"
@@ -503,7 +505,7 @@ export function ProfileTab() {
           </div>
 
           <div>
-            <Label>Instituições de Ensino</Label>
+            <Label htmlFor="institutions-new">Instituições de Ensino</Label>
             <div className="mt-2 space-y-2">
               {formData.institutions.map((inst, idx) => (
                 <div key={idx} className="flex items-center gap-2">
@@ -525,6 +527,7 @@ export function ProfileTab() {
               ))}
               <div className="flex gap-2">
                 <Input
+                  id="institutions-new"
                   value={newInstitution}
                   onChange={(e) => setNewInstitution(e.target.value)}
                   placeholder="Nome da instituição"
@@ -550,11 +553,11 @@ export function ProfileTab() {
           </div>
 
           <div>
-            <Label>Certificações</Label>
+            <Label htmlFor="certifications-new">Certificações</Label>
             <div className="mt-2 space-y-2">
               {formData.certifications.map((cert, idx) => (
                 <div key={idx} className="flex items-center gap-2">
-                  <Input value={cert} readOnly className="bg-white/5" />
+                  <Input value={cert.nome} readOnly className="bg-white/5" />
                   <Button
                     type="button"
                     variant="outline"
@@ -572,6 +575,7 @@ export function ProfileTab() {
               ))}
               <div className="flex gap-2">
                 <Input
+                  id="certifications-new"
                   value={newCertification}
                   onChange={(e) => setNewCertification(e.target.value)}
                   placeholder="Nome da certificação"
@@ -584,7 +588,7 @@ export function ProfileTab() {
                     if (newCertification.trim()) {
                       setFormData((prev) => ({
                         ...prev,
-                        certifications: [...prev.certifications, newCertification.trim()],
+                        certifications: [...prev.certifications, { nome: newCertification.trim() }],
                       }));
                       setNewCertification("");
                     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield } from "lucide-react";
+import { Shield, AlertTriangle } from "lucide-react";
 import { SectionShell } from "../shared/section-shell";
 import { DigitalCertificateUpload } from "../DigitalCertificateUpload";
 

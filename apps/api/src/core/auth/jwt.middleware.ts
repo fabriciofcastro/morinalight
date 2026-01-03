@@ -24,6 +24,13 @@ type JwtMiddlewareOptions = {
  * Extrai o token JWT do header Authorization
  */
 function extractToken(request: FastifyRequest): string | null {
+  // Priority 1: Check for access_token cookie (HttpOnly, secure)
+  const cookieToken = request.cookies?.access_token;
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  // Priority 2: Check Authorization header (Bearer token)
   const authHeader = request.headers.authorization;
   if (!authHeader) {
     return null;
@@ -40,7 +47,7 @@ function extractToken(request: FastifyRequest): string | null {
 /**
  * Valida e decodifica o token JWT (usando RS256 com fallback HS256)
  */
-function validateToken(token: string): JwtPayload | null {
+function verifyAndDecodeToken(token: string): JwtPayload | null {
   return verifyToken(token);
 }
 
@@ -72,7 +79,7 @@ export function createJwtMiddleware(options: JwtMiddlewareOptions) {
 
     // Se houver token, validar e adicionar contexto
     if (token) {
-      const payload = validateToken(token);
+      const payload = verifyAndDecodeToken(token);
 
       if (payload) {
         // Verificar se token está na blacklist (se tiver jti)

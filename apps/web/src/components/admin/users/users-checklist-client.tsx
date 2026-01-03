@@ -5,6 +5,7 @@ import { ArrowLeft, CheckSquare, FileText, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 export function UsersChecklistClient() {
   const router = useRouter();
@@ -83,7 +84,7 @@ Consulte o arquivo completo para mais detalhes.`;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-      
+
       if (!line) {
         if (inParagraph) {
           html += '</p>';
@@ -151,79 +152,81 @@ Consulte o arquivo completo para mais detalhes.`;
   }
 
   return (
-    <div className="relative min-h-screen p-6 space-y-8">
-      {/* Header Futurista */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
+    <AllowedGuard I="read" a="User" redirectTo="/admin">
+      <div className="relative min-h-screen p-6 space-y-8">
+        {/* Header Futurista */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
 
-        <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
-          {/* Tech corner accents */}
-          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
+          <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
+            {/* Tech corner accents */}
+            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
+            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
+            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
+            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
 
-          <div className="relative z-10 flex-1">
-            <div className="flex items-center gap-4 mb-3">
-              <CheckSquare className="h-8 w-8 text-[hsl(var(--primary))]" />
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                  Checklist de Melhorias - Cadastro de Usuários
-                </h1>
-                <p className="text-sm text-white/60 font-medium mt-1">
-                  Análise completa, pendências e funcionalidades do sistema de cadastro
-                </p>
+            <div className="relative z-10 flex-1">
+              <div className="flex items-center gap-4 mb-3">
+                <CheckSquare className="h-8 w-8 text-[hsl(var(--primary))]" />
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
+                    Checklist de Melhorias - Cadastro de Usuários
+                  </h1>
+                  <p className="text-sm text-white/60 font-medium mt-1">
+                    Análise completa, pendências e funcionalidades do sistema de cadastro
+                  </p>
+                </div>
               </div>
             </div>
+
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4"
+                onClick={() => router.push("/admin/users")}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Voltar
+              </Button>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Conteúdo do Checklist */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="relative p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent backdrop-blur-xl shadow-xl"
+        >
+          <div className="prose prose-invert max-w-none">
+            <div
+              className="checklist-content [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mb-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:border-b [&_h2]:border-white/10 [&_h2]:pb-2 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-white/90 [&_h3]:mt-6 [&_h3]:mb-3"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(checklistContent) }}
+            />
           </div>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          {/* Botão para visualizar arquivo completo */}
+          <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-white/60 text-sm">
+              <FileText className="h-4 w-4" />
+              <span>Arquivo completo: docs/CHECKLIST_MELHORIAS_USUARIOS.md</span>
+            </div>
             <Button
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4"
-              onClick={() => router.push("/admin/users")}
+              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer"
+              onClick={() => window.open("/docs/CHECKLIST_MELHORIAS_USUARIOS.md", "_blank")}
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              <Download className="h-4 w-4 mr-2" />
+              Abrir Documento Completo
             </Button>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Conteúdo do Checklist */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="relative p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.08] via-white/[0.03] to-transparent backdrop-blur-xl shadow-xl"
-      >
-        <div className="prose prose-invert max-w-none">
-          <div
-            className="checklist-content [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:text-white [&_h1]:mb-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:border-b [&_h2]:border-white/10 [&_h2]:pb-2 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-white/90 [&_h3]:mt-6 [&_h3]:mb-3"
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(checklistContent) }}
-          />
-        </div>
-
-        {/* Botão para visualizar arquivo completo */}
-        <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-white/60 text-sm">
-            <FileText className="h-4 w-4" />
-            <span>Arquivo completo: docs/CHECKLIST_MELHORIAS_USUARIOS.md</span>
           </div>
-          <Button
-            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer"
-            onClick={() => window.open("/docs/CHECKLIST_MELHORIAS_USUARIOS.md", "_blank")}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Abrir Documento Completo
-          </Button>
-        </div>
-      </motion.div>
-    </div>
+        </motion.div>
+      </div>
+    </AllowedGuard>
   );
 }
 

@@ -174,7 +174,7 @@ export function SupplierForm({ mode, supplierId }: SupplierFormProps) {
                                     value={formData.website || ""}
                                     onChange={e => setFormData({ ...formData, website: e.target.value })}
                                     placeholder="www.empresa.com.br"
-                                    icon={<Globe className="w-4 h-4" />}
+                                    startIcon={<Globe className="w-4 h-4" />}
                                 />
                             </div>
 
@@ -223,14 +223,14 @@ export function SupplierForm({ mode, supplierId }: SupplierFormProps) {
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     type="email"
                                     placeholder="contato@empresa.com.br"
-                                    icon={<Mail className="w-4 h-4" />}
+                                    startIcon={<Mail className="w-4 h-4" />}
                                 />
                                 <FuturisticInput
                                     label="Telefone / WhatsApp"
                                     value={formData.phone || ""}
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     placeholder="(00) 00000-0000"
-                                    icon={<Phone className="w-4 h-4" />}
+                                    startIcon={<Phone className="w-4 h-4" />}
                                 />
                             </div>
                         </div>

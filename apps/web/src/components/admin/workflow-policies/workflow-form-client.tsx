@@ -10,6 +10,7 @@ import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface WorkflowFormClientProps {
   policyId?: string;
@@ -225,23 +226,24 @@ export function WorkflowFormClient({ policyId }: WorkflowFormClientProps) {
   };
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Workflow" : "Novo Workflow"}
-      subtitle={
-        isEditing
-          ? `Atualizar política de workflow`
-          : "Configure uma nova política de workflow no sistema"
-      }
-      icon={<GitBranch className="h-8 w-8 text-[hsl(var(--primary))]" />}
-      onSave={onSubmit}
-      backUrl={isEditing && policyId ? `/admin/workflow-policies/${policyId}` : "/admin/workflow-policies"}
-      isValid={canSave}
-      loading={loading}
-      loadingMessage="Carregando dados da política de workflow..."
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-    >
-      <form onSubmit={onSubmit} className="space-y-6">
+    <AllowedGuard I={isEditing ? "update" : "create"} a="WorkflowPolicy" redirectTo="/admin/workflow-policies">
+      <StandardFormPage
+        title={isEditing ? "Editar Workflow" : "Novo Workflow"}
+        subtitle={
+          isEditing
+            ? `Atualizar política de workflow`
+            : "Configure uma nova política de workflow no sistema"
+        }
+        icon={<GitBranch className="h-8 w-8 text-[hsl(var(--primary))]" />}
+        onSave={onSubmit}
+        backUrl={isEditing && policyId ? `/admin/workflow-policies/${policyId}` : "/admin/workflow-policies"}
+        isValid={canSave}
+        loading={loading}
+        loadingMessage="Carregando dados da política de workflow..."
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+      >
+        <form onSubmit={onSubmit} className="space-y-6">
           {!isEditing && (
             <div className="p-6 rounded-xl border border-white/10 bg-white/[0.02]">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
@@ -336,15 +338,16 @@ export function WorkflowFormClient({ policyId }: WorkflowFormClientProps) {
             </label>
           </div>
 
-        <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
-          {isEditing && workflow && (
-            <>
-              ID: <span className="font-mono">{workflow.id}</span>
-            </>
-          )}
-        </div>
-      </form>
-    </StandardFormPage>
+          <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
+            {isEditing && workflow && (
+              <>
+                ID: <span className="font-mono">{workflow.id}</span>
+              </>
+            )}
+          </div>
+        </form>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }
 

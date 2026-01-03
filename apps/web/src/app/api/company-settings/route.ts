@@ -36,23 +36,30 @@ function respond(payload: NormalizedCompanySettings, init?: ResponseInit) {
 
 function transformRecord(
   record: {
-    logoUrl: string | null;
-    primaryColor: string | null;
-    secondaryColor: string | null;
-    themeMode: string | null;
-    videoLink: string | null;
+    logoUrl?: string | null | undefined;
+    primaryColor?: string | null | undefined;
+    secondaryColor?: string | null | undefined;
+    themeMode?: string | null | undefined;
+    videoLink?: string | null | undefined;
   } | null,
 ): NormalizedCompanySettings {
   if (!record) {
     return normalizeCompanySettings();
   }
 
-  const normalized = normalizeCompanySettings(record);
+  // Convert null to undefined to match normalizeCompanySettings signature
+  const normalized = normalizeCompanySettings({
+    logoUrl: record.logoUrl ?? undefined,
+    primaryColor: record.primaryColor ?? undefined,
+    secondaryColor: record.secondaryColor ?? undefined,
+    themeMode: record.themeMode as "auto" | "light" | "dark" | undefined,
+    videoLink: record.videoLink ?? undefined,
+  });
   return normalized;
 }
 
-function resolveOrgId(request?: Request) {
-  return request?.headers.get("x-organization-id") ?? defaultOrgId;
+function resolveOrgId(request?: Request): string {
+  return request?.headers.get("x-organization-id") ?? defaultOrgId ?? "";
 }
 
 function persistInMemory(orgId: string, settings: NormalizedCompanySettings) {

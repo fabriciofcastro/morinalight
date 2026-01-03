@@ -287,11 +287,11 @@ export function UserPermissionsTab({ userId, onUserUpdated }: UserPermissionsTab
                         perm.origin === "position" && "bg-blue-500/20 text-blue-400 border border-blue-500/30",
                         perm.origin === "sector" && "bg-purple-500/20 text-purple-400 border border-purple-500/30",
                         perm.origin === "department" &&
-                          "bg-orange-500/20 text-orange-400 border border-orange-500/30",
+                        "bg-orange-500/20 text-orange-400 border border-orange-500/30",
                         perm.origin === "custom" &&
-                          "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+                        "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
                         perm.origin === "template" &&
-                          "bg-green-500/20 text-green-400 border border-green-500/30",
+                        "bg-green-500/20 text-green-400 border border-green-500/30",
                       )}
                     >
                       {perm.origin === "position" && "Cargo"}
@@ -493,7 +493,7 @@ export function UserPermissionsTab({ userId, onUserUpdated }: UserPermissionsTab
                           : "Removida",
                     Origem: item.origin,
                     "Realizado Por": item.performedBy,
-                    "Data": new Date(item.performedAt).toLocaleString("pt-BR"),
+                    "Data": item.performedAt ? new Date(item.performedAt).toLocaleString("pt-BR") : "",
                   }));
 
                   const headers = Object.keys(exportData[0] || {});
@@ -569,7 +569,7 @@ export function UserPermissionsTab({ userId, onUserUpdated }: UserPermissionsTab
                     </p>
                     <p className="text-xs text-white/50">
                       Origem: {item.origin} • Por {item.performedBy} em{" "}
-                      {new Date(item.performedAt).toLocaleString("pt-BR")}
+                      {item.performedAt ? new Date(item.performedAt).toLocaleString("pt-BR") : ""}
                     </p>
                   </div>
                 </div>

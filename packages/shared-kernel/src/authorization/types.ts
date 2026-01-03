@@ -51,10 +51,12 @@ export type AppSubjects =
     | 'Post'
     | 'Document'
     | 'Workflow'
+    | 'BusinessSegment'
     | 'TechnicalSheet'
     | 'Notification'
     // Especial
-    | 'all';
+    | 'all'
+    | Record<string, any>;
 
 /**
  * Tipo principal da Ability do CASL

@@ -62,7 +62,7 @@ export function ProductForm({ mode, productId }: ProductFormProps) {
 
             if (mode === "edit" && productId) {
                 setLoading(true);
-                const data = await productsApi.getById(orgId, productId);
+                const data = await productsApi.get(productId);
                 setFormData({
                     name: data.name,
                     sku: data.sku,
@@ -94,10 +94,10 @@ export function ProductForm({ mode, productId }: ProductFormProps) {
         setSaving(true);
         try {
             if (mode === "create") {
-                await productsApi.create(orgId, formData);
+                await productsApi.create(formData);
                 notificationCenter.add({ type: "success", title: "Sucesso", message: "Produto cadastrado." });
             } else if (productId) {
-                await productsApi.update(orgId, productId, formData);
+                await productsApi.update(productId, formData);
                 notificationCenter.add({ type: "success", title: "Sucesso", message: "Produto atualizado." });
             }
             router.push("/admin/products/list");
@@ -260,7 +260,7 @@ export function ProductForm({ mode, productId }: ProductFormProps) {
                                 label="URL da Imagem"
                                 value={formData.imageUrl || ""}
                                 onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
-                                icon={<ImageIcon className="w-4 h-4" />}
+                                startIcon={<ImageIcon className="w-4 h-4" />}
                                 placeholder="https://..."
                             />
 

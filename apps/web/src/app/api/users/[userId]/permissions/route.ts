@@ -14,7 +14,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ user
   }
 
   const response = await fetch(url, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 

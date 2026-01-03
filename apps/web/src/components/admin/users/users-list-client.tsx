@@ -51,6 +51,7 @@ import { PhotoUpload } from "./photo-upload";
 import { QRCodeBadge } from "./qr-code-badge";
 import { ViewModeToggle, type ViewMode } from "@/components/ui/view-mode-toggle";
 import { Can } from "@/lib/auth";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 
 type StatusFilter = "all" | "active" | "inactive" | "suspended" | "pending";
@@ -197,111 +198,113 @@ export function UsersListClient() {
   };
 
   return (
-    <div className="flex flex-col gap-6 pb-6">
-      {/* Header Stat Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-      >
-        <StatCard title="Total" value={stats.total} total={stats.total} color="#60a5fa" />
-        <StatCard title="Ativos" value={stats.active} total={stats.total} color="#4ade80" />
-        <StatCard title="Inativos" value={stats.inactive} total={stats.total} color="#9ca3af" />
-        <StatCard title="Pendentes" value={stats.pending} total={stats.total} color="#facc15" />
-      </motion.div>
+    <AllowedGuard I="read" a="User" redirectTo="/admin">
+      <div className="flex flex-col gap-6 pb-6">
+        {/* Header Stat Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+          <StatCard title="Total" value={stats.total} total={stats.total} color="#60a5fa" />
+          <StatCard title="Ativos" value={stats.active} total={stats.total} color="#4ade80" />
+          <StatCard title="Inativos" value={stats.inactive} total={stats.total} color="#9ca3af" />
+          <StatCard title="Pendentes" value={stats.pending} total={stats.total} color="#facc15" />
+        </motion.div>
 
-      {/* Toolbar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-xl">
-        <div className="relative w-full md:w-96 group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-focus-within:text-[hsl(var(--primary))]" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nome ou email..."
-            className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-[hsl(var(--primary)/0.5)] transition-all"
-          />
-          {search && (
-            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white">
-              <X className="h-3 w-3" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            className="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
-          >
-            <option value="all">Todos</option>
-            <option value="active">Ativos</option>
-            <option value="inactive">Inativos</option>
-            <option value="pending">Pendentes</option>
-          </select>
-
-          <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
-
-          <Can I="create" a="User">
-            <Button onClick={() => router.push("/admin/users/new")} className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white gap-2">
-              <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Novo</span>
-            </Button>
-          </Can>
-        </div>
-      </div>
-
-      {loading ? (
-        <UserSkeleton variant={viewMode} count={8} />
-      ) : users.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-white/30 gap-4">
-          <Users className="h-16 w-16 opacity-20" />
-          <p>Nenhum usuário encontrado</p>
-        </div>
-      ) : (
-        <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-3"}>
-          {users.map((user) => (
-            <UserCard
-              key={user.userId}
-              user={user}
-              viewMode={viewMode}
-              isSelected={selectedUserIds.has(user.userId)}
-              onSelect={() => toggleUserSelection(user.userId)}
-              onView={() => setSelectedUser(user)}
-              onEdit={() => router.push(`/admin/users/${user.userId}/edit`)}
-              onResetPassword={() => handleResetPassword(user.userId)}
-              onToggle2FA={() => handleToggle2FA(user)}
+        {/* Toolbar */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-xl">
+          <div className="relative w-full md:w-96 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-focus-within:text-[hsl(var(--primary))]" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome ou email..."
+              className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-[hsl(var(--primary)/0.5)] transition-all"
             />
-          ))}
+            {search && (
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white">
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+              className="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
+            >
+              <option value="all">Todos</option>
+              <option value="active">Ativos</option>
+              <option value="inactive">Inativos</option>
+              <option value="pending">Pendentes</option>
+            </select>
+
+            <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+
+            <Can I="create" a="User">
+              <Button onClick={() => router.push("/admin/users/new")} className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white gap-2">
+                <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Novo</span>
+              </Button>
+            </Can>
+          </div>
         </div>
-      )}
 
-      {/* Drawers & Modals */}
-      <AnimatePresence>
-        {selectedUser && (
-          <UserDrawer
-            user={selectedUser}
-            onClose={() => setSelectedUser(null)}
-            onResetPassword={() => handleResetPassword(selectedUser.userId)}
-            onEdit={() => router.push(`/admin/users/${selectedUser.userId}/edit`)}
-          />
+        {loading ? (
+          <UserSkeleton variant={viewMode} count={8} />
+        ) : users.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-white/30 gap-4">
+            <Users className="h-16 w-16 opacity-20" />
+            <p>Nenhum usuário encontrado</p>
+          </div>
+        ) : (
+          <div className={viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" : "space-y-3"}>
+            {users.map((user) => (
+              <UserCard
+                key={user.userId}
+                user={user}
+                viewMode={viewMode}
+                isSelected={selectedUserIds.has(user.userId)}
+                onSelect={() => toggleUserSelection(user.userId)}
+                onView={() => setSelectedUser(user)}
+                onEdit={() => router.push(`/admin/users/${user.userId}/edit`)}
+                onResetPassword={() => handleResetPassword(user.userId)}
+                onToggle2FA={() => handleToggle2FA(user)}
+              />
+            ))}
+          </div>
         )}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {notification && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className={`fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl backdrop-blur-md shadow-2xl flex items-center gap-3 z-50 border ${notification.type === "success" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
-              }`}
-          >
-            {notification.type === "success" ? <CheckCircle2 className="h-5 w-5" /> : <X className="h-5 w-5" />}
-            <span className="font-medium">{notification.message}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        {/* Drawers & Modals */}
+        <AnimatePresence>
+          {selectedUser && (
+            <UserDrawer
+              user={selectedUser}
+              onClose={() => setSelectedUser(null)}
+              onResetPassword={() => handleResetPassword(selectedUser.userId)}
+              onEdit={() => router.push(`/admin/users/${selectedUser.userId}/edit`)}
+            />
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {notification && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className={`fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl backdrop-blur-md shadow-2xl flex items-center gap-3 z-50 border ${notification.type === "success" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+                }`}
+            >
+              {notification.type === "success" ? <CheckCircle2 className="h-5 w-5" /> : <X className="h-5 w-5" />}
+              <span className="font-medium">{notification.message}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </AllowedGuard>
   );
 }
 

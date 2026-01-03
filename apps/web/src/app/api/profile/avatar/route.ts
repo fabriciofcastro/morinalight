@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const backendFormData = new FormData();
     backendFormData.append("file", file);
 
-    const headers = await buildAuthHeaders({});
+    const headers = await buildAuthHeaders({}) as any;
     delete headers["Content-Type"]; // Allow browser to set boundary
 
     const response = await fetch(`${apiUrl}/profile/avatar`, {

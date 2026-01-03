@@ -89,21 +89,21 @@ export declare const criarVarianteInputSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     orgId: string;
     sku: string;
-    nome: string;
     productId: string;
+    nome: string;
     atributos: Record<string, string | number | boolean>;
+    ativo?: boolean | undefined;
     preco?: number | null | undefined;
     estoque?: number | null | undefined;
-    ativo?: boolean | undefined;
 }, {
     orgId: string;
     sku: string;
-    nome: string;
     productId: string;
+    nome: string;
     atributos: Record<string, string | number | boolean>;
+    ativo?: boolean | undefined;
     preco?: number | null | undefined;
     estoque?: number | null | undefined;
-    ativo?: boolean | undefined;
 }>;
 export type CriarVarianteInput = z.infer<typeof criarVarianteInputSchema>;
 export declare const varianteViewSchema: z.ZodObject<{
@@ -128,13 +128,13 @@ export declare const varianteViewSchema: z.ZodObject<{
     sku: string;
     createdBy: string;
     updatedBy: string;
-    nome: string;
     productId: string;
+    nome: string;
     atributos: Record<string, string | number | boolean>;
     varianteId: string;
+    ativo?: boolean | undefined;
     preco?: number | null | undefined;
     estoque?: number | null | undefined;
-    ativo?: boolean | undefined;
 }, {
     createdAt: Date;
     updatedAt: Date;
@@ -142,13 +142,13 @@ export declare const varianteViewSchema: z.ZodObject<{
     sku: string;
     createdBy: string;
     updatedBy: string;
-    nome: string;
     productId: string;
+    nome: string;
     atributos: Record<string, string | number | boolean>;
     varianteId: string;
+    ativo?: boolean | undefined;
     preco?: number | null | undefined;
     estoque?: number | null | undefined;
-    ativo?: boolean | undefined;
 }>;
 export type VarianteView = z.infer<typeof varianteViewSchema>;
 export declare const atualizarVarianteInputSchema: z.ZodObject<{
@@ -162,19 +162,19 @@ export declare const atualizarVarianteInputSchema: z.ZodObject<{
 }, "strip", z.ZodTypeAny, {
     orgId: string;
     varianteId: string;
+    ativo?: boolean | undefined;
     nome?: string | undefined;
     atributos?: Record<string, string | number | boolean> | undefined;
     preco?: number | null | undefined;
     estoque?: number | null | undefined;
-    ativo?: boolean | undefined;
 }, {
     orgId: string;
     varianteId: string;
+    ativo?: boolean | undefined;
     nome?: string | undefined;
     atributos?: Record<string, string | number | boolean> | undefined;
     preco?: number | null | undefined;
     estoque?: number | null | undefined;
-    ativo?: boolean | undefined;
 }>;
 export type AtualizarVarianteInput = z.infer<typeof atualizarVarianteInputSchema>;
 export declare const criarCategoriaInputSchema: z.ZodObject<{

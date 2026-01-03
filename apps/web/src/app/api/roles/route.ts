@@ -1,9 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { adminRouteMiddleware } from "@/lib/middleware/security-middleware";
 
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../_lib/auth-headers";
 
-export async function GET() {
+export async function GET(request: NextRequest, context: any) {
+  // Aplicar middleware de segurança admin
+  const middlewareResult = await adminRouteMiddleware(request, context);
+  if (middlewareResult) return middlewareResult;
+
   const response = await fetch(`${apiUrl}/roles`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
@@ -17,7 +22,11 @@ export async function GET() {
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest, context: any) {
+  // Aplicar middleware de segurança admin
+  const middlewareResult = await adminRouteMiddleware(request, context);
+  if (middlewareResult) return middlewareResult;
+
   const body = await request.json().catch(() => ({}));
 
   const response = await fetch(`${apiUrl}/roles`, {

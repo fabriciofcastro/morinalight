@@ -143,14 +143,13 @@ export function PositionForm({ mode, positionId }: PositionFormProps) {
                             <FuturisticSelect
                                 label="Senioridade"
                                 value={formData.seniority}
-                                onChange={val => setFormData({ ...formData, seniority: val })}
+                                onChange={e => setFormData({ ...formData, seniority: e.target.value as any })}
                                 options={SENIORITY_OPTIONS}
-                                placeholder="Selecione..."
                             />
                             <FuturisticInput
                                 label="Salário Base"
                                 type="number"
-                                icon={DollarSign}
+                                startIcon={<DollarSign className="w-4 h-4" />}
                                 value={formData.baseSalary?.toString()}
                                 onChange={e => setFormData({ ...formData, baseSalary: parseFloat(e.target.value) || 0 })}
                                 placeholder="0.00"

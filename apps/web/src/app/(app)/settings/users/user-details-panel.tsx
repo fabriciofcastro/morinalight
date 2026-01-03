@@ -4,6 +4,11 @@ import { GlassCard, cn } from "@morina/ui";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { UserProfileTab } from "./user-profile-tab";
+import { UserOrganizationTab } from "./user-organization-tab";
+import { UserPermissionsTab } from "./user-permissions-tab";
+import { UserActivityTab } from "./user-activity-tab";
+import { UserAuditTab } from "./user-audit-tab";
+import { UserSecurityTab } from "./user-security-tab";
 
 type User = {
   userId: string;
@@ -14,6 +19,8 @@ type User = {
   lastLogin: string | null;
   createdAt: string;
   updatedAt: string;
+  twoFactorEnabled?: boolean;
+  twoFactorEnabledAt?: string | null;
 };
 
 type UserDetailsPanelProps = {
@@ -23,7 +30,7 @@ type UserDetailsPanelProps = {
   onUserUpdated: () => void;
 };
 
-type TabId = "profile" | "organization" | "permissions" | "activity" | "audit";
+type TabId = "profile" | "organization" | "permissions" | "security" | "activity" | "audit";
 
 export function UserDetailsPanel({ userId, user, onClose, onUserUpdated }: UserDetailsPanelProps) {
   const [activeTab, setActiveTab] = useState<TabId>("profile");
@@ -32,6 +39,7 @@ export function UserDetailsPanel({ userId, user, onClose, onUserUpdated }: UserD
     { id: "profile", label: "Perfil" },
     { id: "organization", label: "Organização" },
     { id: "permissions", label: "Permissões" },
+    { id: "security", label: "Segurança" },
     { id: "activity", label: "Atividade" },
     { id: "audit", label: "Auditoria" },
   ];
@@ -85,6 +93,13 @@ export function UserDetailsPanel({ userId, user, onClose, onUserUpdated }: UserD
 
         {activeTab === "permissions" && (
           <UserPermissionsTab userId={userId} onUserUpdated={onUserUpdated} />
+        )}
+
+        {activeTab === "security" && (
+          <UserSecurityTab userId={userId} user={{
+            twoFactorEnabled: !!user.twoFactorEnabled,
+            twoFactorEnabledAt: user.twoFactorEnabledAt
+          }} />
         )}
 
         {activeTab === "activity" && <UserActivityTab userId={userId} />}

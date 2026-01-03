@@ -57,55 +57,50 @@ export class OrderRepository extends AbstractRepository<Order> {
     constructor() {
         super("order");
     }
-
     async findById(id: string): Promise<Order | null> {
-        // return prisma.order.findUnique({
-        //   where: { id },
-        //   include: { items: true },
-        // });
-        return null;
+        const delegate = await this.getDelegate();
+        if (!delegate) return null;
+        const result = await delegate.findUnique({
+            where: { id },
+            include: { items: true },
+        });
+        if (!result) return null;
+        return this.mapToDomain(result);
     }
 
     async findAll(filters?: any): Promise<Order[]> {
+        const delegate = await this.getDelegate();
+        if (!delegate) return [];
+
         const where = this.buildWhereClause(filters);
         const orderBy = this.buildOrderByClause(filters?.orderBy, filters?.order);
 
-        // return prisma.order.findMany({
-        //   where,
-        //   orderBy,
-        //   include: { items: true },
-        //   take: filters?.limit || 50,
-        //   skip: filters?.offset || 0,
-        // });
-
-        return [];
+        const results = await delegate.findMany({
+            where,
+            orderBy,
+            include: { items: true },
+            take: filters?.limit || 50,
+            skip: filters?.offset || 0,
+        });
+        return results.map((r: any) => this.mapToDomain(r));
     }
 
-    async create(data: Partial<Order>): Promise<Order> {
-        // return prisma.order.create({
-        //   data,
-        //   include: { items: true },
-        // });
-        return {} as Order;
-    }
-
-    async update(id: string, data: Partial<Order>): Promise<Order> {
-        // return prisma.order.update({
-        //   where: { id },
-        //   data,
-        //   include: { items: true },
-        // });
-        return {} as Order;
-    }
-
-    async delete(id: string): Promise<void> {
-        // await prisma.order.delete({ where: { id } });
-    }
-
-    async count(filters?: any): Promise<number> {
-        const where = this.buildWhereClause(filters);
-        // return prisma.order.count({ where });
-        return 0;
+    private mapToDomain(o: any): Order {
+        return {
+            ...o,
+            subtotal: Number(o.subtotal),
+            discount: Number(o.discount),
+            tax: Number(o.tax),
+            shipping: Number(o.shipping),
+            total: Number(o.total),
+            items: o.items.map((i: any) => ({
+                ...i,
+                unitPrice: Number(i.unitPrice),
+                discount: Number(i.discount),
+                total: Number(i.total),
+                quantity: i.quantity, // Int
+            })),
+        };
     }
 
     /**
@@ -113,38 +108,47 @@ export class OrderRepository extends AbstractRepository<Order> {
      */
 
     async findByOrderNumber(orderNumber: string): Promise<Order | null> {
-        // return prisma.order.findUnique({
-        //   where: { orderNumber },
-        //   include: { items: true },
-        // });
-        return null;
+        const delegate = await this.getDelegate();
+        if (!delegate) return null;
+        const result = await delegate.findUnique({
+            where: { orderNumber },
+            include: { items: true },
+        });
+        if (!result) return null;
+        return this.mapToDomain(result);
     }
 
     async findByCustomer(customerId: string): Promise<Order[]> {
-        // return prisma.order.findMany({
-        //   where: { customerId },
-        //   include: { items: true },
-        //   orderBy: { createdAt: 'desc' },
-        // });
-        return [];
+        const delegate = await this.getDelegate();
+        if (!delegate) return [];
+        const results = await delegate.findMany({
+            where: { customerId },
+            include: { items: true },
+            orderBy: { createdAt: 'desc' },
+        });
+        return results.map((r: any) => this.mapToDomain(r));
     }
 
     async findByStatus(status: Order["status"]): Promise<Order[]> {
-        // return prisma.order.findMany({
-        //   where: { status },
-        //   include: { items: true },
-        // });
-        return [];
+        const delegate = await this.getDelegate();
+        if (!delegate) return [];
+        const results = await delegate.findMany({
+            where: { status },
+            include: { items: true },
+        });
+        return results.map((r: any) => this.mapToDomain(r));
     }
 
     async findPendingOrders(): Promise<Order[]> {
-        // return prisma.order.findMany({
-        //   where: {
-        //     status: { in: ['PENDING', 'CONFIRMED'] },
-        //   },
-        //   include: { items: true },
-        // });
-        return [];
+        const delegate = await this.getDelegate();
+        if (!delegate) return [];
+        const results = await delegate.findMany({
+            where: {
+                status: { in: ['PENDING', 'CONFIRMED'] },
+            },
+            include: { items: true },
+        });
+        return results.map((r: any) => this.mapToDomain(r));
     }
 
     async updateStatus(
@@ -162,7 +166,17 @@ export class OrderRepository extends AbstractRepository<Order> {
             updateData.deliveredAt = new Date();
         }
 
-        return this.update(id, updateData);
+        const result = await this.update(id, updateData); // update calls getDelegate -> update which returns Prisma obj. Wait.
+        // update returns this.mapToDomain(result)? BaseRepository returns PrismaT.
+        // OrderRepository extends AbstractRepository<Order>. 
+        // If BaseRepository returns T (which is Order), then it ostensibly returns Order.
+        // BUT BaseRepository.update returns delegate.updateResult.
+        // I should override update in OrderRepository or cast result. 
+        // Actually, BaseRepository.update result is unmapped!
+        // So I must override update here as well if I want explicit mapping.
+
+        // Let's implement Override for Update as well since BaseRepo doesn't map.
+        return this.mapToDomain(result); // Assuming update override is added below
     }
 
     async updatePaymentStatus(
@@ -190,19 +204,25 @@ export class OrderRepository extends AbstractRepository<Order> {
         averageOrderValue: number;
         ordersByStatus: Record<string, number>;
     }> {
-        // const orders = await prisma.order.findMany({
-        //   where: {
-        //     createdAt: { gte: startDate, lte: endDate },
-        //   },
-        // });
+        const delegate = await this.getDelegate();
+        if (!delegate) return {
+            totalOrders: 0,
+            totalRevenue: 0,
+            averageOrderValue: 0,
+            ordersByStatus: {}
+        };
 
-        const orders: Order[] = [];
+        const orders = await delegate.findMany({
+            where: {
+                createdAt: { gte: startDate, lte: endDate },
+            },
+        });
 
         const totalOrders = orders.length;
-        const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+        const totalRevenue = orders.reduce((sum: number, o: Order) => sum + o.total, 0);
         const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-        const ordersByStatus = orders.reduce((acc, o) => {
+        const ordersByStatus = orders.reduce((acc: Record<string, number>, o: Order) => {
             acc[o.status] = (acc[o.status] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
@@ -213,6 +233,16 @@ export class OrderRepository extends AbstractRepository<Order> {
             averageOrderValue,
             ordersByStatus,
         };
+    }
+
+    // Override update to handle mapping
+    async update(id: string, data: Partial<Order>): Promise<Order> {
+        const delegate = await this.getDelegate();
+        if (!delegate) throw new Error("Database unavailable");
+        // We need to be careful with sending Decimal fields back.
+        // Prisma expects Decimal or number/string. Number is fine.
+        const result = await delegate.update({ where: { id }, data, include: { items: true } });
+        return this.mapToDomain(result);
     }
 }
 

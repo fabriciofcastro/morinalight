@@ -109,7 +109,7 @@ function ConnectorsSection() {
             notificationCenter.add({
                 type: "success",
                 title: "Sincronização Concluída",
-                message: `${result.itemsSuccess} itens sincronizados com sucesso.`
+                message: `${(result as any).itemsSuccess} itens sincronizados com sucesso.`
             });
         } catch (error) {
             notificationCenter.add({ type: "error", title: "Erro", message: "Falha na sincronização." });

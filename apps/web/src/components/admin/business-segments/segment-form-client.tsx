@@ -9,6 +9,7 @@ import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface SegmentFormClientProps {
   segmentId?: string;
@@ -133,23 +134,24 @@ export function SegmentFormClient({ segmentId }: SegmentFormClientProps) {
   );
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Segmento" : "Novo Segmento"}
-      subtitle={
-        isEditing
-          ? `Atualizar informações do segmento ${segment?.code}`
-          : "Cadastre um novo segmento de negócio no sistema"
-      }
-      icon={<Tag className="h-8 w-8 text-[hsl(var(--primary))]" />}
-      onSave={onSubmit}
-      backUrl={isEditing && segmentId ? `/admin/business-segments/${segmentId}` : "/admin/business-segments"}
-      isValid={canSave}
-      loading={loading}
-      loadingMessage="Carregando dados do segmento..."
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-    >
-      <form onSubmit={onSubmit} className="space-y-6">
+    <AllowedGuard I={isEditing ? "update" : "create"} a="BusinessSegment" redirectTo="/admin/business-segments">
+      <StandardFormPage
+        title={isEditing ? "Editar Segmento" : "Novo Segmento"}
+        subtitle={
+          isEditing
+            ? `Atualizar informações do segmento ${segment?.code}`
+            : "Cadastre um novo segmento de negócio no sistema"
+        }
+        icon={<Tag className="h-8 w-8 text-[hsl(var(--primary))]" />}
+        onSave={onSubmit}
+        backUrl={isEditing && segmentId ? `/admin/business-segments/${segmentId}` : "/admin/business-segments"}
+        isValid={canSave}
+        loading={loading}
+        loadingMessage="Carregando dados do segmento..."
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+      >
+        <form onSubmit={onSubmit} className="space-y-6">
           <FuturisticInput
             label="Código"
             required
@@ -195,15 +197,16 @@ export function SegmentFormClient({ segmentId }: SegmentFormClientProps) {
             </label>
           </div>
 
-        <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
-          {isEditing && segment && (
-            <>
-              ID: <span className="font-mono">{segment.id}</span>
-            </>
-          )}
-        </div>
-      </form>
-    </StandardFormPage>
+          <div className="text-xs text-white/40 mt-6 pt-6 border-t border-white/10">
+            {isEditing && segment && (
+              <>
+                ID: <span className="font-mono">{segment.id}</span>
+              </>
+            )}
+          </div>
+        </form>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }
 

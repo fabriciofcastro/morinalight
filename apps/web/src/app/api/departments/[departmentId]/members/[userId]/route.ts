@@ -12,7 +12,7 @@ export async function DELETE(
     `${apiUrl}/departments/${departmentId}/members/${userId}`,
     {
       method: "DELETE",
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     },
   );
 
@@ -38,7 +38,7 @@ export async function PATCH(
     `${apiUrl}/departments/${departmentId}/members/${userId}`,
     {
       method: "PATCH",
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(body),
     },
   );

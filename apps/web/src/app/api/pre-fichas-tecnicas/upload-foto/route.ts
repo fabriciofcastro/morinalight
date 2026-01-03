@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiUrl } from "@/lib/env";
-import { buildAuthHeaders } from "../../../_lib/auth-headers";
+import { buildAuthHeaders } from "../../_lib/auth-headers";
 
 export async function POST(request: Request) {
   try {

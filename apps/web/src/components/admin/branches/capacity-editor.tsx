@@ -156,7 +156,7 @@ export function CapacityEditor({ value, onChange }: CapacityEditorProps) {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Futuristic Input
+                    <FuturisticInput
                         label="Meta Mensal (un)"
                         type="number"
                         value={value.goals.monthly}

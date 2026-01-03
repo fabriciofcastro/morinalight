@@ -12,8 +12,9 @@ export type UserRecord = {
   phone?: string | null;
   birthDate?: Date | null;
   admissionDate?: Date | null;
-  observations?: string | null;
   mustChangePassword?: boolean;
+  branchId?: string | null;
+  positionId?: string | null;
 };
 
 export type CreateUserInput = {
@@ -30,6 +31,8 @@ export type CreateUserInput = {
   observations?: string | null;
   avatarUrl?: string | null;
   mustChangePassword?: boolean;
+  branchId?: string | null;
+  positionId?: string | null;
 };
 
 export type UpdateUserInput = {
@@ -44,6 +47,8 @@ export type UpdateUserInput = {
   birthDate?: Date | null;
   admissionDate?: Date | null;
   observations?: string | null;
+  branchId?: string | null;
+  positionId?: string | null;
 };
 
 export interface UserRepository {

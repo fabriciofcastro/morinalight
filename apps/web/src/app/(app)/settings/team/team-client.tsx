@@ -123,7 +123,7 @@ export function TeamClient({ orgId, initialMembers }: TeamClientProps) {
         Papel: ROLE_LABELS[member.role] || member.role,
         Status: STATUS_LABELS[member.user?.status ?? "active"] || member.user?.status || "active",
         "Membro Desde": new Date(member.createdAt).toLocaleString("pt-BR"),
-        "Última Atualização": new Date(member.updatedAt).toLocaleString("pt-BR"),
+
       }));
 
       if (format === "json") {

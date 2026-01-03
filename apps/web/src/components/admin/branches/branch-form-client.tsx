@@ -190,7 +190,7 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
       }
     };
 
-    loadBranch();
+    loadData();
 
     // Carregar lista de filiais para seletor de pai
     const loadAllBranches = async () => {
@@ -391,7 +391,13 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
       if (!branchId) return;
 
       try {
-        const newBranch = await organizationalStructureApi.duplicateBranch(branchId, options);
+        const newBranch = await organizationalStructureApi.duplicateBranch(branchId, {
+          name: options.newName,
+          code: options.newCode,
+          copyDocuments: options.copyDocuments,
+          copyBusinessHours: options.copyBusinessHours,
+          maintainHierarchy: options.maintainHierarchy
+        });
 
         notificationCenter.add({
           type: "success",

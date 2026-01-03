@@ -477,7 +477,7 @@ export function ProfilesClient() {
               </div>
 
               <div>
-                <Label>Permissões</Label>
+                <Label htmlFor="permissions-list">Permissões</Label>
                 <p className="mt-1 text-sm text-white/50">
                   Selecione as permissões específicas para este perfil. (Funcionalidade será
                   implementada em breve)

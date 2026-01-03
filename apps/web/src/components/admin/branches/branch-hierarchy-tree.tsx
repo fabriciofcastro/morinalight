@@ -30,8 +30,8 @@ function TreeNode({
         <div>
             <div
                 className={`flex items-center gap-2 p-3 rounded-lg transition-colors ${isHighlighted
-                        ? "bg-blue-500/20 border border-blue-500/30"
-                        : "hover:bg-white/5 border border-transparent"
+                    ? "bg-blue-500/20 border border-blue-500/30"
+                    : "hover:bg-white/5 border border-transparent"
                     } ${onSelect ? "cursor-pointer" : ""}`}
                 style={{ marginLeft: `${level * 24}px` }}
                 onClick={() => onSelect?.(branch)}
@@ -71,7 +71,7 @@ function TreeNode({
                                 <span>•</span>
                                 <span className="flex items-center gap-1">
                                     <GitFork className="w-3 h-3" />
-                                    {branch.children.length} filha{branch.children.length > 1 ? "is" : ""}
+                                    {branch.children?.length || 0} filha{(branch.children?.length || 0) > 1 ? "is" : ""}
                                 </span>
                             </>
                         )}

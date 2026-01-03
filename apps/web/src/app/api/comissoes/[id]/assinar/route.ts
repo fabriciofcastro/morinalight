@@ -7,7 +7,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const response = await fetch(`${apiUrl}/comissoes/${id}/assinar`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   if (!response.ok) {

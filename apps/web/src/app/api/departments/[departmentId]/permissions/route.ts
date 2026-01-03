@@ -6,7 +6,7 @@ import { buildAuthHeaders } from "../../../_lib/auth-headers";
 export async function GET(_request: Request, { params }: { params: Promise<{ departmentId: string }> }) {
   const { departmentId } = await params;
   const response = await fetch(`${apiUrl}/departments/${departmentId}/permissions`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -27,7 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ dep
 
   const response = await fetch(`${apiUrl}/departments/${departmentId}/permissions`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -59,7 +59,7 @@ export async function DELETE(
     `${apiUrl}/departments/${departmentId}/permissions/${permissionId}`,
     {
       method: "DELETE",
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     },
   );
 

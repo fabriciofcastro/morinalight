@@ -81,13 +81,17 @@ export function FiscalTab({ formData, setFormData }: FiscalTabProps) {
 
             <SectionShell title="Identificação Estadual e Municipal">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FuturisticInput
-                        label="Inscrição Estadual (IE)"
-                        placeholder="Ex: 123.456.789.123"
-                        value={formData.ie || ""}
-                        onChange={(e) => setFormData({ ...formData, ie: e.target.value })}
-                        helperText={formData.ie && formData.ie.length < 9 ? "Inscrição Estadual parece curta" : undefined}
-                    />
+                    <div className="space-y-1">
+                        <FuturisticInput
+                            label="Inscrição Estadual (IE)"
+                            placeholder="Ex: 123.456.789.123"
+                            value={formData.ie || ""}
+                            onChange={(e) => setFormData({ ...formData, ie: e.target.value })}
+                        />
+                        {formData.ie && formData.ie.length < 9 && (
+                            <p className="text-xs text-yellow-400/80">Inscrição Estadual parece curta</p>
+                        )}
+                    </div>
                     <FuturisticInput
                         label="Inscrição Municipal (IM)"
                         placeholder="Ex: 1.234.567-8"
@@ -96,13 +100,15 @@ export function FiscalTab({ formData, setFormData }: FiscalTabProps) {
                     />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <FuturisticInput
-                        label="CNAE Principal"
-                        placeholder="Ex: 62.01-5-01"
-                        value={formData.cnaeMain || ""}
-                        onChange={(e) => setFormData({ ...formData, cnaeMain: e.target.value })}
-                        helperText="Código Nacional de Atividade Econômica principal"
-                    />
+                    <div className="space-y-1">
+                        <FuturisticInput
+                            label="CNAE Principal"
+                            placeholder="Ex: 62.01-5-01"
+                            value={formData.cnaeMain || ""}
+                            onChange={(e) => setFormData({ ...formData, cnaeMain: e.target.value })}
+                        />
+                        <p className="text-xs text-white/40">Código Nacional de Atividade Econômica principal</p>
+                    </div>
                     <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 flex gap-3 text-sm">
                         <Info className="w-5 h-5 text-blue-400 flex-shrink-0" />
                         <p className="text-blue-200/90">

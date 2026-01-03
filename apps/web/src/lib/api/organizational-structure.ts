@@ -228,6 +228,7 @@ export const organizationalStructureApi = {
 
 export interface Department {
     id: string;
+    orgId: string;
     name: string;
     code: string;
     description?: string;
@@ -241,6 +242,7 @@ export interface Department {
 }
 
 export interface CreateDepartmentInput {
+    orgId?: string;
     name: string;
     code: string;
     description?: string;

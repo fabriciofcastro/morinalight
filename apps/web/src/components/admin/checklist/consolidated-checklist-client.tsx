@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 export function ConsolidatedChecklistClient() {
   const router = useRouter();
@@ -75,7 +76,7 @@ Consulte o arquivo completo para mais detalhes.`;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-      
+
       if (!line) {
         if (inParagraph) {
           html += '</p>';
@@ -158,58 +159,60 @@ Consulte o arquivo completo para mais detalhes.`;
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Header */}
-        <GlassCard className="mb-6 p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.back()}
-                className="text-white/80 hover:text-white"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar
-              </Button>
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-8 h-8 text-[var(--primary)]" />
-                <div>
-                  <h1 className="text-2xl font-bold text-white">Checklist Consolidado</h1>
-                  <p className="text-white/60 text-sm">Todas as demandas do sistema MORINA</p>
+    <AllowedGuard I="read" a="User" redirectTo="/admin">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Header */}
+          <GlassCard className="mb-6 p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.back()}
+                  className="text-white/80 hover:text-white"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar
+                </Button>
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-8 h-8 text-[var(--primary)]" />
+                  <div>
+                    <h1 className="text-2xl font-bold text-white">Checklist Consolidado</h1>
+                    <p className="text-white/60 text-sm">Todas as demandas do sistema MORINA</p>
+                  </div>
                 </div>
               </div>
+              <Button
+                onClick={handleDownload}
+                className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </Button>
             </div>
-            <Button
-              onClick={handleDownload}
-              className="bg-[var(--primary)] hover:bg-[var(--primary)]/90 text-white"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Download
-            </Button>
-          </div>
-        </GlassCard>
+          </GlassCard>
 
-        {/* Content */}
-        <GlassCard className="p-8">
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
-            </div>
-          ) : (
-            <div
-              className="prose prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(checklistContent) }}
-            />
-          )}
-        </GlassCard>
-      </motion.div>
-    </div>
+          {/* Content */}
+          <GlassCard className="p-8">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
+              </div>
+            ) : (
+              <div
+                className="prose prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: renderMarkdown(checklistContent) }}
+              />
+            )}
+          </GlassCard>
+        </motion.div>
+      </div>
+    </AllowedGuard>
   );
 }
 

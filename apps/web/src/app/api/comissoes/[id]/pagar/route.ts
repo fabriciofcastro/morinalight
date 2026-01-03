@@ -9,7 +9,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const response = await fetch(`${apiUrl}/comissoes/${id}/pagar`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 

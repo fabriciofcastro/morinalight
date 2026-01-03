@@ -43,7 +43,7 @@ export async function POST(
       backendFormData.append("reason", reason);
     }
 
-    const headers = await buildAuthHeaders({});
+    const headers = await buildAuthHeaders({}) as any;
     delete headers["Content-Type"]; // Permitir que o browser defina o boundary
 
     const response = await fetch(`${apiUrl}/users/${userId}/documents/upload`, {

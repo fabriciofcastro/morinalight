@@ -119,6 +119,14 @@ export function AnalyticsDashboardClient() {
                 {/* Export Actions */}
                 <div className="flex gap-2">
                     <Button
+                        onClick={() => router.push("/analytics/reports")}
+                        variant="outline"
+                        className="bg-white/5 border-white/10 hover:bg-white/10 text-white gap-2"
+                    >
+                        <Settings className="w-4 h-4" />
+                        Gestão
+                    </Button>
+                    <Button
                         onClick={() => handleExport('excel')}
                         className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2"
                     >

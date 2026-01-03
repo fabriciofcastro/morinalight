@@ -6,7 +6,7 @@ import { buildAuthHeaders } from "../../../_lib/auth-headers";
 export async function GET(_request: Request, { params }: { params: Promise<{ branchId: string }> }) {
   const { branchId } = await params;
   const response = await fetch(`${apiUrl}/branches/${branchId}/members`, {
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     cache: "no-store",
   });
 
@@ -27,7 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ bra
 
   const response = await fetch(`${apiUrl}/branches/${branchId}/members`, {
     method: "POST",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -54,7 +54,7 @@ export async function PATCH(
     `${apiUrl}/branches/${branchId}/members/${membershipId}`,
     {
       method: "PATCH",
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(body),
     },
   );
@@ -87,7 +87,7 @@ export async function DELETE(
     `${apiUrl}/branches/${branchId}/members/${membershipId}`,
     {
       method: "DELETE",
-      headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+      headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     },
   );
 

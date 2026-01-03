@@ -5,10 +5,8 @@ import * as Sentry from "@sentry/node";
 const sentryPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
     // 1. Request Handler (Tracing e Contexto)
     fastify.addHook("onRequest", async (request, reply) => {
-        Sentry.configureScope((scope) => {
-            scope.setTag("method", request.method);
-            scope.setTag("url", request.url);
-        });
+        Sentry.setTag("method", request.method);
+        Sentry.setTag("url", request.url);
     });
 
     // 2. Error Monitor (Passivo) - Captura erros sem interferir na resposta

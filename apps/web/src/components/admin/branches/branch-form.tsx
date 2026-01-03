@@ -84,24 +84,24 @@ export function BranchForm({ mode, branchId }: BranchFormProps) {
 
             setFormData({
                 name: data.name,
-                code: data.code,
+                code: data.code || "",
                 legalName: data.legalName || "",
                 cnpj: data.cnpj || "",
                 email: data.email || "",
                 phone: data.phone || "",
                 website: data.website || "",
                 address: {
-                    street: "", // Need to parse if it's a string, or maybe API returns broken down fields in `city` etc.
-                    number: "",
-                    complement: "",
-                    neighborhood: "",
-                    city: data.city || "",
-                    state: data.state || "",
-                    zipCode: data.postalCode || "",
+                    street: data.address?.street || "",
+                    number: data.address?.number || "",
+                    complement: data.address?.complement || "",
+                    neighborhood: data.address?.neighborhood || "",
+                    city: data.address?.city || "",
+                    state: data.address?.state || "",
+                    zipCode: data.address?.zipCode || "",
                     country: "Brasil"
                 },
-                branchType: (data.branchType as string) || "PRODUCTION",
-                isActive: data.isActive,
+                branchType: ((data as any).branchType as string) || "PRODUCTION",
+                isActive: data.active ?? true,
             });
 
         } catch (error) {
@@ -336,21 +336,21 @@ export function BranchForm({ mode, branchId }: BranchFormProps) {
                                 <FuturisticInput
                                     label="E-mail"
                                     type="email"
-                                    icon={Mail}
+                                    startIcon={<Mail className="w-4 h-4" />}
                                     value={formData.email}
                                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     placeholder="contato@filial.com"
                                 />
                                 <FuturisticInput
                                     label="Telefone"
-                                    icon={Phone}
+                                    startIcon={<Phone className="w-4 h-4" />}
                                     value={formData.phone}
                                     onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     placeholder="(00) 0000-0000"
                                 />
                                 <FuturisticInput
                                     label="Website"
-                                    icon={Globe}
+                                    startIcon={<Globe className="w-4 h-4" />}
                                     value={formData.website}
                                     onChange={e => setFormData({ ...formData, website: e.target.value })}
                                     placeholder="https://"

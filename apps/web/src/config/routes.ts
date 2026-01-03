@@ -98,6 +98,7 @@ export const APP_ROUTES = {
     ADMIN_USERS_NEW: '/admin/users/new',
     ADMIN_ROLES: '/admin/roles',
     ADMIN_PERMISSIONS: '/admin/permissions/dashboard',
+    ADMIN_CERTIFICATIONS: '/admin/certifications',
 
     // Admin - Outros
     ADMIN_CHECKLIST: '/admin/checklist',

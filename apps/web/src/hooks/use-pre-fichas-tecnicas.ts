@@ -9,8 +9,13 @@ import {
   aprovarTecnicamentePreFichaTecnica,
   reprovarPreFichaTecnica,
   aprovarDiretoriaPreFichaTecnica,
+  atualizarPreFichaTecnica,
+  atualizarChecklistTecnico,
+  exportarPdfPreFichaTecnica,
+  compararVersoesPreFichaTecnica,
   type PreFichaTecnica,
   type CreatePreFichaTecnicaInput,
+  type UpdatePreFichaTecnicaInput,
 } from "@/lib/api/pre-fichas-tecnicas";
 
 function getCurrentOrgId(): string | null {

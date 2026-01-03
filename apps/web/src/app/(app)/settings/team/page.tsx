@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 async function fetchMembers(orgId: string): Promise<OrganizationMember[]> {
   const response = await fetch(`${apiUrl}/organizations/${orgId}/members`, {
     headers: {
-      "x-user-id": defaultActorId,
+      "x-user-id": defaultActorId || "",
     },
     cache: "no-store",
   });
@@ -38,7 +38,7 @@ async function fetchMembers(orgId: string): Promise<OrganizationMember[]> {
 async function fetchInvites(orgId: string): Promise<OrganizationInvite[]> {
   const response = await fetch(`${apiUrl}/organizations/${orgId}/invites`, {
     headers: {
-      "x-user-id": defaultActorId,
+      "x-user-id": defaultActorId || "",
     },
     cache: "no-store",
   });
@@ -52,7 +52,7 @@ async function fetchInvites(orgId: string): Promise<OrganizationInvite[]> {
 }
 
 export default async function TeamSettingsPage() {
-  const orgId = defaultOrgId;
+  const orgId = defaultOrgId || "";
   const members = await fetchMembers(orgId);
   const invites = await fetchInvites(orgId);
 

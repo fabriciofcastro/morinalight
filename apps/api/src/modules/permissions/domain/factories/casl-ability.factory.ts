@@ -32,13 +32,11 @@ export class CaslAbilityFactory {
      */
     static createForUser(permissions: ResolverPermissoesEfetivasResultado): AppAbility {
         // Enriquecer escopo do Sentry com informações de segurança
-        Sentry.configureScope((scope) => {
-            scope.setTag("user_role", permissions.role);
-            scope.setContext("security", {
-                permissions_count: permissions.effective.length,
-                role: permissions.role,
-                is_owner: permissions.role === 'owner'
-            });
+        Sentry.setTag("user_role", permissions.role);
+        Sentry.setContext("security", {
+            permissions_count: permissions.effective.length,
+            role: permissions.role,
+            is_owner: permissions.role === 'owner'
         });
 
         const { can, cannot, build } = new AbilityBuilder<AppAbility>(AppAbility);
@@ -81,14 +79,12 @@ export class CaslAbilityFactory {
         permissions: ResolverPermissoesEfetivasResultado,
         userContext: UserContext
     ): AppAbility {
-        Sentry.configureScope((scope) => {
-            scope.setTag("user_role", permissions.role);
-            scope.setContext("security", {
-                permissions_count: permissions.effective.length,
-                role: permissions.role,
-                is_owner: permissions.role === 'owner',
-                has_advanced_security: true
-            });
+        Sentry.setTag("user_role", permissions.role);
+        Sentry.setContext("security", {
+            permissions_count: permissions.effective.length,
+            role: permissions.role,
+            is_owner: permissions.role === 'owner',
+            has_advanced_security: true
         });
 
         const { can, cannot, build } = new AbilityBuilder<AppAbility>(AppAbility);

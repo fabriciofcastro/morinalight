@@ -18,22 +18,27 @@ const AUTH_USER_KEY = "auth_user";
  * Obtém o token de autenticação do localStorage (client-side apenas)
  */
 export function getAuthToken(): string | null {
-  return null;
+  if (typeof window === "undefined") return null;
+  // O token geralmente é mantido em cookie httpOnly, mas algumas lógicas podem ler do localStorage
+  return localStorage.getItem("auth_token");
 }
 
 /**
  * Salva o token de autenticação no localStorage e cookie
  */
 export function setAuthToken(_token: string): void {
-  // Token é mantido apenas em cookie httpOnly (setado via rota /api/auth/login)
-  void _token;
+  if (typeof window === "undefined") return;
+  localStorage.setItem("auth_token", _token);
 }
 
 /**
  * Remove o token de autenticação
  */
 export function clearAuthToken(): void {
+  if (typeof window === "undefined") return;
   localStorage.removeItem(AUTH_USER_KEY);
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("auth_organizations");
 }
 
 /**
@@ -66,10 +71,9 @@ export function setAuthUser(user: AuthUser): void {
  * Salva a sessão completa (token + user + organizations)
  */
 export function setAuthSession(session: AuthSession): void {
-  // Token permanece apenas em cookie httpOnly
+  setAuthToken(session.token);
   setAuthUser(session.user);
 
-  // Salvar organizações também
   if (typeof window !== "undefined") {
     localStorage.setItem("auth_organizations", JSON.stringify(session.organizations));
   }
@@ -83,8 +87,67 @@ export function isAuthenticated(): boolean {
 }
 
 /**
+ * Decodifica o payload de um JWT
+ */
+export function decodeJwt(token: string): {
+  sub?: string;
+  email?: string;
+  defaultOrgId?: string | null;
+} | null {
+  if (!token) return null;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      return null;
+    }
+    const payload = parts[1];
+    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Obtém o orgId atual (do localStorage ou JWT)
+ */
+export function getCurrentOrgId(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  // Tentar obter do localStorage primeiro (seletor de organização)
+  const selectedOrgId = localStorage.getItem("selected_org_id");
+  if (selectedOrgId) {
+    return selectedOrgId;
+  }
+
+  const token = getAuthToken() || "";
+
+  // Tentar obter do JWT
+  const payload = decodeJwt(token);
+  if (payload?.defaultOrgId) {
+    return payload.defaultOrgId;
+  }
+
+  // Tentar obter da primeira organização da lista
+  const orgsStr = localStorage.getItem("auth_organizations");
+  if (orgsStr) {
+    try {
+      const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
+      if (orgs.length > 0) {
+        return orgs[0].organizationId;
+      }
+    } catch {
+      // Ignorar erro de parsing
+    }
+  }
+
+  return null;
+}
+
+/**
  * Obtém headers de autenticação para requisições
- * @deprecated Use getAuthHeadersWithTenant() para incluir headers de tenant automaticamente
  */
 export function getAuthHeaders(): HeadersInit {
   const token = getAuthToken();
@@ -98,7 +161,6 @@ export function getAuthHeaders(): HeadersInit {
 
 /**
  * Obtém headers de autenticação com tenant (x-org-id e x-user-id)
- * Esta função combina Authorization Bearer token com headers de tenant
  */
 export function getAuthHeadersWithTenant(): HeadersInit {
   const token = getAuthToken();
@@ -106,59 +168,6 @@ export function getAuthHeadersWithTenant(): HeadersInit {
 
   if (!token || !user) {
     return {};
-  }
-
-  // Decodificar JWT para obter defaultOrgId
-  function decodeJwt(token: string): {
-    sub?: string;
-    email?: string;
-    defaultOrgId?: string | null;
-  } | null {
-    try {
-      const parts = token.split(".");
-      if (parts.length !== 3) {
-        return null;
-      }
-      const payload = parts[1];
-      const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
-      return JSON.parse(decoded);
-    } catch {
-      return null;
-    }
-  }
-
-  // Obter orgId atual (do localStorage ou JWT)
-  function getCurrentOrgId(): string | null {
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    // Tentar obter do localStorage primeiro (seletor de organização)
-    const selectedOrgId = localStorage.getItem("selected_org_id");
-    if (selectedOrgId) {
-      return selectedOrgId;
-    }
-
-    // Tentar obter do JWT
-    const payload = decodeJwt(token);
-    if (payload?.defaultOrgId) {
-      return payload.defaultOrgId;
-    }
-
-    // Tentar obter da primeira organização da lista
-    const orgsStr = localStorage.getItem("auth_organizations");
-    if (orgsStr) {
-      try {
-        const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
-        if (orgs.length > 0) {
-          return orgs[0].organizationId;
-        }
-      } catch {
-        // Ignorar erro de parsing
-      }
-    }
-
-    return null;
   }
 
   const orgId = getCurrentOrgId();

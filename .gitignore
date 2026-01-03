@@ -44,3 +44,4 @@ deploy/nginx/ssl/
 Thumbs.db
 
 .pnpm-store/
+.aider*

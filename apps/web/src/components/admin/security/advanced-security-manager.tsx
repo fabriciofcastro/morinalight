@@ -9,7 +9,9 @@ import {
     Plus,
     Filter,
     Activity,
-    AlertTriangle
+    AlertTriangle,
+    FileText,
+    RefreshCw
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -19,15 +21,18 @@ import {
     GlassTabs,
     StandardPageLayout
 } from "@/components/ui/futuristic";
+import { Badge } from "@/components/ui/badge";
 import { SecurityPolicy, TimeWindow, ObjectAccessEntry } from "@morina/shared-kernel";
 
-// Import modules
-import { PoliciesList } from "./policy-list";
-import { PolicyForm } from "./policy-form";
-import { TimeWindowsList } from "./time-window-list";
-import { TimeWindowForm } from "./time-window-form";
 import { AclList } from "./acl-list";
 import { AclForm } from "./acl-form";
+import { ComplianceReportView } from "./compliance-report-view";
+import { SecurityAlertsList } from "./security-alerts-list";
+import { PolicyForm } from "./policy-form";
+import { PoliciesList } from "./policy-list";
+import { TimeWindowForm } from "./time-window-form";
+import { TimeWindowsList } from "./time-window-list";
+import { useEffect } from "react";
 
 /**
  * Advanced Security Manager (Security Command Center)
@@ -39,6 +44,43 @@ export function AdvancedSecurityManager() {
     // UI States
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
+    const [alerts, setAlerts] = useState<any[]>([]);
+    const [alertsLoading, setAlertsLoading] = useState(false);
+
+    // Fetch alerts when Audit tab is active
+    useEffect(() => {
+        if (activeTab === "audit") {
+            fetchAlerts();
+        }
+    }, [activeTab]);
+
+    const fetchAlerts = async () => {
+        try {
+            setAlertsLoading(true);
+            const response = await fetch('/api/security/alerts?limit=50');
+            if (response.ok) {
+                const data = await response.json();
+                setAlerts(data.alerts);
+            }
+        } catch (error) {
+            console.error("Failed to fetch alerts:", error);
+        } finally {
+            setAlertsLoading(false);
+        }
+    };
+
+    const handleAcknowledgeAlert = async (alertId: string) => {
+        try {
+            const response = await fetch(`/api/security/alerts/${alertId}/acknowledge`, {
+                method: 'POST'
+            });
+            if (response.ok) {
+                setAlerts(prev => prev.map(a => a.id === alertId ? { ...a, acknowledged: true } : a));
+            }
+        } catch (error) {
+            console.error("Failed to acknowledge alert:", error);
+        }
+    };
 
     // Mock Data (Simulando persistência até Phase 5)
     const [policies, setPolicies] = useState<SecurityPolicy[]>([
@@ -86,6 +128,7 @@ export function AdvancedSecurityManager() {
         { id: "policies", label: "Políticas PBAC", icon: <Shield className="h-4 w-4" /> },
         { id: "time", label: "Controle Temporal", icon: <Clock className="h-4 w-4" /> },
         { id: "acl", label: "Listas ACL", icon: <Lock className="h-4 w-4" /> },
+        { id: "compliance", label: "Conformidade", icon: <FileText className="h-4 w-4" /> },
         { id: "audit", label: "Auditoria", icon: <Activity className="h-4 w-4" /> },
     ];
 
@@ -180,7 +223,12 @@ export function AdvancedSecurityManager() {
                     <StatCard label="Policies" value={policies.length} trend="PBAC Ativo" icon={<Shield className="text-blue-400" />} />
                     <StatCard label="Janelas" value={timeWindows.length} trend="TBAC Ativo" icon={<Clock className="text-amber-400" />} />
                     <StatCard label="ACLs" value={acls.length} trend="Granular" icon={<Lock className="text-emerald-400" />} />
-                    <StatCard label="Alertas" value="0" trend="Security Healthy" icon={<AlertTriangle className="text-emerald-400" />} />
+                    <StatCard
+                        label="Alertas"
+                        value={alerts.filter(a => !a.acknowledged).length}
+                        trend={alerts.length > 0 ? `${alerts.filter(a => a.severity === 'critical').length} Críticos` : "Security Healthy"}
+                        icon={<AlertTriangle className={alerts.filter(a => !a.acknowledged).length > 0 ? "text-red-400" : "text-emerald-400"} />}
+                    />
                 </div>
 
                 {/* Main Nav */}
@@ -226,7 +274,23 @@ export function AdvancedSecurityManager() {
                                     onDelete={handleDelete}
                                 />
                             )}
-                            {activeTab === "audit" && <AuditLogsPlaceholder />}
+                            {activeTab === "compliance" && <ComplianceReportView />}
+                            {activeTab === "audit" && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-white font-bold text-lg">Alertas de Segurança Recentes</h3>
+                                        <Button variant="outline" size="sm" onClick={fetchAlerts} disabled={alertsLoading}>
+                                            <RefreshCw className={`h-4 w-4 mr-2 ${alertsLoading ? 'animate-spin' : ''}`} />
+                                            Atualizar
+                                        </Button>
+                                    </div>
+                                    <SecurityAlertsList
+                                        alerts={alerts}
+                                        onAcknowledge={handleAcknowledgeAlert}
+                                        loading={alertsLoading}
+                                    />
+                                </div>
+                            )}
                         </motion.div>
                     </AnimatePresence>
                 </div>
@@ -250,12 +314,3 @@ function StatCard({ label, value, trend, icon }: any) {
     );
 }
 
-function AuditLogsPlaceholder() {
-    return (
-        <div className="flex flex-col items-center justify-center p-20 border border-dashed border-white/5 rounded-3xl bg-white/[0.01]">
-            <Activity className="h-12 w-12 text-white/10 mb-4" />
-            <h4 className="text-white/60 font-medium">Fluxo de Triagem de Auditoria</h4>
-            <p className="text-white/20 text-sm mt-1">Os logs de decisão em tempo real aparecerão aqui.</p>
-        </div>
-    );
-}

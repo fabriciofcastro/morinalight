@@ -1,9 +1,23 @@
-import { NextResponse } from "next/server";
+
+import { NextRequest, NextResponse } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../_lib/auth-headers";
+import { requirePermission } from "@/lib/auth/middleware";
+import { ACTIONS, RESOURCES } from "@/lib/auth/rbac";
+import { CreateUserUseCase } from "@/lib/use-cases/create-user";
+import { container } from "@/lib/di/container";
+import { protectedRouteMiddleware } from "@/lib/middleware/security-middleware";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest, context: { params: any }) {
+  // Aplicar middleware de segurança
+  const middlewareResult = await protectedRouteMiddleware(request, context);
+  if (middlewareResult) return middlewareResult;
+
+  // Check Permissions
+  const authResult = await requirePermission(ACTIONS.READ, RESOURCES.USERS)(request, context);
+  if (authResult) return authResult;
+
   const { searchParams } = new URL(request.url);
   const params = new URLSearchParams();
 
@@ -24,21 +38,24 @@ export async function GET(request: Request) {
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest, context: { params: any }) {
+  // Aplicar middleware de segurança
+  const middlewareResult = await protectedRouteMiddleware(request, context);
+  if (middlewareResult) return middlewareResult;
+
+  // Check Permissions
+  const authResult = await requirePermission(ACTIONS.CREATE, RESOURCES.USERS)(request, context);
+  if (authResult) return authResult;
+
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/users`, {
-    method: "POST",
-    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
-    body: JSON.stringify(body),
-    cache: "no-store",
-  });
+  try {
+    // Clean Architecture: Controller -> Use Case
+    const createUserUseCase = new CreateUserUseCase(); // Or container.resolve if we register UseCases
+    const newUser = await createUserUseCase.execute(body);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: "Erro ao criar usuário" }));
-    return NextResponse.json(error, { status: response.status });
+    return NextResponse.json(newUser, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json({ message: err.message || "Erro ao criar usuário" }, { status: 400 });
   }
-
-  const data = await response.json();
-  return NextResponse.json(data, { status: 201 });
 }

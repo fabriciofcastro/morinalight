@@ -13,7 +13,7 @@ export {
     UserRepository,
     userRepository,
     type User,
-} from "./base-repository";
+} from "./user-repository";
 
 // Product Repository
 export {

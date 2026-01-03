@@ -10,6 +10,7 @@ import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface SubdepartmentFormClientProps {
   subdepartmentId?: string;
@@ -25,7 +26,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) return orgs[0].organizationId;
-    } catch {}
+    } catch { }
   }
   return null;
 }
@@ -162,123 +163,125 @@ export function SubdepartmentFormClient({ subdepartmentId, departmentId: initial
   }, [subdepartments, form.departmentId]);
 
   return (
-    <StandardFormPage
-      title={isEditing ? "Editar Subdepartamento" : "Novo Subdepartamento"}
-      subtitle={isEditing ? `Atualizar ${subdepartment?.name}` : "Cadastre um novo subdepartamento"}
-      icon={<Layers className="h-8 w-8" />}
-      onSave={handleSubmit}
-      backUrl={isEditing && subdepartmentId ? `/admin/subdepartments/${subdepartmentId}` : initialDepartmentId ? `/admin/departments/${initialDepartmentId}` : "/admin/departments"}
-      isValid={canSave}
-      autoSaveStatus={status}
-      hasUnsavedChanges={hasUnsavedChanges}
-      loading={loading}
-    >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          <FuturisticInput
-            label="Nome"
-            required
-            value={form.name}
-            onChange={(e) => {
-              setForm((p) => ({ ...p, name: e.target.value }));
-              if (errors.name) setErrors((e) => ({ ...e, name: "" }));
-              markDirty();
-            }}
-            error={!!errors.name}
-            errorMessage={errors.name}
-            placeholder="Ex: Vendas"
-          />
-          <FuturisticInput
-            label="Código"
-            required
-            value={form.code}
-            onChange={(e) => {
-              setForm((p) => ({ ...p, code: e.target.value }));
-              if (errors.code) setErrors((e) => ({ ...e, code: "" }));
-              markDirty();
-            }}
-            error={!!errors.code}
-            errorMessage={errors.code}
-            placeholder="Ex: VEN"
-          />
-        </div>
+    <AllowedGuard I={subdepartmentId ? "update" : "create"} a="Subdepartment" redirectTo={initialDepartmentId ? `/admin/departments/${initialDepartmentId}` : "/admin/departments"}>
+      <StandardFormPage
+        title={isEditing ? "Editar Subdepartamento" : "Novo Subdepartamento"}
+        subtitle={isEditing ? `Atualizar ${subdepartment?.name}` : "Cadastre um novo subdepartamento"}
+        icon={<Layers className="h-8 w-8" />}
+        onSave={handleSubmit}
+        backUrl={isEditing && subdepartmentId ? `/admin/subdepartments/${subdepartmentId}` : initialDepartmentId ? `/admin/departments/${initialDepartmentId}` : "/admin/departments"}
+        isValid={canSave}
+        autoSaveStatus={status}
+        hasUnsavedChanges={hasUnsavedChanges}
+        loading={loading}
+      >
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <FuturisticInput
+              label="Nome"
+              required
+              value={form.name}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, name: e.target.value }));
+                if (errors.name) setErrors((e) => ({ ...e, name: "" }));
+                markDirty();
+              }}
+              error={!!errors.name}
+              errorMessage={errors.name}
+              placeholder="Ex: Vendas"
+            />
+            <FuturisticInput
+              label="Código"
+              required
+              value={form.code}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, code: e.target.value }));
+                if (errors.code) setErrors((e) => ({ ...e, code: "" }));
+                markDirty();
+              }}
+              error={!!errors.code}
+              errorMessage={errors.code}
+              placeholder="Ex: VEN"
+            />
+          </div>
 
-        <FuturisticSelect
-          label="Departamento"
-          required
-          value={form.departmentId}
-          onChange={(e) => {
-            setForm((p) => ({ ...p, departmentId: e.target.value, parentId: "" }));
-            if (errors.departmentId) setErrors((e) => ({ ...e, departmentId: "" }));
-            markDirty();
-          }}
-          error={!!errors.departmentId}
-          errorMessage={errors.departmentId}
-        >
-          <option value="" className="bg-slate-900">Selecione um departamento</option>
-          {departments.map((dept) => (
-            <option key={dept.id} value={dept.id} className="bg-slate-900">
-              {dept.name}
-            </option>
-          ))}
-        </FuturisticSelect>
-
-        {form.departmentId && filteredSubdepartments.length > 0 && (
           <FuturisticSelect
-            label="Subdepartamento Pai (Opcional)"
-            value={form.parentId}
+            label="Departamento"
+            required
+            value={form.departmentId}
             onChange={(e) => {
-              setForm((p) => ({ ...p, parentId: e.target.value }));
+              setForm((p) => ({ ...p, departmentId: e.target.value, parentId: "" }));
+              if (errors.departmentId) setErrors((e) => ({ ...e, departmentId: "" }));
               markDirty();
             }}
+            error={!!errors.departmentId}
+            errorMessage={errors.departmentId}
           >
-            <option value="" className="bg-slate-900">Nenhum (Raiz)</option>
-            {filteredSubdepartments.map((subdept) => (
-              <option key={subdept.subdepartmentId} value={subdept.subdepartmentId} className="bg-slate-900">
-                {subdept.name}
+            <option value="" className="bg-slate-900">Selecione um departamento</option>
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.id} className="bg-slate-900">
+                {dept.name}
               </option>
             ))}
           </FuturisticSelect>
-        )}
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <FuturisticSelect
-            label="Status"
-            value={form.status}
+          {form.departmentId && filteredSubdepartments.length > 0 && (
+            <FuturisticSelect
+              label="Subdepartamento Pai (Opcional)"
+              value={form.parentId}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, parentId: e.target.value }));
+                markDirty();
+              }}
+            >
+              <option value="" className="bg-slate-900">Nenhum (Raiz)</option>
+              {filteredSubdepartments.map((subdept) => (
+                <option key={subdept.subdepartmentId} value={subdept.subdepartmentId} className="bg-slate-900">
+                  {subdept.name}
+                </option>
+              ))}
+            </FuturisticSelect>
+          )}
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <FuturisticSelect
+              label="Status"
+              value={form.status}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, status: e.target.value as "ativo" | "inativo" | "arquivado" }));
+                markDirty();
+              }}
+            >
+              <option value="ativo" className="bg-slate-900">Ativo</option>
+              <option value="inativo" className="bg-slate-900">Inativo</option>
+              <option value="arquivado" className="bg-slate-900">Arquivado</option>
+            </FuturisticSelect>
+
+            <FuturisticInput
+              label="Ordem"
+              type="number"
+              value={form.ordem}
+              onChange={(e) => {
+                setForm((p) => ({ ...p, ordem: parseInt(e.target.value) || 0 }));
+                markDirty();
+              }}
+              placeholder="0"
+            />
+          </div>
+
+          <FuturisticTextarea
+            label="Descrição"
+            value={form.description}
             onChange={(e) => {
-              setForm((p) => ({ ...p, status: e.target.value as "ativo" | "inativo" | "arquivado" }));
+              setForm((p) => ({ ...p, description: e.target.value }));
               markDirty();
             }}
-          >
-            <option value="ativo" className="bg-slate-900">Ativo</option>
-            <option value="inativo" className="bg-slate-900">Inativo</option>
-            <option value="arquivado" className="bg-slate-900">Arquivado</option>
-          </FuturisticSelect>
-
-          <FuturisticInput
-            label="Ordem"
-            type="number"
-            value={form.ordem}
-            onChange={(e) => {
-              setForm((p) => ({ ...p, ordem: parseInt(e.target.value) || 0 }));
-              markDirty();
-            }}
-            placeholder="0"
+            placeholder="Descrição do subdepartamento..."
+            rows={4}
           />
-        </div>
-
-        <FuturisticTextarea
-          label="Descrição"
-          value={form.description}
-          onChange={(e) => {
-            setForm((p) => ({ ...p, description: e.target.value }));
-            markDirty();
-          }}
-          placeholder="Descrição do subdepartamento..."
-          rows={4}
-        />
-      </form>
-    </StandardFormPage>
+        </form>
+      </StandardFormPage>
+    </AllowedGuard>
   );
 }
 

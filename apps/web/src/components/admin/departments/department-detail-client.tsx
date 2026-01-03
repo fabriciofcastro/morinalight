@@ -1,5 +1,7 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+
 import { Button } from "@morina/ui";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Edit, Users, Building2, Layers, TrendingUp } from "lucide-react";
@@ -29,7 +31,7 @@ export function DepartmentDetailClient({ departmentId }: DepartmentDetailClientP
       const orgId = process.env.NEXT_PUBLIC_ORG_ID || "1";
 
       // Buscar detalhes do departamento
-      const dept = await organizationalStructureApi.getDepartment(orgId, departmentId).catch(() => ({
+      const dept = await organizationalStructureApi.getDepartment(departmentId).catch(() => ({
         id: departmentId,
         name: "Departamento de Produção",
         code: "PROD-001",
@@ -49,7 +51,7 @@ export function DepartmentDetailClient({ departmentId }: DepartmentDetailClientP
           name: dept.name,
           code: dept.code,
           level: 0,
-          manager: dept.manager,
+          manager: (dept as any).manager,
           users: [
             { id: "1", name: "Carlos Silva" },
             { id: "2", name: "Ana Costa" },
@@ -119,120 +121,123 @@ export function DepartmentDetailClient({ departmentId }: DepartmentDetailClientP
   const totalSectors = hierarchyData[0]?.children?.reduce((sum, child) =>
     sum + (child.sectors?.length || 0), 0) || 0;
 
+  // Render department details
   return (
-    <div className="p-8 space-y-8 min-h-screen text-white">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+    <AllowedGuard I="read" a="Department" redirectTo="/admin">
+      <div className="p-8 space-y-8 min-h-screen text-white">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push("/admin/departments/list")}
+              className="text-white/60 hover:text-white"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-cyan-200 to-teal-300">
+                {department.name}
+              </h1>
+              <div className="flex items-center gap-2 mt-2">
+                <Badge variant="outline">{department.code}</Badge>
+                <span className="text-white/40">•</span>
+                <span className="text-white/40 text-sm">Centro de Custo: {department.costCenter}</span>
+              </div>
+            </div>
+          </div>
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push("/admin/departments/list")}
-            className="text-white/60 hover:text-white"
+            onClick={() => router.push(`/admin/departments/${departmentId}/edit`)}
+            className="bg-cyan-600 hover:bg-cyan-500 text-white"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <Edit className="w-4 h-4 mr-2" />
+            Editar
           </Button>
-          <div>
-            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-cyan-200 to-teal-300">
-              {department.name}
-            </h1>
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline">{department.code}</Badge>
-              <span className="text-white/40">•</span>
-              <span className="text-white/40 text-sm">Centro de Custo: {department.costCenter}</span>
-            </div>
-          </div>
         </div>
-        <Button
-          onClick={() => router.push(`/admin/departments/${departmentId}/edit`)}
-          className="bg-cyan-600 hover:bg-cyan-500 text-white"
-        >
-          <Edit className="w-4 h-4 mr-2" />
-          Editar
-        </Button>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 rounded-lg bg-blue-500/20">
+                <Users className="w-5 h-5 text-blue-400" />
+              </div>
+              <div>
+                <p className="text-sm text-white/50">Colaboradores</p>
+                <p className="text-2xl font-bold text-white">{totalUsers}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 rounded-lg bg-purple-500/20">
+                <Building2 className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <p className="text-sm text-white/50">Subdepartamentos</p>
+                <p className="text-2xl font-bold text-white">{totalSubdepts}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 rounded-lg bg-green-500/20">
+                <Layers className="w-5 h-5 text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm text-white/50">Setores</p>
+                <p className="text-2xl font-bold text-white">{totalSectors}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 rounded-lg bg-cyan-500/20">
+                <TrendingUp className="w-5 h-5 text-cyan-400" />
+              </div>
+              <div>
+                <p className="text-sm text-white/50">Eficiência</p>
+                <p className="text-2xl font-bold text-white">92%</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Hierarchy Tree */}
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-white">Estrutura Hierárquica</h2>
+          <HierarchyTree
+            data={hierarchyData}
+            onNodeClick={(node) => {
+              console.log("Clicked node:", node);
+              // Pode navegar para detalhes do subdepartamento/setor
+            }}
+          />
+        </div>
       </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-lg bg-blue-500/20">
-              <Users className="w-5 h-5 text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-white/50">Colaboradores</p>
-              <p className="text-2xl font-bold text-white">{totalUsers}</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-lg bg-purple-500/20">
-              <Building2 className="w-5 h-5 text-purple-400" />
-            </div>
-            <div>
-              <p className="text-sm text-white/50">Subdepartamentos</p>
-              <p className="text-2xl font-bold text-white">{totalSubdepts}</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-lg bg-green-500/20">
-              <Layers className="w-5 h-5 text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-white/50">Setores</p>
-              <p className="text-2xl font-bold text-white">{totalSectors}</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="p-6 rounded-xl bg-[#090b16]/40 border border-white/10 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-lg bg-cyan-500/20">
-              <TrendingUp className="w-5 h-5 text-cyan-400" />
-            </div>
-            <div>
-              <p className="text-sm text-white/50">Eficiência</p>
-              <p className="text-2xl font-bold text-white">92%</p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Hierarchy Tree */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-white">Estrutura Hierárquica</h2>
-        <HierarchyTree
-          data={hierarchyData}
-          onNodeClick={(node) => {
-            console.log("Clicked node:", node);
-            // Pode navegar para detalhes do subdepartamento/setor
-          }}
-        />
-      </div>
-    </div>
+    </AllowedGuard>
   );
 }

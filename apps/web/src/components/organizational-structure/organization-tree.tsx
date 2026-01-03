@@ -7,7 +7,7 @@ export type SubdepartmentNode = {
   id: string;
   name: string;
   code: string;
-  status: "ativo" | "inativo" | "arquivado";
+  active: boolean;
   sectors?: SectorNode[];
 };
 
@@ -15,7 +15,7 @@ export type DepartmentNode = {
   id: string;
   name: string;
   code: string;
-  status: "ativo" | "inativo" | "arquivado";
+  active: boolean;
   subdepartments?: SubdepartmentNode[];
   sectors?: SectorNode[]; // Setores diretos (quando não há subdepartamentos)
 };
@@ -24,7 +24,7 @@ export type SectorNode = {
   id: string;
   name: string;
   code: string;
-  status: "ativo" | "inativo" | "arquivado";
+  active: boolean;
   departmentId: string;
   positions?: PositionNode[];
 };
@@ -33,7 +33,7 @@ export type PositionNode = {
   id: string;
   name: string;
   code: string;
-  status: "ativo" | "inativo" | "arquivado";
+  active: boolean;
   sectorId: string;
 };
 

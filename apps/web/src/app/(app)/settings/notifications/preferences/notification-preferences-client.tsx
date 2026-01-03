@@ -157,7 +157,7 @@ export function NotificationPreferencesClient() {
             <div className="space-y-4">
               {/* Channels */}
               <div>
-                <Label className="mb-3 block">Canais de Notificação</Label>
+                <Label htmlFor="channels" className="mb-3 block">Canais de Notificação</Label>
                 <div className="space-y-3">
                   <label className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

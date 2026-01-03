@@ -21,8 +21,9 @@ interface ConfirmDialogProps {
     onOpenChange: (open: boolean) => void;
     onConfirm: () => void | Promise<void>;
     title: string;
-    description?: string;
+    description?: ReactNode;
     confirmText?: string;
+    confirmLabel?: string;
     cancelText?: string;
     variant?: ConfirmDialogVariant;
     isLoading?: boolean;
@@ -83,14 +84,16 @@ export function ConfirmDialog({
     onConfirm,
     title,
     description,
-    confirmText = "Confirmar",
+    confirmText,
+    confirmLabel,
     cancelText = "Cancelar",
     variant = "danger",
     isLoading = false,
     icon,
 }: ConfirmDialogProps) {
     const config = variantConfig[variant];
-    const Icon = icon || config.icon;
+    const IconComponent = config.icon;
+    const finalConfirmText = confirmLabel || confirmText || "Confirmar";
 
     const handleConfirm = async () => {
         const result = onConfirm();
@@ -109,7 +112,11 @@ export function ConfirmDialog({
                             "flex h-12 w-12 shrink-0 items-center justify-center rounded-full",
                             config.iconBg
                         )}>
-                            <Icon className={cn("h-6 w-6", config.iconColor)} />
+                            {icon ? (
+                                icon
+                            ) : (
+                                <IconComponent className={cn("h-6 w-6", config.iconColor)} />
+                            )}
                         </div>
                         <div className="flex-1">
                             <AlertDialogTitle className="text-xl font-bold">
@@ -139,7 +146,7 @@ export function ConfirmDialog({
                                 Processando...
                             </>
                         ) : (
-                            confirmText
+                            finalConfirmText
                         )}
                     </AlertDialogAction>
                 </AlertDialogFooter>

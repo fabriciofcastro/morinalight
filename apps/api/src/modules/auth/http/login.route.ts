@@ -15,6 +15,7 @@ import type { UserRepository } from "../../users/repositories/user.repository";
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
+  code: z.string().optional(), // 2FA code (6 digits)
 });
 
 type LoginRouteDeps = {
@@ -161,6 +162,35 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
         return reply.status(401).send({ message: "Credenciais inválidas" });
       }
 
+      // Check if 2FA is enabled for this user
+      const userWith2FA = await prisma.user.findUnique({
+        where: { id: user.userId },
+        select: { twoFactorEnabled: true, twoFactorSecret: true },
+      });
+
+      if (userWith2FA?.twoFactorEnabled && userWith2FA.twoFactorSecret) {
+        // 2FA is enabled, verify the code
+        if (!body.code) {
+          return reply.status(401).send({
+            message: "Código de autenticação de dois fatores é obrigatório",
+            code: "2FA_REQUIRED",
+          });
+        }
+
+        const { TotpService } = await import("../services/totp.service");
+        const isValidCode = TotpService.verifyToken(body.code, userWith2FA.twoFactorSecret);
+
+        if (!isValidCode) {
+          app.log.warn({ userId: user.userId }, "Código 2FA inválido");
+          return reply.status(401).send({
+            message: "Código de autenticação inválido",
+            code: "INVALID_2FA_CODE",
+          });
+        }
+
+        app.log.info({ userId: user.userId }, "2FA verificado com sucesso");
+      }
+
       app.log.info({ userId: user.userId }, "Senha válida, obtendo organizações");
 
       let organizations: Array<{ organizationId: string; name: string; slug: string; role?: string }>;
@@ -244,11 +274,29 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
         },
       });
 
-      app.log.info({ userId: user.userId }, "Login bem-sucedido, retornando tokens");
+      app.log.info({ userId: user.userId }, "Login bem-sucedido, definindo cookies seguros");
+
+      // Set tokens as HttpOnly cookies (secure in production)
+      reply.setCookie("access_token", accessToken, {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 15 * 60, // 15 minutes (same as token expiry)
+      });
+
+      reply.setCookie("refresh_token", refreshToken, {
+        httpOnly: true,
+        secure: env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+      });
 
       return reply.send({
+        // Still return tokens in body for backward compatibility (optional)
         token: accessToken,
-        refreshToken, // Retornar apenas uma vez - cliente deve armazenar
+        refreshToken,
         user: {
           userId: user.userId,
           email: user.email,

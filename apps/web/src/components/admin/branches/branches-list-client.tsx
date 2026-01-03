@@ -52,7 +52,7 @@ const BranchCard = ({
       {/* Status Line */}
       <div className={cn(
         "absolute top-0 left-0 w-1 h-full shadow-[0_0_10px_currentColor]",
-        organization.isActive ? "bg-emerald-500 text-emerald-500" : "bg-orange-500 text-orange-500"
+        organization.active ? "bg-emerald-500 text-emerald-500" : "bg-orange-500 text-orange-500"
       )} />
 
       <div className="p-5 relative z-10">
@@ -60,11 +60,11 @@ const BranchCard = ({
           <div className="flex items-center gap-3">
             <div className={cn(
               "w-10 h-10 rounded-lg flex items-center justify-center border border-white/10 shadow-lg",
-              organization.isActive ? "bg-emerald-500/10" : "bg-orange-500/10"
+              organization.active ? "bg-emerald-500/10" : "bg-orange-500/10"
             )}>
               <Store className={cn(
                 "w-5 h-5",
-                organization.isActive ? "text-emerald-400" : "text-orange-400"
+                organization.active ? "text-emerald-400" : "text-orange-400"
               )} />
             </div>
             <div>
@@ -75,11 +75,11 @@ const BranchCard = ({
                 </span>
                 <span className={cn(
                   "text-xs px-2 py-0.5 rounded-full border",
-                  organization.isActive
+                  organization.active
                     ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                     : "bg-orange-500/10 border-orange-500/20 text-orange-400"
                 )}>
-                  {organization.isActive ? "Ativa" : "Inativa"}
+                  {organization.active ? "Ativa" : "Inativa"}
                 </span>
               </div>
             </div>
@@ -95,10 +95,10 @@ const BranchCard = ({
         </div>
 
         <div className="space-y-2 mb-6">
-          {organization.city && (
+          {organization.address?.city && (
             <div className="flex items-center gap-2 text-sm text-white/60">
               <MapPin className="w-4 h-4 text-blue-400/70" />
-              <span>{organization.city}, {organization.state}</span>
+              <span>{organization.address?.city}, {organization.address?.state}</span>
             </div>
           )}
           {organization.phone && (
@@ -142,7 +142,7 @@ const BranchCard = ({
           </Can>
         </div>
       </div>
-    </motion.div>
+    </motion.div >
   );
 };
 
@@ -164,7 +164,7 @@ export function BranchesListClient() {
       await new Promise(resolve => setTimeout(resolve, 600));
 
       const response = await organizationsApi.findAll();
-      setOrganizations(response.data || []);
+      setOrganizations(response || []);
     } catch (error) {
       console.error("Erro ao carregar filiais:", error);
       notificationCenter.add({
@@ -213,7 +213,7 @@ export function BranchesListClient() {
   const filteredOrganizations = useMemo(() => {
     return organizations.filter((org) =>
       org.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      org.code.toLowerCase().includes(searchTerm.toLowerCase())
+      (org.code && org.code.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [organizations, searchTerm]);
 
@@ -288,7 +288,7 @@ export function BranchesListClient() {
             </div>
             <p className="text-sm text-emerald-400/60 font-medium uppercase tracking-wider">Ativas</p>
             <h4 className="text-3xl font-bold mt-1 text-emerald-400">
-              {organizations.filter(o => o.isActive).length}
+              {organizations.filter(o => o.active).length}
             </h4>
           </motion.div>
 
@@ -330,10 +330,10 @@ export function BranchesListClient() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredOrganizations.map((org, i) => (
                   <BranchCard
-                    key={org.id}
+                    key={org.organizationId}
                     organization={org}
-                    onEdit={() => router.push(`/admin/branches/${org.id}/edit`)}
-                    onDelete={() => handleDelete(org.id, org.name)}
+                    onEdit={() => router.push(`/admin/branches/${org.organizationId}/edit`)}
+                    onDelete={() => handleDelete(org.organizationId, org.name)}
                     onClone={() => { }}
                   />
                 ))}

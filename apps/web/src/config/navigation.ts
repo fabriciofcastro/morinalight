@@ -223,6 +223,12 @@ export const navItems: NavItem[] = [
                         icon: Shield,
                         permission: "settings:permissions:view",
                     },
+                    {
+                        label: "Conformidade",
+                        href: "/admin/certifications",
+                        icon: Award,
+                        permission: "settings:certifications:view",
+                    },
                 ],
             },
 

@@ -41,9 +41,7 @@ export interface CreateClientInput {
     creditLimit?: number;
 }
 
-export interface UpdateClientInput extends Partial<CreateClientInput> {
-    id: string;
-}
+export interface UpdateClientInput extends Partial<CreateClientInput> { }
 
 export interface ListClientsQuery {
     page?: number;

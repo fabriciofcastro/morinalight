@@ -10,27 +10,84 @@ import {
     YAxis,
     Cell
 } from "recharts";
+import { ExportButton } from "./ExportButton";
 
-const data = [
-    { name: "Eletrônicos", value: 4000 },
-    { name: "Roupas", value: 3000 },
-    { name: "Casa", value: 2000 },
-    { name: "Esporte", value: 2780 },
-    { name: "Livros", value: 1890 },
-];
+interface CategorySales {
+    name: string;
+    value: number;
+    color: string;
+}
 
-const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f43f5e", "#10b981"];
+interface FuturisticBarChartProps {
+    data?: CategorySales[];
+    isLoading?: boolean;
+    error?: Error | null;
+}
 
-export function FuturisticBarChart() {
+export function FuturisticBarChart({ data, isLoading, error }: FuturisticBarChartProps) {
+    // Loading skeleton
+    if (isLoading) {
+        return (
+            <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32 animate-pulse" />
+                <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
+                    <span className="w-2 h-6 bg-purple-500 rounded-full animate-pulse" />
+                    Vendas por Categoria
+                </h3>
+                <div className="h-[300px] w-full relative z-10 flex items-center justify-center">
+                    <div className="text-white/50 text-sm">Carregando dados...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-red-500/20 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+                <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
+                    <span className="w-2 h-6 bg-red-500 rounded-full" />
+                    Vendas por Categoria
+                </h3>
+                <div className="h-[300px] w-full relative z-10 flex items-center justify-center">
+                    <div className="text-red-400/70 text-sm text-center">
+                        <p>Erro ao carregar dados</p>
+                        <p className="text-xs text-white/40 mt-2">Exibindo dados de exemplo</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // No data state
+    if (!data || data.length === 0) {
+        return (
+            <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+                <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
+                    <span className="w-2 h-6 bg-purple-500 rounded-full" />
+                    Vendas por Categoria
+                </h3>
+                <div className="h-[300px] w-full relative z-10 flex items-center justify-center">
+                    <div className="text-white/50 text-sm">Nenhum dado disponível</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
+        <div id="sales-category-chart" className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
             {/* Decorative background glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
 
-            <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
-                <span className="w-2 h-6 bg-purple-500 rounded-full" />
-                Vendas por Categoria
-            </h3>
+            <div className="flex items-center justify-between mb-6 relative z-10">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <span className="w-2 h-6 bg-purple-500 rounded-full" />
+                    Vendas por Categoria
+                </h3>
+                <ExportButton chartId="sales-category-chart" chartData={data} chartName="vendas-categoria" />
+            </div>
 
             <div className="h-[300px] w-full relative z-10">
                 <ResponsiveContainer width="100%" height="100%">
@@ -63,7 +120,7 @@ export function FuturisticBarChart() {
                         />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                             {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                         </Bar>
                     </BarChart>

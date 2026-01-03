@@ -1,5 +1,7 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+
 import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {
@@ -142,85 +144,87 @@ export function BusinessSegmentsListClient() {
     }, [segments]);
 
     return (
-        <div className="p-8 space-y-8 min-h-screen text-white pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-200 to-orange-500">
-                        Segmentos de Negócio
-                    </h1>
-                    <p className="text-white/60 mt-1">Classificação estratégica para análise de mercado</p>
-                </div>
-                <Button
-                    onClick={() => router.push("/admin/business-segments/new")}
-                    className="bg-orange-600 hover:bg-orange-500 text-white shadow-[0_0_20px_rgba(234,88,12,0.3)] border border-orange-400/20"
-                >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Novo Segmento
-                </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                >
-                    <div className="absolute inset-0 bg-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex justify-between items-start relative z-10">
-                        <div>
-                            <p className="text-sm font-medium text-white/40">Total de Segmentos</p>
-                            <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
-                        </div>
-                        <div className="p-3 rounded-xl bg-orange-500/10 text-orange-400">
-                            <Globe className="w-6 h-6" />
-                        </div>
+        <AllowedGuard I="read" a={"BusinessSegment" as any} redirectTo="/admin">
+            <div className="p-8 space-y-8 min-h-screen text-white pb-20">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-200 to-orange-500">
+                            Segmentos de Negócio
+                        </h1>
+                        <p className="text-white/60 mt-1">Classificação estratégica para análise de mercado</p>
                     </div>
-                </motion.div>
-            </div>
-
-            <div className="space-y-4">
-                <div className="flex gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                        <input
-                            type="text"
-                            placeholder="Buscar segmento..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-orange-500/50 transition-all"
-                        />
-                    </div>
+                    <Button
+                        onClick={() => router.push("/admin/business-segments/new")}
+                        className="bg-orange-600 hover:bg-orange-500 text-white shadow-[0_0_20px_rgba(234,88,12,0.3)] border border-orange-400/20"
+                    >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Novo Segmento
+                    </Button>
                 </div>
 
-                {loading ? (
-                    <div className="text-center py-20 text-white/40">Carregando segmentos...</div>
-                ) : filtered.length === 0 ? (
-                    <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum segmento encontrado.</div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filtered.map(segment => (
-                            <SegmentCard
-                                key={segment.id}
-                                segment={segment}
-                                onEdit={() => router.push(`/admin/business-segments/${segment.id}/edit`)}
-                                onDelete={() => handleDelete(segment.id, segment.description)}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
+                    >
+                        <div className="absolute inset-0 bg-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex justify-between items-start relative z-10">
+                            <div>
+                                <p className="text-sm font-medium text-white/40">Total de Segmentos</p>
+                                <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
+                            </div>
+                            <div className="p-3 rounded-xl bg-orange-500/10 text-orange-400">
+                                <Globe className="w-6 h-6" />
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                            <input
+                                type="text"
+                                placeholder="Buscar segmento..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/20 focus:outline-none focus:border-orange-500/50 transition-all"
                             />
-                        ))}
+                        </div>
                     </div>
-                )}
-            </div>
 
-            <DeleteConfirmDialog
-                open={deleteDialogOpen}
-                onOpenChange={(open) => {
-                    setDeleteDialogOpen(open);
-                    if (!open) setSegmentToDelete(null);
-                }}
-                onConfirm={confirmDelete}
-                itemName={segmentToDelete?.description || ""}
-                itemType="segmento"
-                isLoading={deleteLoading}
-            />
-        </div>
+                    {loading ? (
+                        <div className="text-center py-20 text-white/40">Carregando segmentos...</div>
+                    ) : filtered.length === 0 ? (
+                        <div className="text-center py-20 text-white/40 border border-white/5 border-dashed rounded-xl">Nenhum segmento encontrado.</div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {filtered.map(segment => (
+                                <SegmentCard
+                                    key={segment.id}
+                                    segment={segment}
+                                    onEdit={() => router.push(`/admin/business-segments/${segment.id}/edit`)}
+                                    onDelete={() => handleDelete(segment.id, segment.description)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <DeleteConfirmDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={(open) => {
+                        setDeleteDialogOpen(open);
+                        if (!open) setSegmentToDelete(null);
+                    }}
+                    onConfirm={confirmDelete}
+                    itemName={segmentToDelete?.description || ""}
+                    itemType="segmento"
+                    isLoading={deleteLoading}
+                />
+            </div>
+        </AllowedGuard>
     );
 }

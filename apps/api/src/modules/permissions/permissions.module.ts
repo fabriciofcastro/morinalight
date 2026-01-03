@@ -11,6 +11,10 @@ import type { WorkflowPolicyRepository } from "../organizational-structure/domai
 import type { PositionMembershipRepository } from "../organizational-structure/infra/prisma/prisma-position-membership.repository";
 import { PrismaWorkflowPolicyRepository } from "../organizational-structure/infra/prisma/prisma-workflow-policy.repository";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
+import type { UserRepository } from "../users/repositories/user.repository";
+import { PrismaUserRepository } from "../users/infra/prisma/prisma-user.repository";
+import type { DepartmentMembershipRepository } from "../organizational-structure/infra/prisma/prisma-department-membership.repository";
+import { PrismaDepartmentMembershipRepository } from "../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import type {
   DepartmentPermissionRepository,
   PermissionAuditLogRepository,
@@ -59,6 +63,8 @@ export type PermissionsModuleOptions = {
   userPermissionRepository?: UserPermissionRepository;
   permissionChangeRequestRepository?: PermissionChangeRequestRepository;
   workflowPolicyRepository?: WorkflowPolicyRepository;
+  departmentMembershipRepository?: DepartmentMembershipRepository;
+  userRepository?: UserRepository;
   positionPermissionRepository?: PositionPermissionRepository;
   sectorPermissionRepository?: SectorPermissionRepository;
   departmentPermissionRepository?: DepartmentPermissionRepository;
@@ -111,27 +117,35 @@ export async function registerPermissionsModule(
     options.accessAuditLogRepository ??
     (process.env.DATABASE_URL ? new PrismaAccessAuditLogRepository() : undefined);
 
+  const userRepository =
+    options.userRepository ??
+    (process.env.DATABASE_URL ? new PrismaUserRepository() : undefined);
+
+  const departmentMembershipRepository =
+    options.departmentMembershipRepository ??
+    (process.env.DATABASE_URL ? new PrismaDepartmentMembershipRepository() : undefined);
+
   const permissionCacheService =
     options.permissionCacheService ?? new InMemoryPermissionCacheService();
 
   const permissionInheritanceService =
     options.permissionInheritanceService ??
     (options.departmentRepository &&
-    options.sectorRepository &&
-    options.positionRepository &&
-    departmentPermissionRepository &&
-    sectorPermissionRepository &&
-    positionPermissionRepository &&
-    permissionRepository
+      options.sectorRepository &&
+      options.positionRepository &&
+      departmentPermissionRepository &&
+      sectorPermissionRepository &&
+      positionPermissionRepository &&
+      permissionRepository
       ? new PermissionInheritanceServiceImpl({
-          departmentRepository: options.departmentRepository,
-          sectorRepository: options.sectorRepository,
-          positionRepository: options.positionRepository,
-          departmentPermissionRepository,
-          sectorPermissionRepository,
-          positionPermissionRepository,
-          permissionRepository,
-        })
+        departmentRepository: options.departmentRepository,
+        sectorRepository: options.sectorRepository,
+        positionRepository: options.positionRepository,
+        departmentPermissionRepository,
+        sectorPermissionRepository,
+        positionPermissionRepository,
+        permissionRepository,
+      })
       : undefined);
 
   const templateRepository =
@@ -188,6 +202,8 @@ export async function registerPermissionsModule(
       sectorRepository: options.sectorRepository,
       departmentRepository: options.departmentRepository,
       positionMembershipRepository: options.positionMembershipRepository,
+      departmentMembershipRepository,
+      userRepository,
       auditLogRepository,
       templateRepository,
       eventBus,

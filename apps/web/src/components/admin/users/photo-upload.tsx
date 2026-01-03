@@ -125,7 +125,7 @@ export function PhotoUpload({
                 {preview && !disabled && (
                     <Button
                         type="button"
-                        variant="destructive"
+                        variant="danger"
                         size="icon"
                         className="absolute -top-2 -right-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         onClick={handleRemovePhoto}

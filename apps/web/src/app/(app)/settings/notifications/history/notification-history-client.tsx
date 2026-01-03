@@ -126,11 +126,11 @@ export function NotificationHistoryClient() {
     const avgResponseTime =
       readNotifications.length > 0
         ? readNotifications.reduce((sum, n) => {
-            if (n.readAt) {
-              return sum + (n.readAt.getTime() - n.timestamp.getTime());
-            }
-            return sum;
-          }, 0) / readNotifications.length
+          if (n.readAt) {
+            return sum + (n.readAt.getTime() - n.timestamp.getTime());
+          }
+          return sum;
+        }, 0) / readNotifications.length
         : 0;
 
     return {
@@ -188,12 +188,10 @@ export function NotificationHistoryClient() {
         const csvContent = csvRows.join("\n");
         blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         filename = `historico_notificacoes_${new Date().toISOString().split("T")[0]}.csv`;
-        mimeType = "text/csv";
       } else {
         const jsonContent = JSON.stringify(exportData, null, 2);
         blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
         filename = `historico_notificacoes_${new Date().toISOString().split("T")[0]}.json`;
-        mimeType = "application/json";
       }
 
       const url = URL.createObjectURL(blob);
@@ -571,13 +569,13 @@ export function NotificationHistoryClient() {
                         className={cn(
                           "inline-flex rounded px-2 py-1 text-xs font-mono uppercase tracking-wider border",
                           notification.archived &&
-                            "bg-gray-500/20 text-gray-400 border-gray-500/30",
+                          "bg-gray-500/20 text-gray-400 border-gray-500/30",
                           !notification.archived &&
-                            notification.read &&
-                            "bg-green-500/20 text-green-400 border-green-500/30",
+                          notification.read &&
+                          "bg-green-500/20 text-green-400 border-green-500/30",
                           !notification.archived &&
-                            !notification.read &&
-                            "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+                          !notification.read &&
+                          "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
                         )}
                       >
                         {notification.archived

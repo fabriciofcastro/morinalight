@@ -135,7 +135,7 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
         filialId: form.filialId || undefined,
         parentId: form.parentId || undefined,
         active: form.active,
-        description: form.description.trim() || undefined,
+        description: (form.description || "").trim() || undefined,
       };
       await organizationalStructureApi.updateDepartment(updateData);
       notificationCenter.add({
@@ -155,8 +155,8 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
   }, [form, isEditing, departmentId, router]);
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
+    async (e?: React.FormEvent) => {
+      e?.preventDefault();
       if (!canSave) return;
       try {
         await handleSave();
@@ -194,7 +194,7 @@ export function DepartmentFormClient({ departmentId }: DepartmentFormClientProps
         autoSaveStatus={status}
         hasUnsavedChanges={hasUnsavedChanges}
         loading={loading}
-        onSave={handleSubmit}
+
       >
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">

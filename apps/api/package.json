@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^10.1.0",
+    "@types/cookie": "^1.0.0",
     "@types/node": "^20.19.24",
     "@types/papaparse": "^5.5.2",
     "c8": "^10.1.2",

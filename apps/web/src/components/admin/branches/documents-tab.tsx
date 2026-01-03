@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { FileUploadZone, type UploadedFile } from "@/components/ui/file-upload-zone";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { branchDocumentsApi } from "@/lib/api/branch-documents";
-import { notificationCenter } from "@/lib/notification-center";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import {
     DocumentCategory,
     DOCUMENT_CATEGORY_LABELS,

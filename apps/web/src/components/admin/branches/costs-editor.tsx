@@ -150,7 +150,7 @@ export function CostsEditor({ value, onChange }: CostsEditorProps) {
                                         border: "1px solid rgba(255,255,255,0.1)",
                                         borderRadius: "8px",
                                     }}
-                                    formatter={(value: number) => `R$ ${value.toLocaleString("pt-BR")}`}
+                                    formatter={(value: any) => `R$ ${Number(value).toLocaleString("pt-BR")}`}
                                 />
                                 <Bar dataKey="value" fill="#3b82f6" />
                             </BarChart>
@@ -171,7 +171,7 @@ export function CostsEditor({ value, onChange }: CostsEditorProps) {
                                         border: "1px solid rgba(255,255,255,0.1)",
                                         borderRadius: "8px",
                                     }}
-                                    formatter={(value: number) => `R$ ${value.toLocaleString("pt-BR")}`}
+                                    formatter={(value: any) => `R$ ${Number(value).toLocaleString("pt-BR")}`}
                                 />
                                 <Line
                                     type="monotone"

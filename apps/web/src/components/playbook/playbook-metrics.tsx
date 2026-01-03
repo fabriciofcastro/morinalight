@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
+import { useRef, useEffect } from "react";
 import {
     Activity,
     Zap,
@@ -10,10 +10,32 @@ import {
     Users,
     TrendingUp,
     Database,
-    Cpu
+    Cpu,
+    ArrowUp,
+    ArrowDown,
+    Minus
 } from "lucide-react";
 import { GlassCard } from "@morina/ui";
 import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
+
+function AnimatedCounter({ value, decimals = 0 }: { value: number; decimals?: number }) {
+    const nodeRef = useRef<HTMLDivElement>(null);
+    const motionValue = useMotionValue(0);
+    const rounded = useTransform(motionValue, (latest) => {
+        return decimals > 0 ? latest.toFixed(decimals) : Math.round(latest).toString();
+    });
+
+    useEffect(() => {
+        const controls = animate(motionValue, value, {
+            duration: 2,
+            ease: "easeOut"
+        });
+
+        return controls.stop;
+    }, [motionValue, value]);
+
+    return <motion.span ref={nodeRef}>{rounded}</motion.span>;
+}
 
 interface Metric {
     id: string;
@@ -187,13 +209,27 @@ export function PlaybookMetrics() {
                                                 <Icon className={`w-6 h-6 ${metric.color}`} />
                                             </div>
 
-                                            {/* Trend Badge */}
-                                            <div className={`text-xs font-mono px-2 py-1 border ${metric.trendDirection === "up"
-                                                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                                                    : metric.trendDirection === "down"
-                                                        ? "border-blue-500/30 bg-blue-500/10 text-blue-400"
-                                                        : "border-white/10 bg-white/5 text-white/50"
+                                            {/* Trend Badge with Animated Icon */}
+                                            <div className={`flex items-center gap-1 text-xs font-mono px-2 py-1 border ${metric.trendDirection === "up"
+                                                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                                                : metric.trendDirection === "down"
+                                                    ? "border-blue-500/30 bg-blue-500/10 text-blue-400"
+                                                    : "border-white/10 bg-white/5 text-white/50"
                                                 }`}>
+                                                <motion.div
+                                                    animate={{
+                                                        y: metric.trendDirection === "up" ? [-1, 1, -1] : metric.trendDirection === "down" ? [1, -1, 1] : 0
+                                                    }}
+                                                    transition={{
+                                                        duration: 1.5,
+                                                        repeat: Infinity,
+                                                        ease: "easeInOut"
+                                                    }}
+                                                >
+                                                    {metric.trendDirection === "up" && <ArrowUp className="w-3 h-3" />}
+                                                    {metric.trendDirection === "down" && <ArrowDown className="w-3 h-3" />}
+                                                    {metric.trendDirection === "stable" && <Minus className="w-3 h-3" />}
+                                                </motion.div>
                                                 {metric.trend}
                                             </div>
                                         </div>
@@ -203,7 +239,7 @@ export function PlaybookMetrics() {
                                             {metric.label}
                                         </div>
 
-                                        {/* Value */}
+                                        {/* Value with Animated Counter */}
                                         <div className="flex items-baseline gap-2 mb-3">
                                             <motion.div
                                                 className={`text-4xl font-bold ${metric.color}`}
@@ -211,7 +247,7 @@ export function PlaybookMetrics() {
                                                 animate={isInView ? { opacity: 1 } : {}}
                                                 transition={{ duration: 0.8, delay: index * 0.05 + 0.3 }}
                                             >
-                                                {metric.value}
+                                                {isInView && <AnimatedCounter value={parseFloat(metric.value)} decimals={metric.value.includes('.') ? 1 : 0} />}
                                             </motion.div>
                                             {metric.unit && (
                                                 <span className="text-lg text-white/40 font-mono">

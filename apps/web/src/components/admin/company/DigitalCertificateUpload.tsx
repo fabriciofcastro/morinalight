@@ -422,7 +422,7 @@ export function DigitalCertificateUpload({
         title="Remover Certificado"
         description="Tem certeza que deseja remover o certificado digital? Esta ação não pode ser desfeita."
         confirmLabel="Remover"
-        variant="destructive"
+        variant="danger"
       />
     </div>
   );

@@ -1,9 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../_lib/auth-headers";
 
-export async function GET(request: Request) {
+import { requirePermission } from "@/lib/auth/middleware";
+import { ACTIONS, RESOURCES } from "@/lib/auth/rbac";
+
+export async function GET(request: NextRequest, context: { params: any }) {
+  // RBAC Check
+  const authResponse = await requirePermission(ACTIONS.READ, RESOURCES.PRODUCTS)(request, context);
+  if (authResponse) return authResponse;
+
   const { searchParams } = new URL(request.url);
   const params = new URLSearchParams();
 
@@ -24,7 +31,11 @@ export async function GET(request: Request) {
   return NextResponse.json(data);
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest, context: { params: any }) {
+  // RBAC Check
+  const authResponse = await requirePermission(ACTIONS.CREATE, RESOURCES.PRODUCTS)(request, context);
+  if (authResponse) return authResponse;
+
   const body = await request.json();
 
   const response = await fetch(`${apiUrl}/catalogo/produtos`, {

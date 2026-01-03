@@ -17,8 +17,8 @@ function resolveOrgId(paramOrgId?: string) {
   return paramOrgId ?? defaultOrgId;
 }
 
-function resolveActorId(request: Request) {
-  return request.headers.get("x-user-id") ?? defaultActorId;
+function resolveActorId(request: Request): string {
+  return request.headers.get("x-user-id") ?? defaultActorId ?? "";
 }
 
 async function proxy<T>(input: RequestInfo | URL, init?: RequestInit): Promise<NextResponse<T>> {
@@ -49,7 +49,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
   const { orgId: paramOrgId, userId: targetUserId } = await params;
   const orgId = resolveOrgId(paramOrgId);
-  const authHeaders = buildAuthHeaders();
+  const authHeaders = await buildAuthHeaders();
 
   let body: unknown;
 
@@ -74,7 +74,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
   const { orgId: paramOrgId, userId: targetUserId } = await params;
   const orgId = resolveOrgId(paramOrgId);
-  const authHeaders = buildAuthHeaders();
+  const authHeaders = await buildAuthHeaders();
 
   const response = await fetch(`${apiUrl}/organizations/${orgId}/members/${targetUserId}`, {
     method: "DELETE",

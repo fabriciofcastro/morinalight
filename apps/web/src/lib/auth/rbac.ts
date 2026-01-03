@@ -1,6 +1,17 @@
 /**
- * RBAC (Role-Based Access Control) System
+ * @deprecated This legacy RBAC system is maintained for backward compatibility only.
  * 
+ * For new features, use CASL-based authorization instead:
+ * - Frontend: `useAbility()` hook and `<Can>` component
+ * - Backend: `CaslAbilityFactory` and `requirePermission` middleware
+ * 
+ * See: apps/web/docs/security.md for migration guide
+ */
+
+/**
+ * RBAC (Role-Based Access Control) System
+ * @deprecated Use @morina/shared-kernel UnifiedPolicyEngine instead. 
+ * This module is kept for backward compatibility during migration.
  * Sistema completo de controle de acesso baseado em papéis
  */
 

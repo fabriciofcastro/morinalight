@@ -86,7 +86,6 @@ export function RepresentantesClient() {
     {
       key: "nome",
       header: "Representante",
-      sortable: true,
       render: (rep) => (
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--primary-color)_15%,transparent)]">
@@ -120,7 +119,6 @@ export function RepresentantesClient() {
       header: "Comissão",
       width: "120px",
       align: "center",
-      sortable: true,
       render: (rep) => (
         <div className="flex items-center justify-center gap-1.5 font-semibold text-[var(--primary-color)]">
           <Percent className="h-4 w-4" />
@@ -172,7 +170,6 @@ export function RepresentantesClient() {
       header: "Status",
       width: "120px",
       align: "center",
-      sortable: true,
       render: (rep) => (
         <div className="flex justify-center">
           <div
@@ -325,11 +322,6 @@ export function RepresentantesClient() {
         <DataGridMasterpiece
           data={representantes}
           columns={columns}
-          title="Representantes"
-          description="Gerencie os representantes de vendas e suas comissões"
-          loading={loading}
-          searchPlaceholder="Buscar por nome, documento, cliente..."
-          onAdd={() => router.push("/representantes/novo")}
           onRowClick={(rep) => router.push(`/representantes/${rep.representanteId}`)}
         />
       </div>

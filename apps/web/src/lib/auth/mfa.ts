@@ -98,50 +98,58 @@ export class MFAService {
         // Gerar backup codes
         const backupCodes = generateBackupCodes(10);
         const hashedBackupCodes = await Promise.all(
-            backupCodes.map((code) => hashBackupCode(code)),
+            backupCodes.map((code) => hashBackupCode(code))
         );
 
-        // Salvar no banco (temporário até confirmar)
-        // await prisma.user.update({
-        //   where: { id: userId },
-        //   data: {
-        //     mfaSecret: secret,
-        //     mfaEnabled: false, // Só ativa após confirmar
-        //     mfaBackupCodes: hashedBackupCodes,
-        //   },
-        // });
+        // Salvar temporariamente (não ativar ainda)
+        // O usuário precisa verificar o código primeiro
+        // TODO: Salvar em sessão temporária ou cache
 
         return {
             secret,
             qrCodeDataUrl,
-            backupCodes, // Mostrar UMA VEZ para o usuário
+            backupCodes, // Retornar códigos em texto plano UMA VEZ
+            hashedBackupCodes, // Para salvar no banco após confirmação
         };
     }
 
     /**
-     * Confirma e ativa MFA
+     * Confirma e ativa MFA após verificação do código
      */
     async confirmMFA(userId: string, token: string): Promise<boolean> {
-        // Buscar usuário
-        // const user = await prisma.user.findUnique({ where: { id: userId } });
+        // TODO: Buscar secret temporário da sessão/cache
+        // Por enquanto, buscar do banco se já existir
+        const { getPrismaClient } = await import("@/lib/prisma");
+        const prisma = await getPrismaClient();
 
-        // if (!user?.mfaSecret) {
-        //   throw new Error('MFA not initialized');
-        // }
+        if (!prisma) {
+            throw new Error("Database unavailable");
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { twoFactorSecret: true },
+        });
+
+        if (!user?.twoFactorSecret) {
+            return false;
+        }
 
         // Verificar token
-        const mockSecret = "MOCK_SECRET"; // TODO: usar user.mfaSecret
-        const isValid = verifyMFAToken(token, mockSecret);
+        const isValid = verifyMFAToken(token, user.twoFactorSecret);
 
         if (!isValid) {
             return false;
         }
 
         // Ativar MFA
-        // await prisma.user.update({
-        //   where: { id: userId },
-        //   data: { mfaEnabled: true },
-        // });
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                twoFactorEnabled: true,
+                twoFactorEnabledAt: new Date(),
+            },
+        });
 
         return true;
     }
@@ -150,63 +158,120 @@ export class MFAService {
      * Desabilita MFA
      */
     async disableMFA(userId: string, token: string): Promise<boolean> {
-        // Buscar usuário
-        // const user = await prisma.user.findUnique({ where: { id: userId } });
+        const { getPrismaClient } = await import("@/lib/prisma");
+        const prisma = await getPrismaClient();
+
+        if (!prisma) {
+            throw new Error("Database unavailable");
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                twoFactorEnabled: true,
+                twoFactorSecret: true,
+            },
+        });
+
+        if (!user?.twoFactorEnabled || !user.twoFactorSecret) {
+            return false;
+        }
 
         // Verificar token antes de desabilitar
-        const mockSecret = "MOCK_SECRET";
-        const isValid = verifyMFAToken(token, mockSecret);
+        const isValid = verifyMFAToken(token, user.twoFactorSecret);
 
         if (!isValid) {
             return false;
         }
 
-        // Desabilitar
-        // await prisma.user.update({
-        //   where: { id: userId },
-        //   data: {
-        //     mfaEnabled: false,
-        //     mfaSecret: null,
-        //     mfaBackupCodes: [],
-        //   },
-        // });
+        // Desabilitar MFA
+        await prisma.user.update({
+            where: { id: userId },
+            data: {
+                twoFactorEnabled: false,
+                twoFactorSecret: null,
+                twoFactorBackupCodes: null,
+                twoFactorEnabledAt: null,
+            },
+        });
 
         return true;
     }
 
     /**
-     * Verifica MFA no login
+     * Verifica se usuário tem MFA habilitado
      */
-    async verifyMFALogin(
+    async isMFAEnabled(userId: string): Promise<boolean> {
+        const { getPrismaClient } = await import("@/lib/prisma");
+        const prisma = await getPrismaClient();
+
+        if (!prisma) {
+            return false;
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { twoFactorEnabled: true },
+        });
+
+        return user?.twoFactorEnabled ?? false;
+    }
+
+    /**
+     * Verifica código MFA durante login
+     */
+    async verifyMFAForLogin(
         userId: string,
-        token: string,
+        token: string
     ): Promise<{ valid: boolean; usedBackupCode?: boolean }> {
-        // Buscar usuário
-        // const user = await prisma.user.findUnique({ where: { id: userId } });
+        const { getPrismaClient } = await import("@/lib/prisma");
+        const prisma = await getPrismaClient();
 
-        // if (!user?.mfaEnabled || !user?.mfaSecret) {
-        //   return { valid: false };
-        // }
+        if (!prisma) {
+            return { valid: false };
+        }
 
-        const mockSecret = "MOCK_SECRET";
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                twoFactorSecret: true,
+                twoFactorBackupCodes: true
+            },
+        });
 
-        // Tentar verificar TOTP
-        if (verifyMFAToken(token, mockSecret)) {
+        if (!user || !user.twoFactorSecret) {
+            return { valid: false };
+        }
+
+        // 1. Verify TOTP
+        if (verifyMFAToken(token, user.twoFactorSecret)) {
             return { valid: true };
         }
 
-        // Tentar backup code
-        const mockBackupCodes: string[] = []; // TODO: user.mfaBackupCodes
-        for (let i = 0; i < mockBackupCodes.length; i++) {
-            const isValid = await verifyBackupCode(token, mockBackupCodes[i]);
+        // 2. Verify Backup Codes
+        // twoFactorBackupCodes is likely a string or string[] in DB depending on provider (Postgres vs others).
+        // Assuming it is storing hashed codes as string[] or JSON.
+
+        // Safe cast if needed, or handle if it's null
+        let backupCodes: string[] = [];
+        try {
+            backupCodes = user.twoFactorBackupCodes ? JSON.parse(user.twoFactorBackupCodes) : [];
+        } catch {
+            backupCodes = [];
+        }
+
+        for (let i = 0; i < backupCodes.length; i++) {
+            const isValid = await verifyBackupCode(token, backupCodes[i]);
 
             if (isValid) {
-                // Remover backup code usado
-                // mockBackupCodes.splice(i, 1);
-                // await prisma.user.update({
-                //   where: { id: userId },
-                //   data: { mfaBackupCodes: mockBackupCodes },
-                // });
+                // Remove used backup code
+                const newBackupCodes = [...backupCodes];
+                newBackupCodes.splice(i, 1);
+
+                await prisma.user.update({
+                    where: { id: userId },
+                    data: { twoFactorBackupCodes: JSON.stringify(newBackupCodes) },
+                });
 
                 return { valid: true, usedBackupCode: true };
             }

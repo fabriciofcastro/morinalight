@@ -11,6 +11,7 @@ interface SidebarQuickCreateProps {
 }
 
 export function SidebarQuickCreate({ isExpanded = true }: SidebarQuickCreateProps) {
+    const pathname = usePathname();
     const ability = useAbility();
 
     // Ação contextual baseada na página atual

@@ -9,7 +9,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ unit
 
   const response = await fetch(`${apiUrl}/organizational-units/${unitId}`, {
     method: "PUT",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
 
@@ -29,7 +29,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
   const { unitId } = await params;
   const response = await fetch(`${apiUrl}/organizational-units/${unitId}`, {
     method: "DELETE",
-    headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
   });
 
   if (!response.ok) {

@@ -132,13 +132,14 @@ export function requireIPWhitelist() {
             await auditService.log({
                 action: "ip_blocked",
                 userId: "system",
+                userRole: "system",
                 resource: "api",
                 ipAddress: ip,
                 metadata: {
                     path: request.nextUrl.pathname,
                     method: request.method,
                 },
-                success: false,
+                status: "FAILURE",
             });
 
             return NextResponse.json(

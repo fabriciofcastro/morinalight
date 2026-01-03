@@ -16,7 +16,13 @@ export interface LoginResponse {
     email: string;
     displayName: string;
     role: string;
+    mustChangePassword?: boolean;
   };
+  organizations?: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
   // Token NÃO é mais retornado - agora é httpOnly cookie
   requiresTwoFactor?: boolean;
 }
@@ -144,6 +150,17 @@ export const authApi = {
       return true;
     } catch {
       return false;
+    }
+  },
+
+  /**
+   * Set Current Organization - Atualiza localStorage e Cookie
+   */
+  setCurrentOrganization: (orgId: string) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selected_org_id", orgId);
+      // Setar cookie para SSR e Middleware
+      document.cookie = `selected_org_id=${orgId}; path=/; max-age=31536000; SameSite=Lax`;
     }
   },
 };

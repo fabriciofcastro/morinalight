@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { completePasswordResetAction } from '@/app/actions/auth-security';
 import { PasswordStrengthMeter } from '@/components/auth/password-strength';
-import { Lock, key, CheckCircle2 } from 'lucide-react';
+import { Lock, Key, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 function ResetPasswordContent() {
@@ -119,7 +119,8 @@ function ResetPasswordContent() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     startIcon={<Lock className="w-5 h-5" />}
-                    error={confirmPassword && password !== confirmPassword ? "As senhas não coincidem" : undefined}
+                    error={!!(confirmPassword && password !== confirmPassword)}
+                    errorMessage="As senhas não coincidem"
                 />
 
                 <Button

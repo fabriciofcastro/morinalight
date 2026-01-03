@@ -14,7 +14,7 @@ export declare class Category {
     private readonly props;
     private readonly id;
     constructor(props: CategoryProps, id?: CategoryId);
-    static criar(input: Omit<CategoryProps, "criadoEm" | "atualizadoEm" | "ordem" | "ativo"> & {
+    static criar(input: Omit<CategoryProps, "createdAt" | "updatedAt" | "ordem" | "ativo"> & {
         ordem?: number;
         ativo?: boolean;
     }): Category;

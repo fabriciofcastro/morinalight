@@ -122,10 +122,11 @@ export async function POST(request: Request) {
     }
 
     // Se login bem-sucedido, salvar token e organização em cookies
-    if (response.ok && typeof payload === "object" && "token" in payload) {
+    // IMPORTANTE: Se exigir MFA, NÃO definimos o auth_token final ainda
+    if (response.ok && typeof payload === "object" && "token" in payload && !payload.requiresTwoFactor) {
       const token = String(payload.token);
       const cookieStore = await cookies();
-      
+
       // Salvar token de autenticação
       cookieStore.set("auth_token", token, {
         httpOnly: true,
@@ -143,7 +144,7 @@ export async function POST(request: Request) {
           : typeof firstOrg === "string"
             ? firstOrg
             : null;
-        
+
         if (orgId) {
           cookieStore.set("selected_org_id", orgId, {
             httpOnly: true,

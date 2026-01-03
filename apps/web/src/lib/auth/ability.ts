@@ -1,4 +1,4 @@
-import { AbilityBuilder, createMongoAbility } from '@casl/ability';
+import { AbilityBuilder, createMongoAbility, PureAbility, AbilityClass } from '@casl/ability';
 import {
     AppAbility,
     AppActions,
@@ -6,6 +6,12 @@ import {
     unifiedPolicyEngine,
     SecurityContext
 } from '@morina/shared-kernel';
+
+/**
+ * Ability for the client side which supports function conditions
+ */
+export type ClientAppAbility = PureAbility<[AppActions, AppSubjects], unknown>;
+export const ClientAppAbility = PureAbility as AbilityClass<ClientAppAbility>;
 
 /**
  * Permissão recebida da API
@@ -73,11 +79,14 @@ export function buildAbilityForUser(permissions: UserEffectivePermissions): AppA
     return build({
         detectSubjectType: (item) => {
             if (typeof item === 'string') return item as AppSubjects;
-            if (item && typeof item === 'object' && '__typename' in item) {
-                return (item as any).__typename as AppSubjects;
+
+            // Cast to any to handle object instances, as AppSubjects type is strictly strings
+            const subject = item as any;
+            if (subject && typeof subject === 'object' && '__typename' in subject) {
+                return subject.__typename as AppSubjects;
             }
-            return item.constructor.name as AppSubjects;
-        }
+            return subject?.constructor?.name as AppSubjects;
+        },
     });
 }
 
@@ -87,8 +96,8 @@ export function buildAbilityForUser(permissions: UserEffectivePermissions): AppA
 export function buildAbilityForUserWithConditions(
     permissions: UserEffectivePermissions,
     userContext: UserContext
-): AppAbility {
-    const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
+): ClientAppAbility {
+    const { can, cannot, build } = new AbilityBuilder<ClientAppAbility>(ClientAppAbility);
     const securityContext = buildSecurityContext(userContext);
 
     // Super Admin
@@ -107,13 +116,38 @@ export function buildAbilityForUserWithConditions(
 
         if (action && subject) {
             // Integração do motor ABAC legado COM o novo UnifiedPolicyEngine
-            can(action, subject, (resource) => {
-                // 1. Validar condições básicas de ABAC (ex: own, department)
+            can(action, subject, (resource: any) => {
+                // 1. Validar condições básicas de ABAC (ex: own, department) e TBAC
                 if (conditions) {
-                    const matchesAbac = Object.entries(conditions).every(
-                        ([key, value]) => resource?.[key] === value
-                    );
-                    if (!matchesAbac) return false;
+                    // TBAC Check
+                    if (conditions.time) {
+                        const now = new Date();
+                        const currentHour = now.getHours();
+                        const currentDay = now.getDay(); // 0 = Sunday
+                        const { start, end, days } = conditions.time;
+
+                        const [startH] = start.split(':').map(Number);
+                        const [endH] = end.split(':').map(Number);
+
+                        // Check Days (if defined)
+                        if (days && !days.includes(currentDay)) return false;
+
+                        // Check Hours
+                        // Simple checks assuming same day range for now
+                        if (currentHour < startH || currentHour >= endH) return false;
+                    }
+
+                    // Ownership & Attribute Checks
+                    // Filter out 'time' from comparison since it's handled above
+                    const abacConditions = { ...conditions };
+                    delete abacConditions.time;
+
+                    if (Object.keys(abacConditions).length > 0) {
+                        const matchesAbac = Object.entries(abacConditions).every(
+                            ([key, value]) => resource?.[key] === value
+                        );
+                        if (!matchesAbac) return false;
+                    }
                 }
 
                 // 2. Validar contra Security Policies, TBAC e ACLs Avançadas
@@ -138,12 +172,24 @@ export function buildAbilityForUserWithConditions(
     return build({
         detectSubjectType: (item) => {
             if (typeof item === 'string') return item as AppSubjects;
-            if (item && typeof item === 'object' && '__typename' in item) {
-                return (item as any).__typename as AppSubjects;
+
+            const subject = item as any;
+            if (subject && typeof subject === 'object' && '__typename' in subject) {
+                return subject.__typename as AppSubjects;
             }
-            return item.constructor.name as AppSubjects;
+            return subject?.constructor?.name as AppSubjects;
+        },
+        conditionsMatcher: (condition) => {
+            return (subject) => {
+                return condition(subject);
+            };
         }
     });
+}
+
+// Helper to get time windows if they exist in user context (AUBAC)
+function extractTimeWindows(attributes?: Record<string, any>): any[] | undefined {
+    return attributes?.timeWindows;
 }
 
 /**
@@ -160,6 +206,8 @@ function buildSecurityContext(userContext: UserContext): SecurityContext {
         },
         environment: {
             time: new Date(),
+            // TBAC: Se o usuário tiver restrições de horário nos atributos, passamos aqui
+            timeWindows: extractTimeWindows(userContext.attributes),
             ip: userContext.ipAddress,
             userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : userContext.userAgent,
             mfaVerified: userContext.mfaVerified || false
@@ -205,6 +253,14 @@ function parsePermissionKeyWithConditions(
         conditions = { status: 'pending' };
     } else if (modifier === 'draft') {
         conditions = { status: 'draft' };
+    } else if (modifier === 'business_hours') {
+        conditions = {
+            time: {
+                start: '09:00',
+                end: '18:00',
+                days: [1, 2, 3, 4, 5] // Mon-Fri
+            }
+        };
     }
 
     return { action, subject, conditions };
@@ -261,6 +317,7 @@ function mapSubject(raw: string): AppSubjects | null {
         'pre-fichas-tecnicas': 'TechnicalSheet',
         'fichas-custo': 'TechnicalSheet',
         'workflows': 'Workflow',
+        'business-segments': 'BusinessSegment',
         'settings:organizational-structure': 'Organization',
     };
     return map[raw] || null;

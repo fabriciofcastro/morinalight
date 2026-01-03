@@ -13,27 +13,79 @@ export interface BaseRepository<T> {
     count(filters?: any): Promise<number>;
 }
 
+import { getPrismaClient } from "@/lib/prisma";
+
 /**
  * Implementação abstrata do Repository
  */
 export abstract class AbstractRepository<T> implements BaseRepository<T> {
     constructor(protected readonly modelName: string) { }
 
-    abstract findById(id: string): Promise<T | null>;
-    abstract findAll(filters?: any): Promise<T[]>;
-    abstract create(data: Partial<T>): Promise<T>;
-    abstract update(id: string, data: Partial<T>): Promise<T>;
-    abstract delete(id: string): Promise<void>;
-    abstract count(filters?: any): Promise<number>;
+    protected async getDelegate(): Promise<any> {
+        const prisma = await getPrismaClient();
+        if (!prisma) {
+            console.warn(`[Repository] Prisma not available for ${this.modelName}`);
+            return null;
+        }
+        return (prisma as any)[this.modelName];
+    }
+
+    async findById(id: string): Promise<T | null> {
+        const delegate = await this.getDelegate();
+        if (!delegate) return null;
+        return delegate.findUnique({ where: { id } });
+    }
+
+    async findAll(filters?: any): Promise<T[]> {
+        const delegate = await this.getDelegate();
+        if (!delegate) return [];
+
+        const where = this.buildWhereClause(filters);
+        const orderBy = this.buildOrderByClause(filters?.orderBy, filters?.order);
+
+        return delegate.findMany({
+            where,
+            orderBy,
+            take: filters?.limit || 50,
+            skip: filters?.offset || 0,
+        });
+    }
+
+    async create(data: Partial<T>): Promise<T> {
+        const delegate = await this.getDelegate();
+        if (!delegate) throw new Error("Database unavailable");
+        return delegate.create({ data });
+    }
+
+    async update(id: string, data: Partial<T>): Promise<T> {
+        const delegate = await this.getDelegate();
+        if (!delegate) throw new Error("Database unavailable");
+        return delegate.update({ where: { id }, data });
+    }
+
+    async delete(id: string): Promise<void> {
+        const delegate = await this.getDelegate();
+        if (!delegate) throw new Error("Database unavailable");
+        await delegate.delete({ where: { id } });
+    }
+
+    async count(filters?: any): Promise<number> {
+        const delegate = await this.getDelegate();
+        if (!delegate) return 0;
+        const where = this.buildWhereClause(filters);
+        return delegate.count({ where });
+    }
 
     /**
      * Helpers comuns
      */
     protected buildWhereClause(filters: any): any {
+        if (!filters) return {};
+
         const where: any = {};
 
         if (filters.search) {
-            // Implementar busca
+            // Implementar busca genérica se necessário (ex: em campos texto)
         }
 
         if (filters.status) {
@@ -43,6 +95,12 @@ export abstract class AbstractRepository<T> implements BaseRepository<T> {
         if (filters.createdAfter) {
             where.createdAt = { gte: filters.createdAfter };
         }
+
+        // Espalhar outros filtros diretos
+        Object.keys(filters).forEach(key => {
+            if (["status", "createdAfter", "orderBy", "order", "limit", "offset", "search"].includes(key)) return;
+            where[key] = filters[key];
+        });
 
         return where;
     }
@@ -54,86 +112,4 @@ export abstract class AbstractRepository<T> implements BaseRepository<T> {
     }
 }
 
-/**
- * EXEMPLO: User Repository
- */
-export interface User {
-    id: string;
-    email: string;
-    name: string;
-    role: string;
-    status: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
-export class UserRepository extends AbstractRepository<User> {
-    constructor() {
-        super("user");
-    }
-
-    async findById(id: string): Promise<User | null> {
-        // TODO: Implementar com Prisma
-        // return prisma.user.findUnique({ where: { id } });
-        return null;
-    }
-
-    async findAll(filters?: any): Promise<User[]> {
-        const where = this.buildWhereClause(filters);
-        const orderBy = this.buildOrderByClause(filters?.orderBy, filters?.order);
-
-        // return prisma.user.findMany({
-        //   where,
-        //   orderBy,
-        //   take: filters?.limit || 50,
-        //   skip: filters?.offset || 0,
-        // });
-
-        return [];
-    }
-
-    async create(data: Partial<User>): Promise<User> {
-        // return prisma.user.create({ data });
-        return {} as User;
-    }
-
-    async update(id: string, data: Partial<User>): Promise<User> {
-        // return prisma.user.update({ where: { id }, data });
-        return {} as User;
-    }
-
-    async delete(id: string): Promise<void> {
-        // await prisma.user.delete({ where: { id } });
-    }
-
-    async count(filters?: any): Promise<number> {
-        const where = this.buildWhereClause(filters);
-        // return prisma.user.count({ where });
-        return 0;
-    }
-
-    /**
-     * Métodos específicos de User
-     */
-    async findByEmail(email: string): Promise<User | null> {
-        // return prisma.user.findUnique({ where: { email } });
-        return null;
-    }
-
-    async findByRole(role: string): Promise<User[]> {
-        // return prisma.user.findMany({ where: { role } });
-        return [];
-    }
-
-    async updateLastLogin(id: string): Promise<void> {
-        // await prisma.user.update({
-        //   where: { id },
-        //   data: { lastLogin: new Date() },
-        // });
-    }
-}
-
-/**
- * Instância singleton
- */
-export const userRepository = new UserRepository();

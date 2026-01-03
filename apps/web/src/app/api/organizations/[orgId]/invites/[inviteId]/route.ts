@@ -17,15 +17,15 @@ function resolveOrgId(paramOrgId?: string) {
   return paramOrgId ?? defaultOrgId;
 }
 
-function resolveActorId(request: Request) {
-  return request.headers.get("x-user-id") ?? defaultActorId;
+function resolveActorId(request: Request): string {
+  return request.headers.get("x-user-id") ?? defaultActorId ?? "";
 }
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
   const { orgId: paramOrgId, inviteId } = await params;
   const orgId = resolveOrgId(paramOrgId);
-  const authHeaders = buildAuthHeaders();
+  const authHeaders = await buildAuthHeaders();
 
   const response = await fetch(`${apiUrl}/organizations/${orgId}/invites/${inviteId}`, {
     method: "DELETE",

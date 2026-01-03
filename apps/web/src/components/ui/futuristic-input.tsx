@@ -4,7 +4,7 @@ import { useState, useId } from "react";
 import { Info } from "lucide-react";
 
 export interface FuturisticInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  label?: string;
   required?: boolean;
   error?: boolean;
   errorMessage?: string;
@@ -33,9 +33,11 @@ export function FuturisticInput({
   return (
     <div className="group relative">
       <div className="flex items-center gap-2 mb-2">
-        <label htmlFor={inputId} className="block text-sm font-semibold text-white/90 cursor-pointer">
-          {label} {required && <span className="text-red-400">*</span>}
-        </label>
+        {label && (
+          <label htmlFor={inputId} className="block text-sm font-semibold text-white/90 cursor-pointer">
+            {label} {required && <span className="text-red-400">*</span>}
+          </label>
+        )}
         {tooltip && (
           <div
             className="relative"

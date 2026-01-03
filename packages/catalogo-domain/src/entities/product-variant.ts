@@ -40,7 +40,7 @@ export class ProductVariant {
   }
 
   static criar(
-    input: Omit<ProductVariantProps, "criadoEm" | "atualizadoEm" | "ativo"> & {
+    input: Omit<ProductVariantProps, "createdAt" | "updatedAt" | "ativo"> & {
       ativo?: boolean;
     },
   ) {

@@ -141,12 +141,11 @@ export function SectorForm({ mode, sectorId }: SectorFormProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-white/60">Departamento Vinculado</label>
                             <FuturisticSelect
+                                label="Departamento Vinculado"
                                 value={formData.departmentId}
-                                onChange={val => setFormData({ ...formData, departmentId: val })}
-                                options={departments}
-                                placeholder="Selecione um departamento..."
+                                onChange={e => setFormData({ ...formData, departmentId: e.target.value })}
+                                options={[{ value: "", label: "Selecione um departamento..." }, ...departments]}
                             />
                         </div>
 

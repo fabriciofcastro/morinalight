@@ -7,18 +7,12 @@
 "use client";
 
 import { useCurrentUser } from "@/hooks/queries/use-auth";
-import { can, hasPermission, type Role, type Action, type Resource, type Permission } from "./rbac";
-import { useMemo } from "react";
-
-/**
- * Hook para verificar se usuário tem permissão
- */
-import { useCurrentUser } from "@/hooks/queries/use-auth";
-import { type Role, type Action, type Resource, type Permission } from "./rbac";
+import { type Action, type Resource, type Permission } from "./rbac";
 import { useMemo } from "react";
 import { useAbility } from "@/lib/auth/CaslContext";
 import { parsePermissionKey } from "@/lib/auth/ability";
 import { AppActions, AppSubjects } from "@morina/shared-kernel";
+import React from "react";
 
 /**
  * Hook para verificar se usuário tem permissão
@@ -108,34 +102,3 @@ export function withPermission<P extends object>(
         return <Component {...props} />;
     };
 }
-
-/**
- * EXEMPLO DE USO:
- * 
- * ```typescript
- * // Verificar permissão
- * function UsersList() {
- *   const canCreate = useCan('create', 'users');
- *   const canDelete = useCan('delete', 'users');
- * 
- *   return (
- *     <div>
- *       {canCreate && <button>Create User</button>}
- *       
- *       <Can action="delete" resource="users">
- *         <button>Delete User</button>
- *       </Can>
- *     </div>
- *   );
- * }
- * 
- * // Proteger componente inteiro
- * const AdminPanel = withPermission(
- *   AdminPanelComponent,
- *   'settings:update',
- *   UnauthorizedPage
- * );
- * ```
- */
-
-import React from "react";

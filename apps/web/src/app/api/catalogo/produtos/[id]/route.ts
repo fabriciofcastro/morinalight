@@ -1,14 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 import { apiUrl } from "@/lib/env";
 import { buildAuthHeaders } from "../../../_lib/auth-headers";
 
 type RouteParams = {
-  params: Promise<{ id: string;
-   }>;
+  params: Promise<{
+    id: string;
+  }>;
 };
 
-export async function GET(_request: Request, { params }: RouteParams) {
+import { requirePermission } from "@/lib/auth/middleware";
+import { ACTIONS, RESOURCES } from "@/lib/auth/rbac";
+
+export async function GET(request: NextRequest, { params }: RouteParams) {
+  // RBAC Check
+  const authResponse = await requirePermission(ACTIONS.READ, RESOURCES.PRODUCTS)(request, { params });
+  if (authResponse) return authResponse;
+
   const { id } = await params;
   const response = await fetch(`${apiUrl}/catalogo/produtos/${id}`, {
     headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
@@ -23,7 +31,11 @@ export async function GET(_request: Request, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(request: NextRequest, { params }: RouteParams) {
+  // RBAC Check
+  const authResponse = await requirePermission(ACTIONS.UPDATE, RESOURCES.PRODUCTS)(request, { params });
+  if (authResponse) return authResponse;
+
   const { id } = await params;
   const body = await request.json();
 
@@ -45,7 +57,11 @@ export async function PUT(request: Request, { params }: RouteParams) {
   return NextResponse.json(data);
 }
 
-export async function DELETE(_request: Request, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  // RBAC Check
+  const authResponse = await requirePermission(ACTIONS.DELETE, RESOURCES.PRODUCTS)(request, { params });
+  if (authResponse) return authResponse;
+
   const { id } = await params;
   const response = await fetch(`${apiUrl}/catalogo/produtos/${id}`, {
     method: "DELETE",

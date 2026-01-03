@@ -22,11 +22,16 @@ export async function getPrismaClient(): Promise<PrismaClient | null> {
 
   try {
     const { PrismaClient } = await import("@prisma/client");
+    const { createEncryptionMiddleware } = await import("./crypto/prisma-encryption-middleware");
+
     prismaInstance =
       global.prisma ??
       new PrismaClient({
         log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
       });
+
+    // Ativar middleware de criptografia
+    prismaInstance.$use(createEncryptionMiddleware());
 
     if (process.env.NODE_ENV !== "production") {
       global.prisma = prismaInstance;
@@ -35,6 +40,23 @@ export async function getPrismaClient(): Promise<PrismaClient | null> {
     return prismaInstance;
   } catch (error) {
     console.warn("[theme-engine] Prisma client indisponível, usando fallback em memória.", error);
+    return null;
+  }
+}
+
+export async function getRawPrismaClient(): Promise<PrismaClient | null> {
+  if (typeof window !== "undefined") {
+    return null;
+  }
+
+  if (!process.env.DATABASE_URL) {
+    return null;
+  }
+
+  try {
+    const { PrismaClient } = await import("@prisma/client");
+    return new PrismaClient();
+  } catch (error) {
     return null;
   }
 }

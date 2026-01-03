@@ -2,20 +2,21 @@
 
 import React, { useEffect, useState } from 'react';
 import { AbilityProvider } from '@/lib/auth/CaslContext';
-import { buildAbilityForUserWithConditions, type UserEffectivePermissions } from '@/lib/auth/ability';
+import { buildAbilityForUserWithConditions, type UserEffectivePermissions, ClientAppAbility } from '@/lib/auth/ability';
 import { fetchUserPermissions } from '@/hooks/use-permissions';
 import { getAuthUser } from '@/lib/auth-client';
 import { AppAbility } from '@morina/shared-kernel';
+import * as Sentry from '@sentry/nextjs';
 
 export function CaslProvider({ children }: { children: React.ReactNode }) {
-    const [ability, setAbility] = useState<AppAbility>(new AppAbility());
+    const [ability, setAbility] = useState<ClientAppAbility>(new AppAbility() as unknown as ClientAppAbility);
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
         const loadPermissions = async () => {
             const user = getAuthUser();
             if (!user) {
-                setAbility(new AppAbility()); // Guest ability (empty)
+                setAbility(new AppAbility() as unknown as ClientAppAbility); // Guest ability (empty)
                 return;
             }
 
@@ -37,9 +38,27 @@ export function CaslProvider({ children }: { children: React.ReactNode }) {
                     { effective, denied, role } as UserEffectivePermissions,
                     userContext
                 );
+
+                // Sincronizar Contexto do Sentry
+                Sentry.setUser({
+                    id: user.userId,
+                    email: user.email,
+                    role: role || 'member',
+                });
+
+                Sentry.setContext('security', {
+                    role: role,
+                    permissions_count: effective.length,
+                    department_id: context?.departmentId,
+                    has_advanced_context: !!context,
+                });
+
                 setAbility(newAbility);
             } catch (error) {
                 console.error('Failed to load permissions for CASL:', error);
+                Sentry.captureException(error, {
+                    tags: { area: 'permissions', userId: user.userId }
+                });
             }
         };
 

@@ -13,13 +13,13 @@ export declare class ListarVariantesUseCase {
             sku: string;
             createdBy: string;
             updatedBy: string;
-            nome: string;
             productId: string;
+            nome: string;
             atributos: Record<string, string | number | boolean>;
             varianteId: string;
+            ativo?: boolean | undefined;
             preco?: number | null | undefined;
             estoque?: number | null | undefined;
-            ativo?: boolean | undefined;
         }[];
         proximoCursor: string | null;
     }>;

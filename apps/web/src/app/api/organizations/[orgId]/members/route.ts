@@ -16,8 +16,8 @@ function resolveOrgId(paramOrgId?: string) {
   return paramOrgId ?? defaultOrgId;
 }
 
-function resolveActorId(request: Request) {
-  return request.headers.get("x-user-id") ?? defaultActorId;
+function resolveActorId(request: Request): string {
+  return request.headers.get("x-user-id") ?? defaultActorId ?? "";
 }
 
 async function proxy<T>(input: RequestInfo | URL, init?: RequestInit): Promise<NextResponse<T>> {
@@ -44,7 +44,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   const actorId = resolveActorId(request);
   const { orgId: paramOrgId } = await params;
   const orgId = resolveOrgId(paramOrgId);
-  const authHeaders = buildAuthHeaders();
+  const authHeaders = await buildAuthHeaders();
 
   return proxy(`${apiUrl}/organizations/${orgId}/members`, {
     headers: {

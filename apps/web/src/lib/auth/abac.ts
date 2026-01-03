@@ -4,29 +4,35 @@
  * Sistema de controle de acesso baseado em atributos para regras complexas
  */
 
-export interface PolicyCondition {
+export interface ABACCondition {
     field: string;
     operator: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte' | 'in' | 'nin' | 'contains';
     value: any;
 }
 
-export interface AccessPolicy {
+export interface ABACPolicy {
     id: string;
     name: string;
     description?: string;
     resource: string;
     action: string;
-    conditions: PolicyCondition[];
+    conditions: ABACCondition[];
     effect: 'allow' | 'deny';
 }
 
+export interface ABACContext {
+    user: any;
+    resource: any;
+    context?: any;
+}
+
 export class ABACEngine {
-    private policies: Map<string, AccessPolicy> = new Map();
+    private policies: Map<string, ABACPolicy> = new Map();
 
     /**
      * Registra uma política
      */
-    registerPolicy(policy: AccessPolicy) {
+    registerPolicy(policy: ABACPolicy) {
         this.policies.set(policy.id, policy);
     }
 
@@ -72,8 +78,8 @@ export class ABACEngine {
      * Avalia uma política específica
      */
     private evaluatePolicy(
-        policy: AccessPolicy,
-        context: { user: any; resource: any; context?: any },
+        policy: ABACPolicy,
+        context: ABACContext,
     ): boolean {
         return policy.conditions.every(condition =>
             this.evaluateCondition(condition, context),
@@ -84,8 +90,8 @@ export class ABACEngine {
      * Avalia uma condição
      */
     private evaluateCondition(
-        condition: PolicyCondition,
-        context: { user: any; resource: any; context?: any },
+        condition: ABACCondition,
+        context: ABACContext,
     ): boolean {
         const fieldValue = this.getFieldValue(condition.field, context);
         const conditionValue = condition.value;
@@ -132,7 +138,7 @@ export class ABACEngine {
     /**
      * Obtém políticas relevantes para uma ação
      */
-    private getPoliciesForAction(resource: any, action: string): AccessPolicy[] {
+    private getPoliciesForAction(resource: any, action: string): ABACPolicy[] {
         return Array.from(this.policies.values()).filter(
             policy =>
                 policy.resource === resource.constructor.name.toLowerCase() &&
