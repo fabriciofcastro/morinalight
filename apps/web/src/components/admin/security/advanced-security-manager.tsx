@@ -11,7 +11,8 @@ import {
     Activity,
     AlertTriangle,
     FileText,
-    RefreshCw
+    RefreshCw,
+    Ban
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -23,15 +24,19 @@ import {
 } from "@/components/ui/futuristic";
 import { Badge } from "@/components/ui/badge";
 import { SecurityPolicy, TimeWindow, ObjectAccessEntry } from "@morina/shared-kernel";
+import { Can } from "@/lib/auth/CaslContext";
 
 import { AclList } from "./acl-list";
 import { AclForm } from "./acl-form";
+import { AiSecurityAnalyst } from "./ai-security-analyst";
 import { ComplianceReportView } from "./compliance-report-view";
 import { SecurityAlertsList } from "./security-alerts-list";
+import { ThreatGlobe, type Threat } from "./threat-globe";
 import { PolicyForm } from "./policy-form";
 import { PoliciesList } from "./policy-list";
 import { TimeWindowForm } from "./time-window-form";
 import { TimeWindowsList } from "./time-window-list";
+import { BlockedIPsList } from "./blocked-ips-list";
 import { useEffect } from "react";
 
 /**
@@ -46,6 +51,56 @@ export function AdvancedSecurityManager() {
     const [editingItem, setEditingItem] = useState<any>(null);
     const [alerts, setAlerts] = useState<any[]>([]);
     const [alertsLoading, setAlertsLoading] = useState(false);
+    const [threats, setThreats] = useState<Threat[]>([]);
+    const [blockedIps, setBlockedIps] = useState<any[]>([]);
+    const [blockedIpsLoading, setBlockedIpsLoading] = useState(false);
+
+    useEffect(() => {
+        // 1. Fetch initial batch
+        const fetchInitial = async () => {
+            try {
+                const res = await fetch('/api/security/threat-map');
+                const data = await res.json();
+                if (data.threats) {
+                    setThreats(data.threats);
+                }
+            } catch (e) {
+                console.error("Failed to fetch initial threats", e);
+            }
+        };
+        fetchInitial();
+
+        // 2. Connect to SSE Stream
+        const eventSource = new EventSource('/api/security/threat-map/stream');
+
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.threats) {
+                setThreats(prev => {
+                    const newThreats = [...data.threats, ...prev];
+                    return newThreats.slice(0, 50); // Keep last 50
+                });
+            }
+        };
+
+        eventSource.onerror = (err) => {
+            console.error("SSE Connection failed", err);
+            eventSource.close();
+        };
+
+        return () => eventSource.close();
+    }, []);
+
+    const topCountries = useMemo(() => {
+        const counts: Record<string, number> = {};
+        threats.forEach(t => {
+            const country = t.source.country || "Unknown";
+            counts[country] = (counts[country] || 0) + 1;
+        });
+        return Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+    }, [threats]);
 
     // Fetch alerts when Audit tab is active
     useEffect(() => {
@@ -81,6 +136,40 @@ export function AdvancedSecurityManager() {
             console.error("Failed to acknowledge alert:", error);
         }
     };
+
+    const fetchBlockedIps = async () => {
+        try {
+            setBlockedIpsLoading(true);
+            const response = await fetch('/api/security/blocked-ips');
+            if (response.ok) {
+                const data = await response.json();
+                setBlockedIps(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch blocked IPs:", error);
+        } finally {
+            setBlockedIpsLoading(false);
+        }
+    };
+
+    const handleUnblockIp = async (ip: string) => {
+        try {
+            const response = await fetch(`/api/security/blocked-ips?ip=${ip}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                setBlockedIps(prev => prev.filter(b => b.ip !== ip));
+            }
+        } catch (error) {
+            console.error("Failed to unblock IP:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === "firewall") {
+            fetchBlockedIps();
+        }
+    }, [activeTab]);
 
     // Mock Data (Simulando persistência até Phase 5)
     const [policies, setPolicies] = useState<SecurityPolicy[]>([
@@ -130,6 +219,8 @@ export function AdvancedSecurityManager() {
         { id: "acl", label: "Listas ACL", icon: <Lock className="h-4 w-4" /> },
         { id: "compliance", label: "Conformidade", icon: <FileText className="h-4 w-4" /> },
         { id: "audit", label: "Auditoria", icon: <Activity className="h-4 w-4" /> },
+        { id: "firewall", label: "Firewall", icon: <Ban className="h-4 w-4" /> },
+        { id: "docs", label: "Mapeamento", icon: <Info className="h-4 w-4" /> },
     ];
 
     // Handlers
@@ -169,16 +260,30 @@ export function AdvancedSecurityManager() {
         else if (activeTab === "time") setTimeWindows(timeWindows.map(tw => tw.id === id ? { ...tw, active: !tw.active } : tw));
     };
 
+    const currentSubject = useMemo(() => {
+        switch (activeTab) {
+            case "policies": return "SecurityPolicy";
+            case "time": return "TimeWindow";
+            case "acl": return "ObjectAccessEntry";
+            case "compliance": return "ComplianceReport";
+            case "audit": return "SecurityAlert";
+            case "firewall": return "BlockedIP";
+            default: return "all";
+        }
+    }, [activeTab]);
+
     return (
         <StandardPageLayout
             title="Segurança Avançada"
             subtitle="Configuração de modelos PBAC, TBAC e ACLs para Zero Trust."
             icon={<Shield className="h-8 w-8 text-[hsl(var(--primary))]" />}
             headerActions={
-                <Button variant="primary" size="lg" onClick={handleAdd} className="shadow-[0_0_20px_hsl(var(--primary)/0.3)]">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Nova Regra
-                </Button>
+                <Can I="create" a={currentSubject as any}>
+                    <Button variant="primary" size="lg" onClick={handleAdd} className="shadow-[0_0_20px_hsl(var(--primary)/0.3)]">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Nova Regra
+                    </Button>
+                </Can>
             }
         >
             <div className="space-y-6">
@@ -218,17 +323,65 @@ export function AdvancedSecurityManager() {
                     )}
                 </AnimatePresence>
 
-                {/* Stats Overview */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <StatCard label="Policies" value={policies.length} trend="PBAC Ativo" icon={<Shield className="text-blue-400" />} />
-                    <StatCard label="Janelas" value={timeWindows.length} trend="TBAC Ativo" icon={<Clock className="text-amber-400" />} />
-                    <StatCard label="ACLs" value={acls.length} trend="Granular" icon={<Lock className="text-emerald-400" />} />
-                    <StatCard
-                        label="Alertas"
-                        value={alerts.filter(a => !a.acknowledged).length}
-                        trend={alerts.length > 0 ? `${alerts.filter(a => a.severity === 'critical').length} Críticos` : "Security Healthy"}
-                        icon={<AlertTriangle className={alerts.filter(a => !a.acknowledged).length > 0 ? "text-red-400" : "text-emerald-400"} />}
-                    />
+                {/* Security War Room Overview */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Live Threat Map */}
+                    <div className="lg:col-span-2">
+                        <div className="mb-4 flex items-center justify-between">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <Activity className="h-5 w-5 text-red-500 animate-pulse" />
+                                Monitoramento Global de Ameaças
+                            </h3>
+                            <Badge variant="outline" className="text-xs border-red-500/30 text-red-400 bg-red-500/10">
+                                LIVE
+                            </Badge>
+                        </div>
+                        <ThreatGlobe threats={threats} />
+                    </div>
+
+                    {/* Quick Stats & Alerts */}
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
+                            <GlassCard className="p-4 border-white/5 relative overflow-hidden">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <Activity className="h-4 w-4 text-red-500" />
+                                    <h4 className="text-sm font-semibold text-white">Top Origens de Ataque</h4>
+                                </div>
+                                <div className="space-y-2">
+                                    {topCountries.map(([country, count], i) => (
+                                        <div key={country} className="flex items-center justify-between text-xs">
+                                            <span className="text-white/70 flex items-center gap-2">
+                                                <span className="w-4 text-white/30 font-mono">{i + 1}.</span>
+                                                {country}
+                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-red-500/50"
+                                                        style={{ width: `${(count / Math.max(1, topCountries[0][1])) * 100}%` }}
+                                                    />
+                                                </div>
+                                                <span className="font-mono text-white/50 w-6 text-right">{count}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {topCountries.length === 0 && (
+                                        <div className="text-center text-white/20 py-4 text-xs">Nenhum dado</div>
+                                    )}
+                                </div>
+                            </GlassCard>
+
+                            <StatCard
+                                label="Alertas Ativos"
+                                value={alerts.filter(a => !a.acknowledged).length}
+                                trend={alerts.length > 0 ? `${alerts.filter(a => a.severity === 'critical').length} Críticos` : "Security Healthy"}
+                                icon={<AlertTriangle className={alerts.filter(a => !a.acknowledged).length > 0 ? "text-red-400" : "text-emerald-400"} />}
+                            />
+                            <StatCard label="Policies Ativas" value={policies.length} trend="PBAC Enforced" icon={<Shield className="text-blue-400" />} />
+                            <StatCard label="Janelas Temporais" value={timeWindows.length} trend="TBAC Active" icon={<Clock className="text-amber-400" />} />
+                            <StatCard label="Regras ACL" value={acls.length} trend="Granular Control" icon={<Lock className="text-emerald-400" />} />
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Nav */}
@@ -291,10 +444,78 @@ export function AdvancedSecurityManager() {
                                     />
                                 </div>
                             )}
+
+                            {activeTab === "firewall" && (
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-white font-bold text-lg">Firewall: IPs Bloqueados</h3>
+                                        <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" onClick={fetchBlockedIps} disabled={blockedIpsLoading}>
+                                                <RefreshCw className={`h-4 w-4 mr-2 ${blockedIpsLoading ? 'animate-spin' : ''}`} />
+                                                Atualizar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <BlockedIPsList
+                                        blockedIPs={blockedIps.map(b => ({
+                                            ...b,
+                                            permanent: !b.expiresAt
+                                        }))}
+                                        onUnblock={handleUnblockIp}
+                                        loading={blockedIpsLoading}
+                                    />
+                                </div>
+                            )}
+
+                            {activeTab === "docs" && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <GlassCard className="p-6">
+                                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                            <Shield className="h-5 w-5 text-primary" />
+                                            Mapeamento de Permissões
+                                        </h3>
+                                        <div className="space-y-4">
+                                            <DocItem
+                                                key_name="all:manage"
+                                                description="Acesso total ao sistema. Reservado para Owners."
+                                            />
+                                            <DocItem
+                                                key_name="*:view"
+                                                description="Permissão genérica de visualização (Read)."
+                                            />
+                                            <DocItem
+                                                key_name="products:edit:own"
+                                                description="ABAC: Edição restrita a objetos criados pelo próprio usuário."
+                                            />
+                                            <DocItem
+                                                key_name="*:create:business_hours"
+                                                description="TBAC: Criação restrita ao horário comercial configurado."
+                                            />
+                                        </div>
+                                    </GlassCard>
+
+                                    <GlassCard className="p-6">
+                                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                            <Lock className="h-5 w-5 text-emerald-400" />
+                                            Heurísticas de Zero Trust
+                                        </h3>
+                                        <p className="text-sm text-white/50 leading-relaxed italic">
+                                            O Morina utiliza um motor de autorização unificado que avalia 4 camadas:
+                                        </p>
+                                        <ol className="list-decimal list-inside mt-4 space-y-2 text-sm text-white/70">
+                                            <li><strong>RBAC:</strong> Funções básicas do usuário.</li>
+                                            <li><strong>PBAC:</strong> Políticas globais (Time, IP, MFA).</li>
+                                            <li><strong>ACL:</strong> Permissões granulares por objeto.</li>
+                                            <li><strong>ABAC:</strong> Atributos dinâmicos e propriedade.</li>
+                                        </ol>
+                                    </GlassCard>
+                                </div>
+                            )}
                         </motion.div>
                     </AnimatePresence>
                 </div>
             </div>
+            <AiSecurityAnalyst />
         </StandardPageLayout>
     );
 }
@@ -313,4 +534,14 @@ function StatCard({ label, value, trend, icon }: any) {
         </GlassCard>
     );
 }
+
+function DocItem({ key_name, description }: { key_name: string, description: string }) {
+    return (
+        <div className="flex flex-col gap-1 p-2 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+            <span className="text-[10px] font-mono text-[hsl(var(--primary))] font-bold">{key_name}</span>
+            <p className="text-xs text-white/50">{description}</p>
+        </div>
+    );
+}
+
 

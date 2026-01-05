@@ -114,7 +114,7 @@ export function compose(...middlewares: Array<(req: NextRequest, ctx: any) => Pr
 async function getUserFromRequest(request: NextRequest): Promise<UserWithPermissions | null> {
     try {
         // Obter token do cookie httpOnly
-        const authToken = request.cookies.get("auth-token")?.value;
+        const authToken = request.cookies.get("access_token")?.value ?? request.cookies.get("auth-token")?.value;
 
         if (!authToken) {
             return null;

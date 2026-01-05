@@ -4,6 +4,7 @@
  */
 
 import { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
+import { env } from "../config/env";
 import { extractOrgId } from "../auth/rbac.guards";
 import { getPrisma } from "../../infra/database/prisma.service";
 import { getRedisClient, isRedisAvailable } from "../../infra/cache/redis.service";
@@ -53,7 +54,6 @@ export function createRateLimit(options: RateLimitOptions) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     const key = keyGenerator(request);
     const redisKey = `ratelimit:${key}`;
-    const now = Date.now();
     const windowSeconds = Math.ceil(windowMs / 1000);
 
     try {
@@ -204,7 +204,7 @@ export const rateLimits = {
   // Limite para autenticação (mais restritivo)
   auth: createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 10, // 10 tentativas de login
+    max: env.NODE_ENV === "development" ? 100 : 10, // 10 tentativas de login (100 em dev)
     message: "Muitas tentativas de login. Tente novamente em alguns minutos.",
   }),
 
@@ -235,4 +235,3 @@ export const rateLimits = {
     message: "Muitos uploads. Aguarde um momento antes de tentar novamente.",
   }),
 };
-

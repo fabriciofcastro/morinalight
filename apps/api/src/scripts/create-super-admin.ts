@@ -86,7 +86,7 @@ async function createSuperAdmin() {
         let superAdminRole = await prisma.role.findFirst({
             where: {
                 name: "Super Administrador",
-                organizationId: org.id,
+                orgId: org.id,
             },
         });
 
@@ -95,29 +95,10 @@ async function createSuperAdmin() {
             superAdminRole = await prisma.role.create({
                 data: {
                     name: "Super Administrador",
+                    code: "SUPER_ADMIN",
                     description: "Acesso total ao sistema",
-                    organizationId: org.id,
-                    permissions: {
-                        create: [
-                            // Adicionar todas as permissões necessárias
-                            { resource: "users", action: "create" },
-                            { resource: "users", action: "read" },
-                            { resource: "users", action: "update" },
-                            { resource: "users", action: "delete" },
-                            { resource: "organizations", action: "create" },
-                            { resource: "organizations", action: "read" },
-                            { resource: "organizations", action: "update" },
-                            { resource: "organizations", action: "delete" },
-                            { resource: "roles", action: "create" },
-                            { resource: "roles", action: "read" },
-                            { resource: "roles", action: "update" },
-                            { resource: "roles", action: "delete" },
-                            { resource: "permissions", action: "create" },
-                            { resource: "permissions", action: "read" },
-                            { resource: "permissions", action: "update" },
-                            { resource: "permissions", action: "delete" },
-                        ],
-                    },
+                    scope: "GLOBAL",
+                    orgId: org.id,
                 },
             });
             console.log(`✅ Perfil Super Administrador criado: ${superAdminRole.id}`);
@@ -138,7 +119,7 @@ async function createSuperAdmin() {
             update: {},
         });
 
-        console.log(`✅ Perfil atribuído ao usuário: ${userRole.id}`);
+        console.log(`✅ Perfil atribuído ao usuário.`);
 
         console.log("\n🎉 Super Administrador criado/atualizado com sucesso!");
         console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

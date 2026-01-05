@@ -6,6 +6,12 @@ import { circuitBreakerManager, CircuitConfigs } from "@/lib/errors/circuit-brea
 import { performanceMonitor } from "@/lib/errors/performance-monitor";
 import { setupCSRFInterceptor } from "@/lib/security/csrf";
 
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    skipAuthRedirect?: boolean;
+  }
+}
+
 // Helper para gerar UUID no browser
 function randomUUID(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) {
@@ -37,13 +43,21 @@ export class ApiClient {
     this.setupInterceptors();
 
     // Setup CSRF protection
-    setupCSRFInterceptor(this.client);
+    // TEMPORARY: Disabled CSRF for debugging login issue
+    // setupCSRFInterceptor(this.client);
   }
 
   private setupInterceptors() {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
+        console.log("🔷 [AXIOS] Request interceptor:", {
+          method: config.method,
+          url: config.url,
+          baseURL: config.baseURL,
+          fullURL: `${config.baseURL}${config.url}`,
+        });
+
         // Adicionar organization ID se disponível
         if (typeof window !== "undefined") {
           const orgId = localStorage.getItem("selected_org_id");
@@ -56,17 +70,34 @@ export class ApiClient {
         const correlationId = randomUUID();
         config.headers["X-Correlation-ID"] = correlationId;
 
+        console.log("🔷 [AXIOS] Request will be sent to:", `${config.baseURL}${config.url}`);
         return config;
       },
-      (error) => Promise.reject(error),
+      (error) => {
+        console.error("🔴 [AXIOS] Request interceptor error:", error);
+        return Promise.reject(error);
+      },
     );
 
     // Response interceptor - handle errors with new error system
     this.client.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        console.log("🟢 [AXIOS_RESPONSE] Success response:", response.status, response.config.url);
+        return response;
+      },
       async (error) => {
+        console.log("🔴 [AXIOS_RESPONSE] Error interceptor called");
+        console.log("🔴 [AXIOS_RESPONSE] Error object:", error);
+        console.log("🔴 [AXIOS_RESPONSE] Has response?", !!error.response);
+        console.log("🔴 [AXIOS_RESPONSE] Response status:", error.response?.status);
+        console.log("🔴 [AXIOS_RESPONSE] Response data:", error.response?.data);
+        console.log("🔴 [AXIOS_RESPONSE] Error message:", error.message);
+        console.log("🔴 [AXIOS_RESPONSE] Error code:", error.code);
+        console.log("🔴 [AXIOS_RESPONSE] Config URL:", error.config?.url);
+
         // Parse error using new error system (com auto-tracking)
         const appError = parseAxiosError(error);
+        console.log("🔴 [AXIOS_RESPONSE] Parsed AppError:", appError);
 
         // Rastrear erro automaticamente com contexto da requisição
         if (typeof window !== "undefined") {
@@ -88,12 +119,20 @@ export class ApiClient {
           error.config?.url?.includes("/auth/login") ||
           error.config?.url?.includes("/auth/register");
 
+
+
         // Handle authentication errors
-        if (appError.statusCode === 401 && !isAuthEndpoint && typeof window !== "undefined") {
+        if (
+          appError.statusCode === 401 &&
+          !isAuthEndpoint &&
+          typeof window !== "undefined" &&
+          !error.config?.skipAuthRedirect
+        ) {
           window.location.href = "/login";
         }
 
         // Reject with parsed error
+        console.log("🔴 [AXIOS_RESPONSE] Rejecting with appError");
         return Promise.reject(appError);
       },
     );
@@ -119,7 +158,7 @@ export class ApiClient {
 
     try {
       const result = await circuitBreaker.execute(async () => {
-        return retryManager.executeWithRetry(
+        return this.retryManager.executeWithRetry(
           async () => {
             const response = await this.client.get<T>(url, config);
 
@@ -163,6 +202,7 @@ export class ApiClient {
   }
 
   async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+    console.log("🟠 [API_CLIENT] post() called", { url, hasData: !!data });
     const startTime = Date.now();
     const circuitBreaker = circuitBreakerManager.getOrCreate(
       `POST:${url}`,
@@ -170,10 +210,16 @@ export class ApiClient {
     );
 
     try {
+      console.log("🟠 [API_CLIENT] About to execute circuit breaker");
       const result = await circuitBreaker.execute(async () => {
-        return retryManager.executeWithRetry(
+        console.log("🟠 [API_CLIENT] Inside circuit breaker, calling retry manager");
+        return this.retryManager.executeWithRetry(
           async () => {
+            console.log("🟠 [API_CLIENT] Inside retry manager, calling this.client.post");
+            console.log("🟠 [API_CLIENT] Axios baseURL:", this.client.defaults.baseURL);
+            console.log("🟠 [API_CLIENT] Full URL will be:", `${this.client.defaults.baseURL}${url}`);
             const response = await this.client.post<T>(url, data, config);
+            console.log("🟠 [API_CLIENT] Got response from axios:", response.status);
 
             performanceMonitor.track({
               endpoint: url,

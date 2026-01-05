@@ -12,6 +12,8 @@ import { registerListComissoesRoute } from "./list-comissoes.route";
 import { registerListRepresentantesRoute } from "./list-representantes.route";
 import { registerPagarComissaoRoute } from "./pagar-comissao.route";
 import { registerUpdateClienteRoute } from "./update-cliente.route";
+import { registerExportClientesRoute } from "./export-clientes.route";
+import { registerImportClientesRoute } from "./import-clientes.route";
 
 type ClientesHttpDeps = {
   clienteRepository: ClienteRepository;
@@ -31,6 +33,9 @@ export async function registerClientesHttpRoutes(app: FastifyInstance, deps: Cli
   await registerUpdateClienteRoute(app, {
     clienteRepository: deps.clienteRepository,
   });
+
+  await registerExportClientesRoute(app);
+  await registerImportClientesRoute(app);
 
   await registerCreateRepresentanteRoute(app, {
     clienteRepository: deps.clienteRepository,

@@ -5,6 +5,7 @@ import type {
   PermissionFiltro,
   PermissionRepository,
 } from "../../domain/repositories/permission-repository";
+import type { SecurityPolicy, ObjectAccessEntry } from "@morina/shared-kernel";
 
 const prisma = getPrisma();
 
@@ -137,5 +138,52 @@ export class PrismaPermissionRepository implements PermissionRepository {
     await prisma.permission.delete({
       where: { id: permissionId },
     });
+  }
+
+  async listarSecurityPolicies(orgId: string): Promise<SecurityPolicy[]> {
+    const records = await prisma.securityPolicy.findMany({
+      where: { orgId, active: true },
+      orderBy: { priority: "desc" },
+    });
+
+    return records.map((r) => ({
+      id: r.id,
+      name: r.name,
+      description: r.description || undefined,
+      effect: r.effect as "ALLOW" | "DENY",
+      action: r.action.includes(",") ? r.action.split(",").map(a => a.trim()) : r.action,
+      subject: r.subject.includes(",") ? r.subject.split(",").map(s => s.trim()) : r.subject,
+      conditions: (r.conditions as any) || undefined,
+      priority: r.priority,
+      orgId: r.orgId,
+      active: r.active,
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+    }));
+  }
+
+  async listarAclEntries(
+    orgId: string,
+    userId: string,
+    role?: string,
+  ): Promise<ObjectAccessEntry[]> {
+    const records = await prisma.accessControlList.findMany({
+      where: {
+        orgId,
+        OR: [
+          { userId },
+          ...(role ? [{ roleId: role }] : []),
+        ],
+      },
+    });
+
+    return records.map((r) => ({
+      id: r.id,
+      subject: r.subject,
+      subjectId: r.subjectId,
+      userId: r.userId || undefined,
+      roleId: r.roleId || undefined,
+      action: r.action,
+    }));
   }
 }

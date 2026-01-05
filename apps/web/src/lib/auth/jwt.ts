@@ -12,7 +12,9 @@ const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
 const JWT_EXPIRES_IN = "15m"; // Access token: 15 minutos
 const JWT_REFRESH_EXPIRES_IN = "7d"; // Refresh token: 7 dias
 
-if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+const isServer = typeof window === "undefined";
+
+if (isServer && (!JWT_SECRET || !JWT_REFRESH_SECRET)) {
     throw new Error("JWT secrets not configured");
 }
 

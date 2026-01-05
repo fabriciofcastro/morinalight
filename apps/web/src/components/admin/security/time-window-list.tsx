@@ -15,6 +15,7 @@ import {
     Button
 } from "@/components/ui/futuristic";
 import { TimeWindow } from "@morina/shared-kernel";
+import { Can } from "@/lib/auth/CaslContext";
 
 interface TimeWindowsListProps {
     windows: TimeWindow[];
@@ -68,12 +69,14 @@ export function TimeWindowsList({ windows, onEdit, onDelete, onToggle }: TimeWin
                         </div>
 
                         <div className="flex items-center gap-1">
-                            <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onToggle(window.id)}>
-                                <Power className={`h-3.5 w-3.5 ${window.active ? 'text-emerald-400' : 'text-white/40'}`} />
-                            </Button>
-                            <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onEdit(window)}>
-                                <Edit2 className="h-3.5 w-3.5" />
-                            </Button>
+                            <Can I="update" a="TimeWindow">
+                                <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onToggle(window.id)}>
+                                    <Power className={`h-3.5 w-3.5 ${window.active ? 'text-emerald-400' : 'text-white/40'}`} />
+                                </Button>
+                                <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onEdit(window)}>
+                                    <Edit2 className="h-3.5 w-3.5" />
+                                </Button>
+                            </Can>
                         </div>
                     </div>
 
@@ -84,8 +87,8 @@ export function TimeWindowsList({ windows, onEdit, onDelete, onToggle }: TimeWin
                                 <div
                                     key={day}
                                     className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-tighter transition-colors ${isActive
-                                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                            : 'bg-white/5 text-white/10 border border-white/5'
+                                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                        : 'bg-white/5 text-white/10 border border-white/5'
                                         }`}
                                 >
                                     {day}
@@ -95,9 +98,11 @@ export function TimeWindowsList({ windows, onEdit, onDelete, onToggle }: TimeWin
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-white/5 flex justify-end">
-                        <Button variant="link" size="sm" className="h-6 text-[10px] text-red-400/60 hover:text-red-400" onClick={() => onDelete(window.id)}>
-                            <Trash2 className="mr-1 h-3 w-3" /> Excluir Janela
-                        </Button>
+                        <Can I="delete" a="TimeWindow">
+                            <Button variant="link" size="sm" className="h-6 text-[10px] text-red-400/60 hover:text-red-400" onClick={() => onDelete(window.id)}>
+                                <Trash2 className="mr-1 h-3 w-3" /> Excluir Janela
+                            </Button>
+                        </Can>
                     </div>
                 </GlassCard>
             ))}

@@ -4,4 +4,6 @@ export * from "./authorization/advanced/types";
 export * from "./authorization/advanced/policy-compiler";
 export * from "./authorization/advanced/temporal-evaluator";
 export * from "./authorization/advanced/unified-policy-engine";
+export * from "./authorization/permission-constants";
+export * from "./authorization/shared-ability-factory";
 

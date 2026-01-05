@@ -114,6 +114,13 @@ export async function GET(request: NextRequest) {
       ORDER BY date ASC
     `;
 
+        // Get MFA Adoption Rate
+        const totalUsers = await prisma.user.count();
+        const usersWithMfa = await prisma.user.count({
+            where: { twoFactorEnabled: true }
+        });
+        const mfaAdoptionRate = totalUsers > 0 ? (usersWithMfa / totalUsers) * 100 : 0;
+
         return NextResponse.json({
             totalAlerts,
             unacknowledgedAlerts,
@@ -130,6 +137,8 @@ export async function GET(request: NextRequest) {
                 date: item.date,
                 count: Number(item.count),
             })),
+            mfaAdoptionRate,
+            totalUsers
         });
     } catch (error) {
         console.error('Failed to fetch security stats:', error);

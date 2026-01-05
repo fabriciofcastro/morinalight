@@ -1522,7 +1522,8 @@ export function UsersFormClient() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   type="button"
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6"
+                  variant="outline"
+                  className="border-white/10 hover:bg-white/5 text-white cursor-pointer h-[48px] px-6"
                   onClick={() => router.push("/admin/users")}
                 >
                   Cancelar
@@ -1533,9 +1534,10 @@ export function UsersFormClient() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     type="button"
+                    variant="outline"
                     onClick={(e) => handleSubmit(e, true)}
                     disabled={creatingUser}
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="border-white/10 hover:bg-white/5 text-white cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {creatingUser ? (
                       <>
@@ -1554,9 +1556,10 @@ export function UsersFormClient() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     type="button"
+                    variant="outline"
                     onClick={handlePreview}
                     disabled={creatingUser}
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="border-white/10 hover:bg-white/5 text-white cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     Visualizar
@@ -1567,7 +1570,7 @@ export function UsersFormClient() {
                   <Button
                     type="submit"
                     disabled={creatingUser}
-                    className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {creatingUser ? (
                       <>
@@ -1774,8 +1777,9 @@ export function UsersFormClient() {
                   <div className="flex items-center justify-end gap-4 mt-8 pt-6 border-t border-white/10">
                     <Button
                       type="button"
+                      variant="outline"
                       onClick={() => setShowPreview(false)}
-                      className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-6"
+                      className="border-white/10 hover:bg-white/5 text-white cursor-pointer h-[48px] px-6"
                     >
                       Voltar e Editar
                     </Button>
@@ -1783,7 +1787,7 @@ export function UsersFormClient() {
                       type="button"
                       onClick={() => handleSubmit(undefined, false, true)}
                       disabled={creatingUser}
-                      className="bg-linear-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] cursor-pointer h-[48px] px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {creatingUser ? (
                         <>

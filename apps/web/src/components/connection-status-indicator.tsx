@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@morina/ui";
+import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, Loader2, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ export function ConnectionStatusIndicator({
 
   // Sempre chamar o hook (regra dos hooks do React)
   // O hook já tem proteção para SSR
-  const { status, isOnline, backendOnline, realtimeConnected, lastChecked } = useConnectionStatus();
+  const { status, isOnline, backendOnline, realtimeConnected, lastChecked, error } = useConnectionStatus();
 
   useEffect(() => {
     queueMicrotask(() => setMounted(true));
@@ -90,28 +90,46 @@ export function ConnectionStatusIndicator({
         exit={{ opacity: 0, x: 20 }}
         className={cn(
           position === "fixed" ? "fixed bottom-4 right-4" : "absolute top-0 right-0",
-          "z-50 flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium shadow-lg backdrop-blur-sm",
-          config.bgColor,
-          config.borderColor,
-          config.color,
-          className,
+          "z-50",
+          className
         )}
-        title={
-          lastChecked
-            ? `Última verificação: ${lastChecked.toLocaleTimeString("pt-BR")}`
-            : "Status de conexão"
-        }
       >
-        <Icon
-          className={cn("h-4 w-4", status === "checking" && "animate-spin")}
-          aria-hidden="true"
-        />
-        <span className="hidden sm:inline">{config.label}</span>
-        {!isOnline && <span className="ml-1 text-[10px] opacity-75">(Modo offline)</span>}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium shadow-lg backdrop-blur-sm cursor-help",
+                  config.bgColor,
+                  config.borderColor,
+                  config.color
+                )}
+              >
+                <Icon
+                  className={cn("h-4 w-4", status === "checking" && "animate-spin")}
+                  aria-hidden="true"
+                />
+                <span className="hidden sm:inline">{config.label}</span>
+                {!isOnline && <span className="ml-1 text-[10px] opacity-75">(Modo offline)</span>}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="font-medium">
+                {(status === "error" || status === "offline") && error
+                  ? `${config.label} (${error})`
+                  : config.label}
+              </p>
+              <p className="text-xs opacity-75">
+                {lastChecked
+                  ? `Última verificação: ${lastChecked.toLocaleTimeString("pt-BR")}`
+                  : "Status de conexão"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </motion.div>
     </AnimatePresence>
   );
 }
 
-// Exportação explícita para garantir compatibilidade com Next.js/Turbopack
-export { ConnectionStatusIndicator };
+

@@ -5,8 +5,8 @@ import { registerTenantFilterMiddleware } from "../../core/database/tenant-filte
 import { registerEncryptionMiddleware } from "../../core/database/encryption.middleware";
 
 // Extendendo o Client padrão para incluir a extensão de monitoramento
-type ExtendedPrismaClient = Prisma.PrismaClient; // Tipagem simplificada para compatibilidade
-// Em um cenário ideal, usaríamos ReturnType<typeof createPrismaClient>
+// Using the actual PrismaClient type which includes all generated models
+type ExtendedPrismaClient = Prisma.PrismaClient;
 
 let prisma: ExtendedPrismaClient | null = null;
 
@@ -116,7 +116,7 @@ export function getPrisma() {
 }
 
 // Separate Prisma client for read operations (replica)
-let prismaRead: PrismaClient | null = null;
+let prismaRead: Prisma.PrismaClient | null = null;
 
 export function getPrismaRead() {
   if (!prismaRead) {

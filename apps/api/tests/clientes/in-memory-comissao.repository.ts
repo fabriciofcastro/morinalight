@@ -1,5 +1,5 @@
 import type { Comissao } from "../../src/modules/clientes/domain/entities/comissao";
-import type { ComissaoRepository } from "../../src/modules/clientes/domain/repositories/comissao-repository";
+import type { ComissaoRepository, ComissaoFiltro } from "../../src/modules/clientes/domain/repositories/comissao-repository";
 
 export class InMemoryComissaoRepository implements ComissaoRepository {
   private readonly items = new Map<string, Comissao>();
@@ -22,7 +22,7 @@ export class InMemoryComissaoRepository implements ComissaoRepository {
     );
   }
 
-  async listarPorOrg(orgId: string, filtro = {}) {
+  async listarPorOrg(orgId: string, filtro: ComissaoFiltro = {}) {
     const itens = Array.from(this.items.values())
       .filter((c) => c.dados.orgId === orgId)
       .filter((c) => {
@@ -51,7 +51,7 @@ export class InMemoryComissaoRepository implements ComissaoRepository {
       .filter((c) => !representanteId || c.dados.representanteId === representanteId);
   }
 
-  async listarPagas(orgId: string, representanteId?: string) {
+  async listarPagas(orgId: string, representanteId?: string, _dataInicio?: Date, _dataFim?: Date) {
     return Array.from(this.items.values())
       .filter((c) => c.dados.orgId === orgId)
       .filter((c) => c.dados.status === "paga")

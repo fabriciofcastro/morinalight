@@ -3,6 +3,7 @@
  */
 
 import { apiClient } from "./base";
+import type { AxiosRequestConfig } from "axios";
 
 export interface LoginRequest {
   email: string;
@@ -70,8 +71,11 @@ export const authApi = {
   /**
    * Login - Token é setado como httpOnly cookie pelo backend
    */
-  login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>("/auth/login", data);
+  login: async (data: LoginRequest, config?: AxiosRequestConfig): Promise<LoginResponse> => {
+    console.log("🔶 [AUTH_API] login() called, about to call apiClient.post");
+    console.log("🔶 [AUTH_API] Data:", { email: data.email, hasPassword: !!data.password });
+    const response = await apiClient.post<LoginResponse>("/auth/login", data, config);
+    console.log("🔶 [AUTH_API] Got response:", response);
 
     // Token é setado automaticamente como cookie pelo backend
     // Não precisamos fazer nada aqui!

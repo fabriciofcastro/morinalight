@@ -59,7 +59,7 @@ test.describe('Playbook Page', () => {
         await page.waitForTimeout(1000);
 
         // Verify no console errors
-        const errors = [];
+        const errors: string[] = [];
         page.on('console', msg => {
             if (msg.type() === 'error') errors.push(msg.text());
         });

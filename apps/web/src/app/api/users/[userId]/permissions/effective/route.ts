@@ -18,5 +18,15 @@ export async function GET(_request: Request, { params }: { params: Promise<{ use
   }
 
   const data = await response.json();
+
+  // Inject MFA status from cookie
+  const cookieStore = await import("next/headers").then(mod => mod.cookies());
+  const mfaVerified = cookieStore.get("mfa_verified")?.value === "true";
+
+  if (!data.context) {
+    data.context = {};
+  }
+  data.context.mfaVerified = mfaVerified;
+
   return NextResponse.json(data);
 }

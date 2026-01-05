@@ -120,7 +120,7 @@ export function ClientForm({ mode, clientId }: ClientFormProps) {
                         </Button>
                         <h1 className="text-3xl font-bold mt-2">{mode === "create" ? "Novo Cliente" : "Editar Cliente"}</h1>
                     </div>
-                    <Button onClick={handleSubmit} disabled={saving} className="bg-cyan-600 hover:bg-cyan-500 text-white gap-2">
+                    <Button onClick={handleSubmit} disabled={saving} className="bg-blue-600 hover:bg-blue-500 text-white gap-2 cursor-pointer shadow-[0_0_20px_rgba(37,99,235,0.3)]">
                         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         Salvar
                     </Button>

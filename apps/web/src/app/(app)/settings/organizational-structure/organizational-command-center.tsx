@@ -43,7 +43,12 @@ import { Department, Sector, Subdepartment, Position } from "@morina/organizatio
 import { organizationalService } from "@/features/organizational-structure/services/OrganizationalService";
 import { OverviewPanel } from "@/features/organizational-structure/components/Panels/OverviewPanel";
 import { AdvancedMetricsPanel } from "@/features/organizational-structure/components/Panels/AdvancedMetricsPanel";
+import { PredictiveInsightsPanel } from "@/features/organizational-structure/components/Panels/PredictiveInsightsPanel";
+import { ActivityFeedPanel } from "@/features/organizational-structure/components/Panels/ActivityFeedPanel";
+import { ComparisonPanel } from "@/features/organizational-structure/components/Panels/ComparisonPanel";
 import { DateRangePicker, type DateRangePreset } from "@/components/dashboard/DateRangePicker";
+import { generatePDFReport } from "@/lib/reports/pdf-generator";
+import { generateExcelReport } from "@/lib/reports/excel-generator";
 
 // Local types removed in favor of Domain types
 
@@ -59,7 +64,7 @@ type SelectedNode =
   | { type: "sector"; id: string; data: SectorNode }
   | { type: "position"; id: string; data: PositionNode };
 
-type DetailsTab = "overview" | "members" | "permissions" | "audit" | "move" | "import-export";
+type DetailsTab = "overview" | "members" | "permissions" | "audit" | "move" | "import-export" | "comparison";
 
 type DrawerMode = "create" | "edit";
 type DrawerEntityType = "department" | "sector" | "position";
@@ -522,6 +527,15 @@ export function OrganizationalCommandCenter() {
     [armedMode, loadAll, reason],
   );
 
+  // Auto-refresh every 30 seconds for real-time overview
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void loadAll();
+    }, 30000); // 30s
+    return () => clearInterval(interval);
+  }, [loadAll]);
+
+  // Load initial data
   useEffect(() => {
     void loadAll();
   }, [loadAll]);
@@ -614,33 +628,70 @@ export function OrganizationalCommandCenter() {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       } else if (format === "excel") {
-        // Excel format (tab-separated with UTF-8 BOM)
-        const headers = Object.keys(exportData[0] || {});
-        const csvRows = [
-          headers.join("\t"),
-          ...exportData.map((row) =>
-            headers
-              .map((header) => {
-                const value = row[header as keyof typeof row];
-                return value ?? "";
-              })
-              .join("\t"),
-          ),
-        ];
-        const csvContent = "\uFEFF" + csvRows.join("\n"); // BOM UTF-8 for Excel
-        const blob = new Blob([csvContent], { type: "text/tab-separated-values;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `estrutura_organizacional_${new Date().toISOString().split("T")[0]}.xls`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        // Multi-sheet Excel Export
+        const deptSheet = {
+          name: 'Departamentos',
+          columns: [
+            { header: 'ID', key: 'ID', width: 30 },
+            { header: 'Nome', key: 'Nome', width: 30 },
+            { header: 'Código', key: 'Código', width: 15 },
+            { header: 'Status', key: 'Status', width: 10 },
+            { header: 'Pai', key: 'Departamento Pai', width: 30 },
+            { header: 'Criado Em', key: 'Criado Em', width: 20 },
+          ],
+          data: exportData.filter(d => d.Tipo === "Departamento")
+        };
+
+        const sectSheet = {
+          name: 'Setores',
+          columns: [
+            { header: 'ID', key: 'ID', width: 30 },
+            { header: 'Nome', key: 'Nome', width: 30 },
+            { header: 'Código', key: 'Código', width: 15 },
+            { header: 'Status', key: 'Status', width: 10 },
+            { header: 'Departamento', key: 'Setor Vinculado', width: 30 },
+            { header: 'Criado Em', key: 'Criado Em', width: 20 },
+          ],
+          data: exportData.filter(d => d.Tipo === "Setor")
+        };
+
+        const posSheet = {
+          name: 'Cargos',
+          columns: [
+            { header: 'ID', key: 'ID', width: 30 },
+            { header: 'Nome', key: 'Nome', width: 30 },
+            { header: 'Código', key: 'Código', width: 15 },
+            { header: 'Status', key: 'Status', width: 10 },
+            { header: 'Setor', key: 'Setor Vinculado', width: 30 },
+            { header: 'Criado Em', key: 'Criado Em', width: 20 },
+          ],
+          data: exportData.filter(d => d.Tipo === "Cargo")
+        };
+
+        const allSheet = {
+          name: 'Tudo',
+          columns: Object.keys(exportData[0] || {}).map(k => ({ header: k, key: k, width: 20 })),
+          data: exportData
+        };
+
+        await generateExcelReport(
+          `estrutura_organizacional_${new Date().toISOString().split("T")[0]}`,
+          [allSheet, deptSheet, sectSheet, posSheet]
+        );
+
       } else if (format === "pdf") {
-        // Para PDF, vamos criar um HTML simples que pode ser impresso
-        // Em produção, poderia usar jsPDF ou similar
-        const htmlContent = `
+        // PDF Report Generation (Screenshot of dashboard)
+        if (!selected) {
+          // Export Global Dashboard
+          await generatePDFReport(
+            "command-center-dashboard",
+            `relatorio_global_${new Date().toISOString().split("T")[0]}`,
+            "MorinaLight - Relatório Executivo Global"
+          );
+        } else {
+          // Fallback to simple HTML print for specific node or use same screenshot if we wrap detail view
+          // For now, let's just warn or fallback to HTML default if no ID found
+          const htmlContent = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -656,7 +707,7 @@ export function OrganizationalCommandCenter() {
   </style>
 </head>
 <body>
-  <h1>Estrutura Organizacional</h1>
+  <h1>Estrutura Organizacional - Detalhes</h1>
   <p>Exportado em: ${new Date().toLocaleString("pt-BR")}</p>
   <table>
     <thead>
@@ -671,22 +722,23 @@ export function OrganizationalCommandCenter() {
 </body>
 </html>
         `;
-        const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `estrutura_organizacional_${new Date().toISOString().split("T")[0]}.html`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+          const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8;" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `estrutura_organizacional_${new Date().toISOString().split("T")[0]}.html`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
 
-        notificationCenter.add({
-          type: "info",
-          title: "Exportação PDF",
-          message: "Arquivo HTML gerado. Use 'Imprimir' no navegador e salve como PDF.",
-        });
-        return;
+          notificationCenter.add({
+            type: "info",
+            title: "PDF de Nó Selecionado",
+            message: "Para nós específicos, geramos formato HTML para impressão (melhor legibilidade de lista).",
+          });
+          return;
+        }
       }
 
       notificationCenter.add({
@@ -702,7 +754,7 @@ export function OrganizationalCommandCenter() {
         message: "Não foi possível exportar a estrutura organizacional.",
       });
     }
-  }, [departments, sectors, positions]);
+  }, [departments, sectors, positions, selected]);
 
   // ===== Members =====
   const membersApiBase = useMemo(() => {
@@ -1372,11 +1424,12 @@ export function OrganizationalCommandCenter() {
                     { id: "audit", label: "Auditoria", icon: CheckCircle2 },
                     { id: "move", label: "Movimentações", icon: XCircle },
                     { id: "import-export", label: "Import/Export", icon: Download },
+                    { id: "comparison", label: "Comparar", icon: ArrowLeftRight },
                   ] as const
                 ).map((t) => {
                   const Icon = t.icon;
                   const active = tab === t.id;
-                  const disabled = !selected;
+                  const disabled = !selected && t.id !== "overview" && t.id !== "comparison";
                   return (
                     <button
                       key={t.id}
@@ -1398,9 +1451,37 @@ export function OrganizationalCommandCenter() {
                 })}
               </div>
 
-              {!selected ? (
-                <div className="border border-white/10 bg-black/20 p-6 text-sm text-white/50">
-                  Selecione um nó para abrir o painel operacional.
+              {!selected && tab !== "comparison" ? (
+                <div id="command-center-dashboard" className="space-y-8 animate-in fade-in duration-500">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-white">Visão Global</h3>
+                      <p className="text-sm text-white/50">Métricas consolidadas de toda a organização</p>
+                    </div>
+                  </div>
+                  <AdvancedMetricsPanel
+                    departments={departments}
+                    sectors={sectors}
+                    positions={positions}
+                  />
+                  <OverviewPanel
+                    departments={departments}
+                    sectors={sectors}
+                    positions={positions}
+                    membersCount={members.length}
+                    dateRange={dateRange}
+                  />
+                  <PredictiveInsightsPanel
+                    departments={departments}
+                    sectors={sectors}
+                    positions={positions}
+                  />
+
+                  <div className="grid gap-6 lg:grid-cols-3">
+                    <div className="lg:col-span-3">
+                      <ActivityFeedPanel />
+                    </div>
+                  </div>
                 </div>
               ) : tab === "overview" ? (
                 <div className="space-y-8">
@@ -1413,10 +1494,21 @@ export function OrganizationalCommandCenter() {
                     departments={departments}
                     sectors={sectors}
                     positions={positions}
-                    membersCount={members.length} // Note: This might be 0 if members tab wasn't loaded. Ideally force load or use separate count.
+                    membersCount={members.length}
                     dateRange={dateRange}
                   />
+                  <PredictiveInsightsPanel
+                    departments={departments}
+                    sectors={sectors}
+                    positions={positions}
+                  />
                 </div>
+              ) : tab === "comparison" ? (
+                <ComparisonPanel
+                  departments={departments}
+                  sectors={sectors}
+                  positions={positions}
+                />
               ) : tab === "members" ? (
                 <div className="space-y-3">
                   <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">

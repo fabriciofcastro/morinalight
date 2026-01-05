@@ -16,6 +16,28 @@ export const permissionGrantSchema = z.object({
 
 export type PermissionGrant = z.infer<typeof permissionGrantSchema>;
 
+export const securityPolicySchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().optional(),
+  effect: z.enum(["ALLOW", "DENY"]),
+  action: z.union([z.string(), z.array(z.string())]),
+  subject: z.union([z.string(), z.array(z.string())]),
+  conditions: z.record(z.any()).optional(), // ComplexCondition is hard to type fully in Zod, record(any) is safer for transmission
+  priority: z.number(),
+  orgId: z.string().optional(),
+  active: z.boolean().optional(),
+});
+
+export const aclEntrySchema = z.object({
+  id: z.string().optional(),
+  subject: z.string(),
+  subjectId: z.string(),
+  userId: z.string().optional(),
+  roleId: z.string().optional(),
+  action: z.string(),
+});
+
 export const resolverPermissoesEfetivasResultadoSchema = z.object({
   userId: z.string().uuid(),
   orgId: z.string().min(1),
@@ -35,6 +57,8 @@ export const resolverPermissoesEfetivasResultadoSchema = z.object({
     positionId: z.string().optional(),
     attributes: z.record(z.any()).optional(),
   }).optional(),
+  policies: z.array(securityPolicySchema).optional(),
+  aclEntries: z.array(aclEntrySchema).optional(),
 });
 
 export type ResolverPermissoesEfetivasResultado = z.infer<

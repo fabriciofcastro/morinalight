@@ -20,6 +20,8 @@ import { registerRejectProductRoute } from "./reject-product.route";
 import { registerUpdateCategoryRoute } from "./update-category.route";
 import { registerUpdateProductRoute } from "./update-product.route";
 import { registerUpdateVariantRoute } from "./update-variant.route";
+import { registerExportProductsRoute } from "./export-products.route";
+import { registerImportProductsRoute } from "./import-products.route";
 
 type RegisterCatalogoHttpOptions = {
   produtoRepository: ProdutoRepository;
@@ -39,6 +41,8 @@ export async function registerCatalogoHttp(
   await registerRejectProductRoute(app, options);
   await registerListProductsRoute(app, options);
   await registerGetProductRoute(app, options);
+  await registerExportProductsRoute(app);
+  await registerImportProductsRoute(app);
 
   if (options.varianteRepository) {
     await registerCreateVariantRoute(app, {

@@ -10,7 +10,7 @@
  *   node scripts/review-blocks.ts --stats
  */
 
-import { getPrismaClient } from '../src/lib/prisma';
+import { getPrismaClient } from '../lib/prisma';
 import { writeFileSync } from 'fs';
 
 interface ReviewOptions {
@@ -70,13 +70,13 @@ async function reviewBlocks(options: ReviewOptions = {}) {
         console.log(`Total Blocked Users: ${blockedUsers.length}`);
         console.log(`Total Blocked IPs: ${blockedIPs.length}`);
 
-        const expiringSoon = blockedUsers.filter(u => {
+        const expiringSoon = blockedUsers.filter((u: any) => {
             const timeLeft = u.blockedUntil!.getTime() - now.getTime();
             return timeLeft < 60 * 60 * 1000; // Less than 1 hour
         });
         console.log(`Users expiring in < 1 hour: ${expiringSoon.length}`);
 
-        const permanentBlocks = blockedIPs.filter(ip => !ip.expiresAt);
+        const permanentBlocks = blockedIPs.filter((ip: any) => !ip.expiresAt);
         console.log(`Permanent IP blocks: ${permanentBlocks.length}`);
         console.log('');
     }
@@ -86,7 +86,7 @@ async function reviewBlocks(options: ReviewOptions = {}) {
         console.log('👤 Blocked Users');
         console.log('─'.repeat(80));
 
-        blockedUsers.forEach((user, index) => {
+        blockedUsers.forEach((user: any, index: number) => {
             const timeLeft = user.blockedUntil!.getTime() - now.getTime();
             const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
             const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
@@ -110,7 +110,7 @@ async function reviewBlocks(options: ReviewOptions = {}) {
         console.log('🌐 Blocked IPs');
         console.log('─'.repeat(80));
 
-        blockedIPs.forEach((ip, index) => {
+        blockedIPs.forEach((ip: any, index: number) => {
             const isPermanent = !ip.expiresAt;
             let timeInfo = 'Permanent';
 
@@ -143,7 +143,7 @@ async function reviewBlocks(options: ReviewOptions = {}) {
         csvLines.push('Type,Identifier,Email/IP,Blocked At,Expires At,Reason,Status');
 
         // Users
-        blockedUsers.forEach(user => {
+        blockedUsers.forEach((user: any) => {
             const timeLeft = user.blockedUntil!.getTime() - now.getTime();
             const status = timeLeft > 0 ? 'Active' : 'Expired';
             csvLines.push(
@@ -152,7 +152,7 @@ async function reviewBlocks(options: ReviewOptions = {}) {
         });
 
         // IPs
-        blockedIPs.forEach(ip => {
+        blockedIPs.forEach((ip: any) => {
             const status = !ip.expiresAt || ip.expiresAt > now ? 'Active' : 'Expired';
             csvLines.push(
                 `IP,${ip.id},${ip.ip},${ip.blockedAt.toISOString()},${ip.expiresAt?.toISOString() || 'Never'},"${ip.reason || 'N/A'}",${status}`

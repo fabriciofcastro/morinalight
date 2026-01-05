@@ -17,10 +17,17 @@ import { PrismaUserPermissionRepository } from "../../modules/permissions/infra/
 import { PrismaPositionMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position-membership.repository";
 import { PrismaDepartmentMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department-membership.repository";
 import { PrismaPositionRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position.repository";
+import { env } from "../../core/config/env";
 import { InMemoryPermissionCacheService } from "../../modules/permissions/infra/cache/in-memory-permission-cache.service";
+import { RedisPermissionCacheService } from "../../modules/permissions/infra/cache/redis-permission-cache.service";
 import { PermissionInheritanceServiceImpl } from "../../modules/permissions/infra/services/permission-inheritance.service";
 import { PrismaDepartmentRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department.repository";
 import { PrismaSectorRepository } from "../../modules/organizational-structure/infra/prisma/prisma-sector.repository";
+
+// Instância única de cache para o middleware
+const permissionCache = env.REDIS_URL
+  ? new RedisPermissionCacheService()
+  : new InMemoryPermissionCacheService();
 
 // Instâncias globais ou lazy-loaded seriam melhores, 
 // mas para manter consistência vamos instanciar sob demanda aproveitando o cache do PrismaService
@@ -49,7 +56,7 @@ function makeResolverPermissoesEfetivas() {
     permissionRepository: permissionRepo
   });
 
-  const permissionCache = new InMemoryPermissionCacheService();
+  // O cache agora é compartilhado através do singleton acima
 
   return new ResolverPermissoesEfetivasUseCase({
     permissionRepository: permissionRepo,

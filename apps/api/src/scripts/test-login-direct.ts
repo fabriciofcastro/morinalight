@@ -5,8 +5,7 @@ import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
 // Carregar variáveis de ambiente da raiz do projeto
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = resolve(".");
 const rootEnv = resolve(__dirname, "../../../../.env");
 loadEnv({ path: rootEnv, override: false });
 
@@ -37,32 +36,32 @@ async function testLogin() {
     console.log(`   ID: ${user.id}`);
     console.log(`   Email no banco: ${user.email}`);
     console.log(`   Status: ${user.status}`);
-    console.log(`   Hash: ${user.passwordHash.substring(0, 30)}...`);
+    console.log(`   Hash: ${user.passwordHash ? user.passwordHash.substring(0, 30) : "NULL"}...`);
 
     // 2. Testar senha exatamente como a rota faz
     console.log("\n2️⃣ Testando senha...");
     console.log(`   Senha fornecida: ${password}`);
     console.log(`   Tamanho da senha: ${password.length} caracteres`);
 
-    const isValid = await bcrypt.compare(password, user.passwordHash);
+    const isValid = await bcrypt.compare(password, user.passwordHash || "");
     console.log(`   Resultado: ${isValid ? "✅ VÁLIDA" : "❌ INVÁLIDA"}`);
 
     if (!isValid) {
       console.log("\n⚠️  Testando variações da senha...");
-      
+
       // Testar com espaços
       const withSpaces = ` ${password} `;
-      const test1 = await bcrypt.compare(withSpaces, user.passwordHash);
+      const test1 = await bcrypt.compare(withSpaces, user.passwordHash || "");
       console.log(`   Com espaços: ${test1 ? "✅" : "❌"}`);
 
       // Testar sem espaços
       const noSpaces = password.trim();
-      const test2 = await bcrypt.compare(noSpaces, user.passwordHash);
+      const test2 = await bcrypt.compare(noSpaces, user.passwordHash || "");
       console.log(`   Sem espaços: ${test2 ? "✅" : "❌"}`);
 
       // Testar diferentes encodings
       const utf8 = Buffer.from(password, "utf-8").toString("utf-8");
-      const test3 = await bcrypt.compare(utf8, user.passwordHash);
+      const test3 = await bcrypt.compare(utf8, user.passwordHash || "");
       console.log(`   UTF-8: ${test3 ? "✅" : "❌"}`);
 
       console.log("\n💡 A senha não corresponde. Vamos atualizar...");
@@ -74,7 +73,7 @@ async function testLogin() {
       console.log("✅ Senha atualizada!");
 
       // Verificar novamente
-      const verify = await bcrypt.compare(password, newHash);
+      const verify = await bcrypt.compare(password, newHash || "");
       console.log(`   Verificação: ${verify ? "✅ CORRETA" : "❌ AINDA ERRADA"}`);
     } else {
       console.log("\n✅ Tudo correto! O problema pode estar em outro lugar.");

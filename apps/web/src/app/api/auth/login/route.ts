@@ -32,11 +32,17 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  console.log("🟢 [NEXT.JS] POST /api/auth/login received");
   let body: unknown;
 
   try {
     body = await request.json();
+    console.log("🟢 [NEXT.JS] Request body parsed:", {
+      email: (body as any)?.email,
+      hasPassword: !!(body as any)?.password
+    });
   } catch {
+    console.log("🔴 [NEXT.JS] Failed to parse JSON body");
     return NextResponse.json({ message: "Corpo da requisição inválido." }, { status: 400 });
   }
 
@@ -47,11 +53,14 @@ export async function POST(request: Request) {
 
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
+    console.log("🔴 [NEXT.JS] Validation failed:", parsed.error.flatten());
     return NextResponse.json(
       { message: "Dados inválidos", issues: parsed.error.flatten() },
       { status: 400 },
     );
   }
+
+  console.log("🟢 [NEXT.JS] Validation passed, checking rate limit...");
 
   const forwardedFor = request.headers.get("x-forwarded-for");
   const realIp = request.headers.get("x-real-ip");
@@ -65,6 +74,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    console.log("🟢 [NEXT.JS] Calling backend API:", `${apiUrl}/auth/login`);
     // Timeout de 10 segundos para não ficar esperando indefinidamente
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -121,47 +131,24 @@ export async function POST(request: Request) {
       );
     }
 
-    // Se login bem-sucedido, salvar token e organização em cookies
-    // IMPORTANTE: Se exigir MFA, NÃO definimos o auth_token final ainda
-    if (response.ok && typeof payload === "object" && "token" in payload && !payload.requiresTwoFactor) {
-      const token = String(payload.token);
-      const cookieStore = await cookies();
+    // Se login bem-sucedido, repassar cookies do backend
+    // O backend já define os cookies httpOnly, apenas repassamos
+    const responseHeaders = new Headers({
+      "Cache-Control": "no-store, max-age=0",
+    });
 
-      // Salvar token de autenticação
-      cookieStore.set("auth_token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60, // 7 dias
-        path: "/",
+    // Repassar todos os cookies Set-Cookie do backend
+    const setCookieHeaders = response.headers.getSetCookie?.() || [];
+    if (setCookieHeaders.length > 0) {
+      setCookieHeaders.forEach((cookie) => {
+        responseHeaders.append("Set-Cookie", cookie);
       });
-
-      // Salvar organização selecionada se houver
-      if ("organizations" in payload && Array.isArray(payload.organizations) && payload.organizations.length > 0) {
-        const firstOrg = payload.organizations[0];
-        const orgId = typeof firstOrg === "object" && firstOrg !== null
-          ? ("organizationId" in firstOrg ? String(firstOrg.organizationId) : "id" in firstOrg ? String(firstOrg.id) : null)
-          : typeof firstOrg === "string"
-            ? firstOrg
-            : null;
-
-        if (orgId) {
-          cookieStore.set("selected_org_id", orgId, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60, // 7 dias
-            path: "/",
-          });
-        }
-      }
+      console.log("🟢 [NEXT.JS] Forwarding", setCookieHeaders.length, "cookies from backend");
     }
 
     return NextResponse.json(payload, {
       status: response.status,
-      headers: {
-        "Cache-Control": "no-store, max-age=0",
-      },
+      headers: responseHeaders,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

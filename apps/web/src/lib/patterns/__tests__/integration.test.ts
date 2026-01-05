@@ -29,8 +29,8 @@ describe("PaymentService Legacy Integration", () => {
     });
 });
 
-import { productTemplateService } from "../services/product-template-service";
-import { ProductBundle } from "../patterns/prototype-pattern";
+import { productTemplateService } from "../../services/product-template-service";
+import { ProductBundle } from "../prototype-pattern";
 
 describe("ProductTemplateService Integration", () => {
     it("should create independent clones from templates", () => {

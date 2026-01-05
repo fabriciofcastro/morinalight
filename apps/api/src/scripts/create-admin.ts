@@ -1,13 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { config as loadEnv } from "dotenv";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import { resolve } from "path";
 
 // Carregar variáveis de ambiente da raiz do projeto
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const rootEnv = resolve(__dirname, "../../../../.env");
+const rootEnv = resolve(process.cwd(), ".env");
 loadEnv({ path: rootEnv, override: false });
 
 const prisma = new PrismaClient();

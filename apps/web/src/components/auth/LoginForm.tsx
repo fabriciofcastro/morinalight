@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, cn, Label, TooltipProvider } from "@morina/ui";
+import { Button, cn, Label, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
 import {
   ArrowRight,
   Eye,
@@ -10,9 +10,10 @@ import {
   Mail,
   ShieldCheck,
   Terminal,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authApi } from "@/lib/api/auth";
 import { MFALogin } from "./mfa-login";
 
@@ -23,7 +24,17 @@ type LoginNoticePayload = {
   category?: string;
   origin?: string;
   code?: string;
+  retryAction?: () => void;
 };
+
+// Input sanitization helper
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/[<>]/g, "") // Remove < and >
+    .replace(/javascript:/gi, "") // Remove javascript: protocol
+    .replace(/on\w+=/gi, "") // Remove event handlers
+    .trim();
+}
 
 export function LoginForm({
   onNotice,
@@ -34,45 +45,98 @@ export function LoginForm({
 }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [honeypot, setHoneypot] = useState(""); // Anti-bot field
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [mfaRequired, setMfaRequired] = useState(false);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+
+  // Validation errors for inline tooltips
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+
+  // Fetch CSRF token on mount
+  useEffect(() => {
+    async function fetchCSRFToken() {
+      try {
+        const response = await fetch("/api/auth/csrf-token", {
+          credentials: "include",
+        });
+        const data = await response.json();
+        setCsrfToken(data.token);
+      } catch (error) {
+        console.error("Failed to fetch CSRF token:", error);
+      }
+    }
+    fetchCSRFToken();
+  }, []);
 
   function emitNotice(payload: LoginNoticePayload) {
     onNotice?.(payload);
   }
 
+  // Real-time email validation
+  const validateEmail = (value: string): string => {
+    if (!value) return "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+      return "Email inválido";
+    }
+    return "";
+  };
+
+  // Real-time password validation
+  const validatePassword = (value: string): string => {
+    if (!value) return "";
+    if (value.length < 8) {
+      return "Mínimo 8 caracteres";
+    }
+    return "";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("🔵 [LOGIN] handleSubmit called");
     e.preventDefault();
 
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
-
-    if (!trimmedEmail || !trimmedPassword) {
-      emitNotice({ message: "⚠️ Preencha email e senha.", attempts: loginAttempts, category: "VALIDATION", origin: "CLIENT" });
+    // Honeypot check (anti-bot)
+    if (honeypot) {
+      console.log("🤖 [SECURITY] Bot detected via honeypot");
+      // Silently reject (don't give feedback to bot)
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      setIsLoading(false);
       return;
     }
 
-    const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
-    if (!emailIsValid) {
-      emitNotice({ message: "⚠️ E-mail inválido.", attempts: loginAttempts, category: "VALIDATION", origin: "CLIENT" });
+    const sanitizedEmail = sanitizeInput(email.trim());
+    const sanitizedPassword = sanitizeInput(password.trim());
+
+    console.log("🔵 [LOGIN] Email:", sanitizedEmail);
+    console.log("🔵 [LOGIN] Password length:", sanitizedPassword.length);
+    console.log("🔵 [LOGIN] Terms accepted:", termsAccepted);
+    console.log("🔵 [LOGIN] Remember me:", rememberMe);
+
+    // Client-side validation
+    const emailErr = validateEmail(sanitizedEmail);
+    const passwordErr = validatePassword(sanitizedPassword);
+
+    if (emailErr) {
+      setEmailError(emailErr);
+      emitNotice({ message: `⚠️ ${emailErr}`, attempts: loginAttempts, category: "VALIDATION", origin: "CLIENT" });
       return;
     }
 
-    if (trimmedPassword.length < 8) {
-      emitNotice({
-        message: "⚠️ Senha deve ter pelo menos 8 caracteres.",
-        attempts: loginAttempts,
-        category: "VALIDATION",
-        origin: "CLIENT",
-      });
+    if (passwordErr) {
+      setPasswordError(passwordErr);
+      emitNotice({ message: `⚠️ ${passwordErr}`, attempts: loginAttempts, category: "VALIDATION", origin: "CLIENT" });
       return;
     }
 
     if (!termsAccepted) {
+      console.log("🔴 [LOGIN] Validation failed: terms not accepted");
       emitNotice({
         message: "Protocolo de segurança: Aceite os termos.",
         attempts: loginAttempts,
@@ -82,12 +146,34 @@ export function LoginForm({
       return;
     }
 
+    if (!csrfToken) {
+      emitNotice({
+        message: "🔒 Token de segurança não carregado. Recarregue a página.",
+        attempts: loginAttempts,
+        category: "SECURITY",
+        origin: "CLIENT",
+      });
+      return;
+    }
+
+    console.log("✅ [LOGIN] All validations passed, calling API...");
     setIsLoading(true);
 
     try {
-      const response = await authApi.login({ email: trimmedEmail, password: trimmedPassword });
+      console.log("🔵 [LOGIN] Calling authApi.login...");
+      const response = await authApi.login({
+        email: sanitizedEmail,
+        password: sanitizedPassword,
+        remember: rememberMe,
+      }, {
+        headers: {
+          "X-CSRF-Token": csrfToken,
+        },
+      });
+      console.log("✅ [LOGIN] API response:", response);
 
       if (response.requiresTwoFactor) {
+        console.log("🔵 [LOGIN] 2FA required");
         setMfaRequired(true);
         setIsLoading(false);
         return;
@@ -96,19 +182,28 @@ export function LoginForm({
       // Pequeno delay para garantir que o cookie seja salvo
       await new Promise((resolve) => setTimeout(resolve, 100));
 
+      console.log("🔵 [LOGIN] Redirecting...");
       // Usar window.location.href para garantir redirecionamento completo
       if (response.user.mustChangePassword) {
         window.location.href = "/auth/force-change";
-      } else if (response.organizations && response.organizations.length > 1) { // Check existence before length
+      } else if (response.organizations && response.organizations.length > 1) {
         window.location.href = "/select-organization";
       } else {
         window.location.href = "/dashboard";
       }
     } catch (err: unknown) {
+      console.error("🔴 [LOGIN] Error caught:", err);
+      console.error("🔴 [LOGIN] Error details:", {
+        message: (err as any).message,
+        statusCode: (err as any).statusCode,
+        response: (err as any).response,
+        code: (err as any).code,
+      });
       const error = err as {
         code?: string;
         message?: string;
-        response?: { status?: number; data?: { error?: string; message?: string; code?: string } };
+        statusCode?: number;
+        response?: { status?: number; data?: { error?: string; message?: string; code?: string; retryAfter?: number } };
       };
       setLoginAttempts((prev) => prev + 1);
       const nextAttempts = loginAttempts + 1;
@@ -117,10 +212,10 @@ export function LoginForm({
       if (typeof window !== "undefined") {
         import("@/lib/errors/error-tracking").then(({ errorTracking }) => {
           import("@/lib/errors").then(({ parseError }) => {
-            const appError = parseError(err, false); // Não auto-track pois vamos fazer manualmente
+            const appError = parseError(err, false);
             errorTracking.trackError(appError, {
               component: "LoginForm",
-              email: trimmedEmail,
+              email: sanitizedEmail,
               attempts: nextAttempts,
               errorCode: error.response?.data?.code || error.code,
             }).catch(console.error);
@@ -134,7 +229,7 @@ export function LoginForm({
       const errorMessage = errorData?.error || errorData?.message;
       const errorCode = errorData?.code;
 
-      // Erro de rede/conexão
+      // Erro de rede/conexão - com retry automático
       if (
         error.code === "ERR_NETWORK" ||
         error.message === "Network Error" ||
@@ -143,25 +238,27 @@ export function LoginForm({
         error.message?.includes("Connection refused")
       ) {
         emitNotice({
-          message: "🔌 Falha de Conexão: Não foi possível contatar o servidor. Verifique se a API está rodando.",
+          message: "🔌 Falha de Conexão: Não foi possível contatar o servidor.",
           attempts: nextAttempts,
           status: 0,
           category: "NETWORK",
           origin: "NETWORK",
           code: error.code ?? "ERR_NETWORK",
+          retryAction: () => handleSubmit(e),
         });
         return;
       }
 
-      // Timeout
+      // Timeout - com retry automático
       if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
         emitNotice({
-          message: "⏱️ Tempo Esgotado: Servidor demorou para responder. Tente novamente.",
+          message: "⏱️ Tempo Esgotado: Servidor demorou para responder.",
           attempts: nextAttempts,
           status: 0,
           category: "TIMEOUT",
           origin: "NETWORK",
           code: error.code ?? "TIMEOUT",
+          retryAction: () => handleSubmit(e),
         });
         return;
       }
@@ -180,7 +277,6 @@ export function LoginForm({
           break;
 
         case 401:
-          // Mensagens específicas baseadas no erro retornado
           if (errorMessage === "invalid_credentials" || errorCode === "INVALID_CREDENTIALS") {
             emitNotice({
               message: "🔐 Acesso Negado: Email ou senha incorretos.",
@@ -221,7 +317,25 @@ export function LoginForm({
           break;
 
         case 403:
-          if (errorMessage === "account_locked" || errorCode === "ACCOUNT_LOCKED") {
+          if (errorCode === "CSRF_TOKEN_MISSING" || errorCode === "CSRF_MISSING") {
+            emitNotice({
+              message: "🔒 Token de Segurança Ausente: Recarregue a página.",
+              attempts: nextAttempts,
+              status,
+              category: "SECURITY",
+              origin: "API",
+              code: errorCode,
+            });
+          } else if (errorCode === "CSRF_TOKEN_INVALID" || errorCode === "CSRF_INVALID") {
+            emitNotice({
+              message: "🔒 Token de Segurança Expirado: Recarregue a página.",
+              attempts: nextAttempts,
+              status,
+              category: "SECURITY",
+              origin: "API",
+              code: errorCode,
+            });
+          } else if (errorMessage === "account_locked" || errorCode === "ACCOUNT_LOCKED") {
             emitNotice({
               message: "🔒 Conta Bloqueada: Contate o administrador do sistema.",
               attempts: nextAttempts,
@@ -251,9 +365,10 @@ export function LoginForm({
           }
           break;
 
-        case 429:
+        case 429: {
+          const retryAfter = errorData?.retryAfter || 300;
           emitNotice({
-            message: "⏸️ Muitas Tentativas: Aguarde 5 minutos antes de tentar novamente.",
+            message: `⏸️ Muitas Tentativas: Aguarde ${Math.ceil(retryAfter / 60)} minutos antes de tentar novamente.`,
             attempts: nextAttempts,
             status,
             category: "RATE_LIMIT",
@@ -261,6 +376,7 @@ export function LoginForm({
             code: errorCode ?? "RATE_LIMIT",
           });
           break;
+        }
 
         case 500:
           emitNotice({
@@ -275,7 +391,6 @@ export function LoginForm({
 
         case 502:
         case 503: {
-          // Verificar se há mensagem mais específica do backend
           const isApiUnavailable =
             errorCode === "API_UNAVAILABLE" ||
             errorCode === "API_CONNECTION_ERROR" ||
@@ -285,7 +400,7 @@ export function LoginForm({
                 errorMessage.includes("ECONNREFUSED")));
           emitNotice({
             message: isApiUnavailable
-              ? "🔌 API não está rodando. Execute: pnpm turbo dev (ou ./start-database.sh se necessário)"
+              ? "🔌 API não está rodando. Execute: pnpm turbo dev"
               : "🔧 Servidor Indisponível: Sistema em manutenção. Tente mais tarde.",
             attempts: nextAttempts,
             status,
@@ -308,7 +423,6 @@ export function LoginForm({
           break;
 
         default:
-          // Mensagem genérica mais informativa
           if (status) {
             const msg = `❌ Erro ${status}: ${errorMessage || "Falha ao processar login. Tente novamente."}`;
             emitNotice({
@@ -354,7 +468,6 @@ export function LoginForm({
       <MFALogin
         email={email}
         onCancel={() => setMfaRequired(false)}
-      // O próprio MFALogin lida com o redirecionamento ou podemos passar um callback customizado
       />
     );
   }
@@ -371,8 +484,20 @@ export function LoginForm({
           <div className="absolute left-0 right-0 top-0 h-0.5 bg-linear-to-r from-transparent via-[hsl(var(--primary)/0.55)] to-transparent animate-auth-scanline" />
         </div>
 
+        {/* Honeypot field (hidden from users, visible to bots) */}
+        <input
+          type="text"
+          name="website"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px" }}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+        />
+
         <div className="space-y-6">
-          {/* Email Input - Squared & Technical */}
+          {/* Email Input with Tooltip */}
           <div className="group space-y-1.5">
             <Label
               htmlFor="email"
@@ -381,34 +506,44 @@ export function LoginForm({
               <Terminal className="h-3 w-3" />
               Identificador Corporativo
             </Label>
-            <div className="relative">
-              <div className="absolute inset-0 bg-[hsl(var(--primary)/0.1)] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              <div className="relative bg-black/40 border border-white/10 flex items-center px-0 h-12 focus-within:border-[hsl(var(--primary))] transition-all duration-300 group-hover:border-white/20">
-                <div className="h-full w-12 flex items-center justify-center border-r border-white/10 bg-white/5">
-                  <Mail className="h-5 w-5 text-white/40 group-focus-within:text-[hsl(var(--primary))] transition-colors" />
+            <Tooltip open={!!emailError && email.length > 0}>
+              <TooltipTrigger asChild>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[hsl(var(--primary)/0.1)] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className={cn(
+                    "relative bg-black/40 border flex items-center px-0 h-12 transition-all duration-300 group-hover:border-white/20",
+                    emailError && email.length > 0 ? "border-red-500/40" : "border-white/10 focus-within:border-[hsl(var(--primary))]"
+                  )}>
+                    <div className="h-full w-12 flex items-center justify-center border-r border-white/10 bg-white/5">
+                      <Mail className="h-5 w-5 text-white/40 group-focus-within:text-[hsl(var(--primary))] transition-colors" />
+                    </div>
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        onDismissNotice?.();
+                        setEmail(e.target.value);
+                        setEmailError(validateEmail(e.target.value));
+                      }}
+                      placeholder="USUARIO@MORINA.COM"
+                      className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/20 px-4 h-full font-mono tracking-wide"
+                      required
+                      autoComplete="username"
+                      disabled={isLoading}
+                    />
+                    <div className="absolute top-0 right-0 h-2 w-2 border-t border-r border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
+                    <div className="absolute bottom-0 left-0 h-2 w-2 border-b border-l border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
+                  </div>
                 </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    onDismissNotice?.();
-                    setEmail(e.target.value);
-                  }}
-                  placeholder="USUARIO@MORINA.COM"
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/20 px-4 h-full font-mono tracking-wide"
-                  required
-                  autoComplete="username"
-                  disabled={isLoading}
-                />
-                {/* Corner Accents */}
-                <div className="absolute top-0 right-0 h-2 w-2 border-t border-r border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
-                <div className="absolute bottom-0 left-0 h-2 w-2 border-b border-l border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
-              </div>
-            </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="bg-red-500/90 text-white border-red-600">
+                <p className="text-xs font-mono">{emailError}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
 
-          {/* Password Input - Squared & Technical */}
+          {/* Password Input with Tooltip */}
           <div className="group space-y-1.5">
             <div className="flex justify-between items-center pl-1">
               <Label
@@ -425,40 +560,50 @@ export function LoginForm({
                 [ Recuperar Acesso ]
               </Link>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-[hsl(var(--primary)/0.1)] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
-              <div className="relative bg-black/40 border border-white/10 flex items-center px-0 h-12 focus-within:border-[hsl(var(--primary))] transition-all duration-300 group-hover:border-white/20">
-                <div className="h-full w-12 flex items-center justify-center border-r border-white/10 bg-white/5">
-                  <Lock className="h-5 w-5 text-white/40 group-focus-within:text-[hsl(var(--primary))] transition-colors" />
+            <Tooltip open={!!passwordError && password.length > 0}>
+              <TooltipTrigger asChild>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-[hsl(var(--primary)/0.1)] opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className={cn(
+                    "relative bg-black/40 border flex items-center px-0 h-12 transition-all duration-300 group-hover:border-white/20",
+                    passwordError && password.length > 0 ? "border-red-500/40" : "border-white/10 focus-within:border-[hsl(var(--primary))]"
+                  )}>
+                    <div className="h-full w-12 flex items-center justify-center border-r border-white/10 bg-white/5">
+                      <Lock className="h-5 w-5 text-white/40 group-focus-within:text-[hsl(var(--primary))] transition-colors" />
+                    </div>
+                    <input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => {
+                        onDismissNotice?.();
+                        setPassword(e.target.value);
+                        setPasswordError(validatePassword(e.target.value));
+                      }}
+                      placeholder="••••••••"
+                      className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/20 px-4 h-full font-mono tracking-wide"
+                      required
+                      autoComplete="current-password"
+                      disabled={isLoading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="h-full w-12 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all border-l border-white/10"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    <div className="absolute top-0 right-0 h-2 w-2 border-t border-r border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
+                    <div className="absolute bottom-0 left-0 h-2 w-2 border-b border-l border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
+                  </div>
                 </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => {
-                    onDismissNotice?.();
-                    setPassword(e.target.value);
-                  }}
-                  placeholder="••••••••"
-                  className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder:text-white/20 px-4 h-full font-mono tracking-wide"
-                  required
-                  autoComplete="current-password"
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="h-full w-12 flex items-center justify-center text-white/30 hover:text-white hover:bg-white/5 transition-all border-l border-white/10"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-                {/* Corner Accents */}
-                <div className="absolute top-0 right-0 h-2 w-2 border-t border-r border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
-                <div className="absolute bottom-0 left-0 h-2 w-2 border-b border-l border-white/30 group-focus-within:border-[hsl(var(--primary))] transition-colors" />
-              </div>
-            </div>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="bg-red-500/90 text-white border-red-600">
+                <p className="text-xs font-mono">{passwordError}</p>
+              </TooltipContent>
+            </Tooltip>
 
-            {/* Password strength (abaixo do input) — espaço reservado, não empurra layout */}
+            {/* Password strength */}
             <div
               className={cn(
                 "mt-2 h-3",
@@ -492,7 +637,7 @@ export function LoginForm({
           </div>
         </div>
 
-        {/* Terms & Remember - Squared Checkboxes */}
+        {/* Terms & Remember */}
         <div className="space-y-3">
           <label className="flex items-start gap-3 cursor-pointer group select-none">
             <div className="relative mt-0.5">
@@ -536,7 +681,7 @@ export function LoginForm({
           </label>
         </div>
 
-        {/* Action Button - Squared Tech */}
+        {/* Action Button */}
         <Button
           type="submit"
           className={cn(
@@ -547,7 +692,6 @@ export function LoginForm({
           )}
           disabled={isLoading || !termsAccepted || loginAttempts >= 5}
         >
-          {/* Scanline Effect */}
           <div className="absolute inset-0 bg-linear-to-b from-transparent via-white/10 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-700" />
 
           <span className="relative flex items-center justify-center gap-3">

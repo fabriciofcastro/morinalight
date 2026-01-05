@@ -4,35 +4,31 @@
  * Encapsula a lógica de verificação de permissões para reutilização em componentes.
  */
 
-import { useSession } from "next-auth/react"; // Assumindo next-auth ou similar
+import { useAbility } from "@/lib/auth/CaslContext";
+import { getAuthUser } from "@/lib/auth-client";
 import { useCallback } from "react";
-// Em um app real, importaria a lógica CASL/RBAC centralizada
-// import { ability } from "@/lib/auth/ability"; 
 
+/**
+ * @deprecated Use `useAbility()` from `@/lib/auth/CaslContext` instead.
+ * This hook is maintained for backward compatibility.
+ */
 export function usePermission() {
-    const { data: session } = useSession();
+    const ability = useAbility();
+    const user = getAuthUser();
 
-    // Simulação de hook de permissionamento
+    // Adapter for legacy 'can' function
     const can = useCallback((action: string, subject: string) => {
-        if (!session?.user) return false;
+        // Map legacy string subjects if needed, but ability.can handles strings fine
+        // Casl uses 'manage', 'all' for super admin which is covered by ability logic
+        return ability.can(action as any, subject as any);
+    }, [ability]);
 
-        // Admin Master tem acesso a tudo
-        // @ts-ignore
-        if (session.user.role === "ADMIN_MASTER") return true;
-
-        // Lógica real viria aqui (CASL ability check)
-        // return ability.can(action, subject);
-
-        // Fallback simples para exemplo
-        return true;
-    }, [session]);
-
-    const isManager = session?.user && (session.user as any).role === 'MANAGER';
+    const isManager = ability.can('manage', 'all');
 
     return {
         can,
         isManager,
-        user: session?.user,
-        isAuthenticated: !!session?.user
+        user,
+        isAuthenticated: !!user
     };
 }

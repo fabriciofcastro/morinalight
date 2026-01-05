@@ -16,7 +16,7 @@ import { CaslProvider } from "@/components/permissions/casl-provider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isFullWidth = pathname?.startsWith("/admin/company/edit") || pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/invoices");
+  const isFullWidth = pathname === "/" || pathname?.startsWith("/admin/company/edit") || pathname?.startsWith("/dashboard") || pathname?.startsWith("/admin/users") || pathname?.startsWith("/admin/invoices") || pathname?.startsWith("/analytics");
   const showJarvisHud = pathname?.startsWith("/dashboard");
 
   // Guarda a última rota “válida” (para 404 contextual sugerir retorno)

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/api/base";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { PageHeader } from "@/components/ui/page-header";
 
 export function UsersExportClient() {
   const router = useRouter();
@@ -57,47 +58,21 @@ export function UsersExportClient() {
   return (
     <AllowedGuard I="read" a="User" redirectTo="/admin/users">
       <div className="relative min-h-screen p-6 space-y-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-
-          <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-
-            <div className="relative z-10 flex-1">
-              <div className="flex items-center gap-4 mb-3">
-                <Download className="h-8 w-8 text-[hsl(var(--primary))]" />
-                <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                    Exportar Usuários
-                  </h1>
-                  <p className="text-sm text-white/60 font-medium mt-1">
-                    Exporte a lista de usuários em diferentes formatos
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 mt-4">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[40px] px-4"
-                    onClick={() => router.push("/admin/users")}
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Voltar
-                  </Button>
-                </motion.div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        {/* Modern Header */}
+        <PageHeader
+          title="Exportar Usuários"
+          subtitle="Exporte a lista de usuários em diferentes formatos"
+          actions={
+            <Button
+              variant="outline"
+              onClick={() => router.push("/admin/users")}
+              className="border-white/10 hover:bg-white/5 text-white gap-2 cursor-pointer h-[40px]"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Voltar para Lista</span>
+            </Button>
+          }
+        />
 
         {/* Export Options */}
         <motion.div
@@ -118,8 +93,8 @@ export function UsersExportClient() {
                   type="button"
                   onClick={() => setFormat("csv")}
                   className={`p-4 rounded-lg border transition-all ${format === "csv"
-                      ? "border-blue-500/50 bg-blue-500/20"
-                      : "border-white/20 bg-white/[0.03] hover:border-white/30"
+                    ? "border-blue-500/50 bg-blue-500/20"
+                    : "border-white/20 bg-white/[0.03] hover:border-white/30"
                     }`}
                 >
                   <FileText className="h-8 w-8 mx-auto mb-2 text-white/60" />
@@ -130,8 +105,8 @@ export function UsersExportClient() {
                   type="button"
                   onClick={() => setFormat("excel")}
                   className={`p-4 rounded-lg border transition-all ${format === "excel"
-                      ? "border-blue-500/50 bg-blue-500/20"
-                      : "border-white/20 bg-white/[0.03] hover:border-white/30"
+                    ? "border-blue-500/50 bg-blue-500/20"
+                    : "border-white/20 bg-white/[0.03] hover:border-white/30"
                     }`}
                 >
                   <FileSpreadsheet className="h-8 w-8 mx-auto mb-2 text-white/60" />
@@ -142,8 +117,8 @@ export function UsersExportClient() {
                   type="button"
                   onClick={() => setFormat("json")}
                   className={`p-4 rounded-lg border transition-all ${format === "json"
-                      ? "border-blue-500/50 bg-blue-500/20"
-                      : "border-white/20 bg-white/[0.03] hover:border-white/30"
+                    ? "border-blue-500/50 bg-blue-500/20"
+                    : "border-white/20 bg-white/[0.03] hover:border-white/30"
                     }`}
                 >
                   <FileDown className="h-8 w-8 mx-auto mb-2 text-white/60" />
@@ -154,7 +129,7 @@ export function UsersExportClient() {
             </div>
             <div className="pt-4 border-t border-white/10">
               <Button
-                className="w-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] cursor-pointer h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleExport}
                 disabled={loading}
               >

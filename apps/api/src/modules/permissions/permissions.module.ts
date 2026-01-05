@@ -49,6 +49,7 @@ import { PrismaRoleRepository } from "./infra/prisma/prisma-role.repository";
 import { PrismaSectorPermissionRepository } from "./infra/prisma/prisma-sector-permission.repository";
 import { PrismaUserPermissionRepository } from "./infra/prisma/prisma-user-permission.repository";
 import { InMemoryPermissionCacheService } from "./infra/cache/in-memory-permission-cache.service";
+import { RedisPermissionCacheService } from "./infra/cache/redis-permission-cache.service";
 import { PermissionInheritanceServiceImpl } from "./infra/services/permission-inheritance.service";
 import type { PermissionCacheService } from "./domain/services/permission-cache.service";
 import type { PermissionInheritanceService } from "./domain/services/permission-inheritance.service";
@@ -126,7 +127,7 @@ export async function registerPermissionsModule(
     (process.env.DATABASE_URL ? new PrismaDepartmentMembershipRepository() : undefined);
 
   const permissionCacheService =
-    options.permissionCacheService ?? new InMemoryPermissionCacheService();
+    options.permissionCacheService ?? (env.REDIS_URL ? new RedisPermissionCacheService() : new InMemoryPermissionCacheService());
 
   const permissionInheritanceService =
     options.permissionInheritanceService ??
@@ -175,6 +176,7 @@ export async function registerPermissionsModule(
         "/sectors/:sectorId/permissions",
         "/departments/:departmentId/permissions",
         "/permissions/audit-log",
+        "/permissions/matrix",
         "/permissions/change-requests",
         "/permissions/change-requests/sweep-sla",
         "/permissions/change-requests/:id/approve",
@@ -206,7 +208,10 @@ export async function registerPermissionsModule(
       userRepository,
       auditLogRepository,
       templateRepository,
+      templateRepository,
       eventBus,
+      permissionCacheService,
+      permissionInheritanceService,
     });
   }
 

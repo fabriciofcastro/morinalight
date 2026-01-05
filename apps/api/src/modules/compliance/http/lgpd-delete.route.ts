@@ -5,7 +5,7 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { deleteUserData } from "../../../core/compliance/lgpd.service";
+import { lgpdDeletionService } from "../application/services/lgpd-deletion.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 
 const paramsSchema = z.object({
@@ -59,11 +59,11 @@ export async function registerLgpdDeleteRoute(app: FastifyInstance) {
     }
 
     try {
-      await deleteUserData(userId, orgId);
+      await lgpdDeletionService.anonymityUser(userId, orgId);
 
-      return reply.status(200).send({
+      return reply.send({
+        success: true,
         message: "Dados anonimizados com sucesso",
-        code: "DATA_DELETED",
       });
     } catch (error) {
       console.error("Erro ao deletar dados LGPD:", error);

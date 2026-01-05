@@ -110,7 +110,7 @@ describe("Caching Decorator", () => {
     class TestService {
         callCount = 0;
 
-        @Cached({ ttlSeconds: 1 })
+        @Cached({ ttl: 1 })
         async getData(id: string) {
             this.callCount++;
             return { id, value: Math.random() };

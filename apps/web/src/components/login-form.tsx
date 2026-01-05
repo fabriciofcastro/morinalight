@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, cn, Input, Label } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Loader2, ShieldCheck, ShieldX } from "lucide-react";
+import { startAuthentication } from "@simplewebauthn/browser";
+import { ArrowRight, CheckCircle2, Fingerprint, Loader2, ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -155,6 +156,57 @@ export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFo
         setMessage(errorMessage);
       }
     });
+    const handlePasskeyLogin = async () => {
+      setStatus("idle");
+      setMessage(null);
+      startTransition(async () => {
+        try {
+          // 1. Get options
+          const emailValue = watch("email");
+          const resp = await fetch("/api/auth/webauthn/login/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: emailValue }),
+          });
+          const options = await resp.json();
+          if (options.error) throw new Error(options.error);
+
+          // 2. Browser Prompt
+          const authResp = await startAuthentication(options);
+
+          // 3. Verify
+          const verifyResp = await fetch("/api/auth/webauthn/login/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ response: authResp }),
+          });
+
+          const verifyJson = await verifyResp.json();
+          console.log("Verify Answer", verifyJson)
+          if (!verifyJson.verified) throw new Error("Falha na autenticação via Passkey.");
+
+
+          // 4. Success -> Redirect
+          setStatus("success");
+          setMessage("Autenticado via Passkey! Redirecionando...");
+
+          // Definir sessão no cliente também se necessário (embora cookie httpOnly já resolva)
+          // setAuthSession({ token: "cookie-handled", user: {}, organizations: [] }); 
+
+          if (verifyJson.redirect) {
+            window.location.href = verifyJson.redirect;
+          } else {
+            router.push("/dashboard");
+          }
+
+        } catch (err: any) {
+          console.error(err);
+          setStatus("error");
+          setMessage("Erro ao entrar com Passkey. Tente usar senha ou verifique o dispositivo.");
+        }
+      });
+    };
+
   }
 
   return (
@@ -481,6 +533,24 @@ export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFo
               </>
             )}
           </span>
+        </Button>
+      </motion.div>
+
+      {/* Passkey Button */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.5 }}
+      >
+        <Button
+          type="button"
+          onClick={handlePasskeyLogin}
+          disabled={isBusy}
+          variant="outline" // Use outline variant for secondary action
+          className="h-12 w-full border border-[hsl(var(--primary)_/_0.3)] bg-[hsl(var(--surface)_/_0.5)] text-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)_/_0.1)] hover:border-[hsl(var(--primary))]"
+        >
+          <Fingerprint className="mr-2 h-5 w-5" />
+          Entrar com Passkey / Biometria
         </Button>
       </motion.div>
     </form>

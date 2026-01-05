@@ -14,7 +14,10 @@ export interface MockPermissionOptions {
         sectorId?: string;
         positionId?: string;
         attributes?: Record<string, any>;
+        mfaVerified?: boolean;
     };
+    policies?: any[];
+    aclEntries?: any[];
 }
 
 /**
@@ -25,7 +28,9 @@ export async function mockAuth(page: Page, options: MockPermissionOptions = {}) 
         role = "member",
         effective = [],
         denied = [],
-        context = {}
+        context = {},
+        policies = [],
+        aclEntries = []
     } = options;
 
     const userId = "test-user-id";
@@ -53,7 +58,9 @@ export async function mockAuth(page: Page, options: MockPermissionOptions = {}) 
                 effective,
                 denied,
                 role,
-                context
+                context,
+                policies,
+                aclEntries
             }
         });
     });

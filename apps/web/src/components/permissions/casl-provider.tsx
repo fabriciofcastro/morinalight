@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { AbilityProvider } from '@/lib/auth/CaslContext';
-import { buildAbilityForUserWithConditions, type UserEffectivePermissions, ClientAppAbility } from '@/lib/auth/ability';
-import { fetchUserPermissions } from '@/hooks/use-permissions';
-import { getAuthUser } from '@/lib/auth-client';
+import { AbilityProvider } from '../../lib/auth/CaslContext';
+import { buildAbilityForUserWithConditions, type UserEffectivePermissions, ClientAppAbility } from '../../lib/auth/ability';
+import { fetchUserPermissions } from '../../hooks/use-permissions';
+import { getAuthUser } from '../../lib/auth-client';
 import { AppAbility } from '@morina/shared-kernel';
 import * as Sentry from '@sentry/nextjs';
 
@@ -21,7 +21,7 @@ export function CaslProvider({ children }: { children: React.ReactNode }) {
             }
 
             try {
-                const { effective, denied, role, context } = await fetchUserPermissions(user.userId);
+                const { effective, denied, role, context, policies, aclEntries } = await fetchUserPermissions(user.userId);
 
                 // Construir UserContext para ABAC
                 const userContext = {
@@ -31,11 +31,11 @@ export function CaslProvider({ children }: { children: React.ReactNode }) {
                     sectorId: context?.sectorId,
                     positionId: context?.positionId,
                     attributes: context?.attributes || {},
-                    mfaVerified: false // TODO: Obter do estado de mfa
+                    mfaVerified: context?.mfaVerified || false
                 };
 
                 const newAbility = buildAbilityForUserWithConditions(
-                    { effective, denied, role } as UserEffectivePermissions,
+                    { effective, denied, role, policies, aclEntries } as UserEffectivePermissions,
                     userContext
                 );
 

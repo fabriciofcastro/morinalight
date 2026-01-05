@@ -18,10 +18,10 @@ describe("Clientes HTTP Routes", () => {
     const comissaoRepository = new InMemoryComissaoRepository();
 
     // Criar organização de teste
-    const org = await organizationRepository.create({
+    const org = await organizationRepository.criar({
+      organizationId: "test-org-id",
       name: "Test Org",
       slug: "test-org",
-      createdBy: "user-123",
     });
     orgId = org.organizationId;
 

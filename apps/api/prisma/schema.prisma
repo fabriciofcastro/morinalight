@@ -227,27 +227,36 @@ model Organization {
   companySettingsAuditLogs CompanySettingsAuditLog[] @relation("CompanySettingsAuditLog")
 
   // Governance
-  approvalWorkflows ApprovalWorkflow[]
-  approvalRequests  ApprovalRequest[]
+  approvalWorkflows       ApprovalWorkflow[]
+  approvalRequests        ApprovalRequest[]
   companySettingsVersions CompanySettingsVersion[]
 
   // Integrations
-  apiKeys           ApiKey[]
-  webhookEndpoints  WebhookEndpoint[]
+  apiKeys                ApiKey[]
+  webhookEndpoints       WebhookEndpoint[]
   integrationConnections IntegrationConnection[]
-  
+
   // Analytics
-  systemMetrics     SystemMetric[]
-  usageLogs         UsageLog[]
+  systemMetrics SystemMetric[]
+  usageLogs     UsageLog[]
+
+  // Business Analytics
+  salesMetrics     SalesMetric[]
+  inventoryMetrics InventoryMetric[]
+  customerMetrics  CustomerMetric[]
+  supplierMetrics  SupplierMetric[]
+  productMetrics   ProductMetric[]
+  activityLogs     ActivityLog[]
 
   // Advanced Security
-  securityPolicies  SecurityPolicy[]
-  timeWindows       TimeWindow[]
-  acls              AccessControlList[]
+  securityPolicies   SecurityPolicy[]
+  timeWindows        TimeWindow[]
+  acls               AccessControlList[]
   accessDecisionLogs AccessDecisionLog[]
 
   // Certificações
-  certifications       OrganizationCertification[] @relation("OrganizationCertifications")
+  certifications OrganizationCertification[] @relation("OrganizationCertifications")
+  GeoRestriction GeoRestriction[]
 }
 
 model User {
@@ -261,8 +270,8 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  aiUsageLogs  AiUsageLog[]
-  usageLogs    UsageLog[]
+  aiUsageLogs AiUsageLog[]
+  usageLogs   UsageLog[]
 
   // Personal Information Fields
   cpf           String?   @db.Text // CPF formatado (000.000.000-00)
@@ -312,22 +321,42 @@ model User {
   refreshTokens RefreshToken[] @relation("UserRefreshTokens")
 
   // Governance
-  approvalRequests ApprovalRequest[]
+  approvalRequests        ApprovalRequest[]
   approvalRequestComments ApprovalRequestComment[]
-  createdCompanyVersions CompanySettingsVersion[]
-  
+  createdCompanyVersions  CompanySettingsVersion[]
+
   // Security
-  mustChangePassword Boolean @default(false)
-  tokenVersion       Int     @default(1) // Para revogação de sessões (Kill Switch)
+  mustChangePassword  Boolean              @default(false)
+  tokenVersion        Int                  @default(1) // Para revogação de sessões (Kill Switch)
   passwordResetTokens PasswordResetToken[]
-  securityAlerts     SecurityAlert[] @relation("UserSecurityAlerts")
+  securityAlerts      SecurityAlert[]      @relation("UserSecurityAlerts")
+  authenticators      Authenticator[] // WebAuthn/Passkeys
 
   // Advanced Security
-  acls               AccessControlList[]
+  acls              AccessControlList[]
+  geoRestrictions   UserGeoRestriction[]
+  behavioralProfile UserBehavioralProfile?
+  sessions          UserSession[]
 
   @@index([branchId])
   @@index([positionId])
   @@index([cpf])
+}
+
+model Authenticator {
+  id                   String   @id @default(uuid())
+  credentialID         String   @unique
+  userId               String
+  credentialPublicKey  String   @db.Text
+  counter              BigInt
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  createdAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model PasswordResetToken {
@@ -337,8 +366,8 @@ model PasswordResetToken {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -489,20 +518,20 @@ model CompanySettingsAuditLog {
 }
 
 model CompanySettingsVersion {
-  id        String   @id @default(uuid())
-  orgId     String
-  version   Int
-  
+  id      String @id @default(uuid())
+  orgId   String
+  version Int
+
   // Snapshot data
-  snapshot  Json     // Full copy of settings
-  name      String?  @db.VarChar(255) // Optional name (e.g. "Backup Pre-Audit")
-  
+  snapshot Json // Full copy of settings
+  name     String? @db.VarChar(255) // Optional name (e.g. "Backup Pre-Audit")
+
   // Metadata
   createdBy String
   createdAt DateTime @default(now())
-  
+
   restoredAt DateTime? // If this version was restored later
-  
+
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   creator      User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
@@ -1591,9 +1620,10 @@ model Role {
   organization Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
   permissions  RolePermission[]
   users        UserRole[]
-  
+
   // Advanced Security
-  acls         AccessControlList[]
+  acls            AccessControlList[]
+  geoRestrictions RoleGeoRestriction[]
 
   @@unique([orgId, code])
   @@index([orgId, active])
@@ -2386,27 +2416,27 @@ model NotificationInteraction {
 // --- ACCESS GOVERNANCE ---
 
 model AuditEvent {
-  id             String   @id @default(uuid())
-  orgId          String?
-  userId         String?
-  timestamp      DateTime @default(now())
+  id        String   @id @default(uuid())
+  orgId     String?
+  userId    String?
+  timestamp DateTime @default(now())
 
   // Context
-  ip             String
-  location       String?
-  userAgent      String?
-  resource       String   // Screen/Action
-  action         String   // VIEW/EDIT
+  ip        String
+  location  String?
+  userAgent String?
+  resource  String // Screen/Action
+  action    String // VIEW/EDIT
 
   // Verdict
-  decision       String   // ALLOW, DENY, etc.
+  decision String // ALLOW, DENY, etc.
 
   // Integrity
-  previousHash   String?
-  currentHash    String   @unique
-  signature      String?  // RSA Signature
+  previousHash String?
+  currentHash  String  @unique
+  signature    String? // RSA Signature
 
-  trace          DecisionTrace?
+  trace DecisionTrace?
 
   @@index([timestamp])
   @@index([userId])
@@ -2420,10 +2450,10 @@ model DecisionTrace {
   // JSONB with full trace
   inputContext  Json
   policyVersion String
-  scores        Json   // { "aubac": 15, "history": ... }
-  reasons       Json   // ["OUTSIDE_HOURS", "FOREIGN_IP"]
+  scores        Json // { "aubac": 15, "history": ... }
+  reasons       Json // ["OUTSIDE_HOURS", "FOREIGN_IP"]
 
-  event        AuditEvent @relation(fields: [auditEventId], references: [id])
+  event AuditEvent @relation(fields: [auditEventId], references: [id])
 }
 
 // --- Governance System ---
@@ -2432,13 +2462,13 @@ model ApprovalWorkflow {
   id           String   @id @default(uuid())
   orgId        String
   module       String   @db.VarChar(50) // ex: "COMPANY_SETTINGS"
-  fields       Json     // Array of strings: ["cnpj", "legalName"]
+  fields       Json // Array of strings: ["cnpj", "legalName"]
   approverRole String   @db.VarChar(50) // ex: "ADMIN", "MANAGER"
   minApprovals Int      @default(1)
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  
+
   organization Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
   requests     ApprovalRequest[]
 
@@ -2447,26 +2477,26 @@ model ApprovalWorkflow {
 }
 
 model ApprovalRequest {
-  id          String   @id @default(uuid())
-  orgId       String
-  workflowId  String
-  status      String   @default("PENDING") // PENDING, APPROVED, REJECTED, DRAFT
-  
-  data        Json     // O payload da alteração proposta
+  id         String @id @default(uuid())
+  orgId      String
+  workflowId String
+  status     String @default("PENDING") // PENDING, APPROVED, REJECTED, DRAFT
+
+  data        Json // O payload da alteração proposta
   requesterId String
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   workflow     ApprovalWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   organization Organization     @relation(fields: [orgId], references: [id], onDelete: Cascade)
   requester    User             @relation(fields: [requesterId], references: [id], onDelete: Cascade)
 
+  comments ApprovalRequestComment[]
+
   @@index([orgId, status])
   @@index([workflowId])
   @@index([requesterId])
-
-  comments ApprovalRequestComment[]
 }
 
 model ApprovalRequestComment {
@@ -2476,8 +2506,8 @@ model ApprovalRequestComment {
   content   String   @db.Text
   createdAt DateTime @default(now())
 
-  request   ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  author    User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  request ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  author  User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([requestId])
   @@index([authorId])
@@ -2488,32 +2518,32 @@ model ApprovalRequestComment {
 // ============================================================================
 
 model AiProvider {
-  id          String   @id @default(uuid())
-  name        String   // "Google Gemini", "OpenAI"
-  providerKey String   @unique // "gemini", "openai"
-  apiKey      String   // Encriptado (na prática deveria ser, mas aqui para simplificar vai plain ou env ref)
-  isActive    Boolean  @default(true)
-  config      Json?    // Configs específicas (base URL, organization ID)
-  
-  agents      AiAgent[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String  @id @default(uuid())
+  name        String // "Google Gemini", "OpenAI"
+  providerKey String  @unique // "gemini", "openai"
+  apiKey      String // Encriptado (na prática deveria ser, mas aqui para simplificar vai plain ou env ref)
+  isActive    Boolean @default(true)
+  config      Json? // Configs específicas (base URL, organization ID)
+
+  agents    AiAgent[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model AiAgent {
-  id           String   @id @default(uuid())
-  name         String   // "Assistente Fiscal", "RH Helper"
-  slug         String   @unique // "fiscal_advisor", "hr_helper"
+  id           String  @id @default(uuid())
+  name         String // "Assistente Fiscal", "RH Helper"
+  slug         String  @unique // "fiscal_advisor", "hr_helper"
   description  String?
   systemPrompt String  @db.Text // Prompt base do especialista
-  model        String   // "gemini-1.5-flash", "gpt-4o"
+  model        String // "gemini-1.5-flash", "gpt-4o"
   providerId   String
-  temperature  Float    @default(0.7)
-  
-  provider     AiProvider @relation(fields: [providerId], references: [id])
-  logs         AiUsageLog[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  temperature  Float   @default(0.7)
+
+  provider  AiProvider   @relation(fields: [providerId], references: [id])
+  logs      AiUsageLog[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
   @@index([providerId])
 }
@@ -2521,17 +2551,17 @@ model AiAgent {
 model AiUsageLog {
   id               String   @id @default(uuid())
   agentId          String
-  userId           String?  // Pode ser nulo se for sistema
+  userId           String? // Pode ser nulo se for sistema
   timestamp        DateTime @default(now())
   promptTokens     Int
   completionTokens Int
   totalCost        Decimal  @db.Decimal(10, 6) // Custo calculado da chamada
-  durationMs       Int?     // Tempo de resposta
-  
-  agent            AiAgent  @relation(fields: [agentId], references: [id])
-  
+  durationMs       Int? // Tempo de resposta
+
+  agent AiAgent @relation(fields: [agentId], references: [id])
+
   // Relação opcional com User, pois o user pode ser deletado mas o log deve ficar (set null)
-  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([agentId])
   @@index([userId])
@@ -2543,16 +2573,16 @@ model AiUsageLog {
 // ============================================================================
 
 model ApiKey {
-  id          String    @id @default(uuid())
-  orgId       String
-  name        String    // ex: "Integração Zapier"
-  key         String    @unique // Hashed na verificação
-  prefix      String    // ex: "sk_live_..."
-  lastUsedAt  DateTime?
-  scopes      Json?     // Array de strings: ["read:company", "write:products"]
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  
+  id         String    @id @default(uuid())
+  orgId      String
+  name       String // ex: "Integração Zapier"
+  key        String    @unique // Hashed na verificação
+  prefix     String // ex: "sk_live_..."
+  lastUsedAt DateTime?
+  scopes     Json? // Array de strings: ["read:company", "write:products"]
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@index([orgId])
@@ -2560,33 +2590,33 @@ model ApiKey {
 }
 
 model WebhookEndpoint {
-  id          String   @id @default(uuid())
-  orgId       String
-  url         String
-  events      Json     // Array de strings: ["company.updated", "product.created"]
-  secret      String   // Para assinar o payload (HMAC)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  orgId     String
+  url       String
+  events    Json // Array de strings: ["company.updated", "product.created"]
+  secret    String // Para assinar o payload (HMAC)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
   deliveries   WebhookDelivery[]
 
   @@index([orgId])
 }
 
 model WebhookDelivery {
-  id          String   @id @default(uuid())
-  webhookId   String
-  eventId     String
-  eventType   String
-  payload     Json
-  statusCode  Int
-  success     Boolean
-  durationMs  Int
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  webhookId  String
+  eventId    String
+  eventType  String
+  payload    Json
+  statusCode Int
+  success    Boolean
+  durationMs Int
+  createdAt  DateTime @default(now())
 
-  webhook     WebhookEndpoint @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  webhook WebhookEndpoint @relation(fields: [webhookId], references: [id], onDelete: Cascade)
 
   @@index([webhookId])
 }
@@ -2598,35 +2628,35 @@ model WebhookDelivery {
 model IntegrationConnection {
   id            String    @id @default(uuid())
   orgId         String
-  connectorType String    // "mercadolivre", "shopify", "omie", "contaazul"
-  name          String    // Nome dado pelo usuário
-  credentials   Json      // Encrypted tokens/keys
-  config        Json?     // Configurações específicas do connector
+  connectorType String // "mercadolivre", "shopify", "omie", "contaazul"
+  name          String // Nome dado pelo usuário
+  credentials   Json // Encrypted tokens/keys
+  config        Json? // Configurações específicas do connector
   isActive      Boolean   @default(true)
   lastSyncAt    DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
-  organization  Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  syncLogs      IntegrationSyncLog[]
+
+  organization Organization         @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  syncLogs     IntegrationSyncLog[]
 
   @@index([orgId])
   @@index([connectorType])
 }
 
 model IntegrationSyncLog {
-  id              String   @id @default(uuid())
-  connectionId    String
-  syncType        String   // "products", "orders", "customers"
-  status          String   // "success", "error", "partial"
-  itemsProcessed  Int      @default(0)
-  itemsSuccess    Int      @default(0)
-  itemsFailed     Int      @default(0)
-  errors          Json?    // Array de erros
-  durationMs      Int?
-  createdAt       DateTime @default(now())
+  id             String   @id @default(uuid())
+  connectionId   String
+  syncType       String // "products", "orders", "customers"
+  status         String // "success", "error", "partial"
+  itemsProcessed Int      @default(0)
+  itemsSuccess   Int      @default(0)
+  itemsFailed    Int      @default(0)
+  errors         Json? // Array de erros
+  durationMs     Int?
+  createdAt      DateTime @default(now())
 
-  connection      IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  connection IntegrationConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
 
   @@index([connectionId])
   @@index([createdAt])
@@ -2637,15 +2667,15 @@ model IntegrationSyncLog {
 // ============================================================================
 
 model SystemMetric {
-  id          String   @id @default(uuid())
-  orgId       String
-  metricType  String   // "active_users", "api_calls", "feature_usage", "approval_time"
-  metricKey   String   // Chave específica (ex: "feature:ocr", "api:products")
-  value       Float
-  period      String   // "daily", "weekly", "monthly"
-  periodDate  DateTime // Data do período (ex: 2024-01-01 para janeiro)
-  metadata    Json?    // Dados adicionais
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  orgId      String
+  metricType String // "active_users", "api_calls", "feature_usage", "approval_time"
+  metricKey  String // Chave específica (ex: "feature:ocr", "api:products")
+  value      Float
+  period     String // "daily", "weekly", "monthly"
+  periodDate DateTime // Data do período (ex: 2024-01-01 para janeiro)
+  metadata   Json? // Dados adicionais
+  createdAt  DateTime @default(now())
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
@@ -2655,12 +2685,12 @@ model SystemMetric {
 
 model BenchmarkMetric {
   id          String   @id @default(uuid())
-  metricType  String   // "approval_time", "data_completeness", "feature_adoption"
-  industry    String   // "technology", "retail", "manufacturing", "all"
-  companySize String   // "MEI", "ME", "EPP", "all"
-  percentile  Int      // 25, 50, 75, 90
-  value       Float    // Valor de referência
-  period      String   // "2024-Q1", "2024-01"
+  metricType  String // "approval_time", "data_completeness", "feature_adoption"
+  industry    String // "technology", "retail", "manufacturing", "all"
+  companySize String // "MEI", "ME", "EPP", "all"
+  percentile  Int // 25, 50, 75, 90
+  value       Float // Valor de referência
+  period      String // "2024-Q1", "2024-01"
   updatedAt   DateTime @updatedAt
 
   @@unique([metricType, industry, companySize, percentile, period])
@@ -2668,13 +2698,13 @@ model BenchmarkMetric {
 }
 
 model UsageLog {
-  id          String   @id @default(uuid())
-  orgId       String
-  userId      String?
-  action      String   // "page_view", "feature_used", "api_call"
-  resource    String   // "company_settings", "products", "ocr"
-  metadata    Json?
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  orgId     String
+  userId    String?
+  action    String // "page_view", "feature_used", "api_call"
+  resource  String // "company_settings", "products", "ocr"
+  metadata  Json?
+  createdAt DateTime @default(now())
 
   organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -2685,57 +2715,57 @@ model UsageLog {
 
 // PBAC: Policy-Based Access Control
 model SecurityPolicy {
-  id             String       @id @default(uuid())
-  orgId          String
-  name           String       @db.VarChar(255)
-  description    String?      @db.Text
-  effect         String       @db.VarChar(10) // ALLOW, DENY
-  action         String       @db.VarChar(100) // manage, read, etc. (CSV or JSON array)
-  subject        String       @db.VarChar(100) // all, User, etc.
-  conditions     Json?        // Complex conditions DSL
-  priority       Int          @default(0)
-  active         Boolean      @default(true)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id          String   @id @default(uuid())
+  orgId       String
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  effect      String   @db.VarChar(10) // ALLOW, DENY
+  action      String   @db.VarChar(100) // manage, read, etc. (CSV or JSON array)
+  subject     String   @db.VarChar(100) // all, User, etc.
+  conditions  Json? // Complex conditions DSL
+  priority    Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@index([orgId, active])
 }
 
 // TBAC: Time-Based Access Control
 model TimeWindow {
-  id             String       @id @default(uuid())
-  orgId          String
-  name           String       @db.VarChar(255)
-  startTime      String       @db.VarChar(5) // "08:00"
-  endTime        String       @db.VarChar(5) // "18:00"
-  daysOfWeek     Int[]        // [1, 2, 3, 4, 5]
-  timezone       String?      @default("UTC")
-  active         Boolean      @default(true)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id         String   @id @default(uuid())
+  orgId      String
+  name       String   @db.VarChar(255)
+  startTime  String   @db.VarChar(5) // "08:00"
+  endTime    String   @db.VarChar(5) // "18:00"
+  daysOfWeek Int[] // [1, 2, 3, 4, 5]
+  timezone   String?  @default("UTC")
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
 
   @@index([orgId, active])
 }
 
 // ACL: Access Control List (Instance-based)
 model AccessControlList {
-  id             String       @id @default(uuid())
-  orgId          String
-  userId         String?
-  roleId         String?
-  subject        String       @db.VarChar(100) // Document, User, etc.
-  subjectId      String       @db.VarChar(128) // ID of the specific resource
-  action         String       @db.VarChar(100) // manage, read, etc.
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id        String   @id @default(uuid())
+  orgId     String
+  userId    String?
+  roleId    String?
+  subject   String   @db.VarChar(100) // Document, User, etc.
+  subjectId String   @db.VarChar(128) // ID of the specific resource
+  action    String   @db.VarChar(100) // manage, read, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  organization   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
-  role           Role?         @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role         Role?        @relation(fields: [roleId], references: [id], onDelete: SetNull)
 
   @@index([orgId, subject, subjectId])
   @@index([userId])
@@ -2744,47 +2774,66 @@ model AccessControlList {
 
 // Decision Audit Trail: Captures why an access was allowed or denied
 model AccessDecisionLog {
-    id          String   @id @default(uuid())
-    orgId       String
-    userId      String?
-    action      String   @db.VarChar(50)
-    subject     String   @db.VarChar(50)
-    resourceId  String?  @db.VarChar(128)
-    effect      String   @db.VarChar(10) // ALLOW, DENY
-    reason      String?  @db.Text
-    context     Json?    // Snapshot of environment at decision time
-    createdAt   DateTime @default(now())
+  id         String  @id @default(uuid())
+  orgId      String
+  userId     String?
+  action     String  @db.VarChar(50)
+  subject    String  @db.VarChar(50)
+  resourceId String? @db.VarChar(128)
+  resource   Json? // Objeto acessado completo
+  effect     String  @db.VarChar(10) // ALLOW, DENY
+  reason     String? @db.Text
+  context    Json? // Snapshot of environment at decision time
 
-    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  // Contexto de segurança
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.VarChar(500)
+  country   String? @db.VarChar(2)
+  city      String? @db.VarChar(100)
 
-    @@index([orgId, createdAt])
-    @@index([userId, createdAt])
+  // Detecções
+  isVpn   Boolean @default(false)
+  isProxy Boolean @default(false)
+  isTor   Boolean @default(false)
+
+  // Análise comportamental
+  riskScore Int      @default(0) // 0-100
+  anomalies String[] // ["unusual_time", "unusual_location"]
+
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, createdAt])
+  @@index([userId, createdAt])
+  @@index([orgId, effect])
+  @@index([orgId, riskScore])
 }
 
 // Security Alert Model: Tracks security incidents and threats
 model SecurityAlert {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   userId      String
-  alertType   String   @db.VarChar(100) // multiple_failed_logins, multiple_ips, etc
-  severity    String   @db.VarChar(20) // low, medium, high, critical
-  description String   @db.Text
+  alertType   String @db.VarChar(100) // multiple_failed_logins, multiple_ips, etc
+  severity    String @db.VarChar(20) // low, medium, high, critical
+  description String @db.Text
   metadata    Json? // Dados adicionais do alerta
-  
-  acknowledged Boolean  @default(false)
+
+  acknowledged   Boolean   @default(false)
   acknowledgedAt DateTime?
   acknowledgedBy String?
 
   // Location Data
-  ipAddress   String?  @db.VarChar(45)
-  country     String?  @db.VarChar(100)
-  city        String?  @db.VarChar(100)
-  latitude    Float?
-  longitude   Float?
-  
-  createdAt   DateTime @default(now())
-  
-  user        User     @relation("UserSecurityAlerts", fields: [userId], references: [id], onDelete: Cascade)
-  
+  ipAddress String? @db.VarChar(45)
+  country   String? @db.VarChar(100)
+  city      String? @db.VarChar(100)
+  latitude  Float?
+  longitude Float?
+
+  createdAt DateTime @default(now())
+
+  user User @relation("UserSecurityAlerts", fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([createdAt])
   @@index([severity])
@@ -2792,47 +2841,184 @@ model SecurityAlert {
   @@index([acknowledged])
 }
 
+// GeoRestriction: Geographic access control
+enum GeoRestrictionType {
+  COUNTRY
+  IP_RANGE
+  CITY
+  STATE
+}
+
+enum GeoAction {
+  ALLOW
+  DENY
+}
+
+model GeoRestriction {
+  id          String  @id @default(uuid())
+  orgId       String
+  name        String  @db.VarChar(100)
+  description String? @db.VarChar(500)
+
+  // Tipo de restrição
+  type GeoRestrictionType
+
+  // Ação
+  action GeoAction
+
+  // Valores
+  countries String[] // ISO codes: ["BR", "US"]
+  ipRanges  String[] // CIDR: ["192.168.1.0/24"]
+  cities    String[] // ["São Paulo", "Rio de Janeiro"]
+  states    String[] // ["SP", "RJ"]
+
+  // Configurações avançadas
+  blockVpn   Boolean @default(false)
+  blockProxy Boolean @default(false)
+  blockTor   Boolean @default(true)
+
+  // Metadados
+  isActive  Boolean  @default(true)
+  priority  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  // Atribuições
+  userAssignments UserGeoRestriction[]
+  roleAssignments RoleGeoRestriction[]
+
+  @@index([orgId, isActive])
+}
+
+model UserGeoRestriction {
+  userId           String
+  geoRestrictionId String
+  createdAt        DateTime @default(now())
+
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  geoRestriction GeoRestriction @relation(fields: [geoRestrictionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, geoRestrictionId])
+}
+
+model RoleGeoRestriction {
+  roleId           String
+  geoRestrictionId String
+  createdAt        DateTime @default(now())
+
+  role           Role           @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  geoRestriction GeoRestriction @relation(fields: [geoRestrictionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, geoRestrictionId])
+}
+
+// UserBehavioralProfile: Behavioral analysis for anomaly detection
+model UserBehavioralProfile {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  // Padrões temporais
+  usualAccessHours Int[] // [8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+  usualAccessDays  Int[] // [1, 2, 3, 4, 5]
+
+  // Padrões geográficos
+  usualCountries String[] // ["BR"]
+  usualCities    String[] // ["São Paulo"]
+  usualIpRanges  String[] // ["192.168.1.0/24"]
+
+  // Dispositivos
+  knownDeviceIds String[] // Device fingerprints
+
+  // Padrões de navegação
+  usualResources     String[] // Recursos mais acessados
+  averageSessionTime Int // Minutos
+
+  // Score de risco
+  baselineRiskScore Int @default(0)
+  currentRiskScore  Int @default(0)
+
+  // Metadados
+  lastUpdated DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// UserSession: Active session management
+model UserSession {
+  id     String @id @default(uuid())
+  userId String
+
+  // Informações da sessão
+  token        String  @unique @db.VarChar(255)
+  refreshToken String? @unique @db.VarChar(255)
+
+  // Contexto
+  ipAddress String  @db.VarChar(45)
+  userAgent String  @db.VarChar(500)
+  country   String? @db.VarChar(2)
+  city      String? @db.VarChar(100)
+  deviceId  String? @db.VarChar(255)
+
+  // Temporal
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+  lastActivity DateTime @default(now())
+
+  // Status
+  isActive  Boolean   @default(true)
+  revokedAt DateTime?
+  revokedBy String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive])
+  @@index([token])
+}
+
 model Order {
-  id              String      @id @default(uuid())
-  orderNumber     String      @unique
+  id              String    @id @default(uuid())
+  orderNumber     String    @unique
   customerId      String
   customerName    String
   customerEmail   String
-  status          String      @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
-  paymentStatus   String      @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  status          String    @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus   String    @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
   paymentMethod   String
-  subtotal        Decimal     @db.Decimal(10, 2)
-  discount        Decimal     @db.Decimal(10, 2)
-  tax             Decimal     @db.Decimal(10, 2)
-  shipping        Decimal     @db.Decimal(10, 2)
-  total           Decimal     @db.Decimal(10, 2)
+  subtotal        Decimal   @db.Decimal(10, 2)
+  discount        Decimal   @db.Decimal(10, 2)
+  tax             Decimal   @db.Decimal(10, 2)
+  shipping        Decimal   @db.Decimal(10, 2)
+  total           Decimal   @db.Decimal(10, 2)
   shippingAddress Json
   billingAddress  Json
-  notes           String?     @db.Text
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  notes           String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   confirmedAt     DateTime?
   shippedAt       DateTime?
   deliveredAt     DateTime?
 
-  items           OrderItem[]
-  
+  items OrderItem[]
+
   // Optional relations
   // organization Organization @relation(...)
 }
 
 model OrderItem {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   orderId     String
   productId   String
   productName String
   sku         String
   quantity    Int
-  unitPrice   Decimal  @db.Decimal(10, 2)
-  discount    Decimal  @db.Decimal(10, 2)
-  total       Decimal  @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  discount    Decimal @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
 
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 // ============================================
@@ -2840,43 +3026,43 @@ model OrderItem {
 // ============================================
 
 model Certification {
-  id          String   @id @default(uuid())
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  category    String   @db.VarChar(100)
-  icon        String   @db.VarChar(50) // Nome do ícone do lucide-react
-  
+  id          String @id @default(uuid())
+  title       String @db.VarChar(255)
+  description String @db.Text
+  category    String @db.VarChar(100)
+  icon        String @db.VarChar(50) // Nome do ícone do lucide-react
+
   // Detalhes base
-  benefits    Json?    // ["Benefit 1", "Benefit 2"]
-  evidence    Json?    // ["Evidence 1", "Evidence 2"]
-  baseScore   Int      @default(0)
-  
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  benefits  Json? // ["Benefit 1", "Benefit 2"]
+  evidence  Json? // ["Evidence 1", "Evidence 2"]
+  baseScore Int   @default(0)
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   organizations OrganizationCertification[] @relation("CertificationOrganizations")
 }
 
 model OrganizationCertification {
-  id              String   @id @default(uuid())
+  id              String @id @default(uuid())
   orgId           String
   certificationId String
-  status          String   @default("pending") // incomplete, in_progress, complete, prepared
-  progress        Int      @default(0)
-  score           Int      @default(0)
-  
+  status          String @default("pending") // incomplete, in_progress, complete, prepared
+  progress        Int    @default(0)
+  score           Int    @default(0)
+
   // Evidências específicas da organização
-  evidenceLinks   Json?    // Array de URLs/Keys para storage
-  
-  lastAuditedAt   DateTime?
-  nextAuditDate   DateTime?
+  evidenceLinks Json? // Array de URLs/Keys para storage
 
-  organization    Organization @relation("OrganizationCertifications", fields: [orgId], references: [id], onDelete: Cascade)
-  certification   Certification @relation("CertificationOrganizations", fields: [certificationId], references: [id], onDelete: Cascade)
+  lastAuditedAt DateTime?
+  nextAuditDate DateTime?
 
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  organization  Organization  @relation("OrganizationCertifications", fields: [orgId], references: [id], onDelete: Cascade)
+  certification Certification @relation("CertificationOrganizations", fields: [certificationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([orgId, certificationId])
   @@index([orgId, status])
@@ -2884,10 +3070,10 @@ model OrganizationCertification {
 }
 
 model BlockedIP {
-  id        String   @id @default(uuid())
-  ip        String   @unique @db.VarChar(45)
-  reason    String?  @db.Text
-  blockedAt DateTime @default(now())
+  id        String    @id @default(uuid())
+  ip        String    @unique @db.VarChar(45)
+  reason    String?   @db.Text
+  blockedAt DateTime  @default(now())
   expiresAt DateTime?
   createdBy String?
 
@@ -2920,59 +3106,201 @@ enum ReportFormat {
 }
 
 model FilterConfiguration {
-  id          String     @id @default(uuid())
+  id          String  @id @default(uuid())
   orgId       String
   userId      String
-  name        String     @db.VarChar(255)
-  description String?    @db.Text
-  
+  name        String  @db.VarChar(255)
+  description String? @db.Text
+
   // Filter data stored as JSON
   // Example: { "dateRange": { "from": "2024-01-01", "to": "2024-12-31" }, "category": ["electronics"], "region": ["SP", "RJ"] }
-  filterData  Json
-  
+  filterData Json
+
   // Metadata
-  isDefault   Boolean    @default(false)
-  isShared    Boolean    @default(false) // Se compartilhado com toda organização
-  
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  isDefault Boolean @default(false)
+  isShared  Boolean @default(false) // Se compartilhado com toda organização
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orgId, userId])
   @@index([orgId, isShared])
 }
 
 model ReportSchedule {
-  id          String          @id @default(uuid())
-  orgId       String
-  userId      String
-  
+  id     String @id @default(uuid())
+  orgId  String
+  userId String
+
   // Report configuration
-  name        String          @db.VarChar(255)
-  description String?         @db.Text
-  reportType  String          @db.VarChar(100) // sales, inventory, analytics, etc
-  
+  name        String  @db.VarChar(255)
+  description String? @db.Text
+  reportType  String  @db.VarChar(100) // sales, inventory, analytics, etc
+
   // Schedule configuration
-  frequency   ReportFrequency
-  dayOfWeek   Int?            // 0-6 for weekly (0 = Sunday)
-  dayOfMonth  Int?            // 1-31 for monthly
-  timeOfDay   String?         @db.VarChar(5) // HH:MM format (e.g., "09:00")
-  
+  frequency  ReportFrequency
+  dayOfWeek  Int? // 0-6 for weekly (0 = Sunday)
+  dayOfMonth Int? // 1-31 for monthly
+  timeOfDay  String?         @db.VarChar(5) // HH:MM format (e.g., "09:00")
+
   // Report parameters (filters, date ranges, etc)
-  parameters  Json?
-  
+  parameters Json?
+
   // Delivery configuration
-  format      ReportFormat    @default(pdf)
-  recipients  Json            // Array of email addresses
-  
+  format     ReportFormat @default(pdf)
+  recipients Json // Array of email addresses
+
   // Status
-  isActive    Boolean         @default(true)
-  lastRunAt   DateTime?
-  nextRunAt   DateTime?
-  
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  isActive  Boolean   @default(true)
+  lastRunAt DateTime?
+  nextRunAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orgId, userId])
   @@index([isActive, nextRunAt])
   @@index([orgId, isActive])
+}
+
+// ============================================================================
+// BUSINESS ANALYTICS MODELS
+// ============================================================================
+
+// Sales metrics aggregated by period
+model SalesMetric {
+  id     String   @id @default(uuid())
+  orgId  String
+  date   DateTime // Date of the metric
+  period String // "daily", "weekly", "monthly"
+
+  // Sales data
+  revenue Float
+  orders  Int
+  target  Float @default(0)
+
+  // Channel breakdown
+  onlineRevenue Float @default(0)
+  retailRevenue Float @default(0)
+  b2bRevenue    Float @default(0)
+
+  // Profitability
+  profit Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, date, period])
+  @@index([orgId, period, date])
+  @@index([date])
+}
+
+// Inventory insights by category
+model InventoryMetric {
+  id       String @id @default(uuid())
+  orgId    String
+  category String
+
+  totalValue    Float
+  itemCount     Int
+  turnoverRate  Float // Percentage
+  lowStockItems Int   @default(0)
+
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, category])
+  @@index([orgId, lastUpdated])
+}
+
+// Customer segmentation metrics
+model CustomerMetric {
+  id      String @id @default(uuid())
+  orgId   String
+  segment String // "VIP", "Premium", "Regular", "Novos"
+
+  count         Int
+  totalRevenue  Float
+  avgOrderValue Float
+  color         String @db.VarChar(7) // Hex color for UI
+
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, segment])
+  @@index([orgId, lastUpdated])
+}
+
+// Supplier performance metrics
+model SupplierMetric {
+  id         String  @id @default(uuid())
+  orgId      String
+  supplierId String? // Reference to Supplier, nullable for aggregated data
+  name       String
+
+  onTimeDelivery Float // Percentage
+  quality        Float // Percentage
+  totalOrders    Int
+
+  lastUpdated DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, name])
+  @@index([orgId, lastUpdated])
+  @@index([supplierId])
+}
+
+// Top products tracking
+model ProductMetric {
+  id        String  @id @default(uuid())
+  orgId     String
+  productId String? // Reference to Product, nullable for aggregated data
+  name      String
+  category  String
+
+  unitsSold Int
+  revenue   Float
+
+  period     String // "7d", "30d", "90d", "12m"
+  periodDate DateTime // Date when this metric was calculated
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, period, periodDate])
+  @@index([orgId, revenue])
+  @@index([productId])
+}
+
+// Activity log for dashboard feed
+model ActivityLog {
+  id     String  @id @default(uuid())
+  orgId  String
+  userId String?
+
+  type        String // "order", "stock", "customer", "notification"
+  title       String
+  description String
+  metadata    Json?
+
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, timestamp])
+  @@index([type])
 }

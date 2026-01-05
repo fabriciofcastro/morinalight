@@ -16,6 +16,7 @@ import {
     Button
 } from "@/components/ui/futuristic";
 import { ObjectAccessEntry } from "@morina/shared-kernel";
+import { Can } from "@/lib/auth/CaslContext";
 
 interface AclListProps {
     entries: ObjectAccessEntry[];
@@ -95,12 +96,16 @@ export function AclList({ entries, onEdit, onDelete }: AclListProps) {
                         </div>
 
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onEdit(entry)}>
-                                <Edit2 className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button variant="secondary" size="icon" className="h-8 w-8 hover:bg-red-500/20 hover:text-red-400" onClick={() => onDelete(entry.id!)}>
-                                <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
+                            <Can I="update" a="ObjectAccessEntry">
+                                <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onEdit(entry)}>
+                                    <Edit2 className="h-3.5 w-3.5" />
+                                </Button>
+                            </Can>
+                            <Can I="delete" a="ObjectAccessEntry">
+                                <Button variant="secondary" size="icon" className="h-8 w-8 hover:bg-red-500/20 hover:text-red-400" onClick={() => onDelete(entry.id!)}>
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                            </Can>
                         </div>
                     </div>
                 </GlassCard>

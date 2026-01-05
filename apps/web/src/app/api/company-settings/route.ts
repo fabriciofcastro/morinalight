@@ -99,6 +99,7 @@ async function loadFromApi(orgId: string): Promise<NormalizedCompanySettings | n
     const headers = await buildAuthHeaders({
       "x-organization-id": orgId,
     });
+
     const response = await fetch(`${apiUrl}/company-settings`, {
       headers,
       cache: "no-store",
@@ -187,6 +188,12 @@ async function persistWithApi(
 
 export async function GET(request: Request) {
   const orgId = resolveOrgId(request);
+
+  // If no orgId is available, return default settings immediately
+  if (!orgId) {
+    const fallback = normalizeCompanySettings();
+    return respond(fallback);
+  }
 
   const prismaPayload = await loadFromPrisma(orgId);
 

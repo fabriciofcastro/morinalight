@@ -1,11 +1,14 @@
-import { AbilityBuilder, createMongoAbility, PureAbility, AbilityClass } from '@casl/ability';
+import { PureAbility, AbilityClass } from '@casl/ability';
 import {
-    AppAbility,
     AppActions,
     AppSubjects,
-    unifiedPolicyEngine,
-    SecurityContext
+    SharedAbilityFactory,
+    UserContext,
+    UserEffectivePermissions,
+    PermissionGrant,
+    SentryAdapter
 } from '@morina/shared-kernel';
+import * as Sentry from '@sentry/nextjs';
 
 /**
  * Ability for the client side which supports function conditions
@@ -14,337 +17,48 @@ export type ClientAppAbility = PureAbility<[AppActions, AppSubjects], unknown>;
 export const ClientAppAbility = PureAbility as AbilityClass<ClientAppAbility>;
 
 /**
- * Permissão recebida da API
+ * Re-export types from shared-kernel for convenience
  */
-export type PermissionGrant = {
-    permissionKey: string;
-    granted: boolean;
-    source?: string;
-    sourceEntityId?: string;
+export type { PermissionGrant, UserEffectivePermissions, UserContext };
+
+/**
+ * Sentry adapter for Web (Next.js)
+ */
+const webSentryAdapter: SentryAdapter = {
+    setTag: (key: string, value: string) => {
+        Sentry.setTag(key, value);
+    },
+    setContext: (name: string, context: Record<string, any>) => {
+        Sentry.setContext(name, context);
+    },
+    captureMessage: (message: string, level?: 'info' | 'warning' | 'error') => {
+        Sentry.captureMessage(message, level || 'info');
+    }
 };
 
 /**
- * Permissões efetivas do usuário
+ * Builds a basic Ability for the user (Web version)
  */
-export type UserEffectivePermissions = {
-    effective: PermissionGrant[];
-    denied: string[];
-    role: string | null;
-};
-
-/**
- * Contexto do usuário para ABAC e Segurança Avançada (AUBAC)
- */
-export interface UserContext {
-    userId: string;
-    departmentId?: string;
-    sectorId?: string;
-    positionId?: string;
-    role?: string;
-    organizationId?: string;
-    attributes?: Record<string, any>; // Atributos dinâmicos para AUBAC
-    ipAddress?: string;
-    userAgent?: string;
-    mfaVerified?: boolean;
+export function buildAbilityForUser(permissions: UserEffectivePermissions) {
+    return SharedAbilityFactory.createForUser(permissions, webSentryAdapter);
 }
 
 /**
- * Reconstrói a Ability no frontend (versão básica, sem condições ABAC)
- */
-export function buildAbilityForUser(permissions: UserEffectivePermissions): AppAbility {
-    const { can, cannot, build } = new AbilityBuilder<AppAbility>(createMongoAbility);
-
-    // Super Admin
-    if (permissions.role === 'owner') {
-        can('manage', 'all');
-    }
-
-    // Processar Grants
-    for (const grant of permissions.effective) {
-        if (!grant.granted) continue;
-        const { action, subject } = parsePermissionKey(grant.permissionKey);
-        if (action && subject) {
-            can(action, subject);
-        }
-    }
-
-    // Processar Denials
-    for (const deniedKey of permissions.denied) {
-        const { action, subject } = parsePermissionKey(deniedKey);
-        if (action && subject) {
-            cannot(action, subject);
-        }
-    }
-
-    return build({
-        detectSubjectType: (item) => {
-            if (typeof item === 'string') return item as AppSubjects;
-
-            // Cast to any to handle object instances, as AppSubjects type is strictly strings
-            const subject = item as any;
-            if (subject && typeof subject === 'object' && '__typename' in subject) {
-                return subject.__typename as AppSubjects;
-            }
-            return subject?.constructor?.name as AppSubjects;
-        },
-    });
-}
-
-/**
- * Reconstrói a Ability com suporte a condições ABAC e Segurança Avançada (PBAC, TBAC, ACL)
+ * Builds Ability with ABAC conditions and Advanced Security (Web version)
  */
 export function buildAbilityForUserWithConditions(
     permissions: UserEffectivePermissions,
     userContext: UserContext
-): ClientAppAbility {
-    const { can, cannot, build } = new AbilityBuilder<ClientAppAbility>(ClientAppAbility);
-    const securityContext = buildSecurityContext(userContext);
-
-    // Super Admin
-    if (permissions.role === 'owner') {
-        can('manage', 'all');
-    }
-
-    // Processar Grants com condições dinâmicas
-    for (const grant of permissions.effective) {
-        if (!grant.granted) continue;
-
-        const { action, subject, conditions } = parsePermissionKeyWithConditions(
-            grant.permissionKey,
-            userContext
-        );
-
-        if (action && subject) {
-            // Integração do motor ABAC legado COM o novo UnifiedPolicyEngine
-            can(action, subject, (resource: any) => {
-                // 1. Validar condições básicas de ABAC (ex: own, department) e TBAC
-                if (conditions) {
-                    // TBAC Check
-                    if (conditions.time) {
-                        const now = new Date();
-                        const currentHour = now.getHours();
-                        const currentDay = now.getDay(); // 0 = Sunday
-                        const { start, end, days } = conditions.time;
-
-                        const [startH] = start.split(':').map(Number);
-                        const [endH] = end.split(':').map(Number);
-
-                        // Check Days (if defined)
-                        if (days && !days.includes(currentDay)) return false;
-
-                        // Check Hours
-                        // Simple checks assuming same day range for now
-                        if (currentHour < startH || currentHour >= endH) return false;
-                    }
-
-                    // Ownership & Attribute Checks
-                    // Filter out 'time' from comparison since it's handled above
-                    const abacConditions = { ...conditions };
-                    delete abacConditions.time;
-
-                    if (Object.keys(abacConditions).length > 0) {
-                        const matchesAbac = Object.entries(abacConditions).every(
-                            ([key, value]) => resource?.[key] === value
-                        );
-                        if (!matchesAbac) return false;
-                    }
-                }
-
-                // 2. Validar contra Security Policies, TBAC e ACLs Avançadas
-                return unifiedPolicyEngine.evaluate(
-                    action,
-                    subject,
-                    securityContext,
-                    resource
-                );
-            });
-        }
-    }
-
-    // Processar Denials
-    for (const deniedKey of permissions.denied) {
-        const { action, subject } = parsePermissionKey(deniedKey);
-        if (action && subject) {
-            cannot(action, subject);
-        }
-    }
-
-    return build({
-        detectSubjectType: (item) => {
-            if (typeof item === 'string') return item as AppSubjects;
-
-            const subject = item as any;
-            if (subject && typeof subject === 'object' && '__typename' in subject) {
-                return subject.__typename as AppSubjects;
-            }
-            return subject?.constructor?.name as AppSubjects;
-        },
-        conditionsMatcher: (condition) => {
-            return (subject) => {
-                return condition(subject);
-            };
-        }
-    });
-}
-
-// Helper to get time windows if they exist in user context (AUBAC)
-function extractTimeWindows(attributes?: Record<string, any>): any[] | undefined {
-    return attributes?.timeWindows;
+) {
+    return SharedAbilityFactory.createForUserWithConditions(
+        permissions,
+        userContext,
+        webSentryAdapter
+    );
 }
 
 /**
- * Helper para construir o SecurityContext no Frontend
+ * Re-export parsePermissionKey for backward compatibility
+ * Wrapped in arrow function to preserve 'this' context
  */
-function buildSecurityContext(userContext: UserContext): SecurityContext {
-    return {
-        user: {
-            id: userContext.userId,
-            role: userContext.role || 'member',
-            departmentId: userContext.departmentId,
-            sectorId: userContext.sectorId,
-            attributes: userContext.attributes
-        },
-        environment: {
-            time: new Date(),
-            // TBAC: Se o usuário tiver restrições de horário nos atributos, passamos aqui
-            timeWindows: extractTimeWindows(userContext.attributes),
-            ip: userContext.ipAddress,
-            userAgent: typeof window !== 'undefined' ? window.navigator.userAgent : userContext.userAgent,
-            mfaVerified: userContext.mfaVerified || false
-        }
-    };
-}
-
-/**
- * Parse permission key com condições ABAC
- */
-function parsePermissionKeyWithConditions(
-    key: string,
-    userContext: UserContext
-): { action: AppActions | null; subject: AppSubjects | null; conditions?: any } {
-    const parts = key.split(':');
-    if (parts.length < 2) return { action: null, subject: null };
-
-    const subjectRaw = parts[0];
-    const actionRaw = parts[1];
-    const modifier = parts[2]; // ex: 'own', 'department', 'active'
-
-    const subject = mapSubject(subjectRaw);
-    const action = mapAction(actionRaw);
-
-    if (!action || !subject) {
-        return { action, subject };
-    }
-
-    // Aplicar condições
-    let conditions: any = undefined;
-
-    if (modifier === 'own') {
-        conditions = { ownerId: userContext.userId };
-    } else if (modifier === 'department') {
-        conditions = { departmentId: userContext.departmentId };
-    } else if (modifier === 'sector') {
-        conditions = { sectorId: userContext.sectorId };
-    } else if (modifier === 'active') {
-        conditions = { status: 'active' };
-    } else if (modifier === 'inactive') {
-        conditions = { status: 'inactive' };
-    } else if (modifier === 'pending') {
-        conditions = { status: 'pending' };
-    } else if (modifier === 'draft') {
-        conditions = { status: 'draft' };
-    } else if (modifier === 'business_hours') {
-        conditions = {
-            time: {
-                start: '09:00',
-                end: '18:00',
-                days: [1, 2, 3, 4, 5] // Mon-Fri
-            }
-        };
-    }
-
-    return { action, subject, conditions };
-}
-
-/**
- * Parse básico de permission key
- */
-export function parsePermissionKey(key: string): { action: AppActions | null, subject: AppSubjects | null } {
-    const parts = key.split(':');
-    if (parts.length < 2) return { action: null, subject: null };
-
-    const subjectRaw = parts[0];
-    const actionRaw = parts[1];
-
-    const subject = mapSubject(subjectRaw);
-    const action = mapAction(actionRaw);
-
-    return { subject, action };
-}
-
-/**
- * Mapeia prefixos para Subjects
- */
-function mapSubject(raw: string): AppSubjects | null {
-    const map: Record<string, AppSubjects> = {
-        'products': 'Product',
-        'catalog': 'Product',
-        'categories': 'Category',
-        'clients': 'Client',
-        'suppliers': 'Supplier',
-        'orders': 'Order',
-        'sales': 'Order',
-        'users': 'User',
-        'representatives': 'User',
-        'settings:team': 'User',
-        'settings:company': 'Organization',
-        'organization': 'Organization',
-        'settings:permissions': 'Permission',
-        'permissions': 'Permission',
-        'settings:roles': 'Role',
-        'roles': 'Role',
-        'reports': 'Report',
-        'commissions': 'Commission',
-        'dashboard': 'Dashboard',
-        'settings': 'Settings',
-        'departments': 'Department',
-        'sectors': 'Sector',
-        'positions': 'Position',
-        'branches': 'Branch',
-        'posts': 'Post',
-        'documents': 'Document',
-        'notifications': 'Notification',
-        'pre-fichas-tecnicas': 'TechnicalSheet',
-        'fichas-custo': 'TechnicalSheet',
-        'workflows': 'Workflow',
-        'business-segments': 'BusinessSegment',
-        'settings:organizational-structure': 'Organization',
-    };
-    return map[raw] || null;
-}
-
-/**
- * Mapeia sufixos para Actions
- */
-function mapAction(raw: string): AppActions | null {
-    const map: Record<string, AppActions> = {
-        'view': 'read',
-        'list': 'read',
-        'read': 'read',
-        'create': 'create',
-        'edit': 'update',
-        'update': 'update',
-        'delete': 'delete',
-        'remove': 'delete',
-        'manage': 'manage',
-        'approve': 'approve',
-        'reject': 'reject',
-        'publish': 'publish',
-        'archive': 'archive',
-        'export': 'export',
-        'import': 'import',
-        'pay': 'update',
-        'assign': 'update',
-    };
-    return map[raw] || null;
-}
+export const parsePermissionKey = (key: string) => SharedAbilityFactory.parsePermissionKey(key);

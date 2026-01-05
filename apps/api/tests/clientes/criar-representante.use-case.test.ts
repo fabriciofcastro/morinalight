@@ -77,12 +77,13 @@ describe("CriarRepresentanteUseCase", () => {
 
   it("deve criar um representante vinculado a um cliente", async () => {
     // Primeiro criar o cliente
-    const cliente = Cliente.criar(
+    const cliente = Cliente.restaurar(
       {
         orgId: "org-123",
         nome: "João Silva",
         tipo: "fisica",
         documento: "12345678901",
+        status: "ativo",
         createdBy: "user-123",
         updatedBy: "user-123",
         createdAt: new Date(),
@@ -127,12 +128,13 @@ describe("CriarRepresentanteUseCase", () => {
   });
 
   it("não deve permitir criar dois representantes para o mesmo cliente", async () => {
-    const cliente = Cliente.criar(
+    const cliente = Cliente.restaurar(
       {
         orgId: "org-123",
         nome: "João Silva",
         tipo: "fisica",
         documento: "12345678901",
+        status: "ativo",
         createdBy: "user-123",
         updatedBy: "user-123",
         createdAt: new Date(),

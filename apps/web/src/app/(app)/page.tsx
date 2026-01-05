@@ -4,9 +4,7 @@ import { ExecutiveDashboardClient } from "@/components/dashboard/executive-dashb
 export default function HomePage() {
     return (
         <main>
-            <PageBackground variant="circuit">
-                <ExecutiveDashboardClient />
-            </PageBackground>
+            <ExecutiveDashboardClient />
         </main>
     );
 }

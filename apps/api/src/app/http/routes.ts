@@ -35,7 +35,7 @@ import governancePlugin from "../../core/security/governance.plugin";
 import { governanceRoutes } from "../../modules/governance/governance.routes";
 import { intelligenceRoutes } from "../../modules/intelligence/intelligence.routes";
 
-type HttpModulesOptions = {
+export type HttpModulesOptions = {
   catalogo?: CatalogoModuleOptions;
   preficha?: PrefichaModuleOptions;
   preFichaTecnica?: PreFichaTecnicaModuleOptions;
@@ -166,4 +166,8 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
   // Registrar rotas de analytics (Phase 5)
   const { analyticsRoutes } = await import('../../modules/analytics/analytics.routes');
   await analyticsRoutes(app);
+
+  // Registrar rotas de segurança avançada (Phase 18)
+  const { registerBlockedIpsRoutes } = await import('../../modules/security/http/blocked-ips.route');
+  await registerBlockedIpsRoutes(app);
 }

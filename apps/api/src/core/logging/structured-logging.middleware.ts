@@ -9,6 +9,7 @@ import { randomUUID } from "node:crypto";
 declare module "fastify" {
   interface FastifyRequest {
     requestId?: string;
+    startTime?: bigint; // Add startTime for manual tracking
     logContext?: {
       requestId: string;
       userId?: string;
@@ -30,6 +31,9 @@ export async function structuredLoggingMiddleware(
 ): Promise<void> {
   // Gerar requestId único para cada requisição
   const requestId = randomUUID();
+
+  // Capturar tempo de início para rastreamento manual
+  request.startTime = process.hrtime.bigint();
 
   // Extrair informações do request
   const userId = request.auth?.userId;
@@ -81,7 +85,11 @@ export async function logResponse(
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> {
-  const duration = reply.getResponseTime();
+  // Calcular duração manualmente usando o startTime armazenado
+  const duration = request.startTime
+    ? Number(process.hrtime.bigint() - request.startTime) / 1_000_000 // Convert nanoseconds to milliseconds
+    : 0;
+
   const logContext = request.logContext || {};
 
   request.log.info(
@@ -94,8 +102,6 @@ export async function logResponse(
     `${request.method} ${request.url} - ${reply.statusCode} (${duration.toFixed(2)}ms)`,
   );
 }
-
-
 
 
 

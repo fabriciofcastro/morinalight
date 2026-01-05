@@ -12,6 +12,7 @@ import type { PermissionCacheService } from "../../domain/services/permission-ca
 import type { PermissionInheritanceService } from "../../domain/services/permission-inheritance.service";
 import {
   resolverPermissoesEfetivasInputSchema,
+  ResolverPermissoesEfetivasResultado,
   resolverPermissoesEfetivasResultadoSchema,
 } from "../schemas/effective-permissions.schema";
 
@@ -124,175 +125,171 @@ export class ResolverPermissoesEfetivasUseCase {
       granted: boolean;
       sourceEntityId?: string;
     }> = [];
-
     const customGrants: Array<{
       permissionKey: string;
       granted: boolean;
       sourceEntityId?: string;
     }> = [];
 
-    if (this.deps.userPermissionRepository) {
-      const custom = await this.deps.userPermissionRepository.listarPorUser(
-        input.orgId,
-        input.userId,
-      );
-      for (const up of custom) {
-        const permissionKey = await permissionKeyFromIdOrKey(up.permissionId);
-        customGrants.push({
+    // Parallel Fetching - Phase 1: Direct User Data & Memberships
+    const [userPermissions, departmentMemberships, positionMemberships] = await Promise.all([
+      this.deps.userPermissionRepository
+        ? this.deps.userPermissionRepository.listarPorUser(input.orgId, input.userId)
+        : Promise.resolve([]),
+      this.deps.departmentMembershipRepository
+        ? this.deps.departmentMembershipRepository.listarPorUser(input.orgId, input.userId)
+        : Promise.resolve([]),
+      this.deps.positionMembershipRepository
+        ? this.deps.positionMembershipRepository.listarPorUser(input.orgId, input.userId)
+        : Promise.resolve([]),
+    ]);
+
+    // Calculate IDs for Phase 2
+    const departmentIds = departmentMemberships.map((m: any) => m.departmentId);
+    const positionIds = positionMemberships.map((m: any) => m.positionId);
+
+    // Parallel Fetching - Phase 2: Entity Permissions & Details
+    const [
+      departmentPermissions,
+      positionPermissions,
+      positionsDetails
+    ] = await Promise.all([
+      // Department Permissions
+      (this.deps.departmentPermissionRepository && departmentIds.length > 0)
+        ? this.deps.departmentPermissionRepository.listarPorDepartments(input.orgId, departmentIds)
+        : Promise.resolve([]),
+
+      // Position Permissions
+      (this.deps.positionPermissionRepository && positionIds.length > 0)
+        ? this.deps.positionPermissionRepository.listarPorPositions(input.orgId, positionIds)
+        : Promise.resolve([]),
+
+      // Position Details (to get Sector IDs)
+      (this.deps.positionRepository && positionIds.length > 0)
+        ? Promise.all(positionIds.map((id: string) => this.deps.positionRepository!.encontrarPorId(input.orgId, id)))
+        : Promise.resolve([]),
+    ]);
+
+    // Calculate Sector IDs
+    const validPositions = positionsDetails.filter((p: any) => p !== null && p !== undefined);
+    const sectorIds = validPositions.map((p: any) => p.dados.sectorId).filter((id: any): id is string => id !== undefined);
+
+    // Parallel Fetching - Phase 3: Sector Permissions
+    const sectorPermissions = (this.deps.sectorPermissionRepository && sectorIds.length > 0)
+      ? await this.deps.sectorPermissionRepository.listarPorSectors(input.orgId, sectorIds)
+      : [];
+
+    // --- Processing Results ---
+
+    // 1. Custom User Permissions
+    for (const up of userPermissions) {
+      const permissionKey = await permissionKeyFromIdOrKey(up.permissionId);
+      customGrants.push({
+        permissionKey,
+        granted: up.granted,
+        sourceEntityId: input.userId,
+      });
+    }
+
+    // 2. Department Permissions
+    if (departmentIds.length > 0) {
+      for (const dp of departmentPermissions) {
+        const permissionKey = await permissionKeyFromIdOrKey(dp.permissionId);
+        departmentGrants.push({
           permissionKey,
-          granted: up.granted,
-          sourceEntityId: input.userId,
+          granted: dp.granted,
+          sourceEntityId: dp.departmentId,
         });
       }
-    }
 
-    if (this.deps.departmentMembershipRepository && this.deps.departmentPermissionRepository) {
-      const memberships = await this.deps.departmentMembershipRepository.listarPorUser(
-        input.orgId,
-        input.userId,
-      );
-      if (memberships.length > 0) {
-        const departmentIds = memberships.map((m) => m.departmentId);
-        const perms = await this.deps.departmentPermissionRepository.listarPorDepartments(
-          input.orgId,
-          departmentIds,
-        );
-        for (const dp of perms) {
-          const permissionKey = await permissionKeyFromIdOrKey(dp.permissionId);
-          departmentGrants.push({
-            permissionKey,
-            granted: dp.granted,
-            sourceEntityId: dp.departmentId,
-          });
-        }
-
-        // Buscar permissões herdadas dos departamentos pais
-        if (this.deps.permissionInheritanceService) {
-          for (const membership of memberships) {
-            const inherited = await this.deps.permissionInheritanceService.resolveDepartmentInheritedPermissions(
-              input.orgId,
-              membership.departmentId,
-            );
-            for (const perm of inherited) {
-              // Só adicionar se não houver override direto
-              const existingIndex = departmentGrants.findIndex(
-                (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.departmentId,
-              );
-              if (existingIndex === -1) {
-                departmentGrants.push({
-                  permissionKey: perm.permissionKey,
-                  granted: perm.granted,
-                  sourceEntityId: perm.inheritedFrom.entityId,
-                });
-              }
-            }
-          }
-        }
-      }
-    }
-
-    if (
-      this.deps.positionMembershipRepository &&
-      this.deps.sectorPermissionRepository &&
-      this.deps.positionRepository
-    ) {
-      const memberships = await this.deps.positionMembershipRepository.listarPorUser(
-        input.orgId,
-        input.userId,
-      );
-      if (memberships.length > 0) {
-        const positionIds = memberships.map((m) => m.positionId);
-        const positions = await Promise.all(
-          positionIds.map((positionId) =>
-            this.deps.positionRepository!.encontrarPorId(input.orgId, positionId),
-          ),
-        );
-        const validPositions = positions.filter(
-          (p): p is NonNullable<typeof p> => p !== null && p !== undefined,
-        );
-        const sectorIds = validPositions.map((p) => p.dados.sectorId).filter((id): id is string => id !== undefined);
-        if (sectorIds.length > 0) {
-          const perms = await this.deps.sectorPermissionRepository.listarPorSectors(
+      // Department Inheritance
+      if (this.deps.permissionInheritanceService) {
+        await Promise.all(departmentMemberships.map(async (membership: any) => {
+          const inherited = await this.deps.permissionInheritanceService!.resolveDepartmentInheritedPermissions(
             input.orgId,
-            sectorIds,
+            membership.departmentId,
           );
-          for (const sp of perms) {
-            const permissionKey = await permissionKeyFromIdOrKey(sp.permissionId);
-            sectorGrants.push({
-              permissionKey,
-              granted: sp.granted,
-              sourceEntityId: sp.sectorId,
-            });
-          }
-
-          // Buscar permissões herdadas dos setores pais e departamentos
-          if (this.deps.permissionInheritanceService) {
-            for (const sectorId of sectorIds) {
-              const inherited = await this.deps.permissionInheritanceService.resolveSectorInheritedPermissions(
-                input.orgId,
-                sectorId,
-              );
-              for (const perm of inherited) {
-                // Só adicionar se não houver override direto
-                const existingIndex = sectorGrants.findIndex(
-                  (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === sectorId,
-                );
-                if (existingIndex === -1) {
-                  sectorGrants.push({
-                    permissionKey: perm.permissionKey,
-                    granted: perm.granted,
-                    sourceEntityId: perm.inheritedFrom.entityId,
-                  });
-                }
-              }
+          for (const perm of inherited) {
+            const existingIndex = departmentGrants.findIndex(
+              (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.departmentId,
+            );
+            if (existingIndex === -1) {
+              departmentGrants.push({
+                permissionKey: perm.permissionKey,
+                granted: perm.granted,
+                sourceEntityId: perm.inheritedFrom.entityId,
+              });
             }
           }
-        }
+        }));
       }
     }
 
-    if (this.deps.positionMembershipRepository && this.deps.positionPermissionRepository) {
-      const memberships = await this.deps.positionMembershipRepository.listarPorUser(
-        input.orgId,
-        input.userId,
-      );
-      if (memberships.length > 0) {
-        const positionIds = memberships.map((m) => m.positionId);
-        const perms = await this.deps.positionPermissionRepository.listarPorPositions(
-          input.orgId,
-          positionIds,
-        );
-        for (const pp of perms) {
-          const permissionKey = await permissionKeyFromIdOrKey(pp.permissionId);
-          positionGrants.push({
-            permissionKey,
-            granted: pp.granted,
-            sourceEntityId: pp.positionId,
-          });
-        }
+    // 3. Sector Permissions
+    if (sectorIds.length > 0) {
+      for (const sp of sectorPermissions) {
+        const permissionKey = await permissionKeyFromIdOrKey(sp.permissionId);
+        sectorGrants.push({
+          permissionKey,
+          granted: sp.granted,
+          sourceEntityId: sp.sectorId,
+        });
+      }
 
-        // Buscar permissões herdadas dos setores pais (via cargo)
-        if (this.deps.permissionInheritanceService) {
-          for (const membership of memberships) {
-            const inherited = await this.deps.permissionInheritanceService.resolvePositionInheritedPermissions(
-              input.orgId,
-              membership.positionId,
+      // Sector Inheritance
+      if (this.deps.permissionInheritanceService) {
+        await Promise.all(sectorIds.map(async (sectorId: string) => {
+          const inherited = await this.deps.permissionInheritanceService!.resolveSectorInheritedPermissions(
+            input.orgId,
+            sectorId,
+          );
+          for (const perm of inherited) {
+            const existingIndex = sectorGrants.findIndex(
+              (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === sectorId,
             );
-            for (const perm of inherited) {
-              // Só adicionar se não houver override direto
-              const existingIndex = positionGrants.findIndex(
-                (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.positionId,
-              );
-              if (existingIndex === -1) {
-                positionGrants.push({
-                  permissionKey: perm.permissionKey,
-                  granted: perm.granted,
-                  sourceEntityId: perm.inheritedFrom.entityId,
-                });
-              }
+            if (existingIndex === -1) {
+              sectorGrants.push({
+                permissionKey: perm.permissionKey,
+                granted: perm.granted,
+                sourceEntityId: perm.inheritedFrom.entityId,
+              });
             }
           }
-        }
+        }));
+      }
+    }
+
+    // 4. Position Permissions
+    if (positionIds.length > 0) {
+      for (const pp of positionPermissions) {
+        const permissionKey = await permissionKeyFromIdOrKey(pp.permissionId);
+        positionGrants.push({
+          permissionKey,
+          granted: pp.granted,
+          sourceEntityId: pp.positionId,
+        });
+      }
+
+      // Position Inheritance
+      if (this.deps.permissionInheritanceService) {
+        await Promise.all(positionMemberships.map(async (membership: any) => {
+          const inherited = await this.deps.permissionInheritanceService!.resolvePositionInheritedPermissions(
+            input.orgId,
+            membership.positionId,
+          );
+          for (const perm of inherited) {
+            const existingIndex = positionGrants.findIndex(
+              (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.positionId,
+            );
+            if (existingIndex === -1) {
+              positionGrants.push({
+                permissionKey: perm.permissionKey,
+                granted: perm.granted,
+                sourceEntityId: perm.inheritedFrom.entityId,
+              });
+            }
+          }
+        }));
       }
     }
 
@@ -329,12 +326,18 @@ export class ResolverPermissoesEfetivasUseCase {
 
     const denied = Array.from(deny).sort();
 
-    const result = resolverPermissoesEfetivasResultadoSchema.parse({
-      userId: membership.userId,
-      orgId: membership.organizationId,
+    // 7. Advanced Security Policies & ACLs
+    const [policies, aclEntries] = await Promise.all([
+      this.deps.permissionRepository.listarSecurityPolicies(input.orgId),
+      this.deps.permissionRepository.listarAclEntries(input.orgId, input.userId, membership.role),
+    ]);
+
+    const result: ResolverPermissoesEfetivasResultado = {
+      userId: input.userId,
+      orgId: input.orgId,
       role: membership.role,
-      effective,
-      denied,
+      effective: effective,
+      denied: denied,
       breakdown: {
         role: rolePermissionKeys.slice().sort(),
         departments: departmentGrants.map((g) => ({
@@ -372,9 +375,11 @@ export class ResolverPermissoesEfetivasUseCase {
           branchId: user?.branchId,
           cpf: user?.cpf,
           lastLoginAt: user?.lastLoginAt,
-        },
+        } as any,
       },
-    });
+      policies,
+      aclEntries,
+    };
 
     // Armazenar no cache
     if (this.deps.permissionCacheService) {
@@ -382,7 +387,7 @@ export class ResolverPermissoesEfetivasUseCase {
         await this.deps.permissionCacheService.setEffectivePermissions(
           input.orgId,
           input.userId,
-          result.effective,
+          result.effective.map(({ permissionKey, granted }) => ({ permissionKey, granted })) as any,
           result.denied,
         );
       } catch (error) {

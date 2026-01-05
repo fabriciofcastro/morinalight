@@ -8,7 +8,7 @@
 const cacheStorage = new Map<string, { data: any, expiresAt: number }>();
 
 export interface CacheOptions {
-    ttlSeconds: number;
+    ttl: number;
     keyPrefix?: string;
 }
 
@@ -47,7 +47,7 @@ export function Cached(options: CacheOptions) {
             if (result !== null && result !== undefined) {
                 cacheStorage.set(cacheKey, {
                     data: result,
-                    expiresAt: now + (options.ttlSeconds * 1000)
+                    expiresAt: now + (options.ttl * 1000)
                 });
             }
 
@@ -62,7 +62,7 @@ export function Cached(options: CacheOptions) {
  * Cache Invalidation Decorator
  * Limpa o cache quando métodos de escrita são chamados
  */
-export function InvalidatesCache(prefix: string) {
+export function InvalidatesCache(options: string | { keys: string[] }) {
     return function (
         target: any,
         propertyKey: string,
@@ -74,10 +74,15 @@ export function InvalidatesCache(prefix: string) {
             // Executa operação original (ex: update, create)
             const result = await originalMethod.apply(this, args);
 
-            // Invalida chaves que começam com o prefixo
-            console.log(`[Cache] Invalidating prefix ${prefix}*`);
+            // Determina as chaves/prefixos a invalidar
+            const prefixes = typeof options === 'string' ? [options] : options.keys;
+
+            console.log(`[Cache] Invalidating prefixes: ${prefixes.join(', ')}`);
+
+            // Itera sobre as chaves do cache
             for (const key of cacheStorage.keys()) {
-                if (key.startsWith(prefix)) {
+                const shouldDelete = prefixes.some(prefix => key.startsWith(prefix));
+                if (shouldDelete) {
                     cacheStorage.delete(key);
                 }
             }

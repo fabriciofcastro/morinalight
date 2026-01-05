@@ -10,6 +10,10 @@ async function bootstrap() {
     registerDocs: env.NODE_ENV !== "production", // Habilitar docs em dev/test
   });
 
+  // Warmup blocked IP cache before starting
+  const { blockedIpService } = await import("./modules/security/application/services/blocked-ip.service");
+  await blockedIpService.warmupCache().catch(e => console.error("Failed to warmup blocked IP cache:", e));
+
   try {
     await server.listen({ port: env.API_PORT, host: env.API_HOST });
     server.log.info({ port: env.API_PORT }, "Servidor HTTP iniciado");

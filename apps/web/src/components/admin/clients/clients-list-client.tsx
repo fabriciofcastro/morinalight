@@ -13,7 +13,9 @@ import {
     RefreshCw,
     Phone,
     Mail,
-    Zap
+    Zap,
+    Download,
+    Upload
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
@@ -24,6 +26,7 @@ import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Can } from "@/lib/auth";
+import { PageHeader } from "@/components/ui/page-header";
 
 const ClientCard = ({
     client,
@@ -266,80 +269,49 @@ export function ClientsListClient() {
     return (
         <AllowedGuard I="read" a="Client" redirectTo="/admin">
             <div className="p-8 space-y-8 min-h-screen text-white pb-20">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-200 to-cyan-500">
-                            Clientes
-                        </h1>
-                        <p className="text-white/60 mt-1">Gestão de relacionamento e vendas</p>
-                    </div>
-                    <Can I="create" a="Client">
-                        <Button
-                            onClick={() => router.push("/admin/clients/new")}
-                            className="bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.3)] border border-cyan-400/20"
-                        >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Novo Cliente
-                        </Button>
-                    </Can>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                    >
-                        <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex justify-between items-start relative z-10">
-                            <div>
-                                <p className="text-sm font-medium text-white/40">Total da Base</p>
-                                <h3 className="text-3xl font-bold text-white mt-1">{stats.total}</h3>
-                            </div>
-                            <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
-                                <Users className="w-6 h-6" />
-                            </div>
+                <PageHeader
+                    title="Gestão de Clientes"
+                    subtitle="Relacionamento, CRM e base de vendas"
+                    stats={[
+                        { label: "Total", value: stats.total, color: "text-blue-400" },
+                        { label: "Ativos", value: stats.active, color: "text-emerald-400" },
+                        { label: "Leads", value: stats.leads, color: "text-amber-400" },
+                    ]}
+                    actions={
+                        <div className="flex items-center gap-2">
+                            <Can I="create" a="Client">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => router.push("/admin/clients/import")}
+                                    className="border-white/10 hover:bg-white/5 text-white gap-2 cursor-pointer h-[40px]"
+                                >
+                                    <Upload className="w-4 h-4" />
+                                    <span className="hidden lg:inline">Importar</span>
+                                </Button>
+                            </Can>
+                            <Can I="export" a="Client">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => router.push("/admin/clients/export")}
+                                    className="border-white/10 hover:bg-white/5 text-white gap-2 cursor-pointer h-[40px]"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    <span className="hidden lg:inline">Exportar</span>
+                                </Button>
+                            </Can>
+                            <Can I="create" a="Client">
+                                <Button
+                                    onClick={() => router.push("/admin/clients/new")}
+                                    className="bg-blue-600 hover:bg-blue-500 text-white gap-2 shadow-[0_0_20px_rgba(37,99,235,0.3)] border-blue-400/20 cursor-pointer h-[40px]"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    <span>Novo Cliente</span>
+                                </Button>
+                            </Can>
                         </div>
-                    </motion.div>
+                    }
+                />
 
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                    >
-                        <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex justify-between items-start relative z-10">
-                            <div>
-                                <p className="text-sm font-medium text-white/40">Ativos</p>
-                                <h3 className="text-3xl font-bold text-emerald-400 mt-1">{stats.active}</h3>
-                            </div>
-                            <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
-                                <Zap className="w-6 h-6" />
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md relative overflow-hidden group"
-                    >
-                        <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex justify-between items-start relative z-10">
-                            <div>
-                                <p className="text-sm font-medium text-white/40">Leads / Potenciais</p>
-                                <h3 className="text-3xl font-bold text-amber-400 mt-1">
-                                    {stats.leads}
-                                </h3>
-                            </div>
-                            <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400">
-                                <User className="w-6 h-6" />
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
 
                 <div className="space-y-4">
                     <div className="flex flex-col md:flex-row gap-4 bg-[#090b16]/40 p-4 rounded-xl border border-white/5 backdrop-blur-md">

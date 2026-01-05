@@ -22,9 +22,11 @@ import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, Cartesia
 import { analyticsApi, DashboardKPIs, SalesData, TopProduct, RecentActivity } from "@/lib/api/analytics";
 import { notificationCenter } from "@/components/notifications/notification-center";
 
+import { getCurrentOrgId } from "@/lib/auth-client";
+
 export function ExecutiveDashboardClient() {
     const router = useRouter();
-    const orgId = process.env.NEXT_PUBLIC_ORG_ID || "1";
+    const orgId = getCurrentOrgId() || process.env.NEXT_PUBLIC_ORG_ID || "1";
 
     const [loading, setLoading] = useState(true);
     const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
@@ -38,34 +40,10 @@ export function ExecutiveDashboardClient() {
             setLoading(true);
 
             const [kpisRes, salesRes, productsRes, activityRes] = await Promise.all([
-                analyticsApi.getDashboardKPIs(orgId).catch(() => ({
-                    totalRevenue: 125340.50,
-                    revenueGrowth: 12.5,
-                    totalOrders: 342,
-                    ordersGrowth: 8.3,
-                    activeCustomers: 1247,
-                    customersGrowth: 5.2,
-                    lowStockItems: 23,
-                    stockAlertGrowth: -15.3
-                })),
-                analyticsApi.getSalesChart(orgId, period).catch(() => [
-                    { month: 'Jan', revenue: 45000, orders: 120, target: 50000 },
-                    { month: 'Fev', revenue: 52000, orders: 135, target: 50000 },
-                    { month: 'Mar', revenue: 48000, orders: 128, target: 50000 },
-                    { month: 'Abr', revenue: 61000, orders: 156, target: 55000 },
-                    { month: 'Mai', revenue: 72000, orders: 180, target: 60000 },
-                    { month: 'Jun', revenue: 68000, orders: 170, target: 65000 }
-                ]),
-                analyticsApi.getTopProducts(orgId, 5).catch(() => [
-                    { id: '1', name: 'Jaqueta Premium', category: 'Vestuário', unitsSold: 234, revenue: 23400 },
-                    { id: '2', name: 'Calça Social', category: 'Vestuário', unitsSold: 189, revenue: 18900 },
-                    { id: '3', name: 'Camisa Polo', category: 'Vestuário', unitsSold: 156, revenue: 9360 }
-                ]),
-                analyticsApi.getRecentActivity(orgId, 8).catch(() => [
-                    { id: '1', type: 'order', title: 'Novo Pedido #1234', description: 'Cliente: Maria Silva - R$ 2.450,00', timestamp: new Date(Date.now() - 5 * 60000).toISOString() },
-                    { id: '2', type: 'stock', title: 'Alerta de Estoque', description: 'Produto X abaixo do mínimo', timestamp: new Date(Date.now() - 15 * 60000).toISOString() },
-                    { id: '3', type: 'customer', title: 'Novo Cliente', description: 'João Santos cadastrado', timestamp: new Date(Date.now() - 30 * 60000).toISOString() }
-                ])
+                analyticsApi.getDashboardKPIs(orgId),
+                analyticsApi.getSalesChart(orgId, period),
+                analyticsApi.getTopProducts(orgId, 5),
+                analyticsApi.getRecentActivity(orgId, 8)
             ]);
 
             setKpis(kpisRes);

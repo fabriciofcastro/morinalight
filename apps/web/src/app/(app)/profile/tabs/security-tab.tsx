@@ -14,10 +14,13 @@ import {
   Smartphone,
   Trash2,
   X,
+  Download,
+  FileJson,
 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { PasskeySettings } from "@/components/profile/passkey-settings";
 
 export function SecurityTab() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
@@ -43,6 +46,7 @@ export function SecurityTab() {
     confirmPassword: "",
   });
   const [changingPassword, setChangingPassword] = useState(false);
+  const [exportingData, setExportingData] = useState(false);
 
   const [sessions] = useState([
     {
@@ -575,6 +579,54 @@ export function SecurityTab() {
 
   const passwordStrength = getPasswordStrength(passwordForm.newPassword);
 
+  const handleExportData = async () => {
+    setExportingData(true);
+    try {
+      const headers = {
+        ...getAuthHeadersWithTenant(),
+      };
+
+      const profileResponse = await fetch("/api/profile", { headers });
+      if (!profileResponse.ok) throw new Error("Falha ao carregar perfil");
+      const profileData = await profileResponse.json();
+      const userId = profileData.user?.id;
+
+      if (!userId) throw new Error("Usuário não identificado");
+
+      const response = await fetch(`/api/users/${userId}/lgpd/export`, { headers });
+
+      if (response.ok) {
+        const data = await response.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `meus-dados-morina-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        notificationCenter.add({
+          type: "success",
+          title: "Exportação Concluída",
+          message: "Seus dados foram exportados com sucesso em formato JSON.",
+        });
+      } else {
+        throw new Error("Falha na exportação");
+      }
+    } catch (e) {
+      console.error(e);
+      notificationCenter.add({
+        type: "error",
+        title: "Erro na Exportação",
+        message: "Não foi possível exportar seus dados no momento.",
+      });
+    } finally {
+      setExportingData(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Alteração de Senha */}
@@ -664,6 +716,9 @@ export function SecurityTab() {
           </Button>
         </div>
       </GlassCard>
+
+      {/* Passkeys */}
+      <PasskeySettings />
 
       {/* 2FA */}
       <GlassCard className="p-6">
@@ -1127,6 +1182,39 @@ export function SecurityTab() {
               </div>
             </div>
           ))}
+        </div>
+      </GlassCard>
+      {/* LGPD Compliance */}
+      <GlassCard className="p-6 border-blue-500/20 bg-blue-500/5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-1 p-2 rounded-lg bg-blue-500/20">
+              <Shield className="h-5 w-5 text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-white">Privacidade e Dados (LGPD)</h2>
+              <p className="text-sm text-white/60 max-w-xl">
+                Em conformidade com a Lei Geral de Proteção de Dados (Art. 18), você tem o direito à portabilidade.
+                Baixe todos os seus dados pessoais, logs de atividade e preferências em um formato legível por máquina.
+              </p>
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="border-blue-500/30 hover:bg-blue-500/20 text-blue-100 shrink-0"
+            onClick={handleExportData}
+            disabled={exportingData}
+          >
+            {exportingData ? (
+              <>Processando...</>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Exportar Meus Dados (JSON)
+              </>
+            )}
+          </Button>
         </div>
       </GlassCard>
     </div>

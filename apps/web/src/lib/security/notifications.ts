@@ -19,17 +19,7 @@ export interface SecurityNotificationOptions {
 import { emailService } from "@/lib/services/email-service";
 import { slackService } from "@/lib/services/slack-service";
 
-// ... existing imports ...
 
-export type NotificationChannel = "email" | "sms" | "slack" | "push";
-
-export interface SecurityNotificationOptions {
-    to: string;
-    subject?: string;
-    message: string;
-    metadata?: Record<string, any>;
-    priority?: "low" | "medium" | "high" | "critical";
-}
 
 class SecurityNotificationService {
     /**

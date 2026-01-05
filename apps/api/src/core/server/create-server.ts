@@ -1,41 +1,27 @@
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import fastify, { type FastifyLoggerOptions } from "fastify";
+import fastify, { type FastifyLoggerOptions, type FastifyRequest, type FastifyReply, type FastifyError } from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
-import { registerHttp } from "../../app/http/routes";
-import type { AuthModuleOptions as CoreAuthModuleOptions } from "../../core/auth/auth.module";
-import type { AuthModuleOptions } from "../../modules/auth/auth.module";
-import type { CatalogoModuleOptions } from "../../modules/catalogo/catalogo.module";
-import type { ClientesModuleOptions } from "../../modules/clientes/clientes.module";
-import type { CompanySettingsModuleOptions } from "../../modules/company-settings/company-settings.module";
-import type { NotificationsModuleOptions } from "../../modules/notifications/notifications.module";
-import type { OrganizationsModuleOptions } from "../../modules/organizations/organizations.module";
-import type { PrefichaModuleOptions } from "../../modules/preficha/preficha.module";
+import { registerHttp, type HttpModulesOptions } from "../../app/http/routes";
 import { env } from "../config/env";
 import { sanitizeInputs } from "../middleware/sanitize.middleware";
 import { rateLimits } from "../middleware/rate-limit-redis.middleware";
+import { ipBlockMiddleware } from "../middleware/ip-block.middleware";
+import { registerCSRFProtection } from "../middleware/csrf-protection.middleware";
+import { registerLoginRateLimitHook } from "../middleware/login-rate-limit.middleware";
 import { setupHttpMetrics } from "../observability/metrics";
 
 type CreateServerOptions = {
   registerDocs?: boolean;
-  modules?: {
-    catalogo?: CatalogoModuleOptions;
-    preficha?: PrefichaModuleOptions;
-    company?: CompanySettingsModuleOptions;
-    notifications?: NotificationsModuleOptions;
-    organizations?: OrganizationsModuleOptions;
-    auth?: AuthModuleOptions;
-    coreAuth?: CoreAuthModuleOptions;
-    clientes?: ClientesModuleOptions;
-  };
+  modules?: HttpModulesOptions;
 };
 
 export async function createServer({ registerDocs = false, modules }: CreateServerOptions = {}) {
   // Configuração do logger Pino com formato estruturado para Loki
-  const loggerConfig: fastify.FastifyLoggerOptions = {
+  const loggerConfig = {
     level: env.LOG_LEVEL,
     serializers: {
-      req: (req) => ({
+      req: (req: FastifyRequest) => ({
         method: req.method,
         url: req.url,
         headers: {
@@ -45,13 +31,14 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
         remoteAddress: req.ip,
         remotePort: req.socket.remotePort,
       }),
-      res: (res) => ({
+      // biome-ignore lint/suspicious/noExplicitAny: Fastify types are complex here
+      res: (res: any) => ({
         statusCode: res.statusCode,
       }),
-      err: (err) => ({
-        type: err.type,
+      err: (err: FastifyError) => ({
+        type: err.code || err.name,
         message: err.message,
-        stack: err.stack,
+        stack: err.stack || "",
         code: err.code,
         statusCode: err.statusCode,
       }),
@@ -94,8 +81,8 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
   });
 
   // Register cookie plugin for secure token storage
-  const cookie = await import("@fastify/cookie");
-  await app.register(cookie.default, {
+  const fastifyCookie = await import("@fastify/cookie");
+  await app.register(fastifyCookie.default || fastifyCookie, {
     secret: env.JWT_SECRET, // Use JWT secret for cookie signing
     parseOptions: {
       httpOnly: true,
@@ -127,6 +114,9 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
       preload: true,
     },
   });
+
+  // Proteção contra IPs Bloqueados (Firewall) - Deve ser o primeiro hook
+  app.addHook("onRequest", ipBlockMiddleware);
 
   // Sanitização automática de inputs (proteção XSS)
   app.addHook("onRequest", async (request) => {
@@ -181,7 +171,7 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
   setupHttpMetrics(app);
 
   // Register global error handler
-  app.setErrorHandler(async (error, request, reply) => {
+  app.setErrorHandler(async (error: FastifyError, request, reply) => {
     const { errorHandler } = await import("../errors/error-handler");
     return errorHandler(error, request, reply);
   });

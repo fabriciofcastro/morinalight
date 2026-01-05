@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getAuthHeadersWithTenant, getAuthUser } from "../lib/auth-client";
+import type { SecurityPolicy, ObjectAccessEntry } from "@morina/shared-kernel";
 
 // Cache de permissões em memória
 export type PermissionGrant = {
@@ -15,11 +16,14 @@ type CachedPermissions = {
   effective: PermissionGrant[];
   denied: string[];
   role: string | null;
+  policies?: SecurityPolicy[];
+  aclEntries?: ObjectAccessEntry[];
   context?: {
     departmentId?: string;
     sectorId?: string;
     positionId?: string;
     attributes?: Record<string, any>;
+    mfaVerified?: boolean;
   };
   timestamp: number;
 };
@@ -50,6 +54,8 @@ export async function fetchUserPermissions(
     const denied: string[] = Array.isArray(data?.denied) ? data.denied : [];
     const role: string | null = data?.role || null;
     const context = data?.context;
+    const policies: SecurityPolicy[] = data?.policies || [];
+    const aclEntries: ObjectAccessEntry[] = data?.aclEntries || [];
 
     // Atualizar cache
     permissionsCache.set(userId, {
@@ -57,10 +63,12 @@ export async function fetchUserPermissions(
       denied,
       role,
       context,
+      policies,
+      aclEntries,
       timestamp: Date.now(),
     });
 
-    return { effective, denied, role, context };
+    return { effective, denied, role, context, policies, aclEntries };
   } catch (error) {
     console.error("Erro ao buscar permissões:", error);
     return { effective: [], denied: [], role: null, context: undefined };
@@ -116,8 +124,8 @@ function getDefaultPermissions(): string[] {
   ];
 }
 
-import { useAbility } from "@/lib/auth/CaslContext";
-import { parsePermissionKey } from "@/lib/auth/ability";
+import { useAbility } from "../lib/auth/CaslContext";
+import { parsePermissionKey } from "../lib/auth/ability";
 
 /**
  * @deprecated Use useAbility() from @/lib/auth/CaslContext instead.

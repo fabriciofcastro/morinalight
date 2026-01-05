@@ -1,5 +1,7 @@
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
+import type { PermissionCacheService } from "../domain/services/permission-cache.service";
+import type { PermissionInheritanceService } from "../domain/services/permission-inheritance.service";
 import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
 import type { PositionRepository } from "../../organizational-structure/domain/repositories/position-repository";
 import type { SectorRepository } from "../../organizational-structure/domain/repositories/sector-repository";
@@ -18,6 +20,7 @@ import type { UserPermissionRepository } from "../domain/repositories/user-permi
 import { registerDepartmentPermissionsRoute } from "./department-permissions.route";
 import { registerListUserPermissionsRoute } from "./list-user-permissions.route";
 import { registerPermissionAuditLogRoute } from "./permission-audit-log.route";
+import { registerPermissionAuditRoute } from "./permission-audit.route";
 import { registerAccessAuditLogRoute } from "./access-audit-log.route";
 import { registerPermissionChangeRequestsRoute } from "./permission-change-requests.route";
 import { registerPermissionTemplatesRoute } from "./permission-templates.route";
@@ -26,6 +29,9 @@ import { registerSectorPermissionsRoute } from "./sector-permissions.route";
 import { registerUserCustomPermissionsRoute } from "./user-custom-permissions.route";
 import { registerUserEffectivePermissionsRoute } from "./user-effective-permissions.route";
 import { registerBulkAssignPermissionsRoute } from "./bulk-assign-permissions.route";
+
+import { registerGetPermissionMatrixRoute } from "./get-permission-matrix.route";
+import { AccessAuditInterceptor } from "../infra/interceptors/access-audit.interceptor";
 
 type PermissionsHttpDeps = {
   permissionRepository: PermissionRepository;
@@ -45,12 +51,26 @@ type PermissionsHttpDeps = {
   templateRepository?: PermissionTemplateRepository;
   userRepository?: UserRepository;
   eventBus?: DomainEventBus;
+  permissionCacheService?: PermissionCacheService;
+  permissionInheritanceService?: PermissionInheritanceService;
 };
 
 export async function registerPermissionsHttpRoutes(
   app: FastifyInstance,
   deps: PermissionsHttpDeps,
 ) {
+  if (deps.accessAuditLogRepository) {
+    const interceptor = new AccessAuditInterceptor(deps.accessAuditLogRepository);
+    app.addHook("onResponse", async (request, reply) => {
+      // Usar safe-binding para evitar erros não tratados
+      try {
+        await interceptor.intercept(request, reply, null);
+      } catch (err) {
+        request.log.error(err, "Erro no AccessAuditInterceptor");
+      }
+    });
+  }
+
   await registerListUserPermissionsRoute(app, {
     permissionRepository: deps.permissionRepository,
     organizationRepository: deps.organizationRepository,
@@ -155,6 +175,11 @@ export async function registerPermissionsHttpRoutes(
     await registerPermissionAuditLogRoute(app, {
       auditLogRepository: deps.auditLogRepository,
     });
+
+    // Registrar rota de auditoria de permissões
+    await registerPermissionAuditRoute(app, {
+      auditLogRepository: deps.auditLogRepository,
+    });
   }
 
   // Registrar rota de auditoria de acessos
@@ -191,5 +216,10 @@ export async function registerPermissionsHttpRoutes(
     userPermissionRepository: deps.userPermissionRepository,
     auditLogRepository: deps.auditLogRepository,
     eventBus: deps.eventBus,
+  });
+
+  // Registrar rota de matriz de permissões
+  await registerGetPermissionMatrixRoute(app, {
+    permissionRepository: deps.permissionRepository,
   });
 }

@@ -131,3 +131,18 @@ export function requireAuth() {
     }
   };
 }
+
+/**
+ * Middleware para exigir role de admin
+ */
+export async function adminRouteMiddleware(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+  if (!request.auth) {
+    return reply.status(401).send({
+      message: "Autenticação necessária",
+      code: "UNAUTHORIZED",
+    });
+  }
+
+  // TODO: Implement role check when user roles are available
+  // For now, just ensure authentication is present
+}

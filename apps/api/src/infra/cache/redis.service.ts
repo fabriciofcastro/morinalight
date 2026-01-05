@@ -13,18 +13,31 @@ let hasAuthError = false; // Flag para evitar tentativas infinitas em caso de er
  * Obtém ou cria cliente Redis
  */
 export function getRedisClient(): Redis {
+  // Use mock Redis in test environment to avoid external dependencies
+  if (env.NODE_ENV === "test") {
+    const mockRedis = {
+      async set(key: string, value: string, mode?: string, ttl?: number) { return 'OK'; },
+      async get(key: string) { return null; },
+      async del(key: string) { return 1; },
+    } as any;
+    redisClient = mockRedis as unknown as Redis;
+    return redisClient;
+  }
   if (!redisClient) {
     const redisUrl = env.REDIS_URL || process.env.REDIS_URL;
 
     if (!redisUrl) {
       // Em desenvolvimento, não falhar se Redis não estiver configurado
-      if (env.NODE_ENV === "development") {
+      if (env.NODE_ENV === "development" || env.NODE_ENV === "test") {
         console.warn("⚠️ [REDIS] REDIS_URL não configurada. Redis será desabilitado.");
-        // Retornar um cliente mock que não faz nada
-        redisClient = new Redis({
-          lazyConnect: true,
-          enableOfflineQueue: false,
-        });
+        // Return a simple mock client with no-op methods for development/testing
+        const mockRedis = {
+          async set(key: string, value: string, mode?: string, ttl?: number) { return 'OK'; },
+          async get(key: string) { return null; },
+          async del(key: string) { return 1; },
+          // Additional methods used in code can be added as needed
+        } as any;
+        redisClient = mockRedis as unknown as Redis;
         return redisClient;
       }
       throw new Error(
@@ -141,7 +154,7 @@ export function getRedisClient(): Redis {
       if (env.NODE_ENV === "development" && (!env.REDIS_URL && !process.env.REDIS_URL)) {
         return; // Silenciosamente ignorar se não estiver configurado
       }
-      
+
       // Se for erro de autenticação, marcar flag e parar tentativas
       if (err.message.includes("NOAUTH") || err.message.includes("Authentication")) {
         hasAuthError = true;
@@ -164,12 +177,12 @@ export function getRedisClient(): Redis {
         }
         return;
       }
-      
+
       // Para outros erros, apenas logar se não for erro de conexão fechada
       if (!err.message.includes("Connection is closed") && !err.message.includes("ECONNREFUSED")) {
         console.error("❌ [REDIS] Erro ao conectar:", err.message);
       }
-      
+
       // Em desenvolvimento, continuar sem Redis (fallback)
       if (env.NODE_ENV === "development") {
         // Não repetir o aviso, já foi logado

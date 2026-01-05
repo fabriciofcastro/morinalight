@@ -5,7 +5,7 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { exportUserData } from "../../../core/compliance/lgpd.service";
+import { lgpdExportService } from "../application/services/lgpd-export.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
 
 const paramsSchema = z.object({
@@ -44,14 +44,10 @@ export async function registerLgpdExportRoute(app: FastifyInstance) {
     }
 
     try {
-      const data = await exportUserData(userId, orgId);
+      const exportData = await lgpdExportService.generateExport(userId, orgId);
 
       // Retornar como JSON estruturado
-      return reply.send({
-        format: "lgpd-export-v1",
-        exportedAt: new Date().toISOString(),
-        data,
-      });
+      return reply.send(exportData);
     } catch (error) {
       console.error("Erro ao exportar dados LGPD:", error);
       return reply.status(500).send({

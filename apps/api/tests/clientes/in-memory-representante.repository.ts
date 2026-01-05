@@ -22,7 +22,10 @@ export class InMemoryRepresentanteRepository implements RepresentanteRepository 
     return representante;
   }
 
-  async listarPorOrg(orgId: string, filtro = {}) {
+  async listarPorOrg(
+    orgId: string,
+    filtro: { status?: "ativo" | "inativo" | "suspenso"; cursor?: string; limite?: number } = {},
+  ) {
     const itens = Array.from(this.items.values())
       .filter((r) => r.dados.orgId === orgId)
       .filter((r) => {

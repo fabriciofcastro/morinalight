@@ -4,7 +4,7 @@
  * Sistema de middleware modular para segurança de rotas API
  */
 
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, NextFetchEvent } from "next/server";
 import { logger } from "@/lib/observability";
 import { intrusionDetector } from "@/lib/security/intrusion-detection";
 import { verifyAccessToken } from "@/lib/auth/jwt";
@@ -12,16 +12,18 @@ import { userRepository } from "@/lib/repositories";
 import { redisRateLimiter } from "@/lib/rate-limit/redis-rate-limiter";
 import { getRateLimitConfig, getRateLimitKey } from "@/lib/rate-limit/rate-limit-config";
 
+export type MiddlewareContext = NextFetchEvent | { params?: Record<string, string | string[]> } | unknown;
+
 export type MiddlewareFunction = (
     request: NextRequest,
-    context: any
+    context: MiddlewareContext
 ) => Promise<NextResponse | null>;
 
 /**
  * Compõe múltiplos middlewares em um único
  */
 export function composeMiddleware(...middlewares: MiddlewareFunction[]): MiddlewareFunction {
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         for (const middleware of middlewares) {
             const result = await middleware(request, context);
             if (result) {
@@ -36,10 +38,10 @@ export function composeMiddleware(...middlewares: MiddlewareFunction[]): Middlew
  * Middleware de autenticação JWT
  */
 export function authMiddleware(): MiddlewareFunction {
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         try {
             // Obter token do cookie
-            const authToken = request.cookies.get("auth-token")?.value;
+            const authToken = request.cookies.get("access_token")?.value ?? request.cookies.get("auth-token")?.value;
 
             if (!authToken) {
                 logger.warn("Missing auth token", {
@@ -105,7 +107,7 @@ export function authMiddleware(): MiddlewareFunction {
 }
 
 export function roleMiddleware(allowedRoles: string[]): MiddlewareFunction {
-    return async (request: NextRequest, _context: any) => {
+    return async (request: NextRequest, _context: MiddlewareContext) => {
         const user = (request as any).user;
 
         if (!user) {
@@ -145,98 +147,101 @@ export function rateLimitMiddleware(options: {
 }): MiddlewareFunction {
     const { maxRequests, windowMs, keyGenerator } = options;
 
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         // Gerar chave (por IP ou por usuário)
         const key = keyGenerator
             ? keyGenerator(request)
             : request.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
 
-        if (process.env.RATE_LIMIT_ENABLED === 'true') {
-            const config = getRateLimitConfig(request.nextUrl.pathname);
-            const result = await redisRateLimiter.checkLimit(key, {
-                requests: maxRequests || config.requests,
-                window: config.window // Using config window for consistency
-            });
-
-            if (!result.allowed) {
-                logger.warn("Rate limit exceeded (Redis Centralized)", {
-                    key,
-                    remaining: result.remaining,
-                    limit: result.limit,
+        try {
+            if (process.env.RATE_LIMIT_ENABLED === 'true') {
+                const config = getRateLimitConfig(request.nextUrl.pathname);
+                const result = await redisRateLimiter.checkLimit(key, {
+                    requests: maxRequests || config.requests,
+                    window: config.window // Using config window for consistency
                 });
 
-                return NextResponse.json(
-                    {
-                        error: "Too many requests",
-                        retryAfter: result.retryAfter,
-                    },
-                    {
-                        status: 429,
-                        headers: {
-                            "Retry-After": (result.retryAfter || 60).toString(),
-                            "X-RateLimit-Limit": result.limit.toString(),
-                            "X-RateLimit-Remaining": "0",
-                            "X-RateLimit-Reset": result.resetAt.toISOString(),
+                if (!result.allowed) {
+                    logger.warn("Rate limit exceeded (Redis Centralized)", {
+                        key,
+                        remaining: result.remaining,
+                        limit: result.limit,
+                    });
+
+                    return NextResponse.json(
+                        {
+                            error: "Too many requests",
+                            retryAfter: result.retryAfter,
                         },
-                    }
-                );
+                        {
+                            status: 429,
+                            headers: {
+                                "Retry-After": (result.retryAfter || 60).toString(),
+                                "X-RateLimit-Limit": result.limit.toString(),
+                                "X-RateLimit-Remaining": "0",
+                                "X-RateLimit-Reset": result.resetAt.toISOString(),
+                            },
+                        }
+                    );
+                }
             }
+
+            return null;
+        } catch (redisError) {
+            // Fallback para in-memory se Redis falhar
+            logger.warn("Redis rate limiter failed, using in-memory fallback", { error: redisError });
         }
 
-        return null;
-} catch (redisError) { // Fallback para in-memory se Redis falhar logger.warn("Redis rate limiter failed, using in-memory fallback", { error: redisError });
-    }
+        // Fallback: In-memory rate limiting
+        const now = Date.now();
 
-    // Fallback: In-memory rate limiting
-    const now = Date.now();
+        // Obter ou criar entrada
+        if (!rateLimitStore.has(key)) {
+            rateLimitStore.set(key, { count: 0, resetAt: now + windowMs });
+        }
 
-    // Obter ou criar entrada
-    if (!rateLimitStore.has(key)) {
-        rateLimitStore.set(key, { count: 0, resetAt: now + windowMs });
-    }
+        const entry = rateLimitStore.get(key)!;
 
-    const entry = rateLimitStore.get(key)!;
+        // Reset se janela expirou
+        if (now > entry.resetAt) {
+            entry.count = 0;
+            entry.resetAt = now + windowMs;
+        }
 
-    // Reset se janela expirou
-    if (now > entry.resetAt) {
-        entry.count = 0;
-        entry.resetAt = now + windowMs;
-    }
+        // Verificar limite
+        if (entry.count >= maxRequests) {
+            logger.warn("Rate limit exceeded (in-memory)", {
+                key,
+                count: entry.count,
+                limit: maxRequests,
+            });
 
-    // Verificar limite
-    if (entry.count >= maxRequests) {
-        logger.warn("Rate limit exceeded (in-memory)", {
-            key,
-            count: entry.count,
-            limit: maxRequests,
-        });
-
-        return NextResponse.json(
-            {
-                error: "Too many requests",
-                retryAfter: Math.ceil((entry.resetAt - now) / 1000),
-            },
-            {
-                status: 429,
-                headers: {
-                    "Retry-After": Math.ceil((entry.resetAt - now) / 1000).toString(),
+            return NextResponse.json(
+                {
+                    error: "Too many requests",
+                    retryAfter: Math.ceil((entry.resetAt - now) / 1000),
                 },
-            }
-        );
-    }
+                {
+                    status: 429,
+                    headers: {
+                        "Retry-After": Math.ceil((entry.resetAt - now) / 1000).toString(),
+                    },
+                }
+            );
+        }
 
-    // Incrementar contador
-    entry.count += 1;
+        // Incrementar contador
+        entry.count += 1;
 
-    return null;
-};
+        return null;
+    };
 }
 
 /**
  * Middleware de logging de requisições
  */
 export function loggingMiddleware(): MiddlewareFunction {
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         const startTime = Date.now();
 
         // Log da requisição
@@ -257,7 +262,7 @@ export function loggingMiddleware(): MiddlewareFunction {
  * Middleware de security headers
  */
 export function securityHeadersMiddleware(): MiddlewareFunction {
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         // Não bloqueia, apenas adiciona headers na resposta
         // Headers serão adicionados no middleware principal
         return null;
@@ -268,7 +273,7 @@ export function securityHeadersMiddleware(): MiddlewareFunction {
  * Middleware de IDS (Intrusion Detection System)
  */
 export function idsMiddleware(): MiddlewareFunction {
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         const user = (request as any).user;
 
         if (user) {
@@ -291,7 +296,7 @@ export function corsMiddleware(options: {
 }): MiddlewareFunction {
     const { allowedOrigins, allowedMethods } = options;
 
-    return async (request: NextRequest, context: any) => {
+    return async (request: NextRequest, context: MiddlewareContext) => {
         const origin = request.headers.get("origin");
 
         // Verificar origem
@@ -327,7 +332,7 @@ export function addSecurityHeaders(response: NextResponse): NextResponse {
     response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
     response.headers.set(
         "Content-Security-Policy",
-        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:3333 ws://localhost:3333 http: https: ws: wss:;"
     );
 
     return response;

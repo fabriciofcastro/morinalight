@@ -15,6 +15,7 @@ import {
     Button
 } from "@/components/ui/futuristic";
 import { SecurityPolicy } from "@morina/shared-kernel";
+import { Can } from "@/lib/auth/CaslContext";
 
 interface PoliciesListProps {
     policies: SecurityPolicy[];
@@ -80,15 +81,19 @@ export function PoliciesList({ policies, onEdit, onDelete, onToggle }: PoliciesL
                         </div>
 
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button variant="secondary" size="icon" onClick={() => onToggle(policy.id)}>
-                                <Power className={`h-4 w-4 ${policy.active ? 'text-emerald-400' : 'text-white/40'}`} />
-                            </Button>
-                            <Button variant="secondary" size="icon" onClick={() => onEdit(policy)}>
-                                <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button variant="secondary" size="icon" className="hover:bg-red-500/20 hover:text-red-400" onClick={() => onDelete(policy.id)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <Can I="update" a="SecurityPolicy">
+                                <Button variant="secondary" size="icon" onClick={() => onToggle(policy.id)}>
+                                    <Power className={`h-4 w-4 ${policy.active ? 'text-emerald-400' : 'text-white/40'}`} />
+                                </Button>
+                                <Button variant="secondary" size="icon" onClick={() => onEdit(policy)}>
+                                    <Edit2 className="h-4 w-4" />
+                                </Button>
+                            </Can>
+                            <Can I="delete" a="SecurityPolicy">
+                                <Button variant="secondary" size="icon" className="hover:bg-red-500/20 hover:text-red-400" onClick={() => onDelete(policy.id)}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </Can>
                         </div>
                     </div>
 

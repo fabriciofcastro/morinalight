@@ -31,7 +31,6 @@ async function main() {
             displayName: 'Administrador',
             passwordHash: passwordHash,
             status: 'active',
-            termsAcceptedAt: new Date(),
             memberships: {
                 create: {
                     organizationId: org.id,

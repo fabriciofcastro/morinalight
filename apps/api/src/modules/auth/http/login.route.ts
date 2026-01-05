@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import { createHash } from "node:crypto";
 import { z } from "zod";
 
+import { env } from "../../../core/config/env";
 import { signToken } from "../../../core/auth/jwt-rs256.service";
 import { getPrisma } from "../../../infra/database/prisma.service";
 
@@ -16,6 +17,7 @@ const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   code: z.string().optional(), // 2FA code (6 digits)
+  rememberMe: z.boolean().optional().default(false),
 });
 
 type LoginRouteDeps = {
@@ -274,7 +276,11 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
         },
       });
 
-      app.log.info({ userId: user.userId }, "Login bem-sucedido, definindo cookies seguros");
+      app.log.info({ userId: user.userId, rememberMe: body.rememberMe }, "Login bem-sucedido, definindo cookies seguros");
+
+      // Cookie duration based on rememberMe
+      const accessTokenMaxAge = body.rememberMe ? 15 * 60 : undefined; // 15 min or session
+      const refreshTokenMaxAge = body.rememberMe ? 30 * 24 * 60 * 60 : undefined; // 30 days or session
 
       // Set tokens as HttpOnly cookies (secure in production)
       reply.setCookie("access_token", accessToken, {
@@ -282,7 +288,7 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 15 * 60, // 15 minutes (same as token expiry)
+        maxAge: accessTokenMaxAge,
       });
 
       reply.setCookie("refresh_token", refreshToken, {
@@ -290,7 +296,7 @@ export async function registerLoginRoute(app: FastifyInstance, deps: LoginRouteD
         secure: env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        maxAge: 30 * 24 * 60 * 60, // 30 days
+        maxAge: refreshTokenMaxAge,
       });
 
       return reply.send({

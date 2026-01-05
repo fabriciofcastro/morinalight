@@ -107,9 +107,9 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
     // 3. Real Growth Data (Line Chart) with dynamic buckets based on date range
     const growthData = useMemo(() => {
         const allEntities = [
-            ...filteredDepartments.map(d => d.createdAt),
-            ...filteredSectors.map(s => s.createdAt),
-            ...filteredPositions.map(p => p.createdAt)
+            ...departments.map(d => d.createdAt),
+            ...sectors.map(s => s.createdAt),
+            ...positions.map(p => p.createdAt)
         ].filter(Boolean).map(d => new Date(d as string | Date));
 
         const buckets = generateTimeBuckets(dateFilter);
@@ -117,11 +117,11 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
 
         return buckets.map(bucketDate => {
             const label = formatBucketLabel(bucketDate, granularity);
-            // Cumulative count up to this bucket
+            // Cumulative count up to this bucket (includes everything before)
             const count = allEntities.filter(date => date <= bucketDate).length;
             return { x: label, y: count };
         });
-    }, [filteredDepartments, filteredSectors, filteredPositions, dateFilter]);
+    }, [departments, sectors, positions, dateFilter]);
 
     // 4. Real Health/Activity Metrics (Radar)
     const healthData = useMemo(() => {
@@ -238,6 +238,7 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
                     <button
                         type="button"
                         onClick={() => handleExportCSV('departments')}
+                        aria-label="Exportar CSV de Departamentos"
                         className="px-3 py-1.5 text-xs font-mono text-white/50 hover:text-white hover:bg-white/5 border-r border-white/10 transition-colors"
                     >
                         CSV_DEPTS
@@ -245,6 +246,7 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
                     <button
                         type="button"
                         onClick={() => handleExportCSV('sectors')}
+                        aria-label="Exportar CSV de Setores"
                         className="px-3 py-1.5 text-xs font-mono text-white/50 hover:text-white hover:bg-white/5 border-r border-white/10 transition-colors"
                     >
                         CSV_SEC
@@ -252,6 +254,7 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
                     <button
                         type="button"
                         onClick={() => handleExportCSV('positions')}
+                        aria-label="Exportar CSV de Cargos"
                         className="px-3 py-1.5 text-xs font-mono text-white/50 hover:text-white hover:bg-white/5 transition-colors"
                     >
                         CSV_POS
@@ -260,6 +263,7 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
                 <button
                     type="button"
                     onClick={handleExportStats}
+                    aria-label="Exportar estatísticas completas em JSON"
                     className="flex items-center gap-2 text-xs font-mono text-white/50 hover:text-white transition-colors border border-white/10 bg-white/5 px-3 py-1.5 rounded"
                 >
                     <Download className="h-3.5 w-3.5" />

@@ -16,6 +16,7 @@ export interface SalesData {
     revenue: number;
     orders: number;
     target: number;
+    [key: string]: any;
 }
 
 export interface TopProduct {
@@ -41,6 +42,7 @@ export interface SupplierPerformance {
     onTimeDelivery: number; // percentage
     quality: number; // percentage
     totalOrders: number;
+    [key: string]: any;
 }
 
 export interface InventoryInsight {
@@ -49,6 +51,7 @@ export interface InventoryInsight {
     itemCount: number;
     turnoverRate: number; // percentage
     lowStockItems: number;
+    [key: string]: any;
 }
 
 export interface CustomerSegment {
@@ -57,6 +60,7 @@ export interface CustomerSegment {
     totalRevenue: number;
     avgOrderValue: number;
     color: string;
+    [key: string]: any;
 }
 
 export interface RevenueData {
@@ -85,25 +89,29 @@ export interface DateRangeParams {
 export const analyticsApi = {
     getDashboardKPIs: async (orgId: string): Promise<DashboardKPIs> => {
         return apiClient.get<DashboardKPIs>('/analytics/dashboard/kpis', {
-            headers: { 'x-org-id': orgId }
+            headers: { 'x-org-id': orgId },
+            skipAuthRedirect: true
         });
     },
 
     getSalesChart: async (orgId: string, period: '7d' | '30d' | '90d' | '12m'): Promise<SalesData[]> => {
         return apiClient.get<SalesData[]>(`/analytics/sales?period=${period}`, {
-            headers: { 'x-org-id': orgId }
+            headers: { 'x-org-id': orgId },
+            skipAuthRedirect: true
         });
     },
 
     getTopProducts: async (orgId: string, limit: number = 5): Promise<TopProduct[]> => {
         return apiClient.get<TopProduct[]>(`/analytics/top-products?limit=${limit}`, {
-            headers: { 'x-org-id': orgId }
+            headers: { 'x-org-id': orgId },
+            skipAuthRedirect: true
         });
     },
 
     getRecentActivity: async (orgId: string, limit: number = 10): Promise<RecentActivity[]> => {
         return apiClient.get<RecentActivity[]>(`/analytics/activity?limit=${limit}`, {
-            headers: { 'x-org-id': orgId }
+            headers: { 'x-org-id': orgId },
+            skipAuthRedirect: true
         });
     },
 

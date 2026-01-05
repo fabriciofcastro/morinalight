@@ -17,7 +17,7 @@ export function generateCSRFToken(): string {
  * Validar token CSRF
  */
 export function validateCSRFToken(token: string, sessionToken: string): boolean {
-    if (!token || !sessionToken) {
+    if (!token || !sessionToken || typeof token !== 'string' || typeof sessionToken !== 'string') {
         return false;
     }
 

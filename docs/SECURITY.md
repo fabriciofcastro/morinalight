@@ -48,12 +48,49 @@ As configurações de rate limiting estão em `deploy/security/rate-limiting.con
 
 ### RBAC (Role-Based Access Control)
 
-Sistema de permissões baseado em roles:
+O sistema utiliza RBAC para controle de acesso:
 
-- Admin
-- Manager
-- User
-- Guest
+- **Permissões granulares**: Cada funcionalidade possui permissões específicas
+- **Roles**: Agrupamento de permissões por função
+- **Hierarquia**: Permissões podem ser herdadas através da estrutura organizacional
+- **Auditoria**: Todas as mudanças de permissões são registradas
+
+#### Sistema de Auditoria de Permissões
+
+O sistema inclui um **módulo completo de auditoria de permissões** que:
+
+**Detecção de Anomalias (7 tipos):**
+1. **Permissões Órfãs** - Atribuídas a entidades deletadas
+2. **Conflitos** - Permissões contraditórias (granted vs denied)
+3. **Excessivas** - Redundantes ou desnecessárias
+4. **Hierarquia** - Inconsistências na hierarquia organizacional
+5. **Audit Gaps** - Mudanças sem registro adequado
+6. **Obsoletas** - Permissões não utilizadas
+7. **SoD** - Violações de segregação de funções
+
+**Funcionalidades:**
+- ✅ Score de conformidade (0-100%)
+- ✅ Correções automáticas com dry-run
+- ✅ Dashboard visual completo
+- ✅ Auditorias agendadas (diária/semanal)
+- ✅ Alertas automáticos (email/Slack)
+- ✅ API REST e CLI
+
+**Acesso:**
+- Dashboard: `/admin/permissions/audit`
+- API: `POST /permissions/audit/run`
+- CLI: `npx tsx src/scripts/audit-permissions.ts`
+
+**Documentação:**
+- Guia completo: `apps/api/src/modules/permissions/README_AUDIT.md`
+- Integração: `apps/api/src/modules/permissions/INTEGRATION.md`
+- Documentação técnica: `apps/api/src/modules/permissions/DOCUMENTATION.md`
+
+**Automação:**
+- Auditoria diária às 2h da manhã
+- Auditoria semanal aos domingos às 3h
+- Auto-fix de anomalias de baixa severidade
+- Alertas automáticos para problemas críticos
 
 ## Secrets Management
 
@@ -141,20 +178,55 @@ Para habilitar HTTPS:
 - Configure cipher suites seguros
 - Habilite HSTS
 
-## Logs e Monitoramento
+## 11. Auditoria e Monitoramento
 
-### Logs de Segurança
+### Auditorias de Segurança
 
-- Tentativas de login falhadas
-- Requisições bloqueadas por rate limiting
-- Erros de autenticação
-- Acessos não autorizados
+O sistema realiza auditorias regulares de segurança:
 
-### Monitoramento
+- **Auditoria de Código**: Análise estática de código para vulnerabilidades
+- **Auditoria de Dependências**: Verificação de vulnerabilidades em pacotes
+- **Auditoria de Permissões**: Sistema automatizado de auditoria de RBAC
+- **Penetration Testing**: Testes de penetração periódicos
 
-- Health checks regulares
-- Alertas para anomalias
-- Monitoramento de recursos
+#### Auditoria Automatizada de Permissões
+
+Sistema completo de auditoria que executa automaticamente:
+
+**Frequência:**
+- Diária: 2h da manhã (todas as organizações)
+- Semanal: Domingo 3h (auditoria completa + auto-fix)
+- Manual: Via dashboard, API ou CLI
+
+**Métricas Monitoradas:**
+- Score de conformidade (0-100%)
+- Total de anomalias por severidade
+- Violações de segregação de funções
+- Permissões órfãs e conflitos
+- Gaps de auditoria
+
+**Alertas Automáticos:**
+- 🚨 Crítico: Score < 60% ou problemas críticos
+- ⚠️  Aviso: Violações de SoD detectadas
+- 📊 Info: Relatório semanal consolidado
+
+**Canais de Notificação:**
+- Email: `SECURITY_ALERT_EMAIL`, `COMPLIANCE_ALERT_EMAIL`
+- Slack: `SLACK_SECURITY_CHANNEL`
+
+**Correções Automáticas:**
+- Remove permissões órfãs
+- Remove permissões excessivas de baixa severidade
+- Preenche gaps de auditoria
+- **NÃO** resolve conflitos automaticamente (requer revisão manual)
+
+### Logs e Monitoramento
+
+- **Logs de Acesso**: Todos os acessos são registrados
+- **Logs de Auditoria**: Mudanças em dados sensíveis são auditadas
+- **Logs de Permissões**: Todas as alterações de permissões são registradas no `PermissionAuditLog`
+- **Monitoramento em Tempo Real**: Alertas para atividades suspeitas
+- **Retenção**: Logs mantidos por 90 dias (configurável)
 
 ## Backup e Recuperação
 

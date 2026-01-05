@@ -105,7 +105,7 @@ export function useKeyboardNavigation(options: KeyboardNavigationOptions = {}) {
 
   // Retorna handler para usar em elementos React
   return {
-    onKeyDown: handleKeyDown as React.KeyboardEventHandler,
+    onKeyDown: handleKeyDown as unknown as React.KeyboardEventHandler,
     ref: elementRef,
   };
 }

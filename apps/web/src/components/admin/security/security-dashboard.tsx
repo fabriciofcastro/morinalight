@@ -53,6 +53,8 @@ interface SecurityStats {
     alertsByType: Array<{ type: string; count: number }>;
     criticalAlerts: SecurityAlert[];
     timeline: Array<{ date: string; count: number }>;
+    mfaAdoptionRate: number;
+    totalUsers: number;
 }
 
 export function SecurityDashboard() {
@@ -255,6 +257,15 @@ export function SecurityDashboard() {
     return (
         <AllowedGuard I="read" a="Security" redirectTo="/admin">
             <div className="space-y-6">
+                {/* MFA Recommendation Banner for Admins */}
+                {stats.mfaAdoptionRate < 100 && (
+                    <Alert
+                        type="warning"
+                        title="Segurança de Conta Recomendada"
+                        message="Identificamos que nem todos os administradores possuem MFA ativo. Proteja sua conta para cumprir os requisitos SOC2."
+                        icon={<Shield className="h-4 w-4 text-amber-500" />}
+                    />
+                )}
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
@@ -311,12 +322,12 @@ export function SecurityDashboard() {
 
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Alert Types</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                            <CardTitle className="text-sm font-medium">MFA Adoption</CardTitle>
+                            <CheckCircle className={`h-4 w-4 ${stats.mfaAdoptionRate > 80 ? 'text-green-500' : 'text-amber-500'}`} />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{stats.alertsByType.length}</div>
-                            <p className="text-xs text-muted-foreground">Different categories</p>
+                            <div className="text-2xl font-bold">{stats.mfaAdoptionRate.toFixed(1)}%</div>
+                            <p className="text-xs text-muted-foreground">{stats.totalUsers} total users</p>
                         </CardContent>
                     </Card>
                 </div>

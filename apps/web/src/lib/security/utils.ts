@@ -94,7 +94,7 @@ export function sanitizeObject<T extends Record<string, any>>(
 
     for (const key of sensitiveKeys) {
         if (key in sanitized) {
-            sanitized[key] = "***REDACTED***";
+            (sanitized as Record<string, any>)[key] = "***REDACTED***";
         }
     }
 
@@ -122,7 +122,7 @@ export function isSecureContext(): boolean {
  * Constant-time string comparison
  */
 export function constantTimeCompare(a: string, b: string): boolean {
-    if (a.length !== b.length) {
+    if (!a || !b || a.length !== b.length) {
         return false;
     }
 

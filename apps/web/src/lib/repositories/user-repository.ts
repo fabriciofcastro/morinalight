@@ -15,6 +15,7 @@ export interface User {
     updatedAt: Date;
     passwordHash?: string; // Added for AuthStrategy compatibility
     has2FA?: boolean;      // Added for AuthStrategy compatibility
+    blockedUntil?: Date;   // Added for Security Middleware compatibility
 }
 
 export class UserRepository extends AbstractRepository<User> {

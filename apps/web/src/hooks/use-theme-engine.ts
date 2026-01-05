@@ -286,8 +286,11 @@ export function useThemeEngine() {
 
     try {
       const response = await fetch("/api/company-settings", { cache: "no-store" });
+
       if (!response.ok) {
-        throw new Error(`GET /api/company-settings failed: ${response.statusText}`);
+        // Don't throw - fail silently and use defaults
+        console.warn(`[theme-engine] company-settings returned ${response.status}, using defaults`);
+        return null;
       }
 
       const payload = (await response.json()) as CompanyThemeSettings;
@@ -301,7 +304,8 @@ export function useThemeEngine() {
       applyThemeVariables(modeToApply, next);
       return next;
     } catch (error) {
-      console.error("[theme-engine] failed to sync with server", error);
+      // Silent fallback - log but don't break the app
+      console.info("[theme-engine] failed to sync with server, using local defaults", error);
       return null;
     } finally {
       setLoading(false);
@@ -351,7 +355,12 @@ export function useThemeEngine() {
         });
 
         if (!response.ok) {
-          throw new Error(`PUT /api/company-settings failed: ${response.statusText}`);
+          // Don't throw - just warn and use local state
+          console.warn(`[theme-engine] persist failed with ${response.status}, using local state`);
+          const next = mergeCompanyTheme(normalized);
+          const modeToApply = next.themeMode ?? themeRef.current;
+          applyThemeVariables(modeToApply, next);
+          return next;
         }
 
         const payload = (await response.json()) as CompanyThemeSettings;
@@ -362,6 +371,13 @@ export function useThemeEngine() {
           setThemeMode(next.themeMode);
         }
 
+        applyThemeVariables(modeToApply, next);
+        return next;
+      } catch (error) {
+        // Silent fallback - log but still apply local changes
+        console.info("[theme-engine] persist error, applying locally", error);
+        const next = mergeCompanyTheme(normalized);
+        const modeToApply = next.themeMode ?? themeRef.current;
         applyThemeVariables(modeToApply, next);
         return next;
       } finally {

@@ -1,4 +1,5 @@
 import type { Permission } from "../entities/permission";
+import type { SecurityPolicy, ObjectAccessEntry } from "@morina/shared-kernel";
 
 export type PermissionFiltro = {
   module?: string;
@@ -14,4 +15,8 @@ export interface PermissionRepository {
   listar(filtro?: PermissionFiltro): Promise<Permission[]>;
   encontrarPorIds(ids: string[]): Promise<Permission[]>;
   deletar(permissionId: string): Promise<void>;
+
+  // Advanced ACL & Policy
+  listarSecurityPolicies(orgId: string): Promise<SecurityPolicy[]>;
+  listarAclEntries(orgId: string, userId: string, role?: string): Promise<ObjectAccessEntry[]>;
 }

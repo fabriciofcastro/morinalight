@@ -11,6 +11,7 @@ export type ConnectionStatusState = {
   lastChecked: Date | null;
   backendOnline: boolean;
   realtimeConnected: boolean;
+  error: string | null;
 };
 
 /**
@@ -23,6 +24,7 @@ export function useConnectionStatus() {
     lastChecked: null,
     backendOnline: false,
     realtimeConnected: false,
+    error: null,
   });
 
   const checkBackend = useCallback(async () => {
@@ -44,15 +46,18 @@ export function useConnectionStatus() {
         backendOnline: isOnline,
         status: isOnline ? "online" : "error",
         lastChecked: new Date(),
+        error: isOnline ? null : `API Error: ${response.status} ${response.statusText}`,
       }));
 
       return isOnline;
-    } catch {
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Network Error";
       setState((prev) => ({
         ...prev,
         backendOnline: false,
         status: "offline",
         lastChecked: new Date(),
+        error: errorMessage,
       }));
       return false;
     }
@@ -68,10 +73,12 @@ export function useConnectionStatus() {
         ...prev,
         realtimeConnected: prev.backendOnline,
       }));
-    } catch {
+    } catch (err) {
       setState((prev) => ({
         ...prev,
         realtimeConnected: false,
+        // Mantemos o erro do backend se ele existir, senão usamos o erro do realtime
+        error: prev.error || (err instanceof Error ? err.message : "Realtime Error"),
       }));
     }
   }, []);

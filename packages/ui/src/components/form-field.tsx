@@ -52,7 +52,7 @@ export function FormField({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       {label && (
-        <Label htmlFor={id} className={cn(labelColorClass)}>
+        <Label htmlFor={id || ""} className={cn(labelColorClass)}>
           {label}
           {required && <span className="ml-1 text-[hsl(var(--danger))]">*</span>}
         </Label>

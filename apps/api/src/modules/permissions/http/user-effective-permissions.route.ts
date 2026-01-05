@@ -23,6 +23,7 @@ type Dependencies = {
   departmentMembershipRepository?: DepartmentMembershipRepository;
   positionRepository?: PositionRepository;
   permissionInheritanceService?: PermissionInheritanceService;
+  permissionCacheService?: any;
   userRepository?: UserRepository;
 };
 
@@ -51,6 +52,7 @@ export async function registerUserEffectivePermissionsRoute(
           positionMembershipRepository: deps.positionMembershipRepository,
           departmentMembershipRepository: deps.departmentMembershipRepository,
           positionRepository: deps.positionRepository,
+          permissionInheritanceService: deps.permissionInheritanceService,
           permissionCacheService: deps.permissionCacheService,
           userRepository: deps.userRepository,
         });

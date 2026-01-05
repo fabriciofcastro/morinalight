@@ -23,7 +23,8 @@ import {
   QrCode,
   ArrowLeft,
   ExternalLink,
-  Download
+  Download,
+  Upload
 } from "lucide-react";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -52,6 +53,7 @@ import { QRCodeBadge } from "./qr-code-badge";
 import { ViewModeToggle, type ViewMode } from "@/components/ui/view-mode-toggle";
 import { Can } from "@/lib/auth";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { PageHeader } from "@/components/ui/page-header";
 
 
 type StatusFilter = "all" | "active" | "inactive" | "suspended" | "pending";
@@ -200,55 +202,87 @@ export function UsersListClient() {
   return (
     <AllowedGuard I="read" a="User" redirectTo="/admin">
       <div className="flex flex-col gap-6 pb-6">
-        {/* Header Stat Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-        >
-          <StatCard title="Total" value={stats.total} total={stats.total} color="#60a5fa" />
-          <StatCard title="Ativos" value={stats.active} total={stats.total} color="#4ade80" />
-          <StatCard title="Inativos" value={stats.inactive} total={stats.total} color="#9ca3af" />
-          <StatCard title="Pendentes" value={stats.pending} total={stats.total} color="#facc15" />
-        </motion.div>
+        {/* Modern Header with Stats & Actions */}
+        <PageHeader
+          title="Gestão de Usuários"
+          subtitle="Administre identidades, acessos e segurança da organização"
+          stats={[
+            { label: "Total", value: stats.total, color: "text-blue-400" },
+            { label: "Ativos", value: stats.active, color: "text-emerald-400" },
+            { label: "Pendentes", value: stats.pending, color: "text-amber-400" },
+          ]}
+          actions={
+            <div className="flex items-center gap-2">
+              <Can I="export" a="User">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/admin/users/export")}
+                  className="border-white/10 hover:bg-white/5 text-white gap-2 cursor-pointer h-[40px]"
+                >
+                  <Download className="h-4 w-4" />
+                  <span className="hidden lg:inline">Exportar</span>
+                </Button>
+              </Can>
+              <Can I="create" a="User">
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/admin/users/import")}
+                  className="border-white/10 hover:bg-white/5 text-white gap-2 cursor-pointer h-[40px]"
+                >
+                  <Upload className="h-4 w-4" />
+                  <span className="hidden lg:inline">Importar</span>
+                </Button>
+              </Can>
+              <Can I="create" a="User">
+                <Button
+                  onClick={() => router.push("/admin/users/new")}
+                  className="bg-blue-600 hover:bg-blue-500 text-white gap-2 shadow-[0_0_20px_rgba(37,99,235,0.3)] border-blue-400/20 cursor-pointer h-[40px]"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Novo Usuário</span>
+                </Button>
+              </Can>
+            </div>
+          }
+        />
 
         {/* Toolbar */}
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white/5 p-4 rounded-xl border border-white/10 backdrop-blur-xl">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-[#0A0D14]/60 p-4 rounded-xl border border-white/10 backdrop-blur-xl">
           <div className="relative w-full md:w-96 group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-focus-within:text-[hsl(var(--primary))]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-focus-within:text-blue-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome ou email..."
-              className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-[hsl(var(--primary)/0.5)] transition-all"
+              className="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-all cursor-text"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white">
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+              >
                 <X className="h-3 w-3" />
               </button>
             )}
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none cursor-pointer"
-            >
-              <option value="all">Todos</option>
-              <option value="active">Ativos</option>
-              <option value="inactive">Inativos</option>
-              <option value="pending">Pendentes</option>
-            </select>
+            <div className="flex items-center gap-2 bg-black/20 border border-white/10 rounded-lg px-2">
+              <span className="text-[10px] uppercase font-bold text-white/30 px-1">Status</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+                className="bg-transparent py-2 text-sm text-white focus:outline-none cursor-pointer"
+              >
+                <option value="all">Todos</option>
+                <option value="active">Ativos</option>
+                <option value="inactive">Inativos</option>
+                <option value="pending">Pendentes</option>
+              </select>
+            </div>
 
             <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
-
-            <Can I="create" a="User">
-              <Button onClick={() => router.push("/admin/users/new")} className="bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary)/0.9)] text-white gap-2">
-                <Plus className="h-4 w-4" /> <span className="hidden sm:inline">Novo</span>
-              </Button>
-            </Can>
           </div>
         </div>
 
@@ -369,7 +403,7 @@ function UserCard({ user, viewMode, isSelected, onSelect, onView, onEdit, onRese
           <input type="checkbox" checked={isSelected} onChange={onSelect} className="rounded border-white/20 bg-white/5 cursor-pointer accent-[hsl(var(--primary))]" />
         </div>
 
-        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white/80 font-bold border border-white/10">
+        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white/80 font-bold border border-white/10 cursor-pointer">
           {user.avatarUrl ? <img src={user.avatarUrl} alt="" className="h-full w-full rounded-full object-cover" /> : user.displayName.charAt(0)}
         </div>
 
@@ -630,7 +664,7 @@ function UserDrawer({ user, onClose, onResetPassword, onEdit }: any) {
                 )}
 
                 {!resumeFile && (
-                  <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                  <div className="bg-white/5 rounded-xl p-4 border border-white/5 cursor-default">
                     <div className="flex items-center gap-3 text-white/50">
                       <InfoIcon className="h-5 w-5" />
                       <span className="text-sm">Nenhum currículo anexado ainda.</span>
@@ -640,6 +674,24 @@ function UserDrawer({ user, onClose, onResetPassword, onEdit }: any) {
               </motion.div>
             )}
 
+            {/* Modal Footer with standardized buttons */}
+            <div className="mt-auto pt-6 border-t border-white/10 flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 border-white/10 hover:bg-white/5 text-white cursor-pointer"
+                onClick={onClose}
+              >
+                Fechar
+              </Button>
+              <Can I="update" a="User">
+                <Button
+                  className="flex-1 bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                  onClick={onEdit}
+                >
+                  Salvar Alterações
+                </Button>
+              </Can>
+            </div>
           </div>
         </div>
       </motion.div>

@@ -1,5 +1,5 @@
 import type { Cliente } from "../../src/modules/clientes/domain/entities/cliente";
-import type { ClienteRepository } from "../../src/modules/clientes/domain/repositories/cliente-repository";
+import type { ClienteRepository, ClienteListaFiltro } from "../../src/modules/clientes/domain/repositories/cliente-repository";
 
 export class InMemoryClienteRepository implements ClienteRepository {
   private readonly items = new Map<string, Cliente>();
@@ -22,7 +22,7 @@ export class InMemoryClienteRepository implements ClienteRepository {
     return cliente;
   }
 
-  async listarPorOrg(orgId: string, filtro = {}) {
+  async listarPorOrg(orgId: string, filtro: ClienteListaFiltro = {}) {
     const itens = Array.from(this.items.values())
       .filter((c) => c.dados.orgId === orgId)
       .filter((c) => {

@@ -75,6 +75,50 @@ export class AuditService {
         // Implementation for retrieving logs
         return [];
     }
+
+    /**
+     * Log a data export event
+     */
+    async logDataExport(requestedBy: string, targetUserId: string, format: string): Promise<void> {
+        await this.log({
+            action: 'DATA_EXPORT',
+            userId: requestedBy,
+            userRole: 'SYSTEM', // Or retrieve actual role if available
+            resource: 'USER_DATA',
+            resourceId: targetUserId,
+            status: 'SUCCESS',
+            metadata: {
+                format,
+                targetUserId,
+            },
+            changes: {},
+        });
+    }
+
+    /**
+     * Log a failure event
+     */
+    async logFailure(
+        action: string,
+        requestedBy: string,
+        resource: string,
+        error: Error,
+        metadata?: Record<string, any>
+    ): Promise<void> {
+        await this.log({
+            action: action.toUpperCase(),
+            userId: requestedBy,
+            userRole: 'SYSTEM', // Or retrieve actual role if available
+            resource: resource,
+            status: 'FAILURE',
+            metadata: {
+                ...metadata,
+                errorMessage: error.message,
+                errorStack: error.stack,
+            },
+            changes: {},
+        });
+    }
 }
 
 export const auditService = new AuditService();

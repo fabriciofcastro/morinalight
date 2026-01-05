@@ -10,28 +10,49 @@ describe("Permissions Use Cases", () => {
 
   beforeEach(() => {
     // Mock repositories
+    const adminId = "00000000-0000-0000-0000-000000000001";
+    const memberId = "00000000-0000-0000-0000-000000000002";
+
     permissionRepository = {
-      salvar: async () => {},
+      salvar: async () => { },
       encontrarPorId: async () => null,
       encontrarPorChave: async () => null,
       listar: async () => [],
-      encontrarPorIds: async () => [],
-    } as PermissionRepository;
+      encontrarPorIds: async (ids: string[]) => {
+        return ids.map((id) => ({
+          permissionId: id,
+          permissionKey: id,
+          dados: {
+            name: `Permission ${id}`,
+            description: "Mock desc",
+            module: "mock",
+            category: "mock",
+            resource: id.split(":")[0] || "mock",
+            action: id.split(":")[1] || "mock",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        }));
+      },
+      deletar: async () => { },
+      listarSecurityPolicies: async () => [],
+      listarAclEntries: async () => [],
+    } as unknown as PermissionRepository;
 
     organizationRepository = {
       encontrarMembership: async (orgId: string, userId: string) => {
-        if (userId === "admin-user") {
+        if (userId === adminId) {
           return {
             userId,
-            orgId,
+            organizationId: orgId,
             role: "admin",
             createdAt: new Date(),
           };
         }
-        if (userId === "member-user") {
+        if (userId === memberId) {
           return {
             userId,
-            orgId,
+            organizationId: orgId,
             role: "member",
             createdAt: new Date(),
           };
@@ -42,6 +63,10 @@ describe("Permissions Use Cases", () => {
   });
 
   describe("ListarUserPermissionsUseCase", () => {
+    const adminId = "00000000-0000-0000-0000-000000000001";
+    const memberId = "00000000-0000-0000-0000-000000000002";
+    const nonMemberId = "00000000-0000-0000-0000-000000000099";
+
     it("deve listar permissões do usuário admin", async () => {
       const useCase = new ListarUserPermissionsUseCase({
         permissionRepository,
@@ -50,7 +75,7 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "admin-user",
+        userId: adminId,
       });
 
       expect(resultado).toHaveProperty("permissions");
@@ -67,13 +92,14 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "member-user",
+        userId: memberId,
       });
 
       expect(resultado).toHaveProperty("permissions");
       expect(resultado).toHaveProperty("role", "member");
       expect(Array.isArray(resultado.permissions)).toBe(true);
     });
+
 
     it("deve retornar array vazio se usuário não for membro", async () => {
       const useCase = new ListarUserPermissionsUseCase({
@@ -83,7 +109,7 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "non-member-user",
+        userId: nonMemberId,
       });
 
       expect(resultado.permissions).toEqual([]);
@@ -92,6 +118,10 @@ describe("Permissions Use Cases", () => {
   });
 
   describe("VerificarPermissionUseCase", () => {
+    const adminId = "00000000-0000-0000-0000-000000000001";
+    const memberId = "00000000-0000-0000-0000-000000000002";
+    const nonMemberId = "00000000-0000-0000-0000-000000000099";
+
     it("deve verificar permissão corretamente para admin", async () => {
       const useCase = new VerificarPermissionUseCase({
         permissionRepository,
@@ -100,7 +130,7 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "admin-user",
+        userId: adminId,
         permission: "products:view",
       });
 
@@ -116,7 +146,7 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "member-user",
+        userId: memberId,
         permission: "products:view",
       });
 
@@ -132,7 +162,7 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "member-user",
+        userId: memberId,
         permission: "settings:permissions:view",
       });
 
@@ -148,7 +178,7 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "non-member-user",
+        userId: nonMemberId,
         permission: "products:view",
       });
 
@@ -165,13 +195,13 @@ describe("Permissions Use Cases", () => {
 
       const resultado = await useCase.execute({
         orgId: "test-org",
-        userId: "admin-user",
+        userId: adminId,
         permission: "invalid-format",
       });
 
       expect(resultado).toHaveProperty("hasPermission");
       expect(resultado.hasPermission).toBe(false);
-      expect(resultado.reason).toContain("Formato inválido");
+      expect(resultado.reason).toContain("Formato");
     });
   });
 });

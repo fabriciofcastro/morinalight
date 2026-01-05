@@ -105,13 +105,21 @@ export function PositionForm({ mode, positionId }: PositionFormProps) {
         <div className="relative min-h-screen p-8 text-white">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <Button variant="ghost" className="pl-0 gap-2 text-white/60 hover:text-white" onClick={() => router.back()}>
+                    <Button
+                        variant="outline"
+                        className="border-white/10 hover:bg-white/5 text-white gap-2 cursor-pointer"
+                        onClick={() => router.back()}
+                    >
                         <ArrowLeft className="w-4 h-4" />
                         Voltar
                     </Button>
                     <h1 className="text-3xl font-bold mt-2">{mode === "create" ? "Novo Cargo" : "Editar Cargo"}</h1>
                 </div>
-                <Button onClick={handleSubmit} disabled={saving} className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2">
+                <Button
+                    onClick={handleSubmit}
+                    disabled={saving}
+                    className="bg-blue-600 hover:bg-blue-500 text-white gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] cursor-pointer h-[40px] px-6"
+                >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Salvar
                 </Button>
@@ -217,7 +225,7 @@ export function PositionForm({ mode, positionId }: PositionFormProps) {
                         <Button
                             type="button"
                             variant="outline"
-                            className={cn(formData.active ? "border-emerald-500 text-emerald-500 hover:bg-emerald-500/10" : "border-white/10")}
+                            className={cn("cursor-pointer", formData.active ? "border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10" : "border-white/10")}
                             onClick={() => setFormData({ ...formData, active: !formData.active })}
                         >
                             {formData.active ? "Ativo" : "Inativo"}
