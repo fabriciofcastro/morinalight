@@ -208,9 +208,9 @@ export function SecurityDashboard() {
     const getSeverityColor = (severity: string) => {
         switch (severity) {
             case 'critical':
-                return 'destructive';
+                return 'danger';
             case 'high':
-                return 'destructive';
+                return 'danger';
             case 'medium':
                 return 'default';
             case 'low':
@@ -255,7 +255,7 @@ export function SecurityDashboard() {
     }
 
     return (
-        <AllowedGuard I="read" a="Security" redirectTo="/admin">
+        <AllowedGuard I="read" a="Settings" redirectTo="/admin">
             <div className="space-y-6">
                 {/* MFA Recommendation Banner for Admins */}
                 {stats.mfaAdoptionRate < 100 && (
@@ -419,7 +419,7 @@ export function SecurityDashboard() {
                                                     )}
                                                     <Button
                                                         size="sm"
-                                                        variant="destructive"
+                                                        variant="danger"
                                                         onClick={() => handleBlockUser(alert.userId, 60)}
                                                         disabled={acknowledging === alert.id}
                                                     >
@@ -428,7 +428,7 @@ export function SecurityDashboard() {
                                                     {alert.metadata && (alert.metadata as any).ip && (
                                                         <Button
                                                             size="sm"
-                                                            variant="destructive"
+                                                            variant="danger"
                                                             onClick={() => handleBlockIP((alert.metadata as any).ip, 60)}
                                                             disabled={acknowledging === alert.id}
                                                         >
@@ -467,7 +467,7 @@ export function SecurityDashboard() {
                                             >
                                                 <div className="flex-1 space-y-1">
                                                     <div className="flex items-center gap-2">
-                                                        <Badge variant="destructive">CRITICAL</Badge>
+                                                        <Badge variant="danger">CRITICAL</Badge>
                                                         <span className="font-medium">
                                                             {getAlertTypeLabel(alert.alertType)}
                                                         </span>

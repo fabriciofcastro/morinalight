@@ -96,8 +96,8 @@ export function useUser(userId?: string) {
         throw new Error(errorData.message || "Não foi possível criar o usuário.");
       }
 
-      const data = await response.json();
-      const newUser = parseUserResponse(data);
+      const responseData = await response.json();
+      const newUser = parseUserResponse(responseData);
       setUser(newUser);
       return newUser;
     } catch (err) {
@@ -130,8 +130,8 @@ export function useUser(userId?: string) {
         throw new Error(errorData.message || "Não foi possível atualizar o usuário.");
       }
 
-      const data = await response.json();
-      const updatedUser = parseUserResponse(data);
+      const responseData = await response.json();
+      const updatedUser = parseUserResponse(responseData);
       setUser(updatedUser);
       return updatedUser;
     } catch (err) {

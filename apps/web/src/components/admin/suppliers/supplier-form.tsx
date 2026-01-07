@@ -1,25 +1,24 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { CreateSupplierInput, suppliersApi } from "@/lib/api/suppliers";
 import { Button, cn } from "@morina/ui";
 import {
     ArrowLeft,
-    Truck,
-    Save,
-    Loader2,
+    DollarSign,
     FileText,
-    CheckCircle2,
-    Phone,
+    Globe,
+    Loader2,
     Mail,
     MapPin,
-    Globe,
-    DollarSign
+    Phone,
+    Save,
+    Truck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { suppliersApi, CreateSupplierInput } from "@/lib/api/suppliers";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface SupplierFormProps {
     mode: "create" | "edit";
@@ -166,7 +165,7 @@ export function SupplierForm({ mode, supplierId }: SupplierFormProps) {
                                 <FuturisticSelect
                                     label="Status"
                                     value={formData.status || "ACTIVE"}
-                                    onChange={val => setFormData({ ...formData, status: val })}
+                                    onChange={e => setFormData({ ...formData, status: e.target.value as any })}
                                     options={STATUS_OPTIONS}
                                 />
                                 <FuturisticInput
@@ -188,7 +187,7 @@ export function SupplierForm({ mode, supplierId }: SupplierFormProps) {
                                 <FuturisticSelect
                                     label="Tipo de Fornecimento"
                                     value={formData.tipoFornecedor || "PRODUTO"}
-                                    onChange={val => setFormData({ ...formData, tipoFornecedor: val })}
+                                    onChange={e => setFormData({ ...formData, tipoFornecedor: e.target.value as any })}
                                     options={[{ value: "PRODUTO", label: "Produtos" }, { value: "SERVICO", label: "Serviços" }, { value: "MISTO", label: "Híbrido" }]}
                                 />
                             </div>

@@ -5,12 +5,10 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { can, type Role, type Action, type Resource, type UserWithPermissions } from "./rbac";
+import { can, type Action, type Resource, type Role, type UserWithPermissions } from "./rbac";
 // import { abacEngine } from "./abac"; // Removed legacy ABAC
-import { unifiedPolicyEngine, SecurityContext } from "@morina/shared-kernel";
-import { logger } from "@/lib/observability";
+import { SecurityContext, unifiedPolicyEngine } from "@morina/shared-kernel";
 import { verifyAccessToken } from "./jwt";
-import { userRepository } from "@/lib/repositories";
 
 export interface AuthContext {
     user: UserWithPermissions;
@@ -123,28 +121,32 @@ async function getUserFromRequest(request: NextRequest): Promise<UserWithPermiss
         // Validar JWT token
         const payload = verifyAccessToken(authToken);
 
-        // Buscar usuário no banco
-        const user = await userRepository.findById(payload.userId);
+        // Buscar usuário no banco via DI
+        const container = getContainer();
+        const userRepository = container.resolve<IUserRepository>("UserRepository");
+        const userOption = await userRepository.findById(payload.userId);
 
-        if (!user) {
-            logger.warn("User not found for valid token", { userId: payload.userId });
+        if (!isSome(userOption)) {
+            // logger.warn("User not found for valid token", { userId: payload.userId });
             return null;
         }
 
+        const user = userOption;
+
         // Verificar se role do token bate com role do usuário
-        if (user.role !== payload.role) {
-            logger.warn("Role mismatch", {
-                userId: user.id,
-                tokenRole: payload.role,
-                userRole: user.role,
-            });
+        if (user.role.getValue() !== payload.role) {
+            // logger.warn("Role mismatch", {
+            //     userId: user.id,
+            //     tokenRole: payload.role,
+            //     userRole: user.role.getValue(),
+            // });
             return null;
         }
 
         return {
             id: user.id,
-            email: user.email,
-            role: user.role as Role,
+            email: user.email.getValue(),
+            role: user.role.getValue() as Role,
         };
     } catch (error) {
         logger.error("Failed to get user from request", error as Error);

@@ -14,8 +14,15 @@ import { queryKeys, queryConfigs } from "@/lib/query/client";
 export interface User {
     id: string;
     name: string;
+    displayName?: string;
     email: string;
     role: string;
+    status?: "active" | "inactive" | "suspended" | "pending";
+    photoUrl?: string;
+    avatarUrl?: string; // Some components use avatarUrl
+    departmentId?: string;
+    sectorId?: string;
+    positionId?: string;
     createdAt: string;
     updatedAt: string;
 }

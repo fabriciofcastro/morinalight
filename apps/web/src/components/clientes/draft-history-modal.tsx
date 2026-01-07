@@ -1,20 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button, GlassCard } from "@morina/ui";
-import {
-  History,
-  Clock,
-  Trash2,
-  RotateCcw,
-  X,
-  CheckCircle2,
-  AlertCircle,
-  GitCompare,
-} from "lucide-react";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import type { DraftVersion } from "@/hooks/use-draft-history";
+import { Button, GlassCard } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+    Clock,
+    GitCompare,
+    History,
+    RotateCcw,
+    Trash2,
+    X
+} from "lucide-react";
+import { useState } from "react";
+import { ComparisonView } from "./comparison-view";
 
 interface DraftHistoryModalProps<T> {
   isOpen: boolean;

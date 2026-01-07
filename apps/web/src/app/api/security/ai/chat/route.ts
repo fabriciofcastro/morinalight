@@ -1,6 +1,7 @@
 
 import { aiSecurityAnalyst } from '@/lib/ai/security-analyst';
 import { getAuthUser } from '@/lib/auth/server';
+import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -13,8 +14,20 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Role check: Only admin, manager, or owner should clear see this
-        if (!['owner', 'admin', 'manager'].includes(user.role)) {
+        // Fetch full user for role check
+        const dbUser = await prisma.user.findUnique({
+            where: { id: user.userId },
+            include: { roles: { include: { role: true } } }
+        });
+
+        if (!dbUser) {
+            return NextResponse.json({ error: 'User Not Found' }, { status: 404 });
+        }
+
+        const userRoles = dbUser.roles.map(r => r.role.name.toLowerCase());
+        const hasPermission = userRoles.some(role => ['owner', 'admin', 'manager'].includes(role));
+
+        if (!hasPermission) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
@@ -25,9 +38,9 @@ export async function POST(req: Request) {
 
         const { messages } = await req.json();
 
-        const result = await aiSecurityAnalyst.streamChat(messages, user.id);
+        const result = await aiSecurityAnalyst.streamChat(messages, user.userId);
 
-        return result.toDataStreamResponse();
+        return result.toTextStreamResponse();
 
     } catch (error) {
         console.error('AI Chat Error:', error);

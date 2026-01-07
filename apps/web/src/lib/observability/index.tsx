@@ -20,7 +20,4 @@ export {
     getSentryConfig,
     getClientIntegrations,
     beforeSend,
-    beforeSendTransaction,
-    getCustomTags,
-    type SentryConfig,
 } from "./sentry-config";

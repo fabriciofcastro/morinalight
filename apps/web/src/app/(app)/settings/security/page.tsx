@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { MFASetupModal } from '@/components/auth/mfa-setup';
 import { Button } from '@/components/ui/button';
-import { MFASetup } from '@/components/auth/mfa-setup';
-import { Shield, Lock, Key } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Key, Lock, Shield } from 'lucide-react';
+import { useState } from 'react';
 
 export default function SecuritySettingsPage() {
     const [showMFASetup, setShowMFASetup] = useState(false);
@@ -64,14 +64,15 @@ export default function SecuritySettingsPage() {
             </div>
 
             {/* MFA Setup Modal */}
-            <MFASetup
-                open={showMFASetup}
-                onOpenChange={setShowMFASetup}
-                onSuccess={() => {
-                    // Refresh user data or show success message
-                    console.log('MFA enabled successfully');
-                }}
-            />
+            {showMFASetup && (
+                <MFASetupModal
+                    onClose={() => setShowMFASetup(false)}
+                    onSuccess={() => {
+                        // Refresh user data or show success message
+                        console.log('MFA enabled successfully');
+                    }}
+                />
+            )}
         </div>
     );
 }

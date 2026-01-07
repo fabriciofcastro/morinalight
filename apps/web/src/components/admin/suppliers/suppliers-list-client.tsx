@@ -1,28 +1,26 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { useCurrentUser } from "@/hooks/queries/use-auth";
+import { ListSuppliersQuery, Supplier, suppliersApi } from "@/lib/api/suppliers";
+import { Can } from "@/lib/auth";
 import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {
-    Plus,
-    Search,
-    Trash2,
-    Truck,
-    Filter,
-    MoreVertical,
-    RefreshCw,
+    FileText,
     Mail,
     Phone,
-    FileText
+    Plus,
+    RefreshCw,
+    Search,
+    Trash2,
+    Truck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState, useMemo } from "react";
-import { suppliersApi, Supplier, ListSuppliersQuery } from "@/lib/api/suppliers";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { useAuth } from "@/hooks/use-auth";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { Can } from "@/lib/auth";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 const SupplierCard = ({
     supplier,
@@ -183,7 +181,7 @@ const SupplierCard = ({
 export function SuppliersListClient() {
     const router = useRouter();
     // Mock auth for now if hook doesn't exist or return what we need, replacing later
-    // const { orgId } = useAuth(); 
+    const { data: user } = useCurrentUser();
     const orgId = process.env.NEXT_PUBLIC_ORG_ID || "1";
 
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -318,7 +316,7 @@ export function SuppliersListClient() {
                             <Button variant="outline" size="icon" onClick={loadSuppliers} className="border-white/10 text-white/60 hover:text-white">
                                 <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
                             </Button>
-                            <ViewModeToggle viewMode={viewMode} onChange={setViewMode} />
+                            <ViewModeToggle viewMode={viewMode} onChange={(mode) => setViewMode(mode as "grid" | "list")} />
                         </div>
                     </div>
 

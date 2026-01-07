@@ -152,9 +152,11 @@ export function getFocusRingCSS(config: FocusRingConfig = {}): string {
   } = config;
 
   const widthValue = focusRingSpecs.width[width];
-  const offsetValue = focusRingSpecs.offset[offset];
+  const _offsetValue = focusRingSpecs.offset[offset];
   const styleValue = focusRingSpecs.style[style];
-  const colorWithOpacity = `${color}${Math.round(opacity * 255).toString(16).padStart(2, "0")}`;
+  const colorWithOpacity = `${color}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, "0")}`;
 
   return `${widthValue} ${styleValue} ${colorWithOpacity}`;
 }
@@ -225,4 +227,3 @@ export const tokenScales = {
 } as const;
 
 export type TokenScales = typeof tokenScales;
-

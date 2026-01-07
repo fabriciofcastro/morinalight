@@ -11,15 +11,15 @@ import { ErrorPreventionManager } from "../../core/errors/error-prevention";
 export async function errorAnalyticsRoutes(app: FastifyInstance) {
   // Obter estatísticas de erros
   app.get("/analytics/stats", async (request, reply) => {
-    const timeWindow = Number(request.query["timeWindow"]) || 3600000; // 1 hora padrão
+    const timeWindow = Number((request.query as any)["timeWindow"]) || 3600000; // 1 hora padrão
     const stats = ErrorAnalyticsManager.getStats(timeWindow);
     return reply.send(stats);
   });
 
   // Obter top erros
   app.get("/analytics/top-errors", async (request, reply) => {
-    const limit = Number(request.query["limit"]) || 10;
-    const timeWindow = Number(request.query["timeWindow"]) || 3600000;
+    const limit = Number((request.query as any)["limit"]) || 10;
+    const timeWindow = Number((request.query as any)["timeWindow"]) || 3600000;
     const stats = ErrorAnalyticsManager.getStats(timeWindow);
     return reply.send(stats.topErrors.slice(0, limit));
   });

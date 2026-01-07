@@ -19,10 +19,10 @@ describe("LoginForm", () => {
   });
 
   it("chama onAuthenticate quando dados são válidos", async () => {
-    const mockAuthenticate = vi.fn<[], Promise<void>>(() => Promise.resolve());
+    const mockAuthenticate = vi.fn((_payload: LoginFormData) => Promise.resolve());
 
     render(
-      <LoginForm onAuthenticate={mockAuthenticate as (payload: LoginFormData) => Promise<void>} />,
+      <LoginForm onAuthenticate={mockAuthenticate} />,
     );
 
     await userEvent.type(screen.getByPlaceholderText(/morina.ai/i), "lider@morina.ai");

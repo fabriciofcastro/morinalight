@@ -59,6 +59,7 @@ export function triggerConfetti() {
   let frame = 0;
 
   function animate() {
+    if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     particles.forEach((particle, index) => {

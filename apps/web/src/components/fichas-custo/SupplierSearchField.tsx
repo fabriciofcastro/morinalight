@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { Search, Plus, Building2, Loader2, AlertCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { suppliersApi, type Supplier } from "@/lib/api/suppliers";
-import { notificationCenter } from "@/components/notifications/notification-center";
 import { CnpjLookup } from "@/components/admin/company/CnpjLookup";
-import { formatCnpj } from "@/lib/validators/brazilian";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { suppliersApi, type Supplier } from "@/lib/api/suppliers";
+import { AnimatePresence, motion } from "framer-motion";
+import { Building2, Loader2, Plus, Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 interface SupplierSearchFieldProps {
   value: string;
@@ -45,7 +44,7 @@ export function SupplierSearchField({
     setLoading(true);
     try {
       const results = await suppliersApi.list(orgId, { busca: term });
-      setSuppliers(results);
+      setSuppliers(results as any);
       setShowDropdown(true);
     } catch (error) {
       console.error("Erro ao buscar fornecedores:", error);

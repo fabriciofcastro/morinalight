@@ -1,8 +1,8 @@
 import type {
-  Produto,
-  ProdutoListaFiltro,
-  ProdutoListaPagina,
-  ProdutoRepository,
+    Produto,
+    ProdutoListaFiltro,
+    ProdutoListaPagina,
+    ProdutoRepository,
 } from "@morina/catalogo-domain";
 import { Produto as ProdutoEntity } from "@morina/catalogo-domain";
 import { describe, expect, it } from "vitest";
@@ -86,10 +86,10 @@ describe("ListarProdutosUseCase", () => {
 
     const filtrado = await useCase.execute({ orgId, status: "ativo" });
     expect(filtrado.itens).toHaveLength(1);
-    expect(filtrado.itens[0].nome).toBe("Produto Ativo");
+    expect(filtrado.itens[0]!.nome).toBe("Produto Ativo");
 
     const busca = await useCase.execute({ orgId, busca: "rascunho" });
     expect(busca.itens).toHaveLength(1);
-    expect(busca.itens[0].nome).toBe("Produto Rascunho");
+    expect(busca.itens[0]!.nome).toBe("Produto Rascunho");
   });
 });

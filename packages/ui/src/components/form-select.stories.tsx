@@ -31,11 +31,7 @@ const meta: Meta<typeof FormSelect> = {
       control: "boolean",
       description: "Campo obrigatório",
     },
-    validationState: {
-      control: "select",
-      options: ["default", "valid", "invalid", "pending"],
-      description: "Estado de validação",
-    },
+
     disabled: {
       control: "boolean",
       description: "Desabilita o select",
@@ -79,35 +75,9 @@ export const Required: Story = {
   ),
 };
 
-export const Valid: Story = {
-  render: () => (
-    <FormSelect label="Status" validationState="valid" hint="Status válido" defaultValue="opt1">
-      <option value="">Selecione um status</option>
-      <option value="opt1">Ativo</option>
-      <option value="opt2">Inativo</option>
-      <option value="opt3">Pendente</option>
-    </FormSelect>
-  ),
-};
-
 export const Invalid: Story = {
   render: () => (
-    <FormSelect
-      label="Status"
-      validationState="invalid"
-      error="Por favor, selecione uma opção válida"
-    >
-      <option value="">Selecione um status</option>
-      <option value="opt1">Ativo</option>
-      <option value="opt2">Inativo</option>
-      <option value="opt3">Pendente</option>
-    </FormSelect>
-  ),
-};
-
-export const Pending: Story = {
-  render: () => (
-    <FormSelect label="Status" validationState="pending" hint="Validando opção..." defaultValue="opt1">
+    <FormSelect label="Status" error="Por favor, selecione uma opção válida">
       <option value="">Selecione um status</option>
       <option value="opt1">Ativo</option>
       <option value="opt2">Inativo</option>
@@ -145,5 +115,3 @@ export const ManyOptions: Story = {
     </FormSelect>
   ),
 };
-
-

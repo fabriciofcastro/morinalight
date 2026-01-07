@@ -1,30 +1,30 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  GitMerge,
-  Plus,
-  Search,
-  Eye,
-  Edit,
-  Grid,
-  List as ListIcon,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Trash2,
-  Sparkles,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import {
-  type WorkflowPolicy,
-  organizationalStructureApi,
+    type WorkflowPolicy,
+    organizationalStructureApi,
 } from "@/lib/api/organizational-structure";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import {
+    CheckCircle2,
+    Edit,
+    Eye,
+    GitMerge,
+    Grid,
+    List as ListIcon,
+    Plus,
+    RefreshCw,
+    Search,
+    Sparkles,
+    Trash2,
+    XCircle,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type ViewMode = "grid" | "list";
 type StatusFilter = "all" | "active" | "inactive";
@@ -109,7 +109,7 @@ export function WorkflowsListClient() {
   }, [policyToDelete, loadPolicies]);
 
   return (
-    <AllowedGuard I="read" a="WorkflowPolicy" redirectTo="/admin">
+    <AllowedGuard I="read" a={"WorkflowPolicy" as any} redirectTo="/admin">
       <div className="relative min-h-screen p-6 space-y-8">
         {/* Header Futurista */}
         <motion.div

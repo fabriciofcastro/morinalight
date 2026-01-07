@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Wifi, WifiOff, RefreshCw, AlertTriangle } from "lucide-react";
 import { cn } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertTriangle, RefreshCw, Wifi, WifiOff } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type ConnectionStatus = "connected" | "connecting" | "disconnected" | "error";
 
@@ -95,6 +95,7 @@ export function ConnectionStatusIndicator({
             const timer = setTimeout(() => setIsExpanded(false), 5000);
             return () => clearTimeout(timer);
         }
+        return undefined;
     }, [status]);
 
     if (!showIndicator) return null;

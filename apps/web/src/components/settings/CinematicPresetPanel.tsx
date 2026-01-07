@@ -44,7 +44,7 @@ export function CinematicPresetPanel() {
     }
   }
 
-  const current = OPTIONS.find((o) => o.value === value) ?? OPTIONS[0];
+  const current = OPTIONS.find((o) => o.value === value) || OPTIONS[0]!;
 
   return (
     <GlassCard glow className="bg-[color-mix(in oklab,var(--surface-color) 94%,transparent)]/70">

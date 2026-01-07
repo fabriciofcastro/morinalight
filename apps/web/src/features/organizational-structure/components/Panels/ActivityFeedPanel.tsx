@@ -1,12 +1,11 @@
 "use client";
 
-import { useInterval } from "@morina/ui"; // Assuming useInterval exists or I'll implement polling with useEffect
-import { GlassCard, cn } from "@morina/ui";
-import { Activity, Clock, User, FileEdit, PlusCircle, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { GlassCard, cn } from "@morina/ui";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Activity, Clock, User } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 type AuditLog = {
     id: string;

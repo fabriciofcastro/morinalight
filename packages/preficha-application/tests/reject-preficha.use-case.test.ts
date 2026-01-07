@@ -54,10 +54,10 @@ describe("RejeitarPrefichaUseCase", () => {
     });
 
     expect(resultado.status).toBe("rejeitado");
-    expect(resultado.aprovadores[0].aprovado).toBe(false);
-    expect(resultado.aprovadores[0].comentario).toBe(motivo);
+    expect(resultado.aprovadores[0]!.aprovado).toBe(false);
+    expect(resultado.aprovadores[0]!.comentario).toBe(motivo);
     expect(resultado.comentarios.length).toBeGreaterThan(0);
-    expect(resultado.comentarios[0].comentario).toContain(motivo);
+    expect(resultado.comentarios[0]!.comentario).toContain(motivo);
 
     expect(prefichaRepository.salvar).toHaveBeenCalledTimes(1);
     expect(auditoriaRepository.registrar).toHaveBeenCalledTimes(1);

@@ -1,18 +1,19 @@
 
-import { verifyAuthenticationResponse } from '@simplewebauthn/server';
-import { NextResponse } from 'next/server';
+import { generateAccessToken } from '@/lib/auth/jwt';
+import { Role, ROLES, UserWithPermissions } from '@/lib/auth/rbac'; // Ensure we map User to this structure
+import { EXPECTED_ORIGIN, RP_ID } from '@/lib/auth/webauthn-config';
 import prisma from '@/lib/prisma';
-import { RP_ID, EXPECTED_ORIGIN } from '@/lib/auth/webauthn-config';
+import { verifyAuthenticationResponse } from '@simplewebauthn/server';
 import { cookies } from 'next/headers';
-import { generateAccessToken, generateRefreshToken } from '@/lib/auth/jwt';
-import { UserWithPermissions } from '@/lib/auth/rbac'; // Ensure we map User to this structure
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
         const { response } = body;
 
-        const expectedChallenge = cookies().get('webauthn_challenge')?.value;
+        const cookieStore = await cookies();
+        const expectedChallenge = cookieStore.get('webauthn_challenge')?.value;
 
         if (!expectedChallenge) {
             return NextResponse.json({ error: 'Challenge not found or expired' }, { status: 400 });
@@ -33,12 +34,12 @@ export async function POST(req: Request) {
             expectedChallenge,
             expectedOrigin: EXPECTED_ORIGIN,
             expectedRPID: RP_ID,
-            authenticator: {
-                credentialPublicKey: Buffer.from(authenticator.credentialPublicKey, 'base64'),
-                credentialID: authenticator.credentialID,
-                counter: BigInt(authenticator.counter),
+            credential: {
+                id: authenticator.credentialID,
+                publicKey: Buffer.from(authenticator.credentialPublicKey, 'base64'),
+                counter: Number(authenticator.counter),
                 transports: authenticator.transports ? JSON.parse(authenticator.transports) : undefined,
-            },
+            } as any,
         });
 
         if (verification.verified) {
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
             });
 
             // Limpar challenge
-            cookies().delete('webauthn_challenge');
+            (await cookies()).delete('webauthn_challenge');
 
             // --- Gerar Sessão (JWT) ---
             const user = authenticator.user;
@@ -68,21 +69,24 @@ export async function POST(req: Request) {
                 include: { roles: { include: { role: true } } }
             });
 
-            // Fallback role logic (pegar a role mais alta ou 'member')
-            const roleName = userWithRoles?.roles[0]?.role?.name || 'MEMBER'; // Simplificação
+            // Fallback role logic (pegar a role mais alta ou 'user')
+            const rawRole = userWithRoles?.roles[0]?.role?.name?.toLowerCase() || 'user';
+            const roleName = (Object.values(ROLES) as string[]).includes(rawRole)
+                ? (rawRole as Role)
+                : ROLES.USER;
 
             const tokenUser: UserWithPermissions = {
                 id: user.id,
                 email: user.email,
                 role: roleName,
-                permissions: [], // Permissions seriam carregadas aqui se necessário para o token
             };
 
             const accessToken = generateAccessToken(tokenUser);
             // const refreshToken = generateRefreshToken(tokenUser); // Refresh token logic if needed
 
             // Definir Cookies de Sessão
-            cookies().set("auth_token", accessToken, {
+            const cookieStore = await cookies();
+            cookieStore.set("auth_token", accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "lax",
@@ -96,7 +100,7 @@ export async function POST(req: Request) {
             });
 
             if (membership) {
-                cookies().set("selected_org_id", membership.organizationId, {
+                (await cookies()).set("selected_org_id", membership.organizationId, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === "production",
                     sameSite: "lax",
@@ -110,8 +114,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ verified: false, error: "Verification failed" }, { status: 400 });
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('WebAuthn Verify Error:', error);
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : 'Internal Server Error') }, { status: 500 });
     }
 }

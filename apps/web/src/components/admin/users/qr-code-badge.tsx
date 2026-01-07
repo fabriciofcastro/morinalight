@@ -10,9 +10,8 @@
  * - Corrigido path de importações
  */
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@morina/ui';
-import { Download, Share2, Building2, Briefcase, MapPin, Info } from 'lucide-react';
+import { Avatar, Button } from '@morina/ui';
+import { Briefcase, Building2, Download, Info, MapPin, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useRef, useState } from 'react';
 
@@ -93,15 +92,12 @@ export function QRCodeBadge({
 
                         {/* Foto e Dados */}
                         <div className="flex items-center gap-4">
-                            <Avatar className="w-24 h-24 ring-4 ring-white/5 shadow-xl">
-                                {photo ? (
-                                    <AvatarImage src={photo} alt={name} className="object-cover" />
-                                ) : (
-                                    <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-[hsl(var(--primary))] to-purple-600 text-white">
-                                        {getInitials(name)}
-                                    </AvatarFallback>
-                                )}
-                            </Avatar>
+                            <Avatar 
+                                src={photo || undefined} 
+                                fallback={getInitials(name)} 
+                                size="3xl"
+                                className="ring-4 ring-white/5 shadow-xl"
+                            />
 
                             <div className="flex-1 space-y-2 min-w-0">
                                 <h3 className="font-bold text-lg leading-tight text-white truncate">{name}</h3>

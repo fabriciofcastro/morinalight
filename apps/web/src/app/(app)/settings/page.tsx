@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { SettingsLayout } from "@/components/settings/SettingsLayout";
-import { GlassCard } from "@morina/ui";
+import { GlassCard } from "@morina/ui/server";
 
 export const metadata: Metadata = {
   title: "Configurações — MORINA",

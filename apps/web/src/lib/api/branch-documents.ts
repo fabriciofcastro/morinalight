@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { apiClient } from "./base";
 import type {
     BranchDocument,
     CreateBranchDocumentInput,
@@ -13,7 +13,7 @@ export const branchDocumentsApi = {
         const response = await apiClient.get<BranchDocument[]>(
             `/branches/${branchId}/documents`
         );
-        return response.data;
+        return response;
     },
 
     /**
@@ -39,7 +39,7 @@ export const branchDocumentsApi = {
                 },
             }
         );
-        return response.data;
+        return response;
     },
 
     /**
@@ -54,7 +54,7 @@ export const branchDocumentsApi = {
             `/branches/${branchId}/documents/${documentId}`,
             input
         );
-        return response.data;
+        return response;
     },
 
     /**
@@ -74,6 +74,6 @@ export const branchDocumentsApi = {
                 responseType: "blob",
             }
         );
-        return response.data;
+        return response as unknown as Blob;
     },
 };

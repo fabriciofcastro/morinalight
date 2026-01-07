@@ -8,16 +8,19 @@ import { motion } from "framer-motion";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/api/base";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { PageHeader } from "@/components/ui/page-header";
+
+type ImportResult = {
+  success: number;
+  errors: number;
+  details?: Array<{ line: number; error: string }>;
+};
 
 export function UsersImportClient() {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [importResult, setImportResult] = useState<{
-    success: number;
-    errors: number;
-    details?: Array<{ line: number; error: string }>;
-  } | null>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -65,7 +68,7 @@ export function UsersImportClient() {
         throw new Error(errorData.message || "Não foi possível importar os usuários.");
       }
 
-      const result = (await response.json()) as typeof importResult;
+      const result = (await response.json()) as ImportResult;
       setImportResult(result);
 
       notificationCenter.add({

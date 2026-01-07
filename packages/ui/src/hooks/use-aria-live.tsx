@@ -75,26 +75,15 @@ export function AriaLiveRegion({ messages }: { messages: AriaLiveMessage[] }) {
   return (
     <>
       {politeMessages.length > 0 && (
-        <div
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          className="sr-only"
-        >
+        <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
           {politeMessages[politeMessages.length - 1]?.message}
         </div>
       )}
       {assertiveMessages.length > 0 && (
-        <div
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-          className="sr-only"
-        >
+        <div role="alert" aria-live="assertive" aria-atomic="true" className="sr-only">
           {assertiveMessages[assertiveMessages.length - 1]?.message}
         </div>
       )}
     </>
   );
 }
-

@@ -1,17 +1,16 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import { Building2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { organizationalStructureApi, type Department, type CreateDepartmentInput, type UpdateDepartmentInput } from "@/lib/api/organizational-structure";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
-import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { organizationalStructureApi, type CreateDepartmentInput, type Department, type UpdateDepartmentInput } from "@/lib/api/organizational-structure";
+import { Building2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface DepartmentFormClientProps {
   departmentId?: string;
@@ -30,7 +29,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

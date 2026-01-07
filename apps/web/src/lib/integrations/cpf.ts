@@ -30,26 +30,26 @@ export function validarCpf(cpf: string): boolean {
   // Calcular primeiro dígito verificador
   let sum = 0;
   for (let i = 0; i < 9; i++) {
-    sum += parseInt(cleaned[i]) * (10 - i);
+    sum += parseInt(cleaned[i]!) * (10 - i);
   }
 
   let remainder = sum % 11;
   const firstDigit = remainder < 2 ? 0 : 11 - remainder;
 
-  if (parseInt(cleaned[9]) !== firstDigit) {
+  if (parseInt(cleaned[9]!) !== firstDigit) {
     return false;
   }
 
   // Calcular segundo dígito verificador
   sum = 0;
   for (let i = 0; i < 10; i++) {
-    sum += parseInt(cleaned[i]) * (11 - i);
+    sum += parseInt(cleaned[i]!) * (11 - i);
   }
 
   remainder = sum % 11;
   const secondDigit = remainder < 2 ? 0 : 11 - remainder;
 
-  if (parseInt(cleaned[10]) !== secondDigit) {
+  if (parseInt(cleaned[10]!) !== secondDigit) {
     return false;
   }
 

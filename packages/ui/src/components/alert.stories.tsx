@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { AlertTriangle, CheckCircle2, Info as InfoIcon, XCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./alert";
-import { AlertTriangle, CheckCircle2, Info, XCircle } from "lucide-react";
 
 const meta: Meta<typeof Alert> = {
   title: "Components/Alert",
@@ -9,7 +9,8 @@ const meta: Meta<typeof Alert> = {
     layout: "centered",
     docs: {
       description: {
-        component: "Componente de alerta para exibir mensagens informativas, de sucesso, aviso ou erro.",
+        component:
+          "Componente de alerta para exibir mensagens informativas, de sucesso, aviso ou erro.",
       },
     },
   },
@@ -56,9 +57,7 @@ export const Warning: Story = {
     <Alert variant="warning">
       <AlertTriangle />
       <AlertTitle>Atenção</AlertTitle>
-      <AlertDescription>
-        Este é um aviso importante que requer sua atenção.
-      </AlertDescription>
+      <AlertDescription>Este é um aviso importante que requer sua atenção.</AlertDescription>
     </Alert>
   ),
 };
@@ -78,7 +77,7 @@ export const Error: Story = {
 export const Info: Story = {
   render: () => (
     <Alert variant="default">
-      <Info />
+      <InfoIcon />
       <AlertTitle>Informação</AlertTitle>
       <AlertDescription>Esta é uma mensagem informativa sobre o sistema.</AlertDescription>
     </Alert>
@@ -88,7 +87,7 @@ export const Info: Story = {
 export const WithoutTitle: Story = {
   render: () => (
     <Alert variant="default">
-      <Info />
+      <InfoIcon />
       <AlertDescription>Esta é uma mensagem sem título.</AlertDescription>
     </Alert>
   ),
@@ -100,12 +99,10 @@ export const LongMessage: Story = {
       <AlertTriangle />
       <AlertTitle>Mensagem Longa</AlertTitle>
       <AlertDescription>
-        Esta é uma mensagem de alerta muito longa que contém muitas informações importantes sobre
-        o que está acontecendo no sistema. Ela pode ser usada para explicar situações complexas ou
+        Esta é uma mensagem de alerta muito longa que contém muitas informações importantes sobre o
+        que está acontecendo no sistema. Ela pode ser usada para explicar situações complexas ou
         fornecer detalhes adicionais sobre um aviso ou erro.
       </AlertDescription>
     </Alert>
   ),
 };
-
-

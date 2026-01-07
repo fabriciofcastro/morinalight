@@ -4,9 +4,9 @@ import { forwardRef } from "react";
 
 import { cn } from "../lib/cn";
 import { FormField } from "./form-field";
-import { Select, type SelectProps } from "./select";
+import { NativeSelect, type NativeSelectProps } from "./native-select";
 
-export interface FormSelectProps extends SelectProps {
+export interface FormSelectProps extends NativeSelectProps {
   label?: string;
   error?: string;
   hint?: string;
@@ -19,12 +19,12 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
 
     return (
       <FormField label={label} error={error} hint={hint} required={required} fieldId={selectId}>
-        <Select
+        <NativeSelect
           ref={ref}
           id={selectId}
           className={cn(
             error &&
-              "border-[hsl(var(--danger))] focus:border-[hsl(var(--danger))] focus:shadow-[0_0_0_2px_rgba(239,68,68,0.22)]",
+            "border-[hsl(var(--danger))] focus:border-[hsl(var(--danger))] focus:shadow-[0_0_0_2px_rgba(239,68,68,0.22)]",
             className,
           )}
           aria-invalid={!!error}
@@ -32,7 +32,7 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
           {...props}
         >
           {children}
-        </Select>
+        </NativeSelect>
         {error && (
           <p id={`${selectId}-error`} className="sr-only">
             {error}

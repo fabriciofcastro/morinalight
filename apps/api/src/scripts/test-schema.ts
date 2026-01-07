@@ -20,7 +20,7 @@ try {
 } catch (error) {
   console.error("❌ Erro na validação do schema:");
   if (error instanceof z.ZodError) {
-    console.error("Erros:", error.errors);
+    console.error("Erros:", error.issues);
   } else {
     console.error("Erro:", error);
   }

@@ -83,7 +83,7 @@ export class SessionManager {
         //   where: { id: sessionId },
         // });
 
-        const session: UserSession | null = null; // TODO: buscar real
+        const session = null as any as UserSession | null; // TODO: buscar real
 
         if (!session || !session.active) {
             return null;
@@ -136,7 +136,7 @@ export class SessionManager {
         //   data: { active: false },
         // });
 
-        const mockUserId = "user-123"; // TODO: session?.userId
+        const mockUserId = "user-123";
 
         await auditService.log({
             action: "session_terminated",

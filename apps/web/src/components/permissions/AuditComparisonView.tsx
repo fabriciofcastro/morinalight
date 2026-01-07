@@ -1,13 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@morina/ui";
+import { ArrowRight, Calendar, Minus, TrendingDown, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
 import ReactDiffViewer from "react-diff-viewer-continued";
-import { ArrowRight, TrendingUp, TrendingDown, Minus, Calendar } from "lucide-react";
 
 interface AuditSummary {
     id: string;

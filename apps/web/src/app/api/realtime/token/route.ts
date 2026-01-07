@@ -14,7 +14,7 @@ function decodeJwt(token: string): { sub?: string } | null {
     if (parts.length !== 3) {
       return null;
     }
-    const payload = parts[1];
+    const payload = parts[1]!;
     const decoded = Buffer.from(payload.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString(
       "utf-8",
     );

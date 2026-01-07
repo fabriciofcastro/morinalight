@@ -1,0 +1,401 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Getting Started" />
+
+# Getting Started with @morina/ui
+
+Welcome to **@morina/ui**, an enterprise-grade React component library built for the Morina Light platform. This guide will help you get up and running quickly.
+
+## Installation
+
+The `@morina/ui` package is part of the Morina Light monorepo and is already configured for use in the workspace.
+
+### For New Applications
+
+If you're creating a new application in the monorepo:
+
+```bash
+# Navigate to your app directory
+cd apps/your-app
+
+# The package is already available via workspace protocol
+# Just import and use components
+```
+
+### Dependencies
+
+The library requires the following peer dependencies:
+
+```json
+{
+  "react": "^19.0.0",
+  "react-dom": "^19.0.0"
+}
+```
+
+## Theme Setup
+
+### 1. Import Theme Styles
+
+Add the theme CSS to your application's root layout or main entry point:
+
+```tsx
+// app/layout.tsx or _app.tsx
+import '@morina/ui/src/theme/theme.css';
+```
+
+### 2. Wrap Your App with ThemeProvider
+
+```tsx
+import { ThemeProvider } from '@morina/ui';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <ThemeProvider defaultTheme="dark">
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+### Available Themes
+
+- `light` - Light mode theme
+- `dark` - Dark mode theme (default)
+- `high-contrast` - High contrast theme for accessibility
+
+## Basic Usage
+
+### Importing Components
+
+```tsx
+import { Button, Input, Card, Badge } from '@morina/ui';
+
+function MyComponent() {
+  return (
+    <Card>
+      <h2>Welcome</h2>
+      <Input placeholder="Enter your name" />
+      <Button variant="default">Submit</Button>
+      <Badge variant="success">Active</Badge>
+    </Card>
+  );
+}
+```
+
+### Using Form Components
+
+```tsx
+import { FormField, FormInput, FormSelect, Button } from '@morina/ui';
+
+function MyForm() {
+  return (
+    <form>
+      <FormField label="Name" required>
+        <FormInput 
+          placeholder="John Doe" 
+          validationState="default"
+        />
+      </FormField>
+      
+      <FormSelect label="Country" required>
+        <option value="">Select...</option>
+        <option value="br">Brazil</option>
+        <option value="us">United States</option>
+      </FormSelect>
+      
+      <Button type="submit">Save</Button>
+    </form>
+  );
+}
+```
+
+### Building Data Tables
+
+Use the standardized DataTable pattern with ActionToolbar and FilterInput:
+
+```tsx
+import { 
+  ActionToolbar, 
+  FilterInput, 
+  DataTable,
+  Button 
+} from '@morina/ui';
+import { Plus, Download } from 'lucide-react';
+
+function MyDataTable() {
+  const [filter, setFilter] = React.useState('');
+  
+  const columns = [
+    { accessorKey: 'name', header: 'Name' },
+    { accessorKey: 'email', header: 'Email' },
+    { accessorKey: 'status', header: 'Status' },
+  ];
+  
+  return (
+    <div className="space-y-4">
+      <ActionToolbar
+        prefix={
+          <FilterInput
+            value={filter}
+            onChange={setFilter}
+            placeholder="Search..."
+          />
+        }
+        suffix={
+          <>
+            <Button variant="outline" leftIcon={<Download />}>
+              Export
+            </Button>
+            <Button leftIcon={<Plus />}>
+              New Item
+            </Button>
+          </>
+        }
+      />
+      
+      <DataTable
+        columns={columns}
+        data={data}
+        enableRowSelection
+      />
+    </div>
+  );
+}
+```
+
+## Component Categories
+
+### Atoms (Basic Building Blocks)
+- **Button** - Primary action component with multiple variants
+- **Input** - Text input with validation states
+- **Badge** - Status and label indicators
+- **Avatar** - User profile images with fallbacks
+- **Icon** - Lucide icon wrapper with consistent sizing
+- **ActionButton** - Toolbar button with tooltip support
+- **FilterInput** - Search input with debounce
+
+### Molecules (Composite Components)
+- **Card** - Content container with header/footer
+- **FormField** - Form input with label and error handling
+- **Modal** - Dialog overlay with multiple sizes
+- **Tabs** - Tabbed navigation with variants
+- **ActionToolbar** - Responsive toolbar for filters and actions
+
+### Organisms (Complex Patterns)
+- **DataTable** - Full-featured data grid with sorting and pagination
+- **FormWizard** - Multi-step form with stepper
+- **PageHeader** - Standardized page header with breadcrumbs
+
+## Design Tokens
+
+Access design tokens for custom styling:
+
+```tsx
+import { semanticTokens, designTokens } from '@morina/ui';
+
+// Use semantic tokens for theme-aware values
+const myStyles = {
+  backgroundColor: semanticTokens.color.background.primary,
+  padding: semanticTokens.spacing.component.padding.md,
+  borderRadius: semanticTokens.radius.md,
+};
+
+// Or use design tokens for fixed values
+const fixedStyles = {
+  fontSize: designTokens.fontSize.md,
+  fontWeight: designTokens.fontWeight.semibold,
+};
+```
+
+## Utility Functions
+
+### cn() - Class Name Merger
+
+Merge Tailwind classes intelligently:
+
+```tsx
+import { cn } from '@morina/ui';
+
+function MyComponent({ className }) {
+  return (
+    <div className={cn(
+      'p-4 rounded-lg',
+      'bg-background-primary',
+      className // User classes override defaults
+    )}>
+      Content
+    </div>
+  );
+}
+```
+
+## TypeScript Support
+
+All components are fully typed with TypeScript:
+
+```tsx
+import type { ButtonProps, InputProps } from '@morina/ui';
+
+// Extend component props
+interface CustomButtonProps extends ButtonProps {
+  customProp?: string;
+}
+
+function CustomButton({ customProp, ...props }: CustomButtonProps) {
+  return <Button {...props} />;
+}
+```
+
+## Accessibility
+
+All components follow WCAG 2.1 AA standards:
+
+- ✅ Keyboard navigation support
+- ✅ ARIA attributes
+- ✅ Focus management
+- ✅ Screen reader compatibility
+- ✅ Color contrast compliance
+
+### Using Skip Links
+
+```tsx
+import { SkipLink } from '@morina/ui';
+
+function Layout() {
+  return (
+    <>
+      <SkipLink href="#main-content">Skip to main content</SkipLink>
+      <nav>...</nav>
+      <main id="main-content">...</main>
+    </>
+  );
+}
+```
+
+## Best Practices
+
+### 1. Use Semantic Variants
+
+```tsx
+// ✅ Good - semantic meaning
+<Badge variant="success">Active</Badge>
+<Button variant="danger">Delete</Button>
+
+// ❌ Avoid - generic styling
+<Badge className="bg-green-500">Active</Badge>
+```
+
+### 2. Leverage Form Components
+
+```tsx
+// ✅ Good - integrated validation
+<FormField label="Email" error={errors.email}>
+  <FormInput type="email" validationState="invalid" />
+</FormField>
+
+// ❌ Avoid - manual error handling
+<div>
+  <label>Email</label>
+  <Input type="email" />
+  {errors.email && <span>{errors.email}</span>}
+</div>
+```
+
+### 3. Follow the DataTable Pattern
+
+```tsx
+// ✅ Good - standardized pattern
+<ActionToolbar prefix={<FilterInput />} suffix={<Button />} />
+<DataTable columns={columns} data={data} />
+
+// ❌ Avoid - custom implementations
+<div className="flex justify-between">
+  <input type="search" />
+  <button>New</button>
+</div>
+<table>...</table>
+```
+
+### 4. Use Theme Tokens
+
+```tsx
+// ✅ Good - theme-aware
+<div className="bg-background-primary text-text-primary" />
+
+// ❌ Avoid - hardcoded colors
+<div className="bg-gray-900 text-white" />
+```
+
+## Common Patterns
+
+### Loading States
+
+```tsx
+<Button isLoading disabled>
+  Saving...
+</Button>
+```
+
+### Controlled Components
+
+```tsx
+const [value, setValue] = useState('');
+
+<Input 
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+/>
+```
+
+### Conditional Rendering
+
+```tsx
+{isLoading ? (
+  <Spinner size="lg" />
+) : (
+  <DataTable columns={columns} data={data} />
+)}
+```
+
+## Storybook
+
+Explore all components interactively in Storybook:
+
+```bash
+# Start Storybook
+pnpm storybook
+
+# Build static Storybook
+pnpm build-storybook
+```
+
+Visit `http://localhost:6006` to browse:
+- Component examples
+- Interactive props
+- Design token reference
+- Usage patterns
+
+## Next Steps
+
+- 📚 Browse the [Component Library](/?path=/story/components-button--default) in Storybook
+- 🎨 Explore [Design Tokens](/?path=/story/theme-design-tokens--default)
+- 📖 Review [DataTable Pattern](/?path=/story/patterns-datatable-pattern--default)
+- 🧩 Check out [Action Components](/?path=/story/components-action-components--action-button-story)
+
+## Support
+
+For questions or issues:
+- Check component stories in Storybook
+- Review the [walkthrough documentation](file:///home/fabricio/.gemini/antigravity/brain/ad836d43-bb41-4212-aa54-ade73325d56e/walkthrough.md)
+- Consult the team's internal documentation
+
+---
+
+**Version**: 0.1.0  
+**License**: Private  
+**Built with**: React 19, TypeScript, Radix UI, TanStack Table

@@ -1,10 +1,12 @@
 /**
  * Auth Hook - Updated for httpOnly Cookies
  */
+"use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApi, type LoginRequest, type RegisterRequest } from "@/lib/api/auth";
 import { queryKeys } from "@/lib/query/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 /**
  * Hook para login com httpOnly cookies
@@ -96,17 +98,22 @@ export function useIsAuthenticated() {
 export function useAutoRefreshToken() {
     const queryClient = useQueryClient();
 
-    return useQuery({
+    const query = useQuery({
         queryKey: ["auth", "refresh"],
         queryFn: () => authApi.refreshToken(),
         staleTime: 14 * 60 * 1000, // 14 minutos (refresh antes de expirar)
         refetchInterval: 14 * 60 * 1000, // Refresh a cada 14 minutos
         refetchIntervalInBackground: true,
         enabled: typeof window !== "undefined", // Apenas no cliente
-        onSuccess: (data) => {
-            queryClient.setQueryData(queryKeys.auth.session(), data.user);
-        },
     });
+
+    useEffect(() => {
+        if (query.data) {
+            queryClient.setQueryData(queryKeys.auth.session(), query.data.user);
+        }
+    }, [query.data, queryClient]);
+
+    return query;
 }
 
 /**

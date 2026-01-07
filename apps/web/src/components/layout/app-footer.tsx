@@ -1,43 +1,35 @@
 "use client";
 
-import { Github, Heart, Mail } from "lucide-react";
 import Link from "next/link";
 
 export function AppFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[color-mix(in_oklab,var(--border)_90%,transparent)] bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] backdrop-blur-xl">
-      <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex items-center gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-            <span>© {currentYear} Morina Light</span>
-            <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">Todos os direitos reservados</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link
-              href="mailto:ops@morina.ai"
-              className="flex items-center gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] transition-colors hover:text-[var(--primary)]"
-            >
-              <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Suporte</span>
-            </Link>
-            <Link
-              href="https://github.com/fabriciofcastro/morinalight"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] transition-colors hover:text-[var(--primary)]"
-            >
-              <Github className="h-4 w-4" />
-              <span className="hidden sm:inline">GitHub</span>
-            </Link>
-            <div className="flex items-center gap-1 text-sm text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)]">
-              <span>Feito com</span>
-              <Heart className="h-4 w-4 fill-[var(--primary)] text-[var(--primary)]" />
-            </div>
-          </div>
+    <footer className="relative border-t border-[color-mix(in_oklab,hsl(var(--border))_70%,transparent_30%)] bg-[color-mix(in_oklab,hsl(var(--surface))_72%,transparent_28%)] backdrop-blur-xl px-6 py-4 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 opacity-50">
+        <div className="absolute inset-0 holo-grid" />
+        <div className="absolute left-0 top-0 h-full w-[2px] beam-line opacity-40" />
+        <div className="absolute right-[10%] top-0 h-full w-px beam-line opacity-25" />
+      </div>
+      <div className="flex items-center justify-between text-xs text-white/40">
+        <div className="flex items-center gap-4">
+          <span>&copy; {currentYear} Morina Têxtil</span>
+          <span className="h-3 w-px bg-white/20" />
+          <span>v2.0.0</span>
         </div>
+        <div className="flex items-center justify-center gap-4 flex-1">
+          <Link href="/termos" className="hover:text-white/70 transition-colors">
+            Termos
+          </Link>
+          <Link href="/privacidade" className="hover:text-white/70 transition-colors">
+            Privacidade
+          </Link>
+          <Link href="/lgpd" className="hover:text-white/70 transition-colors">
+            LGPD
+          </Link>
+        </div>
+        <div className="w-[120px]" /> {/* Spacer para manter alinhamento */}
       </div>
     </footer>
   );

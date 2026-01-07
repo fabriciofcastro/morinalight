@@ -114,7 +114,7 @@ export function useAuditTimeline({
         `${apiUrl}/catalogo/produtos/${produtoId}/auditoria?${params.toString()}`,
         {
           headers: {
-            "x-org-id": orgId,
+            "x-org-id": orgId || "",
           },
           cache: "no-store",
         },
@@ -191,8 +191,8 @@ export function useAuditTimeline({
     const client = createRealtimeClient({
       apiUrl,
       realtimeUrl,
-      orgId,
-      actorId,
+      orgId: orgId || "",
+      actorId: actorId || "",
       onEvent: (event) => {
         lastEventIdRef.current = event.metadata.eventId;
         if (

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button, GlassCard } from "@morina/ui";
-import { Badge } from "@/components/ui/badge";
-import { X, History, Eye, GitCompare } from "lucide-react";
 import { notificationCenter } from "@/components/notifications/notification-center";
-import { ComparacaoVersoes, PreFichaTecnica } from "@/lib/api/pre-fichas-tecnicas";
+import { Badge } from "@/components/ui/badge";
+import { ComparacaoVersoes, PreFichaTecnica, Tecido } from "@/lib/api/pre-fichas-tecnicas";
+import { Button, GlassCard } from "@morina/ui";
+import { Eye, GitCompare, History, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ComparacaoVersoesModal } from "../../comparacao-versoes-modal";
 
 interface HistoricoVersoesModalProps {
@@ -26,11 +26,11 @@ export function HistoricoVersoesModal({
             createdAt: string;
             motivoAlteracao?: string | null;
             criadoPor: string;
-            dadosSnapshot: any;
+            dadosSnapshot: PreFichaTecnica;
         }>
     >([]);
     const [loading, setLoading] = useState(true);
-    const [selectedVersao, setSelectedVersao] = useState<any>(null);
+    const [selectedVersao, setSelectedVersao] = useState<PreFichaTecnica | null>(null);
     const [showComparacao, setShowComparacao] = useState(false);
     const [comparacaoData, setComparacaoData] = useState<ComparacaoVersoes | null>(null);
 
@@ -112,7 +112,7 @@ export function HistoricoVersoesModal({
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => setSelectedVersao(versao.dadosSnapshot)}
+                                                onClick={() => setSelectedVersao(versao.dadosSnapshot as unknown as PreFichaTecnica)}
                                                 className="text-blue-400 hover:bg-blue-400/10"
                                                 title="Ver detalhes"
                                             >
@@ -160,17 +160,17 @@ export function HistoricoVersoesModal({
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-sm">
-                            <VersionDataField label="Código" value={selectedVersao.codigoPeca} />
-                            <VersionDataField label="Nome" value={selectedVersao.nomePecaPiloto} />
-                            <VersionDataField label="Status" value={selectedVersao.status} />
-                            <VersionDataField label="Molde" value={selectedVersao.versaoMolde} />
+                            <VersionDataField label="Código" value={selectedVersao.codigoPeca as string} />
+                            <VersionDataField label="Nome" value={selectedVersao.nomePecaPiloto as string} />
+                            <VersionDataField label="Status" value={selectedVersao.status as string} />
+                            <VersionDataField label="Molde" value={String(selectedVersao.versaoMolde)} />
                         </div>
 
-                        {selectedVersao.tecidos?.length > 0 && (
+                        {(selectedVersao.tecidos || []).length > 0 && (
                             <div className="mb-8">
                                 <h4 className="text-xs font-semibold text-white/40 uppercase mb-3 px-1">Materiais</h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {selectedVersao.tecidos.map((t: any, i: number) => (
+                                    {(selectedVersao.tecidos || []).map((t: Tecido, i: number) => (
                                         <div key={i} className="p-3 bg-white/5 rounded-lg border border-white/5">
                                             <p className="text-blue-300 text-xs font-medium mb-1 capitalize">{t.tipo}</p>
                                             <p className="text-white font-medium">{t.nome}</p>

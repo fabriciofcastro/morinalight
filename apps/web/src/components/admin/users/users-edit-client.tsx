@@ -1,24 +1,23 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  User,
-  ArrowLeft,
-  Save,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { useUser, type UpdateUserRequest } from "@/hooks/use-user";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
-import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
+import { useUser, type UpdateUserRequest } from "@/hooks/use-user";
 import { organizationalStructureApi } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { UserStatusBadge } from "./user-status-badge";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import {
+    ArrowLeft,
+    Save,
+    User,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { PhotoUpload } from "./photo-upload";
 import { QRCodeBadge } from "./qr-code-badge";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { Can } from "@/lib/auth";
+import { UserStatusBadge } from "./user-status-badge";
 
 interface UsersEditClientProps {
   userId: string;
@@ -34,7 +33,8 @@ interface FormErrors {
 
 export function UsersEditClient({ userId }: UsersEditClientProps) {
   const router = useRouter();
-  const { user, loading: loadingUser, error, fetchUser, updateUser, loading: saving } = useUser(userId);
+  const { user, loading: loadingUser, error, fetchUser, updateUser, fetchUserIfNeeded } = useUser(userId);
+  const saving = loadingUser; // Simplification or keep separate if needed, but destructuring same key twice error fix.
 
   // Form data
   const [formData, setFormData] = useState<UpdateUserRequest & {
@@ -401,8 +401,8 @@ export function UsersEditClient({ userId }: UsersEditClientProps) {
                 Foto de Perfil
               </h2>
               <PhotoUpload
-                currentPhoto={user.photoUrl}
-                userName={user.displayName}
+                currentPhoto={user?.avatarUrl}
+                userName={user?.displayName}
                 onPhotoChange={(file) => {
                   console.log("Photo selected:", file);
                   // Upload logic would go here
@@ -416,15 +416,16 @@ export function UsersEditClient({ userId }: UsersEditClientProps) {
                 <div className="w-1 h-6 bg-gradient-to-b from-[hsl(var(--primary))] to-[hsl(var(--accent))] rounded-full" />
                 Crachá Digital
               </h2>
-              <QRCodeBadge
-                user={{
-                  ...user,
-                  name: user.displayName,
-                  department: departments.find(d => d.id === formData.departmentId)?.name || "N/A",
-                  position: positions.find(p => p.id === formData.positionId)?.name || "N/A",
-                  branch: "Matriz",
-                }}
-              />
+              {user && (
+                <QRCodeBadge
+                  userId={user.userId}
+                  name={user.displayName}
+                  email={user.email}
+                  department={departments.find(d => d.id === formData.departmentId)?.name || "N/A"}
+                  position={positions.find(p => p.id === formData.positionId)?.name || "N/A"}
+                  photo={user.avatarUrl}
+                />
+              )}
             </div>
           </motion.div>
 

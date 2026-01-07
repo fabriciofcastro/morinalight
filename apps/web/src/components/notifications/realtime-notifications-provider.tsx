@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
 import { getAuthUser } from "@/lib/auth-client";
 import { defaultActorId, defaultOrgId } from "@/lib/env";
+import { useEffect, useState } from "react";
 
 /**
  * Obtém orgId atual (do localStorage ou JWT)
@@ -25,7 +25,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing
@@ -56,11 +56,11 @@ export function RealtimeNotificationsProvider() {
     const user = getAuthUser();
 
     // Obter orgId
-    const currentOrgId = getCurrentOrgId() ?? defaultOrgId;
+    const currentOrgId = getCurrentOrgId() ?? defaultOrgId ?? null;
     queueMicrotask(() => setOrgId(currentOrgId));
 
     // Obter userId
-    const currentUserId = user?.userId ?? defaultActorId;
+    const currentUserId = user?.userId ?? defaultActorId ?? null;
     queueMicrotask(() => setUserId(currentUserId));
   }, [mounted]);
 

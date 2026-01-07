@@ -1,35 +1,34 @@
 "use client";
 
-import { Button, GlassCard, Input } from "@morina/ui";
-import {
-  FileText,
-  Plus,
-  Search,
-  Eye,
-  Download,
-  AlertCircle,
-} from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { Badge } from "@/components/ui/badge";
 import { usePreFichasTecnicas, usePreFichaTecnica } from "@/hooks/use-pre-fichas-tecnicas";
 import type {
-  PreFichaTecnica,
-  CreateTecidoInput,
-  CreateInsumoTecnicoInput,
-  TipoTecido,
-  TipoInsumoTecnico,
-  UnidadeMedida,
+    CreateInsumoTecnicoInput,
+    CreateTecidoInput,
+    PreFichaTecnica,
+    TipoInsumoTecnico,
+    TipoTecido,
+    UnidadeMedida,
 } from "@/lib/api/pre-fichas-tecnicas";
-import { Badge } from "@/components/ui/badge";
 import { apiUrl } from "@/lib/env";
+import { Button, GlassCard, Input } from "@morina/ui";
+import {
+    AlertCircle,
+    Download,
+    Eye,
+    FileText,
+    Plus,
+    Search,
+} from "lucide-react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
-import { STATUS_COLORS, STATUS_LABELS } from "./constants";
-import { PreFichaFormData, FiltroStatus } from "./types";
-import { PreFichaFormModal } from "./components/modals/PreFichaFormModal";
-import { PreFichaDetailModal } from "./components/modals/PreFichaDetailModal";
 import { HistoricoVersoesModal } from "./components/modals/HistoricoVersoesModal";
+import { PreFichaDetailModal } from "./components/modals/PreFichaDetailModal";
+import { PreFichaFormModal } from "./components/modals/PreFichaFormModal";
 import { PreFichaPdfPreviewModal } from "./components/modals/PreFichaPdfPreviewModal";
-import { formatDate } from "./utils";
+import { STATUS_COLORS, STATUS_LABELS } from "./constants";
+import { FiltroStatus, PreFichaFormData } from "./types";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") return null;
@@ -39,7 +38,7 @@ function getCurrentOrgId(): string | null {
   if (orgsStr) {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
-      if (orgs.length > 0) return orgs[0].organizationId;
+      if (orgs.length > 0) return orgs[0]!.organizationId;
     } catch { /* Ignorar */ }
   }
   return null;

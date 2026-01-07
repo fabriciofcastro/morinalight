@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { X, History } from "lucide-react";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { AuditTimeline } from "@/components/ui/audit-timeline";
 import { useAuditLog } from "@/hooks/use-audit-log";
-import { notificationCenter } from "@/lib/notification-center";
+import { History, X } from "lucide-react";
 
 interface AuditLogModalProps {
     entityType: string;

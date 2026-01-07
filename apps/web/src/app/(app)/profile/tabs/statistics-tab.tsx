@@ -49,8 +49,8 @@ export function StatisticsTab() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-white/50">Módulo Mais Usado</p>
-              <p className="text-xl font-bold text-white">{stats.mostUsedModules[0].name}</p>
-              <p className="text-sm text-white/50">{stats.mostUsedModules[0].count} ações</p>
+              <p className="text-xl font-bold text-white">{stats.mostUsedModules[0]!.name}</p>
+              <p className="text-sm text-white/50">{stats.mostUsedModules[0]!.count} ações</p>
             </div>
             <BarChart3 className="h-12 w-12 text-[hsl(var(--primary))]/30" />
           </div>
@@ -61,7 +61,7 @@ export function StatisticsTab() {
             <div>
               <p className="text-sm text-white/50">Horário de Pico</p>
               <p className="text-xl font-bold text-white">
-                {stats.peakHours.reduce((max, h) => (h.count > max.count ? h : max), stats.peakHours[0]).hour}
+                {stats.peakHours.reduce((max, h) => (h.count > max.count ? h : max), stats.peakHours[0]!).hour}
               </p>
               <p className="text-sm text-white/50">Maior produtividade</p>
             </div>

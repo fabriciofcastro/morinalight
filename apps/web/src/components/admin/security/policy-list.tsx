@@ -1,21 +1,20 @@
 "use client";
 
+import { Can } from "@/lib/auth/CaslContext";
+import { SecurityPolicy } from "@morina/shared-kernel";
 import {
-    Shield,
-    MoreVertical,
+    Badge,
+    Button,
+    GlassCard
+} from "@morina/ui";
+import {
+    ArrowUpRight,
     Edit2,
-    Trash2,
     Eye,
     Power,
-    ArrowUpRight
+    Shield,
+    Trash2
 } from "lucide-react";
-import {
-    GlassCard,
-    Badge,
-    Button
-} from "@/components/ui/futuristic";
-import { SecurityPolicy } from "@morina/shared-kernel";
-import { Can } from "@/lib/auth/CaslContext";
 
 interface PoliciesListProps {
     policies: SecurityPolicy[];
@@ -33,7 +32,7 @@ export function PoliciesList({ policies, onEdit, onDelete, onToggle }: PoliciesL
                 <p className="text-white/40 max-w-md mx-auto mt-2">
                     Defina regras globais de acesso baseadas em atributos para máxima precisão.
                 </p>
-                <Button variant="primary" className="mt-6">
+                <Button variant="gradient" className="mt-6">
                     Mapear Primeira Política
                 </Button>
             </div>
@@ -57,7 +56,7 @@ export function PoliciesList({ policies, onEdit, onDelete, onToggle }: PoliciesL
                                     <h4 className="font-semibold text-white group-hover:text-[hsl(var(--primary))] transition-colors">
                                         {policy.name}
                                     </h4>
-                                    <Badge variant={policy.effect === 'ALLOW' ? 'success' : 'destructive'} className="text-[10px] py-0">
+                                    <Badge variant={policy.effect === 'ALLOW' ? 'success' : 'danger'} className="text-[10px] py-0">
                                         {policy.effect}
                                     </Badge>
                                 </div>
@@ -81,7 +80,7 @@ export function PoliciesList({ policies, onEdit, onDelete, onToggle }: PoliciesL
                         </div>
 
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Can I="update" a="SecurityPolicy">
+                            <Can I="update" a="Settings">
                                 <Button variant="secondary" size="icon" onClick={() => onToggle(policy.id)}>
                                     <Power className={`h-4 w-4 ${policy.active ? 'text-emerald-400' : 'text-white/40'}`} />
                                 </Button>
@@ -89,7 +88,7 @@ export function PoliciesList({ policies, onEdit, onDelete, onToggle }: PoliciesL
                                     <Edit2 className="h-4 w-4" />
                                 </Button>
                             </Can>
-                            <Can I="delete" a="SecurityPolicy">
+                            <Can I="delete" a="Settings">
                                 <Button variant="secondary" size="icon" className="hover:bg-red-500/20 hover:text-red-400" onClick={() => onDelete(policy.id)}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>

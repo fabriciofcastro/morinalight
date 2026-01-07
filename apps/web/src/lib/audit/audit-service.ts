@@ -9,14 +9,16 @@ import { getPrismaClient } from "@/lib/prisma";
 export interface AuditLogEntry {
     action: string;
     userId: string;
-    userRole: string;
+    userRole?: string;
     resource: string;
     resourceId?: string;
     changes?: Record<string, any>; // JSON changes (diff)
     ipAddress?: string;
     userAgent?: string;
-    status: "SUCCESS" | "FAILURE";
+    status?: "SUCCESS" | "FAILURE";
+    success?: boolean;
     metadata?: Record<string, any>;
+    timestamp?: Date;
 }
 
 export class AuditService {
@@ -108,7 +110,7 @@ export class AuditService {
         await this.log({
             action: action.toUpperCase(),
             userId: requestedBy,
-            userRole: 'SYSTEM', // Or retrieve actual role if available
+            userRole: 'SYSTEM',
             resource: resource,
             status: 'FAILURE',
             metadata: {
@@ -119,6 +121,96 @@ export class AuditService {
             changes: {},
         });
     }
+
+    /**
+     * Log a successful action
+     */
+    async logSuccess(
+        action: string,
+        userId: string,
+        resource: string,
+        options: { resourceId?: string; metadata?: Record<string, any> }
+    ): Promise<void> {
+        await this.log({
+            action: action.toUpperCase(),
+            userId,
+            resource,
+            resourceId: options.resourceId,
+            status: 'SUCCESS',
+            metadata: options.metadata,
+        });
+    }
+
+    /**
+     * Log a data access event (LGPD requirement)
+     */
+    async logDataAccess(
+        userId: string,
+        dataCategory: string,
+        resourceId: string,
+        reason: string
+    ): Promise<void> {
+        await this.log({
+            action: 'DATA_ACCESS',
+            userId,
+            resource: dataCategory,
+            resourceId,
+            metadata: { reason },
+            status: 'SUCCESS',
+        });
+    }
+
+    /**
+     * Log a data change event (LGPD requirement)
+     */
+    async logDataChange(
+        userId: string,
+        resource: string,
+        resourceId: string,
+        changes: Record<string, { old: any; new: any }>
+    ): Promise<void> {
+        await this.log({
+            action: 'DATA_CHANGE',
+            userId,
+            resource,
+            resourceId,
+            changes,
+            status: 'SUCCESS',
+        });
+    }
+
+    /**
+     * Generate a compliance report
+     */
+    async generateComplianceReport(start: Date, end: Date): Promise<any> {
+        // Implementation for generating reports
+        return {
+            period: { start, end },
+            totalEvents: 0,
+            summary: "No events recorded in this stub implementation",
+        };
+    }
+}
+
+/**
+ * Decorator to make a method auditable
+ */
+export function Auditable(action: string, resource: string) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        const originalMethod = descriptor.value;
+        descriptor.value = async function (...args: any[]) {
+            const result = await originalMethod.apply(this, args);
+            await auditService.log({
+                action: action.toUpperCase(),
+                userId: 'SYSTEM', // Context would normally provide the real user
+                resource,
+                status: 'SUCCESS',
+                metadata: { method: propertyKey, args },
+            });
+            return result;
+        };
+        return descriptor;
+    };
 }
 
 export const auditService = new AuditService();

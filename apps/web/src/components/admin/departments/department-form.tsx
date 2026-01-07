@@ -1,22 +1,20 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { CodeValidator } from "@/components/ui/code-validator";
+import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { CreateDepartmentInput, organizationalStructureApi } from "@/lib/api/organizational-structure";
 import { Button, cn } from "@morina/ui";
-import { motion } from "framer-motion";
 import {
     ArrowLeft,
-    Building2,
     CheckCircle2,
-    Network,
-    Save,
+    FileText,
     Loader2,
-    FileText
+    Network,
+    Save
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { organizationalStructureApi, CreateDepartmentInput, UpdateDepartmentInput } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
-import { CodeValidator } from "@/components/ui/code-validator";
 
 interface DepartmentFormProps {
     mode: "create" | "edit";
@@ -129,7 +127,7 @@ export function DepartmentForm({ mode, departmentId }: DepartmentFormProps) {
                             />
                             <CodeValidator
                                 value={formData.code}
-                                onChange={(value) => setFormData({ ...formData, code: value })}
+                                onChange={(value: string) => setFormData({ ...formData, code: value })}
                                 entity="department"
                                 currentId={departmentId}
                                 label="Código"

@@ -104,7 +104,7 @@ export function validateImport(data: OrganizationalStructureImport): {
   // Validar referências
   for (const subdept of data.subdepartments || []) {
     const dept = data.departments?.find(
-      (d) => d.id === subdept.departmentId || d.departmentId === subdept.departmentId,
+      (d) => (d as any).id === subdept.departmentId,
     );
     if (!dept) {
       errors.push(`Subdepartamento ${subdept.code} referencia departamento inexistente: ${subdept.departmentId}`);
@@ -113,14 +113,14 @@ export function validateImport(data: OrganizationalStructureImport): {
 
   for (const sector of data.sectors || []) {
     const dept = data.departments?.find(
-      (d) => d.id === sector.departmentId || d.departmentId === sector.departmentId,
+      (d) => (d as any).id === sector.departmentId,
     );
     if (!dept && !sector.subdepartmentId) {
       errors.push(`Setor ${sector.code} referencia departamento inexistente: ${sector.departmentId}`);
     }
     if (sector.subdepartmentId) {
       const subdept = data.subdepartments?.find(
-        (sd) => sd.id === sector.subdepartmentId || sd.subdepartmentId === sector.subdepartmentId,
+        (sd) => (sd as any).subdepartmentId === sector.subdepartmentId,
       );
       if (!subdept) {
         errors.push(`Setor ${sector.code} referencia subdepartamento inexistente: ${sector.subdepartmentId}`);
@@ -197,21 +197,23 @@ export async function importFromJSON(
 
       if (existing && options.updateExisting) {
         await organizationalStructureApi.updateDepartment({
-          departmentId: existing.id || existing.departmentId,
-          orgId,
-          ...dept,
-        });
-        result.warnings.push(`Departamento ${dept.code} atualizado`);
-      } else if (!existing) {
-        await organizationalStructureApi.createDepartment({
-          orgId,
+          id: existing.id,
           name: dept.name,
           code: dept.code,
           description: dept.description,
           type: dept.type || "CORE",
-          filialId: dept.filialId,
-          parentId: dept.parentId,
-          active: dept.active !== false,
+          active: (dept as any).status !== "inativo",
+        });
+        result.warnings.push(`Departamento ${dept.code} atualizado`);
+      } else if (!existing) {
+        await organizationalStructureApi.createDepartment({
+          name: dept.name,
+          code: dept.code,
+          description: dept.description,
+          type: dept.type || "CORE",
+          filialId: (dept as any).filialId,
+          parentId: (dept as any).parentId,
+          active: (dept as any).status !== "inativo",
         });
         result.imported.departments++;
       }
@@ -230,7 +232,7 @@ export async function importFromJSON(
     try {
       const existing = await organizationalStructureApi
         .getSubdepartments()
-        .then((list) => list.find((sd) => sd.code === subdept.code))
+        .then((res) => res.itens.find((sd) => sd.code === subdept.code))
         .catch(() => null);
 
       if (existing && !options.updateExisting && !options.skipDuplicates) {
@@ -246,7 +248,7 @@ export async function importFromJSON(
       // Buscar departmentId atualizado
       const dept = await organizationalStructureApi
         .getDepartments()
-        .then((list) => list.find((d) => d.code === data.departments?.find((d2) => d2.id === subdept.departmentId || d2.departmentId === subdept.departmentId)?.code))
+        .then((list) => list.find((d) => d.code === data.departments?.find((d2) => (d2 as any).id === subdept.departmentId)?.code))
         .catch(() => null);
 
       if (!dept) {
@@ -261,19 +263,22 @@ export async function importFromJSON(
 
       if (existing && options.updateExisting) {
         await organizationalStructureApi.updateSubdepartment({
-          subdepartmentId: existing.id || existing.subdepartmentId,
+          subdepartmentId: existing.subdepartmentId,
           orgId,
-          departmentId: dept.id || dept.departmentId,
-          ...subdept,
+          departmentId: dept.id,
+          name: subdept.name,
+          code: subdept.code,
+          description: subdept.description || undefined,
+          status: subdept.status || "ativo",
         });
         result.warnings.push(`Subdepartamento ${subdept.code} atualizado`);
       } else if (!existing) {
         await organizationalStructureApi.createSubdepartment({
           orgId,
-          departmentId: dept.id || dept.departmentId,
+          departmentId: dept.id,
           name: subdept.name,
           code: subdept.code,
-          description: subdept.description,
+          description: subdept.description ?? undefined,
           status: subdept.status || "ativo",
         });
         result.imported.subdepartments++;
@@ -309,7 +314,7 @@ export async function importFromJSON(
       // Buscar departmentId/subdepartmentId atualizado
       const dept = await organizationalStructureApi
         .getDepartments()
-        .then((list) => list.find((d) => d.code === data.departments?.find((d2) => d2.id === sector.departmentId || d2.departmentId === sector.departmentId)?.code))
+        .then((list) => list.find((d) => d.code === data.departments?.find((d2) => (d2 as any).id === sector.departmentId)?.code))
         .catch(() => null);
 
       if (!dept) {
@@ -326,29 +331,32 @@ export async function importFromJSON(
       if (sector.subdepartmentId) {
         const subdept = await organizationalStructureApi
           .getSubdepartments()
-          .then((list) => list.find((sd) => sd.code === data.subdepartments?.find((sd2) => sd2.id === sector.subdepartmentId || sd2.subdepartmentId === sector.subdepartmentId)?.code))
+          .then((res) => res.itens.find((sd) => sd.code === data.subdepartments?.find((sd2) => (sd2 as any).id === sector.subdepartmentId || sd2.subdepartmentId === sector.subdepartmentId)?.code))
           .catch(() => null);
-        subdepartmentId = subdept?.id || subdept?.subdepartmentId;
+        subdepartmentId = subdept?.subdepartmentId;
       }
 
       if (existing && options.updateExisting) {
         await organizationalStructureApi.updateSector({
           id: existing.id,
-          orgId,
-          departmentId: dept.id || dept.departmentId,
-          subdepartmentId,
-          ...sector,
-        });
-        result.warnings.push(`Setor ${sector.code} atualizado`);
-      } else if (!existing) {
-        await organizationalStructureApi.createSector({
-          orgId,
-          departmentId: dept.id || dept.departmentId,
+          departmentId: dept.id,
           subdepartmentId,
           name: sector.name,
           code: sector.code,
           description: sector.description,
-          status: sector.status || "ativo",
+          type: sector.type || "CORE",
+          active: (sector as any).status !== "inativo",
+        });
+        result.warnings.push(`Setor ${sector.code} atualizado`);
+      } else if (!existing) {
+        await organizationalStructureApi.createSector({
+          departmentId: dept.id,
+          subdepartmentId,
+          name: sector.name,
+          code: sector.code,
+          description: sector.description,
+          type: sector.type || "CORE",
+          active: (sector as any).status !== "inativo",
         });
         result.imported.sectors++;
       }
@@ -399,22 +407,26 @@ export async function importFromJSON(
       if (existing && options.updateExisting) {
         await organizationalStructureApi.updatePosition({
           id: existing.id,
-          orgId,
-          sectorId: sector.id,
-          ...position,
-        });
-        result.warnings.push(`Cargo ${position.code} atualizado`);
-      } else if (!existing) {
-        await organizationalStructureApi.createPosition({
-          orgId,
           sectorId: sector.id,
           name: position.name,
           code: position.code,
           description: position.description,
+          seniority: position.seniority || "PLENO",
+          active: (position as any).status !== "inativo",
+        });
+        result.warnings.push(`Cargo ${position.code} atualizado`);
+      } else if (!existing) {
+        await organizationalStructureApi.createPosition({
+          sectorId: sector.id,
+          name: position.name,
+          code: position.code,
+          description: position.description,
+          seniority: position.seniority || "PLENO",
           responsabilidades: position.responsabilidades,
           requisitos: position.requisitos,
           salarioMin: position.salarioMin,
           salarioMax: position.salarioMax,
+          active: (position as any).status !== "inativo",
         });
         result.imported.positions++;
       }

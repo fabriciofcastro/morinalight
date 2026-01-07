@@ -1,10 +1,10 @@
 
-import { verifyRegistrationResponse } from '@simplewebauthn/server';
-import { NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth/server';
+import { EXPECTED_ORIGIN, RP_ID } from '@/lib/auth/webauthn-config';
 import prisma from '@/lib/prisma';
-import { RP_ID, EXPECTED_ORIGIN } from '@/lib/auth/webauthn-config';
+import { verifyRegistrationResponse } from '@simplewebauthn/server';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
@@ -17,7 +17,8 @@ export async function POST(req: Request) {
         const { response } = body;
 
         // Recuperar challenge do cookie
-        const expectedChallenge = cookies().get('webauthn_challenge')?.value;
+        const cookieStore = await cookies();
+        const expectedChallenge = cookieStore.get('webauthn_challenge')?.value;
 
         if (!expectedChallenge) {
             return NextResponse.json({ error: 'Challenge not found or expired' }, { status: 400 });
@@ -31,15 +32,15 @@ export async function POST(req: Request) {
         });
 
         if (verification.verified && verification.registrationInfo) {
-            const { credentialPublicKey, credentialID, counter, credentialDeviceType, credentialBackedUp } = verification.registrationInfo;
+            const { credential, credentialDeviceType, credentialBackedUp } = verification.registrationInfo;
 
             // Salvar no banco
             await prisma.authenticator.create({
                 data: {
-                    userId: user.id,
-                    credentialID: credentialID,
-                    credentialPublicKey: Buffer.from(credentialPublicKey).toString('base64'),
-                    counter: BigInt(counter),
+                    userId: user.userId,
+                    credentialID: credential.id,
+                    credentialPublicKey: Buffer.from(credential.publicKey).toString('base64'),
+                    counter: BigInt(verification.registrationInfo.credential.counter || 0), // Use credential counter if available
                     credentialDeviceType,
                     credentialBackedUp,
                     transports: response.transports ? JSON.stringify(response.transports) : null,
@@ -47,15 +48,15 @@ export async function POST(req: Request) {
             });
 
             // Limpar challenge
-            cookies().delete('webauthn_challenge');
+            (await cookies()).delete('webauthn_challenge');
 
             return NextResponse.json({ verified: true });
         } else {
             return NextResponse.json({ verified: false, error: "Verification failed" }, { status: 400 });
         }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('WebAuthn Verify Error:', error);
-        return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ error: (error instanceof Error ? error.message : 'Internal Server Error') }, { status: 500 });
     }
 }

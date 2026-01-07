@@ -117,7 +117,7 @@ export function AnimatedGlyph({
       accentColor={accentColor}
       glowColor={glowColor}
       size={resolvedSize}
-      paused={paused || shouldReduceMotion}
+      paused={paused || !!shouldReduceMotion}
       className={className}
     />
   );

@@ -90,13 +90,13 @@ function parseCSVLine(line: string): string[] {
  * Converte CSV para estrutura organizacional
  */
 export function csvToOrganizationalStructure(rows: CSVRow[]): {
-  departments: Omit<Department, "id" | "departmentId" | "createdAt" | "updatedAt">[];
-  subdepartments: Omit<Subdepartment, "id" | "subdepartmentId" | "createdAt" | "updatedAt">[];
+  departments: Omit<Department, "id" | "createdAt" | "updatedAt">[];
+  subdepartments: Omit<Subdepartment, "subdepartmentId" | "createdAt" | "updatedAt">[];
   sectors: Omit<Sector, "id" | "createdAt" | "updatedAt">[];
   positions: Omit<Position, "id" | "createdAt" | "updatedAt">[];
 } {
-  const departments: Omit<Department, "id" | "departmentId" | "createdAt" | "updatedAt">[] = [];
-  const subdepartments: Omit<Subdepartment, "id" | "subdepartmentId" | "createdAt" | "updatedAt">[] = [];
+  const departments: Omit<Department, "id" | "createdAt" | "updatedAt">[] = [];
+  const subdepartments: Omit<Subdepartment, "subdepartmentId" | "createdAt" | "updatedAt">[] = [];
   const sectors: Omit<Sector, "id" | "createdAt" | "updatedAt">[] = [];
   const positions: Omit<Position, "id" | "createdAt" | "updatedAt">[] = [];
 
@@ -111,13 +111,11 @@ export function csvToOrganizationalStructure(rows: CSVRow[]): {
         orgId: "", // Será preenchido durante importação
         name: row.Nome,
         code: row.Código,
-        description: row.Descrição || null,
+        description: row.Descrição || undefined,
         type: "CORE",
-        filialId: null,
-        parentId: null,
         active: row.Status === "ativo",
       });
-      departmentMap.set(row.Código, row.ID);
+      departmentMap.set(row.Código, row.ID || row.Código);
     }
   }
 
@@ -132,10 +130,11 @@ export function csvToOrganizationalStructure(rows: CSVRow[]): {
           departmentId: deptId,
           name: row.Nome,
           code: row.Código,
-          description: row.Descrição || null,
+          description: row.Descrição || undefined,
           status: (row.Status as "ativo" | "inativo" | "arquivado") || "ativo",
+          ordem: 0,
         });
-        subdepartmentMap.set(row.Código, row.ID);
+        subdepartmentMap.set(row.Código, row.ID || row.Código);
       }
     }
   }
@@ -150,15 +149,15 @@ export function csvToOrganizationalStructure(rows: CSVRow[]): {
 
       if (deptId) {
         sectors.push({
-          orgId: "", // Será preenchido durante importação
-          departmentId: deptId,
-          subdepartmentId: subdeptId || null,
           name: row.Nome,
           code: row.Código,
-          description: row.Descrição || null,
-          status: (row.Status as "ativo" | "inativo" | "arquivado") || "ativo",
+          description: row.Descrição || undefined,
+          type: "CORE",
+          active: row.Status === "ativo",
+          departmentId: deptId,
+          subdepartmentId: subdeptId,
         });
-        sectorMap.set(row.Código, row.ID);
+        sectorMap.set(row.Código, row.ID || row.Código);
       }
     }
   }
@@ -170,16 +169,16 @@ export function csvToOrganizationalStructure(rows: CSVRow[]): {
       const sectorId = sectorMap.get(sectorCode);
       if (sectorId) {
         positions.push({
-          orgId: "", // Será preenchido durante importação
-          sectorId,
           name: row.Nome,
           code: row.Código,
-          description: row.Descrição || null,
-          responsabilidades: null,
-          requisitos: null,
-          salarioMin: null,
-          salarioMax: null,
-          status: (row.Status as "ativo" | "inativo" | "arquivado") || "ativo",
+          description: row.Descrição || undefined,
+          seniority: "PLENO",
+          active: row.Status === "ativo",
+          sectorId,
+          responsabilidades: undefined,
+          requisitos: undefined,
+          salarioMin: undefined,
+          salarioMax: undefined,
         });
       }
     }

@@ -1,7 +1,5 @@
-import { NextResponse } from "next/server";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { getPrismaClient } from "@/lib/prisma";
-import { GeoIPService } from "@/lib/security/geoip-service";
+import { NextResponse } from "next/server";
 
 // Simulation Data Generators
 const ATTACK_TYPES = ["SQL Injection", "Brute Force", "DDoS", "XSS", "Port Scan", "Malware"];
@@ -58,11 +56,11 @@ export async function GET(request: Request) {
         // Fetch last 50 alerts from last 1 hour
         const alerts = await prisma.securityAlert.findMany({
             where: {
-                timestamp: {
+                createdAt: {
                     gt: new Date(Date.now() - 60 * 60 * 1000) // Last hour
                 }
             },
-            orderBy: { timestamp: 'desc' },
+            orderBy: { createdAt: 'desc' },
             take: 50
         });
 
@@ -80,7 +78,7 @@ export async function GET(request: Request) {
                 lat: -23.5505, // Sao Paulo
                 long: -46.6333
             },
-            timestamp: alert.timestamp
+            timestamp: alert.createdAt
         }));
 
         return NextResponse.json({ threats, mode: 'live' });

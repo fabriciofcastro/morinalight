@@ -1,25 +1,23 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  Settings,
-  Plus,
-  Search,
-  Edit,
-  Trash2,
-  Save,
-  ArrowLeft,
-  X,
-  GripVertical,
-} from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { statusCustomizadoApi } from "@/lib/api/status-customizado-ficha-custo";
-import type { StatusCustomizado, CreateStatusCustomizadoInput, UpdateStatusCustomizadoInput } from "@/lib/api/status-customizado-ficha-custo";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { PageLoader } from "@/components/ui/PageLoader";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import type { CreateStatusCustomizadoInput, StatusCustomizado, UpdateStatusCustomizadoInput } from "@/lib/api/status-customizado-ficha-custo";
+import { statusCustomizadoApi } from "@/lib/api/status-customizado-ficha-custo";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import {
+    ArrowLeft,
+    Edit,
+    Plus,
+    Save,
+    Search,
+    Settings,
+    Trash2
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -34,7 +32,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

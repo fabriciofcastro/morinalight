@@ -1,0 +1,16 @@
+Total pages found in apps/web/src/app: 167
+Eligible pages for sidebar: 112
+Unique paths/hrefs found in sidebar: 115
+
+✅ All eligible pages are in the sidebar!
+
+Summary:
+Missing: 0
+Covered: 112
+Coverage: 100.00%
+
+⚠️ Sidebar items without matching (eligible) route:
+- /admin/categories/new
+- /admin/clients
+- /commissions/reports
+- /demo

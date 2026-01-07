@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, GlassCard, Input, Label } from "@morina/ui";
-import { Mail, Phone, Plus, Trash2 } from "lucide-react";
+import { Mail, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -82,7 +82,7 @@ export function CompanyContactsTab() {
             </div>
 
             <div>
-              <Label>E-mails Secundários</Label>
+              <Label htmlFor="emailsSecundarios">E-mails Secundários</Label>
               <div className="flex gap-2">
                 <Input
                   type="email"

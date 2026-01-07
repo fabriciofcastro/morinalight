@@ -1,12 +1,12 @@
-import { cn } from "@morina/ui";
-import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Providers } from "@/app/providers";
 import { ConnectionProviders } from "@/components/connection-providers";
-import { ThemeShell } from "@/components/theme-shell";
-import { QueryProvider } from "@/lib/query/provider";
-import { AdvancedErrorBoundary } from "@/lib/errors";
 import { CookieConsent } from "@/components/legal/cookie-consent";
+import { ThemeShell } from "@/components/theme-shell";
+import { AdvancedErrorBoundary } from "@/lib/errors";
+import { cn } from "@morina/ui/server";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Inter, Poppins } from "next/font/google";
 
 import "./globals.css";
 
@@ -37,7 +37,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={cn(interSans.variable, poppinsDisplay.variable, "antialiased")}
       >
-        <QueryProvider>
+        <Providers>
           <ThemeProvider
             attribute="data-theme"
             defaultTheme="dark"
@@ -51,7 +51,7 @@ export default function RootLayout({
               <CookieConsent />
             </AdvancedErrorBoundary>
           </ThemeProvider>
-        </QueryProvider>
+        </Providers>
       </body>
     </html>
   );

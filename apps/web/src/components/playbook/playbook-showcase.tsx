@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-import { GlassCard } from "@morina/ui";
 import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
+import { GlassCard } from "@morina/ui";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface PlaybookItem {
     id: string;
@@ -73,6 +73,7 @@ export function PlaybookShowcase() {
 
             return () => clearInterval(interval);
         }
+        return undefined;
     }, [isPaused]);
 
     const handlePrevious = () => {
@@ -85,7 +86,7 @@ export function PlaybookShowcase() {
         setCurrentIndex((prev) => (prev + 1) % playbooks.length);
     };
 
-    const currentPlaybook = playbooks[currentIndex];
+    const currentPlaybook = playbooks[currentIndex]!;
     const config = statusConfig[currentPlaybook.status];
 
     const slideVariants = {

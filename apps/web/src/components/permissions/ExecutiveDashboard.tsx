@@ -1,35 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-    BarChart,
+    Activity,
+    AlertTriangle,
+    Download,
+    Shield,
+    TrendingDown,
+    TrendingUp,
+    Users,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import {
     Bar,
-    LineChart,
-    Line,
-    PieChart,
-    Pie,
+    BarChart,
+    CartesianGrid,
     Cell,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
     XAxis,
     YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
 } from "recharts";
-import {
-    TrendingUp,
-    TrendingDown,
-    AlertTriangle,
-    Shield,
-    Users,
-    Activity,
-    Download,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface ExecutiveKPIs {
     overallConformityScore: number;
@@ -300,7 +300,7 @@ export function ExecutiveDashboard({ orgId }: { orgId: string }) {
                                             {getTrendIcon(dept.trend)}
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <Badge variant={dept.conformityScore >= 80 ? 'default' : 'destructive'}>
+                                            <Badge variant={dept.conformityScore >= 80 ? 'default' : 'danger'}>
                                                 {dept.conformityScore}% conformity
                                             </Badge>
                                             <span className="text-sm text-muted-foreground">{dept.userCount} users</span>
@@ -326,7 +326,7 @@ export function ExecutiveDashboard({ orgId }: { orgId: string }) {
                                         cx="50%"
                                         cy="50%"
                                         labelLine={false}
-                                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                        label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                                         outerRadius={120}
                                         fill="#8884d8"
                                         dataKey="value"

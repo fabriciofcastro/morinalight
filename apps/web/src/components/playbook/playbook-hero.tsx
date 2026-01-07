@@ -1,10 +1,10 @@
 "use client";
 
-import { motion, useScroll, useTransform, useMotionValue, useReducedMotion } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
-import Link from "next/link";
-import { ChevronDown, Play, Sparkles } from "lucide-react";
 import { GridAnimatedBackground } from "@/components/ui/animated-backgrounds";
+import { animate, motion, useMotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { ChevronDown, Play, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 // Componentes internos auxiliares que estavam faltando
 function FloatingOrbs() {
@@ -36,7 +36,7 @@ export function PlaybookHero() {
 
     const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
     const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.9]);
-    
+
     // Typewriter effect logic
     const baseText = "Acelere módulos críticos com RBAC granular, auditoria total e experiências assistidas por IA. Configuramos fluxos, eventos e interfaces para você subir em 48h.";
     const count = useMotionValue(0);
@@ -47,8 +47,9 @@ export function PlaybookHero() {
         setIsLoaded(true);
         if (shouldReduceMotion) {
             count.set(baseText.length);
+            return undefined;
         } else {
-            const controls = motion.animate(count, baseText.length, {
+            const controls = animate(count, baseText.length, {
                 type: "tween",
                 duration: 2,
                 ease: "easeInOut",
@@ -120,10 +121,10 @@ export function PlaybookHero() {
                     initial={{ opacity: 0 }}
                     animate={isLoaded ? { opacity: 1 } : {}}
                 >
-                    <motion.span 
-                        dangerouslySetInnerHTML={{ 
-                            __html: renderText(baseText.slice(0, rounded.get())) 
-                        }} 
+                    <motion.span
+                        dangerouslySetInnerHTML={{
+                            __html: renderText(baseText.slice(0, rounded.get()))
+                        }}
                     />
                 </motion.div>
 

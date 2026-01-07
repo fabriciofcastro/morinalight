@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Textarea } from "./textarea";
 import { FormField } from "./form-field";
+import { Textarea } from "./textarea";
 
 const meta: Meta<typeof Textarea> = {
   title: "Components/Textarea",
@@ -9,8 +9,7 @@ const meta: Meta<typeof Textarea> = {
     layout: "centered",
     docs: {
       description: {
-        component:
-          "Campo de texto multilinha com suporte a estados de validação e acessibilidade.",
+        component: "Campo de texto multilinha com suporte a estados de validação e acessibilidade.",
       },
     },
   },
@@ -118,12 +117,3 @@ export const WithRows: Story = {
     rows: 10,
   },
 };
-
-
-
-
-
-
-
-
-

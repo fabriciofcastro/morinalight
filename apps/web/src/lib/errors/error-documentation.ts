@@ -36,7 +36,7 @@ export class ErrorDocumentationGenerator {
         const docs: ErrorDocumentation[] = [];
 
         for (const group of groups) {
-            const friendly = getUserFriendlyMessage(group.errors[0]);
+            const friendly = getUserFriendlyMessage(group.errors[0] as AppError);
 
             docs.push({
                 code: group.code,
@@ -147,8 +147,8 @@ export class ErrorDocumentationGenerator {
             if (otherGroup.fingerprint === group.fingerprint) continue;
 
             // Verificar se compartilham endpoints
-            const sharedEndpoints = Array.from(group.affectedEndpoints).filter((e) =>
-                otherGroup.affectedEndpoints.has(e),
+            const sharedEndpoints = Array.from(group.affectedEndpoints).filter((e: any) =>
+                otherGroup.affectedEndpoints.has(e as string),
             );
 
             if (sharedEndpoints.length > 0) {

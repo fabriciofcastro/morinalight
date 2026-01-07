@@ -13,7 +13,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, validationState, ...props }, ref) => {
     // Classes baseadas no estado de validação
     const validationClasses = {
-      valid: "border-[hsl(158,72%,35%)] focus:border-[hsl(158,72%,35%)] focus:shadow-[0_0_0_1px_hsl(158,72%,35%/0.60),0_0_26px_-14px_hsl(158,72%,35%/0.45)]",
+      valid:
+        "border-[hsl(158,72%,35%)] focus:border-[hsl(158,72%,35%)] focus:shadow-[0_0_0_1px_hsl(158,72%,35%/0.60),0_0_26px_-14px_hsl(158,72%,35%/0.45)]",
       invalid:
         "border-[hsl(0,82%,45%)] focus:border-[hsl(0,82%,45%)] focus:shadow-[0_0_0_1px_hsl(0,82%,45%/0.60),0_0_26px_-14px_hsl(0,82%,45%/0.45)]",
       pending:

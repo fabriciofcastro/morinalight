@@ -1321,11 +1321,12 @@ export function UsersClient() {
                                 className={cn(
                                   "absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[hsl(var(--surface))]",
                                   // TODO: Verificar status real do usuário
-                                  Math.random() > 0.5
+                                  // Status baseado no estado do usuário
+                                  user.status === "active"
                                     ? "bg-green-500"
                                     : "bg-gray-400",
                                 )}
-                                title={Math.random() > 0.5 ? "Online" : "Offline"}
+                                title={user.status === "active" ? "Ativo" : "Inativo"}
                               />
                             </div>
                             <div>

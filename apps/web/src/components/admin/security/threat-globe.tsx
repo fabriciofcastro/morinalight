@@ -1,7 +1,8 @@
 "use client";
 
 import createGlobe from "cobe";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { Activity } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSpring } from "react-spring";
 
 export type Threat = {
@@ -228,7 +229,7 @@ export function ThreatGlobe({ threats = [], className = "" }: { threats?: Threat
                     </div>
                     <p className="text-[11px] text-blue-100/80 leading-tight">
                         Padrão de ataque detectado em {hotZones.length} região(ões).
-                        Recomendado: Ativar Modo de Defesa Ativa para {hotZones[0].label}.
+                        Recomendado: Ativar Modo de Defesa Ativa para {hotZones[0]!.label}.
                     </p>
                 </div>
             )}

@@ -1,4 +1,6 @@
 import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import "@testing-library/jest-dom";
 
 import { GlassCard } from "./glass-card";
 
@@ -12,7 +14,9 @@ describe("GlassCard", () => {
 
     expect(screen.getByText("Energia Orion")).toBeInTheDocument();
     const card = container.firstElementChild;
-    expect(card?.className).toContain("shadow-[var(--shadow-soft)]");
+    expect(card?.className).toContain(
+      "hover:shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.15)]",
+    );
   });
 
   it("permite desativar o glow", () => {
@@ -23,6 +27,8 @@ describe("GlassCard", () => {
     );
 
     const card = container.firstElementChild;
-    expect(card?.className).not.toContain("shadow-[var(--shadow-soft)]");
+    expect(card?.className).not.toContain(
+      "hover:shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.15)]",
+    );
   });
 });

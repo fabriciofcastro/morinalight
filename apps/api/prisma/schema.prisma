@@ -3304,3 +3304,27 @@ model ActivityLog {
   @@index([orgId, timestamp])
   @@index([type])
 }
+
+// Outbox Pattern
+enum OutboxStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model OutboxMessage {
+  id            String       @id
+  type          String       @db.VarChar(255)
+  payload       String       @db.Text
+  status        OutboxStatus @default(PENDING)
+  occurredAt    DateTime
+  processedAt   DateTime?
+  error         String?      @db.Text
+  attempts      Int          @default(0)
+  correlationId String?      @db.VarChar(255)
+  causationId   String?      @db.VarChar(255)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([status, occurredAt])
+}

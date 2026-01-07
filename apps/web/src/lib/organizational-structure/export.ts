@@ -2,7 +2,7 @@
  * Utilitários para exportação de estrutura organizacional
  */
 
-import type { Department, Subdepartment, Sector, Position } from "@/lib/api/organizational-structure";
+import type { Department, Subdepartment, Sector, Position } from "@morina/organizational-structure-domain";
 
 export type OrganizationalStructureExport = {
   version: string;
@@ -51,26 +51,26 @@ export function exportToCSV(
   // Departments
   for (const dept of departments) {
     lines.push(
-      `Departamento,${dept.id || dept.departmentId},${dept.code},"${dept.name}",${dept.status},,,,"${dept.description || ""}"`,
+      `Departamento,${dept.id},${dept.code},"${dept.name}",${dept.active ? "Ativo" : "Inativo"},,,,"${dept.description || ""}"`,
     );
   }
 
   // Subdepartments
   for (const subdept of subdepartments) {
-    const dept = departments.find((d) => d.id === subdept.departmentId || d.departmentId === subdept.departmentId);
+    const dept = departments.find((d) => d.id === subdept.departmentId);
     lines.push(
-      `Subdepartamento,${subdept.id || subdept.subdepartmentId},${subdept.code},"${subdept.name}",${subdept.status},"${dept?.name || ""}",,"${subdept.description || ""}"`,
+      `Subdepartamento,${subdept.subdepartmentId},${subdept.code},"${subdept.name}",${subdept.status},"${dept?.name || ""}",,"${subdept.description || ""}"`,
     );
   }
 
   // Sectors
   for (const sector of sectors) {
-    const dept = departments.find((d) => d.id === sector.departmentId || d.departmentId === sector.departmentId);
+    const dept = departments.find((d) => d.id === sector.departmentId);
     const subdept = subdepartments.find(
-      (sd) => sd.id === sector.subdepartmentId || sd.subdepartmentId === sector.subdepartmentId,
+      (sd) => sd.subdepartmentId === sector.subdepartmentId,
     );
     lines.push(
-      `Setor,${sector.id},${sector.code},"${sector.name}",${sector.status},"${dept?.name || ""}","${subdept?.name || ""}",,"${sector.description || ""}"`,
+      `Setor,${sector.id},${sector.code},"${sector.name}",${sector.active ? "Ativo" : "Inativo"},"${dept?.name || ""}","${subdept?.name || ""}",,"${sector.description || ""}"`,
     );
   }
 
@@ -78,13 +78,13 @@ export function exportToCSV(
   for (const position of positions) {
     const sector = sectors.find((s) => s.id === position.sectorId);
     const dept = departments.find(
-      (d) => d.id === sector?.departmentId || d.departmentId === sector?.departmentId,
+      (d) => d.id === sector?.departmentId,
     );
     const subdept = subdepartments.find(
-      (sd) => sd.id === sector?.subdepartmentId || sd.subdepartmentId === sector?.subdepartmentId,
+      (sd) => sd.subdepartmentId === sector?.subdepartmentId,
     );
     lines.push(
-      `Cargo,${position.id},${position.code},"${position.name}",${position.status},"${dept?.name || ""}","${subdept?.name || ""}","${sector?.name || ""}","${position.description || ""}"`,
+      `Cargo,${position.id},${position.code},"${position.name}",${position.active ? "Ativo" : "Inativo"},"${dept?.name || ""}","${subdept?.name || ""}","${sector?.name || ""}","${position.description || ""}"`,
     );
   }
 

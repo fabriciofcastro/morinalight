@@ -1,22 +1,22 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { Button, GlassCard, Input, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";
 import {
-  Archive,
-  Check,
-  CheckCheck,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Inbox,
-  MoreVertical,
-  Search,
-  Trash2,
-  X,
+    Archive,
+    Check,
+    CheckCheck,
+    ChevronLeft,
+    ChevronRight,
+    Download,
+    Inbox,
+    MoreVertical,
+    Search,
+    Trash2,
+    X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { useMemo, useState } from "react";
 
 type NotificationInteraction = {
   id: string;
@@ -186,7 +186,7 @@ export function NotificationsClient() {
       if (!groups[groupKey]) {
         groups[groupKey] = [];
       }
-      groups[groupKey].push(notification);
+      groups[groupKey]!.push(notification);
     });
 
     return groups;
@@ -237,7 +237,7 @@ export function NotificationsClient() {
       if (!groups[groupKey]) {
         groups[groupKey] = [];
       }
-      groups[groupKey].push(notification);
+      groups[groupKey]!.push(notification);
     });
 
     return groups;

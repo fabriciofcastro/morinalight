@@ -5,14 +5,14 @@
  * Verifica código MFA após login bem-sucedido
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { verifyMFAToken, verifyBackupCode } from "@/lib/auth/mfa";
-import { getPrismaClient } from "@/lib/prisma";
-import { logger } from "@/lib/observability";
+import { verifyBackupCode, verifyMFAToken } from "@/lib/auth/mfa";
 import { Role } from "@/lib/auth/rbac";
-import { z } from "zod";
+import { logger } from "@/lib/observability";
+import { getPrismaClient } from "@/lib/prisma";
 import { intrusionDetector } from "@/lib/security/intrusion-detection";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
 const schema = z.object({
     email: z.string().email(),
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
                 // Verificar cada backup code hasheado
                 for (let i = 0; i < backupCodes.length; i++) {
-                    const matches = await verifyBackupCode(token, backupCodes[i]);
+                    const matches = await verifyBackupCode(token, backupCodes[i]!);
 
                     if (matches) {
                         isValid = true;

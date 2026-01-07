@@ -122,7 +122,7 @@ export function ButtonWithErrorTooltipExample() {
         </Button>
       </ErrorTooltip>
 
-      {error && (
+      {!!error && (
         <ErrorBadge error={error} variant="subtle" showTooltip />
       )}
     </div>
@@ -141,7 +141,7 @@ export function CardWithErrorIndicatorExample() {
         <h3 className="font-semibold text-white">Produto</h3>
         <p className="text-sm text-white/70">Descrição do produto...</p>
       </div>
-      {error && (
+      {!!error && (
         <InlineErrorIndicator
           error={error}
           position="top-right"
@@ -200,7 +200,7 @@ export function ElegantNotificationsExample() {
         </Button>
       </div>
 
-      {error && (
+      {!!error && (
         <ElegantErrorNotification
           error={error}
           variant="compact"
@@ -209,7 +209,7 @@ export function ElegantNotificationsExample() {
         />
       )}
 
-      {toastError && (
+      {!!toastError && (
         <ElegantErrorToast
           error={toastError}
           duration={5000}

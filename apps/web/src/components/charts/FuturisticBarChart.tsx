@@ -19,12 +19,22 @@ interface CategorySales {
 }
 
 interface FuturisticBarChartProps {
-    data?: CategorySales[];
+    data?: any[]; // Accept any array structure
     isLoading?: boolean;
     error?: Error | null;
+    xAxis?: string; // Optional: key for x-axis
+    yAxis?: string; // Optional: key for y-axis
+    tooltipFormat?: (value: any) => string; // Optional: custom tooltip formatter
 }
 
-export function FuturisticBarChart({ data, isLoading, error }: FuturisticBarChartProps) {
+export function FuturisticBarChart({
+    data,
+    isLoading,
+    error,
+    xAxis = "name",
+    yAxis = "value",
+    tooltipFormat
+}: FuturisticBarChartProps) {
     // Loading skeleton
     if (isLoading) {
         return (
@@ -94,7 +104,7 @@ export function FuturisticBarChart({ data, isLoading, error }: FuturisticBarChar
                     <BarChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                         <XAxis
-                            dataKey="name"
+                            dataKey={xAxis}
                             stroke="rgba(255,255,255,0.5)"
                             fontSize={12}
                             tickLine={false}
@@ -106,7 +116,7 @@ export function FuturisticBarChart({ data, isLoading, error }: FuturisticBarChar
                             fontSize={12}
                             tickLine={false}
                             axisLine={false}
-                            tickFormatter={(value) => `${value}`}
+                            tickFormatter={tooltipFormat || ((value) => `${value}`)}
                             dx={-10}
                         />
                         <Tooltip
@@ -118,9 +128,9 @@ export function FuturisticBarChart({ data, isLoading, error }: FuturisticBarChar
                                 color: "#fff",
                             }}
                         />
-                        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                        <Bar dataKey={yAxis} radius={[4, 4, 0, 0]}>
                             {data.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                <Cell key={`cell-${index}`} fill={entry.color || `hsl(${index * 45}, 70%, 60%)`} />
                             ))}
                         </Bar>
                     </BarChart>

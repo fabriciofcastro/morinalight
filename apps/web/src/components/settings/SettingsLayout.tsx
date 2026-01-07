@@ -1,8 +1,7 @@
 "use client";
 
-import { cn } from "@morina/ui";
-import { motion } from "framer-motion";
-import { ArrowLeft, Search } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, CheckCircle2, Loader2, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -48,17 +47,20 @@ export function SettingsLayout({
         try {
           await onSave();
           setLastSaved(new Date());
-          notificationCenter.add({
-            type: "success",
-            title: "Salvo",
-            message: "Alterações salvas com sucesso.",
-          });
+          // TODO: Add toast notification system
+          // notificationCenter.add({
+          //   type: "success",
+          //   title: "Salvo",
+          //   message: "Alterações salvas com sucesso.",
+          // });
         } catch (error) {
-          notificationCenter.add({
-            type: "error",
-            title: "Erro ao salvar",
-            message: error instanceof Error ? error.message : "Não foi possível salvar as alterações.",
-          });
+          console.error("Erro ao salvar:", error);
+          // TODO: Add toast notification system
+          // notificationCenter.add({
+          //   type: "error",
+          //   title: "Erro ao salvar",
+          //   message: error instanceof Error ? error.message : "Não foi possível salvar as alterações.",
+          // });
         } finally {
           setInternalSaving(false);
         }
@@ -74,7 +76,7 @@ export function SettingsLayout({
     if (title) return title;
     const segments = pathname?.split("/").filter(Boolean) || [];
     if (segments.length >= 2 && segments[0] === "settings") {
-      const pageName = segments[segments.length - 1];
+      const pageName = segments[segments.length - 1]!;
       return pageName
         .split("-")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -94,7 +96,7 @@ export function SettingsLayout({
       permissions: "Configure permissões granulares e controle de acesso (RBAC)",
     };
     const segments = pathname?.split("/").filter(Boolean) || [];
-    const pageName = segments[segments.length - 1];
+    const pageName = segments[segments.length - 1]!;
     return pathDescriptions[pageName] || "Configure as opções do sistema";
   };
 
@@ -116,6 +118,7 @@ export function SettingsLayout({
       const timer = setTimeout(() => searchInputRef.current?.focus(), 0);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [searchOpen]);
 
   const handleBack = () => {

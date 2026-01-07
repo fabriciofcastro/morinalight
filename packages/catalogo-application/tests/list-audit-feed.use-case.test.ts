@@ -1,16 +1,16 @@
 import type {
-  Produto,
-  ProdutoAuditoria,
-  ProdutoAuditoriaFiltro,
-  ProdutoAuditoriaPagina,
-  ProdutoAuditoriaRepository,
-  ProdutoListaFiltro,
-  ProdutoListaPagina,
-  ProdutoRepository,
+    Produto,
+    ProdutoAuditoria,
+    ProdutoAuditoriaFiltro,
+    ProdutoAuditoriaPagina,
+    ProdutoAuditoriaRepository,
+    ProdutoListaFiltro,
+    ProdutoListaPagina,
+    ProdutoRepository,
 } from "@morina/catalogo-domain";
 import {
-  ProdutoAuditoria as ProdutoAuditoriaEntity,
-  Produto as ProdutoEntity,
+    ProdutoAuditoria as ProdutoAuditoriaEntity,
+    Produto as ProdutoEntity,
 } from "@morina/catalogo-domain";
 import { describe, expect, it } from "vitest";
 
@@ -135,7 +135,7 @@ describe("ListarAuditoriaFeedUseCase", () => {
     const resultado = await useCase.execute({ orgId });
 
     expect(resultado.itens).toHaveLength(1);
-    const item = resultado.itens[0];
+    const item = resultado.itens[0]!;
     expect(item.acao).toBe("produto_aprovado");
     expect(item.produto?.nome).toBe("Produto Feed");
     expect(item.produto?.status).toBe("ativo");

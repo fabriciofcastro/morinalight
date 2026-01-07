@@ -250,4 +250,3 @@ export const loadingAnimations = {
   pulse: getAnimationClasses("pulse", { iteration: "infinite" }),
   shimmer: getAnimationClasses("shimmer", { iteration: "infinite" }),
 };
-

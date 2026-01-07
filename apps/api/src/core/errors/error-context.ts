@@ -123,7 +123,7 @@ export class ErrorContextManager {
       request: {
         method: request.method,
         url: request.url,
-        path: request.routerPath || request.url.split("?")[0],
+        path: (request as any).routerPath || request.url.split("?")[0]!,
         query: request.query as Record<string, unknown>,
         params: request.params as Record<string, unknown>,
         headers: this.sanitizeHeaders(request.headers as Record<string, string>),
@@ -131,12 +131,12 @@ export class ErrorContextManager {
         ip: request.ip,
         userAgent: request.headers["user-agent"],
       },
-      user: request.user
+      user: (request as any).user
         ? {
-            id: (request.user as { userId: string }).userId,
-            email: (request.user as { email?: string }).email,
-            role: (request.user as { role?: string }).role,
-            permissions: (request.user as { permissions?: string[] }).permissions,
+            id: ((request as any).user as { userId: string }).userId,
+            email: ((request as any).user as { email?: string }).email,
+            role: ((request as any).user as { role?: string }).role,
+            permissions: ((request as any).user as { permissions?: string[] }).permissions,
           }
         : undefined,
       application: {

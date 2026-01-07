@@ -6,10 +6,10 @@
 
 "use client";
 
+import { cn } from "@/lib/utils";
+import { Input } from "@morina/ui";
 import React from "react";
 import { FieldErrorTooltip } from "./ErrorTooltip";
-import { Input } from "@morina/ui";
-import { cn } from "@/lib/utils";
 
 interface FormFieldWithErrorProps {
   label?: string;
@@ -51,7 +51,7 @@ export function FormFieldWithError({
           {children}
         </div>
       </FieldErrorTooltip>
-      {error && typeof error === "string" && (
+      {typeof error === "string" && (
         <p className="text-xs text-red-400/80 mt-1">{error}</p>
       )}
     </div>
@@ -87,7 +87,7 @@ export function InputWithError({
       required={required}
     >
       <Input
-        {...props}
+        {...(props as any)}
         className={cn(
           hasError && "border-red-500/50 focus:border-red-500 focus:ring-red-500/20",
           className

@@ -9,7 +9,7 @@
  *   node scripts/log-monitor.ts --follow  # Modo contínuo
  */
 
-import { getPrismaClient } from '../src/lib/prisma';
+import { getPrismaClient } from '../lib/prisma';
 
 interface MonitorOptions {
     follow?: boolean;
@@ -41,7 +41,7 @@ async function monitorLogs(options: MonitorOptions = {}) {
     const checkLogs = async () => {
         try {
             // Buscar alertas desde a última verificação
-            const alerts = await prisma.securityAlert.findMany({
+            const alerts = await (prisma as any).securityAlert.findMany({
                 where: {
                     severity: severity === 'critical' ? 'critical' : {
                         in: severity === 'high' ? ['high', 'critical'] :
@@ -69,17 +69,18 @@ async function monitorLogs(options: MonitorOptions = {}) {
                 console.log(`\n🚨 ${alerts.length} new alert(s) detected at ${new Date().toISOString()}`);
                 console.log('─'.repeat(80));
 
-                alerts.forEach((alert, index) => {
-                    const severityIcon = {
+                alerts.forEach((alert: any, index: number) => {
+                    const severityIconMap: Record<string, string> = {
                         critical: '🔴',
                         high: '🟠',
                         medium: '🟡',
                         low: '🟢'
-                    }[alert.severity] || '⚪';
+                    };
+                    const severityIcon = severityIconMap[alert.severity as string] || '⚪';
 
                     console.log(`\n${severityIcon} [${index + 1}] ${alert.alertType.toUpperCase()}`);
                     console.log(`   Severity: ${alert.severity}`);
-                    console.log(`   User: ${alert.user.displayName || alert.user.email}`);
+                    console.log(`   User: ${alert.user?.displayName || alert.user?.email || 'Unknown'}`);
                     console.log(`   Description: ${alert.description}`);
                     console.log(`   Time: ${alert.createdAt.toISOString()}`);
                     console.log(`   Acknowledged: ${alert.acknowledged ? 'Yes' : 'No'}`);

@@ -36,4 +36,4 @@ export {
 } from "./utils";
 
 // Security Headers
-export { securityHeaders } from "../middleware";
+export { securityHeadersMiddleware as securityHeaders } from "../middleware/security-middleware";

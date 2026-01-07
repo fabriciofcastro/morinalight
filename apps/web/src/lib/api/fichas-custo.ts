@@ -79,6 +79,8 @@ export interface FichaCusto {
   dataReprovacao?: string | null;
   justificativaReprovacao?: string | null;
   versaoAtual: number;
+  dataAbertura?: string | null;
+  dataCorte?: string | null;
   createdAt: string;
   updatedAt: string;
   insumos: Insumo[];
@@ -154,6 +156,8 @@ export interface FiltroFichasCusto {
   dataInicio?: string;
   dataFim?: string;
   busca?: string;
+  colecao?: string;
+  ordenacao?: "data" | "valor" | "nome";
   pagina?: number;
   tamanhoPagina?: number;
 }
@@ -202,7 +206,7 @@ export class FichasCustoApi {
    */
   async listar(orgId: string, filtro?: FiltroFichasCusto): Promise<ListaFichasCustoResultado> {
     const params = new URLSearchParams();
-    
+
     if (filtro?.status && filtro.status.length > 0) {
       for (const s of filtro.status) {
         params.append("status", s);
@@ -220,7 +224,7 @@ export class FichasCustoApi {
 
     const queryString = params.toString();
     const url = `/organizations/${orgId}/fichas-custo${queryString ? `?${queryString}` : ""}`;
-    
+
     return api.get<ListaFichasCustoResultado>(url, { timeout: 15000 });
   }
 

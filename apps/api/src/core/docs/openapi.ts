@@ -6,9 +6,9 @@
  * com seus schemas Zod, proporcionando documentação sempre atualizada.
  */
 
-import type { FastifyInstance } from "fastify";
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
+import type { FastifyInstance } from "fastify";
 import { env } from "../config/env";
 
 export type SwaggerOptions = {
@@ -179,10 +179,10 @@ export async function registerOpenAPIDocs(
 
   try {
     // Registrar @fastify/swagger para gerar especificação OpenAPI
-    await app.register(fastifySwagger, getSwaggerConfig());
+    await app.register(fastifySwagger as any, getSwaggerConfig());
 
     // Registrar @fastify/swagger-ui para interface visual
-    await app.register(fastifySwaggerUi, getSwaggerUIConfig(routePrefix));
+    await app.register(fastifySwaggerUi as any, getSwaggerUIConfig(routePrefix));
 
     app.log.info({ routePrefix }, "✅ Documentação Swagger registrada");
     app.log.info({ url: `http://localhost:${env.API_PORT}${routePrefix}` }, "📚 Acesse a documentação em");

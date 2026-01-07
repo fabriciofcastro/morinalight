@@ -1,16 +1,16 @@
 "use client";
 
-import { Layers } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { organizationalStructureApi, type Subdepartment, type CreateSubdepartmentInput, type UpdateSubdepartmentInput, type Department } from "@/lib/api/organizational-structure";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
-import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { organizationalStructureApi, type CreateSubdepartmentInput, type Department, type Subdepartment, type UpdateSubdepartmentInput } from "@/lib/api/organizational-structure";
+import { Layers } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface SubdepartmentFormClientProps {
   subdepartmentId?: string;
@@ -25,7 +25,7 @@ function getCurrentOrgId(): string | null {
   if (orgsStr) {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
-      if (orgs.length > 0) return orgs[0].organizationId;
+      if (orgs.length > 0) return orgs[0]!.organizationId;
     } catch { }
   }
   return null;
@@ -75,7 +75,8 @@ export function SubdepartmentFormClient({ subdepartmentId, departmentId: initial
           organizationalStructureApi.getSubdepartments(),
         ]);
         setDepartments(deptsData);
-        setSubdepartments(subdeptsData.filter((s) => !subdepartmentId || s.subdepartmentId !== subdepartmentId));
+        setSubdepartments(Array.isArray(subdeptsData) ? subdeptsData : (subdeptsData?.itens || []));
+        setSubdepartments((prev) => prev.filter((s) => !subdepartmentId || s.subdepartmentId !== subdepartmentId));
 
         if (subdepartmentId) {
           const subdept = await organizationalStructureApi.getSubdepartment(subdepartmentId);
@@ -125,7 +126,7 @@ export function SubdepartmentFormClient({ subdepartmentId, departmentId: initial
         status: form.status,
         ordem: form.ordem,
       };
-      await organizationalStructureApi.updateSubdepartment(updateData);
+      await organizationalStructureApi.updateSubdepartment({ ...updateData, orgId });
       notificationCenter.add({ type: "success", title: "Subdepartamento atualizado", message: "Alterações salvas com sucesso." });
     } else {
       await organizationalStructureApi.createSubdepartment({ ...form, orgId });
@@ -163,7 +164,7 @@ export function SubdepartmentFormClient({ subdepartmentId, departmentId: initial
   }, [subdepartments, form.departmentId]);
 
   return (
-    <AllowedGuard I={subdepartmentId ? "update" : "create"} a="Subdepartment" redirectTo={initialDepartmentId ? `/admin/departments/${initialDepartmentId}` : "/admin/departments"}>
+    <AllowedGuard I={subdepartmentId ? "update" : "create"} a={"Subdepartment" as any} redirectTo={initialDepartmentId ? `/admin/departments/${initialDepartmentId}` : "/admin/departments"}>
       <StandardFormPage
         title={isEditing ? "Editar Subdepartamento" : "Novo Subdepartamento"}
         subtitle={isEditing ? `Atualizar ${subdepartment?.name}` : "Cadastre um novo subdepartamento"}

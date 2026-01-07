@@ -33,7 +33,9 @@ export const companySettingsSchema = z.object({
 export type CompanySettingsPayload = z.infer<typeof companySettingsSchema>;
 
 export const DEFAULT_COMPANY_SETTINGS: CompanySettingsPayload = {
+  logoUrl: undefined,
   primaryColor: "#2855FF",
   secondaryColor: "#9C27B0",
   themeMode: "auto",
+  videoLink: undefined,
 };

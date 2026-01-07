@@ -1,8 +1,7 @@
 "use client"
 
-import React from "react"
-import { ResponsiveContainer, Treemap, Tooltip } from "recharts"
 import { motion } from "framer-motion"
+import { ResponsiveContainer, Tooltip, Treemap } from "recharts"
 
 interface TreemapDataPoint {
     name: string
@@ -26,8 +25,23 @@ const defaultColors = [
     "hsl(var(--chart-5))",
 ]
 
-const CustomizedContent = (props: any) => {
-    const { x, y, width, height, index, name, size, colors } = props
+interface CustomizedContentProps {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    index: number;
+    name: string;
+    size: number;
+    colors: string[];
+}
+
+const CustomizedContent = (props: any) => { 
+    // Recharts passes a lot of internal props, safe to keep props as any or partial unknown here if strictly typed is too hard, 
+    // but the goal is to fix explicit 'any' if possible. 
+    // However, Recharts custom content props are dynamic.
+    // Let's type what we use.
+    const { x, y, width, height, index, name, size, colors } = props as CustomizedContentProps;
 
     return (
         <g>
@@ -98,7 +112,7 @@ export function FuturisticTreemap({
             )}
             <ResponsiveContainer width="100%" height={height}>
                 <Treemap
-                    data={flattenedData}
+                    data={flattenedData as any}
                     dataKey="size"
                     aspectRatio={4 / 3}
                     stroke="hsl(var(--background))"
@@ -114,10 +128,10 @@ export function FuturisticTreemap({
                             borderRadius: "8px",
                             color: "hsl(var(--popover-foreground))",
                         }}
-                        formatter={(value: number) => [
+                        formatter={((value: number) => [
                             value.toLocaleString("pt-BR"),
                             "Valor",
-                        ]}
+                        ]) as any}
                     />
                 </Treemap>
             </ResponsiveContainer>

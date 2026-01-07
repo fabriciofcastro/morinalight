@@ -1,0 +1,15 @@
+Total pages found in apps/web/src/app: 167
+Eligible pages for sidebar: 112
+Unique paths/hrefs found in sidebar: 106
+
+❌ Missing pages in sidebar:
+- /admin/business-segments (apps/web/src/app/(app)/admin/business-segments/page.tsx)
+- /admin/permissions (apps/web/src/app/(app)/admin/permissions/page.tsx)
+- /admin/workflow-policies (apps/web/src/app/(app)/admin/workflow-policies/page.tsx)
+- /admin/notifications (apps/web/src/app/(app)/admin/notifications/page.tsx)
+- /products (apps/web/src/app/(app)/products/page.tsx)
+
+Summary:
+Missing: 5
+Covered: 107
+Coverage: 95.54%

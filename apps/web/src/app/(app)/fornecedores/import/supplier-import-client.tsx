@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { Upload, FileSpreadsheet, CheckCircle2, XCircle, Download, ArrowLeft } from "lucide-react";
-import { Button, GlassCard } from "@morina/ui";
-import { suppliersImportApi, type ImportPreview, type SupplierImportRow, type ImportResult } from "@/lib/api/suppliers-import";
 import { notificationCenter } from "@/components/notifications/notification-center";
-import { UploadStep } from "./components/upload-step";
+import { suppliersImportApi, type ImportPreview, type ImportResult } from "@/lib/api/suppliers-import";
+import { Button, GlassCard } from "@morina/ui";
+import { ArrowLeft, CheckCircle2, Download, FileSpreadsheet, Upload, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { PreviewStep } from "./components/preview-step";
 import { ResultStep } from "./components/result-step";
+import { UploadStep } from "./components/upload-step";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -23,7 +23,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

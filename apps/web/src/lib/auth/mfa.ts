@@ -86,6 +86,65 @@ export async function verifyBackupCode(
  */
 export class MFAService {
     /**
+     * Gera secret (wrapper para testes)
+     */
+    generateSecret(): string {
+        return authenticator.generateSecret();
+    }
+
+    /**
+     * Gera QR code (wrapper para testes)
+     */
+    async generateQRCode(secret: string, userEmail: string): Promise<string> {
+        const otpauth = authenticator.keyuri(userEmail, APP_NAME, secret);
+        return generateQRCode(otpauth);
+    }
+
+    /**
+     * Gera token TOTP (wrapper para testes)
+     */
+    generateToken(secret: string): string {
+        return authenticator.generate(secret);
+    }
+
+    /**
+     * Verifica token (wrapper para testes)
+     */
+    verifyToken(secret: string, token: string): boolean {
+        return verifyMFAToken(token, secret);
+    }
+
+    /**
+     * Gera backup codes (wrapper para testes)
+     */
+    generateBackupCodes(count: number = 10): string[] {
+        const codes: string[] = [];
+        for (let i = 0; i < count; i++) {
+            // Format: XXXX-XXXX
+            const part1 = crypto.randomBytes(2).toString('hex').toUpperCase();
+            const part2 = crypto.randomBytes(2).toString('hex').toUpperCase();
+            codes.push(`${part1}-${part2}`);
+        }
+        return codes;
+    }
+
+    /**
+     * Hash backup code (wrapper para testes) - versão síncrona
+     */
+    hashBackupCode(code: string): string {
+        // Para testes, usar hash simples (em produção, usar bcrypt async)
+        return crypto.createHash('sha256').update(code).digest('hex');
+    }
+
+    /**
+     * Verifica backup code (wrapper para testes) - versão síncrona
+     */
+    verifyBackupCode(code: string, hashedCodes: string[]): boolean {
+        const hashedInput = this.hashBackupCode(code);
+        return hashedCodes.includes(hashedInput);
+    }
+
+    /**
      * Habilita MFA para usuário
      */
     async enableMFA(userId: string, userEmail: string) {

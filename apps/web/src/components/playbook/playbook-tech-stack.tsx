@@ -1,18 +1,18 @@
 "use client";
 
-import { motion, useInView, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
-import {
-    Database,
-    Code2,
-    Shield,
-    Zap,
-    Globe,
-    Cpu,
-    Boxes
-} from "lucide-react";
 import { HexagonGrid } from "@/components/login/hexagon-grid";
 import { GlassCard } from "@morina/ui";
+import { motion, useInView, useReducedMotion } from "framer-motion";
+import {
+    Boxes,
+    Code2,
+    Cpu,
+    Database,
+    Globe,
+    Shield,
+    Zap
+} from "lucide-react";
+import { useRef } from "react";
 
 interface TechItem {
     name: string;
@@ -103,7 +103,7 @@ export function PlaybookTechStack() {
 
                 {/* Tech Grid */}
                 <motion.div
-                    variants={containerVariants}
+                    variants={containerVariants as any}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
@@ -114,7 +114,7 @@ export function PlaybookTechStack() {
                         return (
                             <motion.div
                                 key={tech.name}
-                                variants={itemVariants}
+                                variants={itemVariants as any}
                                 whileHover={{
                                     scale: 1.05,
                                     transition: { duration: 0.2 }

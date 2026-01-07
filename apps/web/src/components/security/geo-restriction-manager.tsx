@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Globe, MapPin, Shield, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Edit, Globe, MapPin, Plus, Shield, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface GeoRestriction {
     id: string;
@@ -19,7 +19,7 @@ interface GeoRestriction {
 }
 
 interface GeoRestrictionManagerProps {
-    orgId: string;
+    orgId?: string;
 }
 
 const RESTRICTION_TYPES = [
@@ -355,7 +355,7 @@ function GeoRestrictionModal({
         ipRanges: restriction?.ipRanges.join(', ') || '',
         blockVpn: restriction?.blockVpn || false,
         blockProxy: restriction?.blockProxy || false,
-        blockTor: restriction?.blockTor || true,
+        blockTor: (restriction?.blockTor ?? true) as boolean,
     });
 
     const handleSubmit = async (e: React.FormEvent) => {

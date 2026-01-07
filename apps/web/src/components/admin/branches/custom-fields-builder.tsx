@@ -1,29 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import {
-    Plus,
-    Trash2,
-    MoveUp,
-    MoveDown,
-    Type,
-    Settings,
-    AlignLeft,
-    Hash,
-    Calendar,
-    ToggleLeft,
-    List,
-    Mail,
-    Link as LinkIcon,
-    Palette
-} from "lucide-react";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import type {
     BranchCustomFieldsConfig,
     CustomFieldDefinition,
-    CustomFieldType,
-    CustomFieldOption
+    CustomFieldType
 } from "@/types/custom-fields";
+import {
+    AlignLeft,
+    Calendar,
+    Hash,
+    Link as LinkIcon,
+    List,
+    Mail,
+    MoveDown,
+    MoveUp,
+    Plus,
+    Settings,
+    ToggleLeft,
+    Trash2,
+    Type
+} from "lucide-react";
+import { useState } from "react";
 
 interface CustomFieldsBuilderProps {
     config: BranchCustomFieldsConfig;
@@ -82,8 +80,8 @@ export function CustomFieldsBuilder({ config, onChange }: CustomFieldsBuilderPro
 
         if (targetIndex >= 0 && targetIndex < newFields.length) {
             [newFields[index], newFields[targetIndex]] = [
-                newFields[targetIndex],
-                newFields[index],
+                newFields[targetIndex]!,
+                newFields[index]!,
             ];
             onChange({ ...config, fields: newFields });
         }
@@ -221,8 +219,8 @@ export function CustomFieldsBuilder({ config, onChange }: CustomFieldsBuilderPro
                                                                 value={option.label}
                                                                 onChange={(e) => {
                                                                     const newOptions = [...(field.options || [])];
-                                                                    newOptions[optIndex].label = e.target.value;
-                                                                    newOptions[optIndex].value = e.target.value.toLowerCase().replace(/\s+/g, "_");
+                                                                    newOptions[optIndex]!.label = e.target.value;
+                                                                    newOptions[optIndex]!.value = e.target.value.toLowerCase().replace(/\s+/g, "_");
                                                                     updateField(field.id, { options: newOptions });
                                                                 }}
                                                                 placeholder="Nome da opção"

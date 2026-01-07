@@ -28,6 +28,7 @@ export function RadialPulse() {
                 }}
             />
 
+            {/* @ts-ignore */}
             <style jsx>{`
         @keyframes pulse-expand {
           0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.08; }

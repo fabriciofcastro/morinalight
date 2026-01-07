@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Keyboard, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { cn } from "../../../lib/utils";
 
 interface KeyboardShortcut {
@@ -101,7 +101,7 @@ export function KeyboardShortcuts({ className }: { className?: string }) {
     if (!acc[shortcut.category]) {
       acc[shortcut.category] = [];
     }
-    acc[shortcut.category].push(shortcut);
+    acc[shortcut.category]!.push(shortcut);
     return acc;
   }, {} as Record<string, KeyboardShortcut[]>);
 

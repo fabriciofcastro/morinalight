@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 
 interface AnimatedTechCornersProps {
@@ -18,7 +18,7 @@ export function AnimatedTechCorners({
         setIsVisible(true);
     }, []);
 
-    const cornerVariants = {
+    const cornerVariants: Variants = {
         hidden: { pathLength: 0, opacity: 0 },
         visible: {
             pathLength: 1,
@@ -30,7 +30,7 @@ export function AnimatedTechCorners({
         },
     };
 
-    const glowVariants = {
+    const glowVariants: Variants = {
         glow: {
             filter: [
                 "drop-shadow(0 0 2px hsl(var(--primary)/0.5))",

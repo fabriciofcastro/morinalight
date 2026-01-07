@@ -1,0 +1,20 @@
+<% if (withStory) { %>
+import React from 'react';
+import { Meta, StoryObj } from '@storybook/react';
+import { <%= name %> } from './<%= name %>';
+
+const meta: Meta<typeof <%= name %>> = {
+  title: 'Components/<%= name %>',
+  component: <%= name %>,
+  parameters: {
+    layout: 'centered',
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof <%= name %>>;
+
+export const Default: Story = {
+  args: {},
+};
+<% } %>

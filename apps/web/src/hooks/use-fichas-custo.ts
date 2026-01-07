@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
-import { fichasCustoApi, type FichaCusto, type FiltroFichasCusto, type ListaFichasCustoResultado, type CreateFichaCustoInput, type UpdateFichaCustoInput, type BoletoFichaCusto, type CreateBoletoInput, type PagarBoletoInput, type ListaBoletosResultado } from "@/lib/api/fichas-custo";
+import { fichasCustoApi, type BoletoFichaCusto, type CreateBoletoInput, type CreateFichaCustoInput, type FichaCusto, type FiltroFichasCusto, type PagarBoletoInput, type UpdateFichaCustoInput } from "@/lib/api/fichas-custo";
+import { useCallback, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -16,7 +16,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

@@ -35,8 +35,8 @@ export const Default: Story = {
       <div className="p-6">
         <h3 className="mb-2 text-lg font-semibold text-white">Card Padrão</h3>
         <p className="text-white/70">
-          Este é um card com efeito glassmorphism padrão. Ele tem um fundo translúcido que cria
-          uma sensação de profundidade.
+          Este é um card com efeito glassmorphism padrão. Ele tem um fundo translúcido que cria uma
+          sensação de profundidade.
         </p>
       </div>
     ),
@@ -112,12 +112,3 @@ export const Nested: Story = {
     ),
   },
 };
-
-
-
-
-
-
-
-
-

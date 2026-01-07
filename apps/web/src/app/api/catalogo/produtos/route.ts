@@ -6,7 +6,7 @@ import { buildAuthHeaders } from "../../_lib/auth-headers";
 import { requirePermission } from "@/lib/auth/middleware";
 import { ACTIONS, RESOURCES } from "@/lib/auth/rbac";
 
-export async function GET(request: NextRequest, context: { params: any }) {
+export async function GET(request: NextRequest, context: { params: unknown }) {
   // RBAC Check
   const authResponse = await requirePermission(ACTIONS.READ, RESOURCES.PRODUCTS)(request, context);
   if (authResponse) return authResponse;
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest, context: { params: any }) {
   return NextResponse.json(data);
 }
 
-export async function POST(request: NextRequest, context: { params: any }) {
+export async function POST(request: NextRequest, context: { params: unknown }) {
   // RBAC Check
   const authResponse = await requirePermission(ACTIONS.CREATE, RESOURCES.PRODUCTS)(request, context);
   if (authResponse) return authResponse;

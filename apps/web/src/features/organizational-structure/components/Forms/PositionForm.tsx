@@ -1,7 +1,7 @@
 "use client";
 
-import { useSmartForm } from "@/hooks/use-smart-form";
 import { BaseForm } from "@/components/common/forms/BaseForm";
+import { useSmartForm } from "@/hooks/use-smart-form";
 import { Position, PositionSchema } from "@morina/organizational-structure-domain";
 import { Input, Label } from "@morina/ui";
 
@@ -14,18 +14,15 @@ type PositionFormProps = {
 };
 
 export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCancel }: PositionFormProps) {
-    const { formData, errors, submitting, setValue, handleSubmit, register } = useSmartForm<Position>({
+    const { formData, errors, submitting, setValue, handleSubmit } = useSmartForm<Position>({
         schema: PositionSchema,
         defaultValues: initialData || {
             name: "",
             code: "",
             description: "",
-            sectorId: sectorId || "",
+            sectorId: sectorId || null,
+            seniority: "Junior",
             active: true,
-            responsabilidades: "",
-            requisitos: "",
-            salarioMin: 0,
-            salarioMax: 0,
         },
         onSubmit,
         onSuccess,
@@ -39,7 +36,7 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
             title={initialData?.id ? "Editar Cargo" : "Novo Cargo"}
             subtitle={initialData?.id ? "Atualize os dados do cargo" : "Preencha os dados do cargo"}
             onSubmit={handleSubmit}
-            onCancel={onCancel}
+            onBack={onCancel}
             submitting={submitting}
         >
             <div className="space-y-4">
@@ -47,12 +44,13 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
                     <Label htmlFor="name">Nome</Label>
                     <Input
                         id="name"
-                        {...register("name")}
+                        value={formData.name || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue("name", e.target.value)}
                         className="mt-1"
                         placeholder="Ex: Desenvolvedor Senior"
                     />
                     {errors.name && (
-                        <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>
+                        <p className="text-sm text-red-500 mt-1">{errors.name}</p>
                     )}
                 </div>
 
@@ -60,12 +58,13 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
                     <Label htmlFor="code">Código</Label>
                     <Input
                         id="code"
-                        {...register("code")}
+                        value={formData.code || ""}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue("code", e.target.value)}
                         className="mt-1"
                         placeholder="Ex: DEV-SR"
                     />
                     {errors.code && (
-                        <p className="text-sm text-red-500 mt-1">{errors.code.message}</p>
+                        <p className="text-sm text-red-500 mt-1">{errors.code}</p>
                     )}
                 </div>
 
@@ -74,12 +73,13 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
                         <Label htmlFor="sectorId">ID do Setor</Label>
                         <Input
                             id="sectorId"
-                            {...register("sectorId")}
+                            value={formData.sectorId || ""}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue("sectorId", e.target.value)}
                             className="mt-1"
                             placeholder="UUID do setor"
                         />
                         {errors.sectorId && (
-                            <p className="text-sm text-red-500 mt-1">{errors.sectorId.message}</p>
+                            <p className="text-sm text-red-500 mt-1">{errors.sectorId}</p>
                         )}
                     </div>
                 )}
@@ -88,7 +88,8 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
                     <Label htmlFor="seniority">Senioridade</Label>
                     <select
                         id="seniority"
-                        {...register("seniority")}
+                        value={formData.seniority}
+                        onChange={(e) => setValue("seniority", e.target.value as any)}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-1"
                     >
                         <option value="Junior">Junior</option>
@@ -98,7 +99,7 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
                         <option value="Principal">Principal</option>
                     </select>
                     {errors.seniority && (
-                        <p className="text-sm text-red-500 mt-1">{errors.seniority.message}</p>
+                        <p className="text-sm text-red-500 mt-1">{errors.seniority}</p>
                     )}
                 </div>
 
@@ -106,7 +107,8 @@ export function PositionForm({ initialData, sectorId, onSubmit, onSuccess, onCan
                     <input
                         type="checkbox"
                         id="active"
-                        {...register("active")}
+                        checked={formData.active}
+                        onChange={(e) => setValue("active", e.target.checked)}
                         className="h-4 w-4 rounded border-gray-300"
                     />
                     <Label htmlFor="active">Ativo</Label>

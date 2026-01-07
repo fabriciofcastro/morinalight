@@ -73,6 +73,29 @@ export function WorkflowFormClient({ policyId }: WorkflowFormClientProps) {
     } as const;
   }, []);
 
+  const canSave = useMemo(() => {
+    try {
+      JSON.parse(configJson);
+      return form.module.trim().length >= 2 && configJson.trim().length >= 2;
+    } catch {
+      return false;
+    }
+  }, [form, configJson]);
+
+  // Auto-save
+  const { status, hasUnsavedChanges, markDirty, markClean, manualSave } = useAutoSave({
+    onSave: async () => {
+      if (!canSave) return;
+      await handleSave();
+    },
+    intervalMs: 30000, // 30 segundos
+    requireValid: true,
+    isValid: () => canSave,
+    onAutoSaveComplete: () => {
+      markClean();
+    },
+  });
+
   useEffect(() => {
     const loadData = async () => {
       if (policyId) {
@@ -118,29 +141,6 @@ export function WorkflowFormClient({ policyId }: WorkflowFormClientProps) {
 
     void loadData();
   }, [policyId, searchParams, templates, markClean, markDirty]);
-
-  const canSave = useMemo(() => {
-    try {
-      JSON.parse(configJson);
-      return form.module.trim().length >= 2 && configJson.trim().length >= 2;
-    } catch {
-      return false;
-    }
-  }, [form, configJson]);
-
-  // Auto-save
-  const { status, hasUnsavedChanges, markDirty, markClean, manualSave } = useAutoSave({
-    onSave: async () => {
-      if (!canSave) return;
-      await handleSave();
-    },
-    intervalMs: 30000, // 30 segundos
-    requireValid: true,
-    isValid: () => canSave,
-    onAutoSaveComplete: () => {
-      markClean();
-    },
-  });
 
   const handleSave = useCallback(async () => {
     let parsedConfig: Record<string, unknown>;
@@ -226,7 +226,7 @@ export function WorkflowFormClient({ policyId }: WorkflowFormClientProps) {
   };
 
   return (
-    <AllowedGuard I={isEditing ? "update" : "create"} a="WorkflowPolicy" redirectTo="/admin/workflow-policies">
+    <AllowedGuard I={isEditing ? "update" : "create"} a="User" redirectTo="/admin/workflow-policies">
       <StandardFormPage
         title={isEditing ? "Editar Workflow" : "Novo Workflow"}
         subtitle={

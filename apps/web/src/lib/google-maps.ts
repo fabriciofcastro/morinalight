@@ -22,9 +22,16 @@ export function getGoogleMapsLoader(): Loader {
     return googleMapsLoader;
 }
 
-export async function loadGoogleMaps(): Promise<typeof google> {
+export async function loadGoogleMaps(): Promise<any> {
     const loader = getGoogleMapsLoader();
-    return await loader.load();
+    await (loader as any).load();
+    return window.google;
+}
+
+declare global {
+    interface Window {
+        google: any;
+    }
 }
 
 export interface Coordinates {

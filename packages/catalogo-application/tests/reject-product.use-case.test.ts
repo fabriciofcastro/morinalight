@@ -1,11 +1,11 @@
 import type {
-  ProdutoAuditoria,
-  ProdutoAuditoriaFiltro,
-  ProdutoAuditoriaPagina,
-  ProdutoAuditoriaRepository,
-  ProdutoListaFiltro,
-  ProdutoListaPagina,
-  ProdutoRepository,
+    ProdutoAuditoria,
+    ProdutoAuditoriaFiltro,
+    ProdutoAuditoriaPagina,
+    ProdutoAuditoriaRepository,
+    ProdutoListaFiltro,
+    ProdutoListaPagina,
+    ProdutoRepository,
 } from "@morina/catalogo-domain";
 
 import { Produto } from "@morina/catalogo-domain";
@@ -127,7 +127,7 @@ describe("ReprovarProdutoUseCase", () => {
     await repository.salvar(produto);
 
     const eventos: unknown[] = [];
-    const eventBus = { publish: async (event: unknown) => eventos.push(event) };
+    const eventBus = { publish: async (event: unknown) => { eventos.push(event); } };
 
     const useCase = new ReprovarProdutoUseCase({
       produtoRepository: repository,

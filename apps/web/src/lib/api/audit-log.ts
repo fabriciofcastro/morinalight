@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { apiClient } from "./base";
 import type { AuditLogEntry, AuditLogFilter } from "@/types/audit-log";
 
 export const auditLogApi = {
@@ -27,7 +27,7 @@ export const auditLogApi = {
             hasMore: boolean;
         }>(`/audit-log?${params.toString()}`);
 
-        return response.data;
+        return response;
     },
 
     /**
@@ -41,7 +41,7 @@ export const auditLogApi = {
         const response = await apiClient.get<AuditLogEntry[]>(
             `/audit-log/${entityType}/${entityId}?limit=${limit}`
         );
-        return response.data;
+        return response;
     },
 
     /**
@@ -65,6 +65,6 @@ export const auditLogApi = {
             }
         );
 
-        return response.data;
+        return response as unknown as Blob;
     },
 };

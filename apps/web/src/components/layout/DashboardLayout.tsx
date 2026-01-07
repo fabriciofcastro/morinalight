@@ -1,26 +1,26 @@
 "use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { authApi } from '@/lib/api/auth';
 import {
-    LayoutDashboard,
-    Users,
-    Building2,
-    ShieldCheck,
-    UserCircle,
-    Package,
-    FileText,
-    Truck,
-    DollarSign,
     Bell,
-    Settings,
+    Building2,
+    ChevronDown,
+    DollarSign,
+    FileText,
+    LayoutDashboard,
     LogOut,
     Menu,
+    Package,
+    Settings,
+    ShieldCheck,
+    Truck,
+    UserCircle,
+    Users,
     X,
-    ChevronDown,
 } from 'lucide-react';
-import { authApi } from '@/lib/api/auth';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -40,7 +40,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-    const user = authApi.getCurrentUser();
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const currentUser = await authApi.getCurrentUser();
+                setUser(currentUser);
+            } catch (error) {
+                console.error("Failed to fetch user:", error);
+            }
+        };
+        fetchUser();
+    }, []);
 
     const handleLogout = () => {
         authApi.logout();

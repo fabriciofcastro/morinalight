@@ -1,11 +1,12 @@
 
 "use client";
 
+import { Button, Input, cn } from "@morina/ui";
+// @ts-ignore
 import { useChat } from "ai/react";
-import { Button, GlassCard, Input, cn } from "@morina/ui";
-import { Bot, ChevronDown, ChevronUp, Loader2, Send, ShieldAlert, Sparkles, Terminal } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { Bot, ChevronDown, Loader2, Send, Sparkles, Terminal } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export function AiSecurityAnalyst() {
     const [isOpen, setIsOpen] = useState(false);
@@ -13,7 +14,7 @@ export function AiSecurityAnalyst() {
 
     const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
         api: "/api/security/ai/chat",
-        onError: (error) => {
+        onError: (error: Error) => {
             console.error("AI Chat Error", error);
         }
     });
@@ -96,7 +97,7 @@ export function AiSecurityAnalyst() {
                                 </div>
                             )}
 
-                            {messages.map((m) => (
+                            {messages.map((m: any) => (
                                 <div
                                     key={m.id}
                                     className={cn(
@@ -120,7 +121,7 @@ export function AiSecurityAnalyst() {
                                             <div className="whitespace-pre-wrap leading-relaxed">
                                                 {m.content}
                                             </div>
-                                            {m.toolInvocations?.map((toolInvocation) => {
+                                            {m.toolInvocations?.map((toolInvocation: any) => {
                                                 const toolCallId = toolInvocation.toolCallId;
                                                 // Only show tool execution status, not full result unless debug
                                                 if (!('result' in toolInvocation)) {

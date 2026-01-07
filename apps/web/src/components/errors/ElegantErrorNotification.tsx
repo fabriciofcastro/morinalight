@@ -6,24 +6,24 @@
 
 "use client";
 
-import React, { useState } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@morina/ui";
-import {
-  AlertCircle,
-  XCircle,
-  AlertTriangle,
-  Info,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
 import { parseError } from "@/lib/errors";
 import { getUserFriendlyMessage } from "@/lib/errors/user-messages";
 import { cn } from "@/lib/utils";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@morina/ui";
+import {
+    AlertCircle,
+    AlertTriangle,
+    ChevronDown,
+    ChevronUp,
+    Info,
+    XCircle,
+} from "lucide-react";
+import React, { useState } from "react";
 
 interface ElegantErrorNotificationProps {
   error: unknown;
@@ -259,6 +259,7 @@ export function ElegantErrorToast({
 
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [duration, onDismiss]);
 
   if (!isVisible) return null;

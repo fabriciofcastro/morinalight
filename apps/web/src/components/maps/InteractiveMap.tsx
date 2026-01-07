@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 "use client";
 
 import { GlassCard, cn } from "@morina/ui";
@@ -75,11 +76,8 @@ export function InteractiveMap({
     };
   }, [marker]);
 
-  useEffect(() => {
-    if (map && geocoder && fullAddress && !loading) {
-      geocodeAddress();
-    }
-  }, [map, geocoder, fullAddress, loading, geocodeAddress]);
+  // Moved useEffect to after geocodeAddress definition
+
 
   const initializeMap = () => {
     if (!mapRef.current || !window.google) return;
@@ -164,6 +162,12 @@ export function InteractiveMap({
       }
     });
   }, [geocoder, map, fullAddress, marker]);
+
+  useEffect(() => {
+    if (map && geocoder && fullAddress && !loading) {
+      geocodeAddress();
+    }
+  }, [map, geocoder, fullAddress, loading, geocodeAddress]);
 
   const handleZoomIn = () => {
     if (map) {
@@ -272,20 +276,8 @@ export function InteractiveMap({
 }
 
 // Declaração de tipos para Google Maps
-declare global {
-  interface Window {
-    google: {
-      maps: {
-        Map: new (element: HTMLElement, options?: any) => any;
-        Marker: new (options?: any) => any;
-        Geocoder: new () => any;
-        GeocoderStatus: any;
-        Animation: any;
-        InfoWindow: new (options?: any) => any;
-      };
-    };
-  }
-}
+// Removed conflicting global declaration
+// declare global { ... }
 
 
 

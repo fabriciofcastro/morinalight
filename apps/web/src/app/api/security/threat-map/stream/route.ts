@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getPrismaClient } from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
 // Simulation Data Generators (Copied from main route)
 const ATTACK_TYPES = ["SQL Injection", "Brute Force", "DDoS", "XSS", "Port Scan", "Malware"];
@@ -26,13 +26,20 @@ function generateRandomThreat() {
     };
 }
 
+interface ThreatMapUpdate {
+  type?: string;
+  timestamp?: string;
+  threats?: any[]; // Ideally strict typed, but keeping basic structure for now
+  mode?: 'simulation' | 'live';
+}
+
 export async function GET(req: NextRequest) {
     const isDev = process.env.NODE_ENV === 'development';
     const responseStream = new TransformStream();
     const writer = responseStream.writable.getWriter();
     const encoder = new TextEncoder();
 
-    const sendEvent = async (data: any) => {
+    const sendEvent = async (data: ThreatMapUpdate) => {
         await writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
     };
 
@@ -65,15 +72,15 @@ export async function GET(req: NextRequest) {
 
                 const newAlerts = await prisma.securityAlert.findMany({
                     where: {
-                        timestamp: {
+                        createdAt: {
                             gt: lastTimestamp
                         }
                     },
-                    orderBy: { timestamp: 'asc' }
+                    orderBy: { createdAt: 'asc' }
                 });
 
                 if (newAlerts.length > 0) {
-                    lastTimestamp = newAlerts[newAlerts.length - 1].timestamp;
+                    lastTimestamp = newAlerts[newAlerts.length - 1]!.createdAt;
                     const threats = newAlerts.map(alert => ({
                         id: alert.id,
                         type: alert.alertType,
@@ -85,7 +92,7 @@ export async function GET(req: NextRequest) {
                             country: alert.country
                         },
                         target: SAO_PAULO,
-                        timestamp: alert.timestamp
+                        timestamp: alert.createdAt
                     }));
                     sendEvent({ threats, mode: 'live' });
                 }

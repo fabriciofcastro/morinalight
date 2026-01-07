@@ -1,59 +1,44 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  Users,
-  Plus,
-  Search,
-  Eye,
-  Edit,
-  Grid,
-  List as ListIcon,
-  X,
-  UserCheck,
-  UserX,
-  Clock,
-  MoreVertical,
-  Lock,
-  Smartphone,
-  Sparkles,
-  CheckCircle2,
-  FileText,
-  Camera,
-  QrCode,
-  ArrowLeft,
-  ExternalLink,
-  Download,
-  Upload
-} from "lucide-react";
-import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { useUsers, type User } from "@/hooks/use-users";
-import { useDebounce } from "@/hooks/use-debounce";
-import { UserStatusBadge } from "./user-status-badge";
-import { UserSkeleton } from "./UserSkeleton";
-import { useBulkActions } from "@/hooks/use-bulk-actions";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-  Input,
-  Label
-} from "@morina/ui";
-import { usersApi } from "@/lib/api/users";
-import { PhotoUpload } from "./photo-upload";
-import { QRCodeBadge } from "./qr-code-badge";
-import { ViewModeToggle, type ViewMode } from "@/components/ui/view-mode-toggle";
-import { Can } from "@/lib/auth";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { PageHeader } from "@/components/ui/page-header";
+import { ViewModeToggle, type ViewMode } from "@/components/ui/view-mode-toggle";
+import { useBulkActions } from "@/hooks/use-bulk-actions";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useUsers, type User } from "@/hooks/use-users";
+import { usersApi } from "@/lib/api/users";
+import { Can } from "@/lib/auth";
+import {
+    Button, DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Tooltip,
+    TooltipContent, TooltipProvider, TooltipTrigger
+} from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+    ArrowLeft,
+    Camera,
+    CheckCircle2,
+    Download,
+    Edit,
+    Eye,
+    FileText,
+    Lock,
+    MoreVertical,
+    Plus,
+    QrCode,
+    Search,
+    Smartphone,
+    Upload,
+    Users,
+    X
+} from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { PhotoUpload } from "./photo-upload";
+import { QRCodeBadge } from "./qr-code-badge";
+import { UserStatusBadge } from "./user-status-badge";
+import { UserSkeleton } from "./UserSkeleton";
 
 
 type StatusFilter = "all" | "active" | "inactive" | "suspended" | "pending";
@@ -287,7 +272,7 @@ export function UsersListClient() {
         </div>
 
         {loading ? (
-          <UserSkeleton variant={viewMode} count={8} />
+          <UserSkeleton variant={viewMode as any} count={8} />
         ) : users.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-white/30 gap-4">
             <Users className="h-16 w-16 opacity-20" />

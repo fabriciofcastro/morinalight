@@ -6,8 +6,8 @@
 
 "use client";
 
-import { useState, useRef, KeyboardEvent, ClipboardEvent } from "react";
 import { cn } from "@/lib/utils";
+import { ClipboardEvent, KeyboardEvent, useRef, useState } from "react";
 
 interface MFAVerificationInputProps {
     length?: number;
@@ -76,7 +76,7 @@ export function MFAVerificationInput({
             {Array.from({ length }).map((_, index) => (
                 <input
                     key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
+                    ref={(el) => { inputRefs.current[index] = el; }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}

@@ -23,18 +23,18 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
     // --- Date Range Filtering ---
     const dateFilter = useMemo(() => parseDateRange(dateRange as any), [dateRange]);
 
-    const filteredDepartments = useMemo(() =>
-        filterByDateRange(departments, dateFilter),
+    const filteredDepartments = useMemo((): Department[] =>
+        filterByDateRange(departments as any, dateFilter) as Department[],
         [departments, dateFilter]
     );
 
-    const filteredSectors = useMemo(() =>
-        filterByDateRange(sectors, dateFilter),
+    const filteredSectors = useMemo((): Sector[] =>
+        filterByDateRange(sectors as any, dateFilter) as Sector[],
         [sectors, dateFilter]
     );
 
-    const filteredPositions = useMemo(() =>
-        filterByDateRange(positions, dateFilter),
+    const filteredPositions = useMemo((): Position[] =>
+        filterByDateRange(positions as any, dateFilter) as Position[],
         [positions, dateFilter]
     );
 
@@ -137,17 +137,20 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
     }, [filteredDepartments, activeDepartments, filteredSectors, activeSectors, filteredPositions, activePositions]);
 
     // 5. Salary vs Seniority (Scatter Chart)
+    // Note: Position doesn't have baseSalary property yet, using placeholder data
     const scatterData = useMemo(() => {
+        // Placeholder: Return empty array until baseSalary is added to Position schema
+        return [];
+
+        /* TODO: Uncomment when baseSalary is added to Position schema
         const seniorityMap: Record<string, number> = {
             "JUNIOR": 1, "PLENO": 2, "SENIOR": 3, "ESPECIALISTA": 4,
             "COORDENADOR": 5, "GERENTE": 6, "DIRETOR": 7
         };
 
-        // Group by Department for coloring
         const groups = new Map<string, { x: number, y: number, z: number, category: string }[]>();
 
         filteredPositions.forEach(p => {
-            // Find dept
             const sector = filteredSectors.find(s => s.id === p.sectorId);
             const dept = filteredDepartments.find(d => d.id === sector?.departmentId);
             const deptName = dept?.code || "N/A";
@@ -157,12 +160,11 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
             groups.get(deptName)?.push({
                 x: seniorityMap[p.seniority] || 0,
                 y: p.baseSalary || 0,
-                z: 100, // uniform size
+                z: 100,
                 category: p.name
             });
         });
 
-        // Convert to series (limit to top 5 departments to avoid clutter)
         const topDepts = Array.from(groups.entries())
             .sort((a, b) => b[1].length - a[1].length)
             .slice(0, 5);
@@ -174,6 +176,7 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
             data: entry[1],
             color: colors[idx % colors.length]
         }));
+        */
     }, [filteredDepartments, filteredSectors, filteredPositions]);
 
     const handleExportStats = () => {
@@ -209,8 +212,8 @@ export function OverviewPanel({ departments, sectors, positions, membersCount = 
                 sectors.map(s => `${s.id},"${s.name}",${s.code},${s.departmentId},${s.active},${s.createdAt}`).join("\n");
             filename = "sectors.csv";
         } else {
-            content = "ID,Name,Code,SectorID,Seniority,BaseSalary,Active,CreatedAt\n" +
-                positions.map(p => `${p.id},"${p.name}",${p.code},${p.sectorId},${p.seniority},${p.baseSalary},${p.active},${p.createdAt}`).join("\n");
+            content = "ID,Name,Code,SectorID,Seniority,Active,CreatedAt\n" +
+                positions.map(p => `${p.id},"${p.name}",${p.code},${p.sectorId},${p.seniority},${p.active},${p.createdAt}`).join("\n");
             filename = "positions.csv";
         }
 

@@ -22,8 +22,10 @@ export function AdvancedMetricsPanel({ departments, sectors, positions }: Advanc
     }, [positions]);
 
     // 2. Cost per Department
+    // TODO: Uncomment when baseSalary is added to Position schema
     const totalSalaryCost = useMemo(() => {
-        return positions.reduce((sum, p) => sum + (p.baseSalary || 0), 0);
+        // return positions.reduce((sum, p) => sum + (p.baseSalary || 0), 0);
+        return 0; // Placeholder
     }, [positions]);
 
     const avgCostPerDept = useMemo(() => {
@@ -56,16 +58,19 @@ export function AdvancedMetricsPanel({ departments, sectors, positions }: Advanc
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
         const recentEntities = [
-            ...departments.filter(d => new Date(d.createdAt) > thirtyDaysAgo),
-            ...sectors.filter(s => new Date(s.createdAt) > thirtyDaysAgo),
-            ...positions.filter(p => new Date(p.createdAt) > thirtyDaysAgo)
+            ...departments.filter(d => d.createdAt && new Date(d.createdAt) > thirtyDaysAgo),
+            ...sectors.filter(s => s.createdAt && new Date(s.createdAt) > thirtyDaysAgo),
+            ...positions.filter(p => p.createdAt && new Date(p.createdAt) > thirtyDaysAgo)
         ];
 
         return recentEntities.length;
     }, [departments, sectors, positions]);
 
     // 7. Salary Outliers (positions beyond 2 std deviations)
+    // TODO: Uncomment when baseSalary is added to Position schema
     const salaryOutliers = useMemo(() => {
+        return 0; // Placeholder
+        /*
         const salaries = positions.map(p => p.baseSalary || 0).filter(s => s > 0);
         if (salaries.length === 0) return 0;
 
@@ -75,6 +80,7 @@ export function AdvancedMetricsPanel({ departments, sectors, positions }: Advanc
 
         const outliers = salaries.filter(s => Math.abs(s - mean) > 2 * stdDev);
         return outliers.length;
+        */
     }, [positions]);
 
     const metrics = [

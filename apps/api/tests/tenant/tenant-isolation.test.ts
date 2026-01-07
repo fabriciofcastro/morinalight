@@ -2,11 +2,11 @@ import { Produto } from "@morina/catalogo-domain";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
-import { InMemoryProdutoRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto.repository";
 import { InMemoryProdutoAuditoriaRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto-auditoria.repository";
+import { InMemoryProdutoRepository } from "../../src/modules/catalogo/infra/memory/in-memory-produto.repository";
 import { InMemoryCompanySettingsRepository } from "../../src/modules/company-settings/repositories/in-memory-company-settings.repository";
-import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
 import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
+import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
 import { InMemoryUserInviteRepository } from "../../src/modules/organizations/infra/memory/in-memory-user-invite.repository";
 import { InMemoryUserRepository } from "../../src/modules/users/infra/memory/in-memory-user.repository";
 
@@ -339,7 +339,9 @@ describe("Isolamento Multi-Tenant", () => {
     it("usuário de org1 não pode acessar configurações de org2", async () => {
       // Criar configurações para org2
       await companySettingsRepository.save(org2Id, {
+        logoUrl: undefined,
         primaryColor: "#0000FF",
+        secondaryColor: undefined,
         themeMode: "dark",
         videoLink: "https://example.com/video",
       });
@@ -359,7 +361,9 @@ describe("Isolamento Multi-Tenant", () => {
     it("usuário de org1 só acessa configurações da org1", async () => {
       // Criar configurações para org1
       await companySettingsRepository.save(org1Id, {
+        logoUrl: undefined,
         primaryColor: "#FF0000",
+        secondaryColor: undefined,
         themeMode: "light",
         videoLink: "https://example.com/video1",
       });

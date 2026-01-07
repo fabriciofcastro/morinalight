@@ -2,34 +2,30 @@
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
-import { Button } from "@morina/ui";
-import {
-  Settings,
-  Plus,
-  Search,
-  Eye,
-  Edit,
-  Grid,
-  List as ListIcon,
-  RefreshCw,
-  CheckCircle2,
-  XCircle,
-  Trash2,
-  Filter,
-  Download,
-  Palette,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { useDebounce } from "@/hooks/use-debounce";
-import {
-  type StatusCustomizado,
-  statusCustomizadoApi,
-  type ListarStatusCustomizadosQuery,
-} from "@/lib/api/status-customizado-ficha-custo";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useDebounce } from "@/hooks/use-debounce";
+import {
+  statusCustomizadoApi,
+  type ListarStatusCustomizadosQuery,
+  type StatusCustomizado,
+} from "@/lib/api/status-customizado-ficha-custo";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import {
+  CheckCircle2,
+  Download,
+  Edit,
+  Palette,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  Trash2,
+  XCircle
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") return null;
@@ -39,7 +35,7 @@ function getCurrentOrgId(): string | null {
   if (orgsStr) {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
-      if (orgs.length > 0) return orgs[0].organizationId;
+      if (orgs.length > 0) return orgs[0]!.organizationId;
     } catch {
       // Ignorar erro
     }
@@ -164,7 +160,7 @@ export function StatusCustomizadosListClient() {
   }, [status]);
 
   return (
-    <AllowedGuard I="read" a="StatusCustomizado" redirectTo="/admin">
+    <AllowedGuard I="read" a={"StatusCustomizado" as any} redirectTo="/admin">
       <div className="relative min-h-screen p-6 space-y-8">
         {/* Header Futurista */}
         <motion.div

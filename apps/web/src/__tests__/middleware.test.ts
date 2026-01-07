@@ -16,14 +16,16 @@ describe('Security Middleware', () => {
                 verifyToken: vi.fn().mockResolvedValue({ userId: '123' }),
             }));
 
-            const result = await authMiddleware(mockRequest, {});
+            const middleware = authMiddleware();
+            const result = await middleware(mockRequest, {});
             expect(result).toBeNull(); // No response = middleware passed
         });
 
         it('should reject requests without token', async () => {
             const mockRequest = new NextRequest('http://localhost:3000/api/test');
 
-            const result = await authMiddleware(mockRequest, {});
+            const middleware = authMiddleware();
+            const result = await middleware(mockRequest, {});
             expect(result).toBeTruthy();
             expect(result?.status).toBe(401);
         });
@@ -41,7 +43,8 @@ describe('Security Middleware', () => {
                 },
             });
 
-            const result = await rateLimitMiddleware(mockRequest, {});
+            const middleware = rateLimitMiddleware({ maxRequests: 100, windowMs: 60000 });
+            const result = await middleware(mockRequest, {});
             expect(result).toBeNull();
         });
 
@@ -53,11 +56,12 @@ describe('Security Middleware', () => {
             });
 
             // Simulate multiple requests
+            const middleware = rateLimitMiddleware({ maxRequests: 100, windowMs: 60000 });
             for (let i = 0; i < 101; i++) {
-                await rateLimitMiddleware(mockRequest, {});
+                await middleware(mockRequest, {});
             }
 
-            const result = await rateLimitMiddleware(mockRequest, {});
+            const result = await middleware(mockRequest, {});
             expect(result).toBeTruthy();
             expect(result?.status).toBe(429);
         });

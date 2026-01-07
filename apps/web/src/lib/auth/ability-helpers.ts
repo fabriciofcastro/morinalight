@@ -54,7 +54,7 @@ export function useCanOwn(
 
     if (!user) return false;
 
-    return ability.can(action, subject, { ownerId }) && user.id === ownerId;
+    return ability.can(action, subject, { ownerId } as any) && user.id === ownerId;
 }
 
 /**
@@ -72,7 +72,7 @@ export function useCanWithConditions(
     conditions: Record<string, any>
 ): boolean {
     const ability = useAbility();
-    return ability.can(action, subject, conditions);
+    return ability.can(action, subject, conditions as any);
 }
 
 /**
@@ -100,5 +100,5 @@ export function useIsSameDepartment(departmentId?: string): boolean {
 
     if (!user || !departmentId) return false;
 
-    return user.departmentId === departmentId;
+    return (user as any).departmentId === departmentId;
 }

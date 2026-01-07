@@ -1,242 +1,214 @@
 "use client";
 
-import { useState, useMemo, type ReactNode } from "react";
-import { ChevronDown, ChevronUp, ArrowUpDown, Download, Filter } from "lucide-react";
-import { Button } from "./button";
-import { Input } from "./input";
+import {
+  type ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  type OnChangeFn,
+  type PaginationState,
+  type RowSelectionState,
+  type SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "../lib/cn";
 
-export type Column<T> = {
-  key: keyof T | string;
-  header: string;
-  render?: (row: T) => ReactNode;
-  sortable?: boolean;
-  filterable?: boolean;
-  width?: string;
-  align?: "left" | "center" | "right";
-};
+export type DataTableDensity = "compact" | "comfortable" | "spacious";
 
-export type DataTableProps<T extends Record<string, unknown>> = {
-  data: T[];
-  columns: Column<T>[];
-  onRowClick?: (row: T) => void;
-  onRowSelect?: (selectedRows: T[]) => void;
-  pageSize?: number;
-  exportable?: boolean;
-  onExport?: (data: T[]) => void;
-  className?: string;
+export type DataTableProps<TData> = {
+  columns: ColumnDef<TData>[];
+  data: TData[];
+
+  // Pagination
+  pageCount?: number;
+  rowCount?: number;
+  manualPagination?: boolean;
+
+  // Sorting
+  manualSorting?: boolean;
+
+  // Filtering
+  manualFiltering?: boolean;
+
+  // Row Selection
+  enableRowSelection?: boolean | ((row: any) => boolean);
+
+  // State
+  state?: {
+    pagination?: PaginationState;
+    sorting?: SortingState;
+    rowSelection?: RowSelectionState;
+  };
+
+  // State Handlers
+  onPaginationChange?: OnChangeFn<PaginationState>;
+  onSortingChange?: OnChangeFn<SortingState>;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+
+  // UI
+  loading?: boolean;
   emptyMessage?: string;
+  className?: string;
+  density?: DataTableDensity;
+
+  // Row Actions
+  onRowClick?: (row: TData) => void;
 };
 
-export function DataTable<T extends Record<string, unknown>>({
-  data,
+/**
+ * DataTable component powered by TanStack Table
+ * Supports server-side and client-side pagination, sorting, filtering, and row selection
+ *
+ * @example
+ * ```tsx
+ * <DataTable
+ *   columns={columns}
+ *   data={data}
+ *   pageCount={totalPages}
+ *   rowCount={totalRows}
+ *   state={{ pagination, sorting, rowSelection }}
+ *   onPaginationChange={setPagination}
+ *   onSortingChange={setSorting}
+ *   onRowSelectionChange={setRowSelection}
+ *   manualPagination
+ *   manualSorting
+ *   enableRowSelection
+ * />
+ * ```
+ */
+export function DataTable<TData>({
   columns,
-  onRowClick,
-  onRowSelect,
-  pageSize = 10,
-  exportable = false,
-  onExport,
-  className,
+  data,
+  pageCount,
+  rowCount,
+  manualPagination = false,
+  manualSorting = false,
+  manualFiltering = false,
+  enableRowSelection = false,
+  state,
+  onPaginationChange,
+  onSortingChange,
+  onRowSelectionChange,
+  loading = false,
   emptyMessage = "Nenhum dado disponível",
-}: DataTableProps<T>) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortColumn, setSortColumn] = useState<keyof T | string | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
-  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set());
-  const [searchQuery, setSearchQuery] = useState("");
+  className,
+  density = "comfortable",
+  onRowClick,
+}: DataTableProps<TData>) {
+  const table = useReactTable({
+    data,
+    columns,
 
-  const filteredData = useMemo(() => {
-    if (!searchQuery) return data;
-    return data.filter((row) =>
-      Object.values(row).some((value) =>
-        String(value).toLowerCase().includes(searchQuery.toLowerCase()),
-      ),
-    );
-  }, [data, searchQuery]);
+    // Core
+    getCoreRowModel: getCoreRowModel(),
 
-  const sortedData = useMemo(() => {
-    if (!sortColumn) return filteredData;
-    return [...filteredData].sort((a, b) => {
-      const aVal = a[sortColumn as keyof T];
-      const bVal = b[sortColumn as keyof T];
-      if (aVal === bVal) return 0;
-      const comparison = aVal < bVal ? -1 : 1;
-      return sortDirection === "asc" ? comparison : -comparison;
-    });
-  }, [filteredData, sortColumn, sortDirection]);
+    // Pagination
+    manualPagination,
+    pageCount,
+    rowCount,
 
-  const paginatedData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return sortedData.slice(start, start + pageSize);
-  }, [sortedData, currentPage, pageSize]);
+    // Sorting
+    manualSorting,
 
-  const totalPages = Math.ceil(sortedData.length / pageSize);
+    // Filtering
+    manualFiltering,
 
-  const handleSort = (columnKey: keyof T | string) => {
-    if (sortColumn === columnKey) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortColumn(columnKey);
-      setSortDirection("asc");
-    }
-  };
+    // Row Selection
+    enableRowSelection,
 
-  const handleSelectAll = () => {
-    if (selectedRows.size === paginatedData.length) {
-      setSelectedRows(new Set());
-      onRowSelect?.([]);
-    } else {
-      const newSelected = new Set(Array.from({ length: paginatedData.length }, (_, i) => i));
-      setSelectedRows(newSelected);
-      onRowSelect?.(paginatedData);
-    }
-  };
+    // State
+    state: {
+      pagination: state?.pagination,
+      sorting: state?.sorting,
+      rowSelection: state?.rowSelection,
+    },
 
-  const handleSelectRow = (index: number) => {
-    const newSelected = new Set(selectedRows);
-    if (newSelected.has(index)) {
-      newSelected.delete(index);
-    } else {
-      newSelected.add(index);
-    }
-    setSelectedRows(newSelected);
-    const selected = paginatedData.filter((_, i) => newSelected.has(i));
-    onRowSelect?.(selected);
-  };
+    // State Handlers
+    onPaginationChange,
+    onSortingChange,
+    onRowSelectionChange,
+  });
 
-  const handleExport = () => {
-    if (onExport) {
-      onExport(sortedData);
-    } else {
-      const csv = [
-        columns.map((c) => c.header).join(","),
-        ...sortedData.map((row) =>
-          columns.map((c) => {
-            const val = row[c.key as keyof T];
-            return typeof val === "string" && val.includes(",") ? `"${val}"` : val;
-          }).join(","),
-        ),
-      ].join("\n");
-      const blob = new Blob([csv], { type: "text/csv" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "export.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+  const densityClasses = {
+    compact: "py-1.5",
+    comfortable: "py-3",
+    spacious: "py-4",
   };
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div className="flex items-center justify-between gap-4">
-        <Input
-          placeholder="Buscar..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="max-w-sm"
-        />
-        {exportable && (
-          <Button onClick={handleExport} variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Exportar
-          </Button>
-        )}
-      </div>
-
-      <div className="border border-[hsl(var(--border))] rounded-lg overflow-hidden">
+      <div className="border border-white/10 rounded-none overflow-hidden bg-black/20 backdrop-blur-sm">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-[hsl(var(--surface-muted))] border-b border-[hsl(var(--border))]">
-                {onRowSelect && (
-                  <th className="px-4 py-3 w-12">
-                    <input
-                      type="checkbox"
-                      checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-[hsl(var(--border))]"
-                    />
-                  </th>
-                )}
-                {columns.map((col) => (
-                  <th
-                    key={String(col.key)}
-                    className={cn(
-                      "px-4 py-3 text-left text-sm font-semibold text-[hsl(var(--text-2))]",
-                      col.align === "center" && "text-center",
-                      col.align === "right" && "text-right",
-                      col.sortable && "cursor-pointer hover:bg-[hsl(var(--surface))]",
-                      col.width && `w-[${col.width}]`,
-                    )}
-                    style={col.width ? { width: col.width } : undefined}
-                    onClick={() => col.sortable && handleSort(col.key)}
-                  >
-                    <div className="flex items-center gap-2">
-                      {col.header}
-                      {col.sortable && (
-                        <span className="text-[hsl(var(--text-3))]">
-                          {sortColumn === col.key ? (
-                            sortDirection === "asc" ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
-                            )
-                          ) : (
-                            <ArrowUpDown className="h-4 w-4 opacity-50" />
-                          )}
-                        </span>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-white/10 bg-white/5">
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className={cn(
+                        "px-4 text-left text-sm font-semibold text-white/90",
+                        densityClasses[density],
+                        header.column.getCanSort() &&
+                        "cursor-pointer hover:bg-white/10 transition-colors",
                       )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
+                      style={{
+                        width: header.column.columnDef.size,
+                      }}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div className="flex items-center gap-2">
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {header.column.getCanSort() && (
+                            <span className="text-white/40">
+                              {{
+                                asc: <ChevronUp className="h-4 w-4" />,
+                                desc: <ChevronDown className="h-4 w-4" />,
+                              }[header.column.getIsSorted() as string] ?? (
+                                  <ArrowUpDown className="h-4 w-4 opacity-50" />
+                                )}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
             </thead>
             <tbody>
-              {paginatedData.length === 0 ? (
+              {loading ? (
                 <tr>
-                  <td
-                    colSpan={columns.length + (onRowSelect ? 1 : 0)}
-                    className="px-4 py-12 text-center text-[hsl(var(--text-2))]"
-                  >
+                  <td colSpan={columns.length} className="px-4 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center gap-4">
+                      <div className="w-8 h-8 border-4 border-white/10 border-t-[hsl(var(--primary))] rounded-full animate-spin" />
+                      <p className="text-white/40 font-mono text-sm animate-pulse">
+                        CARREGANDO DADOS...
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-4 py-12 text-center text-white/60">
                     {emptyMessage}
                   </td>
                 </tr>
               ) : (
-                paginatedData.map((row, idx) => (
+                table.getRowModel().rows.map((row) => (
                   <tr
-                    key={idx}
-                    onClick={() => onRowClick?.(row)}
+                    key={row.id}
+                    onClick={() => onRowClick?.(row.original)}
                     className={cn(
-                      "border-b border-[hsl(var(--border))] transition-colors",
-                      onRowClick && "cursor-pointer hover:bg-[hsl(var(--surface-muted))]",
-                      selectedRows.has(idx) && "bg-[hsl(var(--primary)/0.1)]",
+                      "border-b border-white/5 transition-colors",
+                      onRowClick && "cursor-pointer hover:bg-white/5",
+                      row.getIsSelected() && "bg-[hsl(var(--primary))]/10",
                     )}
                   >
-                    {onRowSelect && (
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedRows.has(idx)}
-                          onChange={() => handleSelectRow(idx)}
-                          onClick={(e) => e.stopPropagation()}
-                          className="rounded border-[hsl(var(--border))]"
-                        />
-                      </td>
-                    )}
-                    {columns.map((col) => (
-                      <td
-                        key={String(col.key)}
-                        className={cn(
-                          "px-4 py-3 text-sm text-[hsl(var(--text-1))]",
-                          col.align === "center" && "text-center",
-                          col.align === "right" && "text-right",
-                        )}
-                      >
-                        {col.render ? col.render(row) : String(row[col.key as keyof T] ?? "")}
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className={cn("px-4 text-sm text-white/80", densityClasses[density])}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
                   </tr>
@@ -246,41 +218,6 @@ export function DataTable<T extends Record<string, unknown>>({
           </table>
         </div>
       </div>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-[hsl(var(--text-2))]">
-            Mostrando {((currentPage - 1) * pageSize) + 1} a {Math.min(currentPage * pageSize, sortedData.length)} de {sortedData.length}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              Anterior
-            </Button>
-            <span className="text-sm text-[hsl(var(--text-2))]">
-              Página {currentPage} de {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              Próxima
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
-
-
-
-
-
-

@@ -43,7 +43,7 @@ export function Skeleton({
         animationClasses[animation],
         className
       )}
-      style={style}
+      style={style as any}
     />
   );
 }

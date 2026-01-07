@@ -1,5 +1,7 @@
 "use client";
 
+import { EnterpriseHeader as AppHeader } from "@/presentation/components/EnterpriseHeader";
+import { EnterpriseSidebar as AppSidebar } from "@/presentation/components/EnterpriseSidebar";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ConnectionStatusIndicator } from "../connection-status-indicator";
@@ -8,8 +10,6 @@ import { OfflineSyncNotification } from "../offline-sync-notification";
 import { SessionTimeoutWarning } from "../session/session-timeout-warning";
 import { AppBackgroundAdvanced } from "./app-background-advanced";
 import { AppFooter } from "./app-footer";
-import { AppHeader } from "./app-header";
-import { AppSidebar } from "./app-sidebar";
 
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -114,16 +114,18 @@ export function AppLayout({ children }: AppLayoutProps) {
       className="relative flex h-screen overflow-hidden"
       data-cinematic={cinematicPreset}
       data-cinematic-pref={cinematicPreference}
-      style={cinematicVars}
+      style={cinematicVars as any}
     >
       {/* Background animado fixo avançado */}
       <AppBackgroundAdvanced />
 
-      {/* Sidebar */}
-      <AppSidebar />
+      {/* Sidebar Container - Explicit Width Reservation */}
+      <aside className="hidden lg:flex w-[80px] flex-col shrink-0 z-50">
+          <AppSidebar />
+      </aside>
 
       {/* Main content area */}
-      <div className="relative z-10 flex flex-1 flex-col overflow-hidden">
+      <div className="relative z-10 flex flex-1 flex-col overflow-hidden min-w-0">
         {/* Header */}
         <AppHeader />
 

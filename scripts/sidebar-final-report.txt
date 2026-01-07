@@ -1,0 +1,70 @@
+Total pages found in apps/web/src/app: 167
+Eligible pages for sidebar: 112
+Unique paths/hrefs found in sidebar: 61
+
+❌ Missing pages in sidebar:
+- /admin/branches/new (apps/web/src/app/(app)/admin/branches/new/page.tsx)
+- /admin/branches/dashboard (apps/web/src/app/(app)/admin/branches/dashboard/page.tsx)
+- /admin/branches/list (apps/web/src/app/(app)/admin/branches/list/page.tsx)
+- /admin/business-segments/new (apps/web/src/app/(app)/admin/business-segments/new/page.tsx)
+- /admin/business-segments/list (apps/web/src/app/(app)/admin/business-segments/list/page.tsx)
+- /admin/company/edit (apps/web/src/app/(app)/admin/company/edit/page.tsx)
+- /admin/departments/new (apps/web/src/app/(app)/admin/departments/new/page.tsx)
+- /admin/departments/list (apps/web/src/app/(app)/admin/departments/list/page.tsx)
+- /admin/permissions/approvals (apps/web/src/app/(app)/admin/permissions/approvals/page.tsx)
+- /admin/permissions/matrix (apps/web/src/app/(app)/admin/permissions/matrix/page.tsx)
+- /admin/permissions/new (apps/web/src/app/(app)/admin/permissions/new/page.tsx)
+- /admin/permissions/dashboard (apps/web/src/app/(app)/admin/permissions/dashboard/page.tsx)
+- /admin/permissions/access-audit (apps/web/src/app/(app)/admin/permissions/access-audit/page.tsx)
+- /admin/permissions/list (apps/web/src/app/(app)/admin/permissions/list/page.tsx)
+- /admin/positions/new (apps/web/src/app/(app)/admin/positions/new/page.tsx)
+- /admin/positions/list (apps/web/src/app/(app)/admin/positions/list/page.tsx)
+- /admin/positions (apps/web/src/app/(app)/admin/positions/page.tsx)
+- /admin/roles/new (apps/web/src/app/(app)/admin/roles/new/page.tsx)
+- /admin/roles/list (apps/web/src/app/(app)/admin/roles/list/page.tsx)
+- /admin/sectors/new (apps/web/src/app/(app)/admin/sectors/new/page.tsx)
+- /admin/sectors/list (apps/web/src/app/(app)/admin/sectors/list/page.tsx)
+- /admin/sectors (apps/web/src/app/(app)/admin/sectors/page.tsx)
+- /admin/workflow-policies/new (apps/web/src/app/(app)/admin/workflow-policies/new/page.tsx)
+- /admin/workflow-policies/list (apps/web/src/app/(app)/admin/workflow-policies/list/page.tsx)
+- /admin/users/import (apps/web/src/app/(app)/admin/users/import/page.tsx)
+- /admin/users/export (apps/web/src/app/(app)/admin/users/export/page.tsx)
+- /admin/users/checklist (apps/web/src/app/(app)/admin/users/checklist/page.tsx)
+- /admin/users/list (apps/web/src/app/(app)/admin/users/list/page.tsx)
+- /admin/status-customizados-ficha-custo/new (apps/web/src/app/(app)/admin/status-customizados-ficha-custo/new/page.tsx)
+- /admin/status-customizados-ficha-custo (apps/web/src/app/(app)/admin/status-customizados-ficha-custo/page.tsx)
+- /admin/subdepartments/new (apps/web/src/app/(app)/admin/subdepartments/new/page.tsx)
+- /admin/checklist (apps/web/src/app/(app)/admin/checklist/page.tsx)
+- /admin/notifications/list (apps/web/src/app/(app)/admin/notifications/list/page.tsx)
+- /admin/notifications/new (apps/web/src/app/(app)/admin/notifications/new/page.tsx)
+- /admin/notifications (apps/web/src/app/(app)/admin/notifications/page.tsx)
+- /admin/suppliers/new (apps/web/src/app/(app)/admin/suppliers/new/page.tsx)
+- /admin/error-playground (apps/web/src/app/(app)/admin/error-playground/page.tsx)
+- /admin/abac-demo (apps/web/src/app/(app)/admin/abac-demo/page.tsx)
+- /clientes (apps/web/src/app/(app)/clientes/page.tsx)
+- /clients (apps/web/src/app/(app)/clients/page.tsx)
+- /products (apps/web/src/app/(app)/products/page.tsx)
+- /settings/organizational-structure (apps/web/src/app/(app)/settings/organizational-structure/page.tsx)
+- /settings/team (apps/web/src/app/(app)/settings/team/page.tsx)
+- /settings/invites (apps/web/src/app/(app)/settings/invites/page.tsx)
+- /settings/notifications/history (apps/web/src/app/(app)/settings/notifications/history/page.tsx)
+- /settings/notifications/preferences (apps/web/src/app/(app)/settings/notifications/preferences/page.tsx)
+- /users (apps/web/src/app/(app)/users/page.tsx)
+- /fornecedores/list (apps/web/src/app/(app)/fornecedores/list/page.tsx)
+- /suppliers (apps/web/src/app/suppliers/page.tsx)
+- /certifications/iso27001 (apps/web/src/app/certifications/iso27001/page.tsx)
+- /certifications/soc2 (apps/web/src/app/certifications/soc2/page.tsx)
+- /certifications/pci-dss (apps/web/src/app/certifications/pci-dss/page.tsx)
+- /certifications (apps/web/src/app/certifications/page.tsx)
+- /admin/permissions/audit (apps/web/src/app/(dashboard)/admin/permissions/audit/page.tsx)
+
+Summary:
+Missing: 54
+Covered: 58
+Coverage: 51.79%
+
+⚠️ Sidebar items without matching (eligible) route:
+- /admin/categories/new
+- /admin/clients
+- /commissions/reports
+- /demo

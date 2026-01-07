@@ -2,19 +2,19 @@
 
 import { Button, cn, GlassCard, Input } from "@morina/ui";
 import {
-  Briefcase,
-  Building2,
-  Check,
-  FileText,
-  History,
-  Layers,
-  Plus,
-  Save,
-  Search,
-  Shield,
-  Sparkles,
-  User,
-  X,
+    Briefcase,
+    Building2,
+    Check,
+    FileText,
+    History,
+    Layers,
+    Plus,
+    Save,
+    Search,
+    Shield,
+    Sparkles,
+    User,
+    X,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { AuditLogPanel } from "./AuditLogPanel";
@@ -426,7 +426,7 @@ export function PermissionsClient() {
       if (!grouped[permission.module]) {
         grouped[permission.module] = [];
       }
-      grouped[permission.module].push(permission);
+      grouped[permission.module]!.push(permission);
     });
     return grouped;
   }

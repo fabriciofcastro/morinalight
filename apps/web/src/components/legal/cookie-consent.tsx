@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -10,8 +9,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useEffect, useState } from "react";
 
 type Consent = {
     necessary: boolean;
@@ -69,7 +69,7 @@ export function CookieConsent() {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed bottom-4 right-4 z-50 max-w-md animate-in slide-in-from-bottom-5 fade-in duration-500">
+        <div className="fixed bottom-4 right-4 z-[9999] max-w-md animate-in slide-in-from-bottom-5 fade-in duration-500">
             <Card className="border-primary/20 shadow-2xl backdrop-blur-xl bg-background/95">
                 <CardHeader className="pb-2">
                     <CardTitle className="text-lg flex items-center gap-2">

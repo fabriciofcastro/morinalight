@@ -1,17 +1,17 @@
 "use client";
 
-import { Save, Loader2, Settings } from "lucide-react";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
+import { useAutoSave } from "@/hooks/useAutoSave";
 import {
   statusCustomizadoApi,
   type CreateStatusCustomizadoInput,
   type UpdateStatusCustomizadoInput,
 } from "@/lib/api/status-customizado-ficha-custo";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { StandardFormPage } from "@/components/templates";
-import { useAutoSave } from "@/hooks/useAutoSave";
+import { Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") return null;
@@ -21,7 +21,7 @@ function getCurrentOrgId(): string | null {
   if (orgsStr) {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
-      if (orgs.length > 0) return orgs[0].organizationId;
+      if (orgs.length > 0) return orgs[0]!.organizationId;
     } catch {
       // Ignorar erro
     }
@@ -142,7 +142,7 @@ export function StatusCustomizadoFormClient({ statusId }: { statusId?: string })
   );
 
   return (
-    <AllowedGuard I={statusId ? "update" : "create"} a="StatusCustomizado" redirectTo="/admin/status-customizados-ficha-custo">
+    <AllowedGuard I={statusId ? "update" : "create"} a={"StatusCustomizado" as any} redirectTo="/admin/status-customizados-ficha-custo">
       <StandardFormPage
         title={statusId ? "Editar Status Customizado" : "Novo Status Customizado"}
         subtitle={

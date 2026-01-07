@@ -86,9 +86,9 @@ export function HeroBackdrop({ className }: HeroBackdropProps) {
         }}
       />
 
-      <AnimatedRibbons reduceMotion={reduceMotion} />
-      <AnimatedGrid reduceMotion={reduceMotion} />
-      <FloatingParticles reduceMotion={reduceMotion} />
+      <AnimatedRibbons reduceMotion={!!reduceMotion} />
+      <AnimatedGrid reduceMotion={!!reduceMotion} />
+      <FloatingParticles reduceMotion={!!reduceMotion} />
     </div>
   );
 }

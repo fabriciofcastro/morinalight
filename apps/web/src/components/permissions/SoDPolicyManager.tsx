@@ -1,15 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Plus, Trash2, AlertTriangle, CheckCircle, Play } from "lucide-react";
+import { Alert, AlertDescription, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Textarea } from "@morina/ui";
+import { AlertTriangle, CheckCircle, Play, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface SoDPolicy {
     id: string;
@@ -188,7 +181,7 @@ export function SoDPolicyManager() {
 
     const updateConflictPair = (index: number, pairIndex: number, value: string) => {
         const updated = [...newPolicy.conflictingPermissions];
-        updated[index][pairIndex] = value;
+        updated[index]![pairIndex] = value;
         setNewPolicy({ ...newPolicy, conflictingPermissions: updated });
     };
 
@@ -292,7 +285,7 @@ export function SoDPolicyManager() {
                         </div>
 
                         <div>
-                            <Label>Permissões Conflitantes</Label>
+                            <Label htmlFor="conflicts">Permissões Conflitantes</Label>
                             <div className="space-y-2 mt-2">
                                 {newPolicy.conflictingPermissions.map((pair, index) => (
                                     <div key={index} className="flex gap-2 items-center">

@@ -1,29 +1,29 @@
 "use client";
 
-import { Button, cn, GlassCard, Input } from "@morina/ui";
-import {
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  Filter,
-  RefreshCw,
-  Search,
-  Shield,
-  Signal,
-  SlidersHorizontal,
-  XCircle,
-} from "lucide-react";
-import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { invalidatePermissionsCache } from "@/hooks/use-permissions";
 import {
-  type Department,
-  organizationalStructureApi,
-  type Position,
-  type Sector,
+    type Department,
+    organizationalStructureApi,
+    type Position,
+    type Sector,
 } from "@/lib/api/organizational-structure";
 import { type Permission, permissionsApi } from "@/lib/api/permissions";
 import { type User, usersApi } from "@/lib/api/users";
+import { Button, cn, GlassCard, Input } from "@morina/ui";
+import {
+    CheckCircle2,
+    Clock,
+    ExternalLink,
+    Filter,
+    RefreshCw,
+    Search,
+    Shield,
+    Signal,
+    SlidersHorizontal,
+    XCircle,
+} from "lucide-react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type PermissionGrant = {
   permissionKey: string;
@@ -113,7 +113,7 @@ export function PermissionMatrixClient() {
       setUsersLoading(true);
       const data = await usersApi.list();
       setUsers(data);
-      if (!selectedUserId && data.length > 0) {
+      if (!selectedUserId && data.length > 0 && data[0]) {
         setSelectedUserId(data[0].userId);
       }
     } catch (error) {

@@ -1,17 +1,17 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { Button, GlassCard, Input, Label, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";
 import {
-  BarChart3,
-  Download,
-  FileSpreadsheet,
-  Filter,
-  Search,
-  TrendingUp,
-  Activity,
+    Activity,
+    BarChart3,
+    Download,
+    FileSpreadsheet,
+    Filter,
+    Search,
+    TrendingUp,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type Notification = {
   id: string;
@@ -170,7 +170,7 @@ export function NotificationHistoryClient() {
       let filename: string;
 
       if (format === "csv") {
-        const headers = Object.keys(exportData[0]);
+        const headers = Object.keys(exportData[0] as object);
         const csvRows = [
           headers.join(","),
           ...exportData.map((row) =>

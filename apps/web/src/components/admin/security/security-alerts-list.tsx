@@ -1,11 +1,10 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Can } from '@/lib/auth/CaslContext';
+import { motion } from 'framer-motion';
+import { AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react';
 
 interface SecurityAlert {
     id: string;
@@ -89,7 +88,7 @@ export function SecurityAlertsList({ alerts, onAcknowledge, loading }: SecurityA
                             </div>
                         </div>
                         {!alert.acknowledged && (
-                            <Can I="update" a="SecurityAlert">
+                            <Can I="update" a={"Notification" as any}>
                                 <Button
                                     onClick={() => onAcknowledge(alert.id)}
                                     disabled={loading}

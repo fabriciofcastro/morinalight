@@ -54,9 +54,12 @@ export function meetsContrastRatio(
  * Calcula luminância relativa de uma cor RGB (0-1)
  */
 function getRelativeLuminance(rgb: { r: number; g: number; b: number }): number {
-  const [r, g, b] = [rgb.r / 255, rgb.g / 255, rgb.b / 255].map((val) => {
-    return val <= 0.03928 ? val / 12.92 : Math.pow((val + 0.055) / 1.055, 2.4);
+  const values = [rgb.r / 255, rgb.g / 255, rgb.b / 255].map((val) => {
+    return val <= 0.03928 ? val / 12.92 : ((val + 0.055) / 1.055) ** 2.4;
   });
+  const r = values[0]!;
+  const g = values[1]!;
+  const b = values[2]!;
 
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
@@ -68,9 +71,9 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
+        r: parseInt(result[1]!, 16),
+        g: parseInt(result[2]!, 16),
+        b: parseInt(result[3]!, 16),
       }
     : null;
 }
@@ -82,9 +85,9 @@ function parseRgb(rgb: string): { r: number; g: number; b: number } | null {
   const match = rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
   return match
     ? {
-        r: parseInt(match[1], 10),
-        g: parseInt(match[2], 10),
-        b: parseInt(match[3], 10),
+        r: parseInt(match[1]!, 10),
+        g: parseInt(match[2]!, 10),
+        b: parseInt(match[3]!, 10),
       }
     : null;
 }
@@ -136,9 +139,8 @@ export function mergeAccessibilityProps(
     ...defaultProps,
     ...userProps,
     // aria-describedby pode ser combinado
-    "aria-describedby": [defaultProps["aria-describedby"], userProps["aria-describedby"]]
-      .filter(Boolean)
-      .join(" ") || undefined,
+    "aria-describedby":
+      [defaultProps["aria-describedby"], userProps["aria-describedby"]].filter(Boolean).join(" ") ||
+      undefined,
   } as AccessibleProps;
 }
-

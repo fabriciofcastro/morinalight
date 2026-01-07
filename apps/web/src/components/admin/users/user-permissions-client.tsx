@@ -1,15 +1,15 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import { Shield, ArrowLeft, CheckCircle2, XCircle, Building2, Briefcase, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { useUser } from "@/hooks/use-user";
 import { useUserPermissions } from "@/hooks/use-user-permissions";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Can } from "@/lib/auth";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import { ArrowLeft, Briefcase, Building2, CheckCircle2, Shield, User, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface UserPermissionsClientProps {
   userId: string;
@@ -54,7 +54,7 @@ export function UserPermissionsClient({ userId }: UserPermissionsClientProps) {
     if (!acc[perm.module]) {
       acc[perm.module] = [];
     }
-    acc[perm.module].push(perm);
+    acc[perm.module]!.push(perm);
     return acc;
   }, {} as Record<string, typeof effectivePermissions>);
 

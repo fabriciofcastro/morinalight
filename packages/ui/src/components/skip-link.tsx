@@ -15,7 +15,11 @@ export interface SkipLinkProps {
   className?: string;
 }
 
-export function SkipLink({ targetId = "main-content", children = "Pular para conteúdo principal", className }: SkipLinkProps) {
+export function SkipLink({
+  targetId = "main-content",
+  children = "Pular para conteúdo principal",
+  className,
+}: SkipLinkProps) {
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const target = document.getElementById(targetId);
@@ -46,4 +50,3 @@ export function SkipLink({ targetId = "main-content", children = "Pular para con
     </a>
   );
 }
-

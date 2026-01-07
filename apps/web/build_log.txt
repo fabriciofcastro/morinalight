@@ -1,2 +1,41 @@
-src/app/(app)/settings/permissions/permissions-client.tsx(1086,7): error TS1005: ')' expected.
-src/app/(app)/settings/permissions/permissions-client.tsx(1247,7): error TS1005: ')' expected.
+
+> web@0.1.0 build /home/fabricio/projects/morinalight/apps/web
+> next build
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+   ▲ Next.js 16.0.1 (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · clientTraceMetadata
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Turbopack build encountered 1 warnings:
+./node_modules/.pnpm/fstream@1.0.12/node_modules/fstream/lib
+Package rimraf can't be external
+The request rimraf matches serverExternalPackages (or the default list).
+The request could not be resolved by Node.js from the project directory.
+Packages that should be external need to be installed in the project directory, so they can be resolved from the output files.
+Try to install it into the project directory by running npm install rimraf from the project directory.
+
+
+ ✓ Compiled successfully in 33.9s
+   Running next.config.js provided runAfterProductionCompile ...
+ ✓ Completed runAfterProductionCompile in 815ms
+   Running TypeScript ...
+Failed to compile.
+
+./src/app/(app)/admin/audit/page.tsx:75:45
+Type error: Type '{ orgId: string; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'orgId' does not exist on type 'IntrinsicAttributes'.
+
+[0m [90m 73 |[39m
+ [90m 74 |[39m                         [33m<[39m[33mdiv[39m className[33m=[39m[32m"bg-white/50 dark:bg-gray-900/40 backdrop-blur-sm border border-gray-200 dark:border-gray-800 rounded-3xl p-2"[39m[33m>[39m
+[31m[1m>[22m[39m[90m 75 |[39m                             [33m<[39m[33mAuditDashboard[39m orgId[33m=[39m[32m"current-org"[39m [33m/[39m[33m>[39m
+ [90m    |[39m                                             [31m[1m^[22m[39m
+ [90m 76 |[39m                         [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 77 |[39m                     [33m<[39m[33m/[39m[33mdiv[39m[33m>[39m
+ [90m 78 |[39m                 ) [33m:[39m ([0m
+Next.js build worker exited with code: 1 and signal: null
+ ELIFECYCLE  Command failed with exit code 1.

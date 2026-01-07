@@ -52,11 +52,10 @@ export class PasswordResetService {
         await auditService.log({
             action: "PASSWORD_RESET_REQUESTED",
             userId: user.id,
-            userEmail: user.email,
             resource: "user_account",
             timestamp: new Date(),
             success: true,
-            metadata: { ipFn: "server-side" } // Metadata placeholder
+            metadata: { ipFn: "server-side", userEmail: user.email }
         });
 
         // 1. Generate Secure Token
@@ -150,12 +149,14 @@ export class PasswordResetService {
         ]);
 
         // --- ENTERPRISE SECURITY: AUDIT & ALERT ---
-        await auditService.logSuccess(
-            "PASSWORD_CHANGED_VIA_RESET",
-            dbToken.userId,
-            "user_account",
-            { metadata: { tokenUsed: dbToken.id } }
-        );
+        await auditService.log({
+            action: "PASSWORD_CHANGED_VIA_RESET",
+            userId: dbToken.userId,
+            resource: "user_account",
+            timestamp: new Date(),
+            success: true,
+            metadata: { tokenUsed: dbToken.id }
+        });
 
         // Alert Email (Security Notice)
         await emailService.send({

@@ -1,35 +1,33 @@
 "use client";
 
-import { Loader2, Building2, FileText, MapPin, Phone, Info, CheckCircle2, FolderOpen, History, Copy } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { z } from "zod";
-import { organizationalStructureApi, type Branch, type CreateBranchInput, type UpdateBranchInput } from "@/lib/api/organizational-structure";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
-import { FuturisticSelect } from "@/components/ui/futuristic-select";
-import { StandardFormPage } from "@/components/templates";
-import { useAutoSave } from "@/hooks/useAutoSave";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { AnimatedNetworkBackground } from "@/components/ui/animated-network-background";
-import { Button } from "@/components/ui/button";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { DocumentsTab } from "@/components/admin/branches/documents-tab";
-import { AuditLogModal } from "@/components/ui/audit-log-modal";
-import { DuplicateBranchModal, type DuplicateOptions } from "@/components/ui/duplicate-branch-modal";
-import { BusinessHoursEditor } from "@/components/admin/branches/business-hours-editor";
-import type { BusinessHours } from "@/types/business-hours";
-import { BUSINESS_HOURS_TEMPLATES } from "@/types/business-hours";
-import { MapPicker } from "@/components/ui/map-picker";
-import { useGeocoding } from "@/hooks/use-geocoding";
-import type { Coordinates } from "@/lib/google-maps";
 import { BranchSelector } from "@/components/admin/branches/branch-selector";
+import { BusinessHoursEditor } from "@/components/admin/branches/business-hours-editor";
 import { CapacityEditor } from "@/components/admin/branches/capacity-editor";
 import { CostsEditor } from "@/components/admin/branches/costs-editor";
 import { CustomFieldsBuilder } from "@/components/admin/branches/custom-fields-builder";
 import { CustomFieldsRenderer } from "@/components/admin/branches/custom-fields-renderer";
+import { DocumentsTab } from "@/components/admin/branches/documents-tab";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
+import { AnimatedNetworkBackground } from "@/components/ui/animated-network-background";
+import { AuditLogModal } from "@/components/ui/audit-log-modal";
+import { Button } from "@/components/ui/button";
+import { DuplicateBranchModal, type DuplicateOptions } from "@/components/ui/duplicate-branch-modal";
+import { FuturisticInput } from "@/components/ui/futuristic-input";
+import { FuturisticSelect } from "@/components/ui/futuristic-select";
+import { MapPicker } from "@/components/ui/map-picker";
+import { useGeocoding } from "@/hooks/use-geocoding";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { organizationalStructureApi, type Branch, type CreateBranchInput, type UpdateBranchInput } from "@/lib/api/organizational-structure";
+import type { Coordinates } from "@/lib/google-maps";
+import type { BusinessHours } from "@/types/business-hours";
+import { BUSINESS_HOURS_TEMPLATES } from "@/types/business-hours";
 import type { BranchCustomFieldsConfig, CustomFieldsValues } from "@/types/custom-fields";
-import { useState as useReactState } from "react";
-import { Settings2, TrendingUp, DollarSign } from "lucide-react";
+import { Building2, CheckCircle2, Copy, DollarSign, FileText, FolderOpen, History, Info, Loader2, MapPin, Phone, Settings2, TrendingUp } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 
 // Zod Schema Validation
 const branchSchema = z.object({
@@ -116,7 +114,7 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
     const result = branchSchema.safeParse(form);
     if (!result.success) {
       const formattedErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
+      result.error.issues.forEach((err) => {
         const path = err.path.join(".");
         formattedErrors[path] = err.message;
         // Also map nested address errors to simple keys if needed or handle in UI
@@ -368,6 +366,7 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
 
       return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [
     form.address?.street,
     form.address?.number,

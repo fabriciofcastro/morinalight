@@ -1,25 +1,24 @@
 "use client";
 
-import { Button, GlassCard } from "@morina/ui";
-import {
-  Building2,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  X,
-  Edit,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  History,
-  UserPlus,
-  FileText,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { Button, GlassCard } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+    AlertCircle,
+    Building2,
+    CheckCircle2,
+    Edit,
+    FileText,
+    History,
+    Mail,
+    MapPin,
+    Phone,
+    User,
+    UserPlus,
+    X,
+    XCircle,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Cliente = {
   clienteId: string;
@@ -55,8 +54,8 @@ type HistoricoItem = {
   id: string;
   acao: string;
   campo: string | null;
-  estadoAnterior: any;
-  estadoNovo: any;
+  estadoAnterior: unknown;
+  estadoNovo: unknown;
   actorId: string;
   createdAt: string;
   justificativa: string | null;

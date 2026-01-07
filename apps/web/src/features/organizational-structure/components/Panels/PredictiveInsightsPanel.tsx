@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
-import { Department, Sector, Position } from "@morina/organizational-structure-domain";
-import { GlassCard } from "@morina/ui";
-import { TrendingUp, AlertTriangle, Lightbulb, TrendingDown } from "lucide-react";
 import { FuturisticLineChart } from "@/components/charts/FuturisticLineChart";
-import { addMonths, format, startOfMonth, subMonths } from "date-fns";
+import { Department, Position, Sector } from "@morina/organizational-structure-domain";
+import { GlassCard } from "@morina/ui";
+import { addMonths, format, subMonths } from "date-fns";
+import { AlertTriangle, Lightbulb, TrendingDown } from "lucide-react";
+import { useMemo } from "react";
 
 interface PredictiveInsightsPanelProps {
     departments: Department[];
@@ -17,9 +17,9 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
     // --- 1. Growth Projection (Linear Regression) ---
     const projectionData = useMemo(() => {
         const allDates = [
-            ...departments.map(d => new Date(d.createdAt)),
-            ...sectors.map(s => new Date(s.createdAt)),
-            ...positions.map(p => new Date(p.createdAt))
+            ...departments.filter(d => d.createdAt).map(d => new Date(d.createdAt!)),
+            ...sectors.filter(s => s.createdAt).map(s => new Date(s.createdAt!)),
+            ...positions.filter(p => p.createdAt).map(p => new Date(p.createdAt!))
         ].filter(d => !isNaN(d.getTime())).sort((a, b) => a.getTime() - b.getTime());
 
         if (allDates.length < 2) return [];
@@ -46,7 +46,7 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
 
         sortedKeys.forEach((key, index) => {
             const [year, month] = key.split('-');
-            const monthStart = new Date(parseInt(year), parseInt(month) - 1, 1);
+            const monthStart = new Date(parseInt(year!), parseInt(month!) - 1, 1);
             const nextMonthStart = addMonths(monthStart, 1);
 
             const inMonth = allDates.filter(d => d >= monthStart && d < nextMonthStart).length;
@@ -74,7 +74,7 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
         });
 
         // Add 6 months future
-        const lastIndex = historyData[historyData.length - 1].x;
+        const lastIndex = historyData[historyData.length - 1]!.x;
         const lastDate = new Date(); // approx
 
         for (let i = 1; i <= 6; i++) {
@@ -90,7 +90,7 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
     const projectedGrowthRate = useMemo(() => {
         if (projectionData.length < 2) return 0;
         const current = projectionData.findLast(p => p.type === 'history')?.y || 0;
-        const future = projectionData[projectionData.length - 1].y;
+        const future = projectionData[projectionData.length - 1]!.y;
         if (current === 0) return 0;
         return Math.round(((future - current) / current) * 100);
     }, [projectionData]);
@@ -99,6 +99,8 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
     const anomalies = useMemo(() => {
         const issues: { title: string; desc: string; severity: 'high' | 'medium' }[] = [];
 
+        // TODO: Uncomment when baseSalary is added to Position schema
+        /*
         // Salary Outliers (Z-Score > 2.5)
         const salaries = positions.map(p => p.baseSalary || 0).filter(s => s > 0);
         if (salaries.length > 5) {
@@ -119,6 +121,7 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
                 });
             }
         }
+        */
 
         // Rapid Growth Departments (>10 positions added recently) - mock logic for "recently" data availability
         // Assuming we check createdAt
@@ -130,7 +133,7 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
             // Find dept
             // Need full tree traversal or assume we can find it. 
             // Simplified: just check if position is new. If we had dept linking it would be better.
-            if (new Date(p.createdAt) > thirtyDaysAgo) {
+            if (p.createdAt && new Date(p.createdAt) > thirtyDaysAgo) {
                 const sector = sectors.find(s => s.id === p.sectorId);
                 if (sector?.departmentId) {
                     deptGrowth[sector.departmentId] = (deptGrowth[sector.departmentId] || 0) + 1;
@@ -159,8 +162,8 @@ export function PredictiveInsightsPanel({ departments, sectors, positions }: Pre
                 if (!deptVacancy[sector.departmentId]) {
                     deptVacancy[sector.departmentId] = { total: 0, inactive: 0 };
                 }
-                deptVacancy[sector.departmentId].total++;
-                if (!p.active) deptVacancy[sector.departmentId].inactive++;
+                deptVacancy[sector.departmentId]!.total++;
+                if (!p.active) deptVacancy[sector.departmentId]!.inactive++;
             }
         });
 

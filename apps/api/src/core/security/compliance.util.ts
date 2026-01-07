@@ -4,7 +4,7 @@
  * Provides helper functions to ensure all pages/routes follow security standards
  */
 
-import { type FastifyRequest, type FastifyReply } from "fastify";
+import { type FastifyReply, type FastifyRequest } from "fastify";
 
 export interface SecurityCheckResult {
     passed: boolean;
@@ -280,15 +280,15 @@ export async function securityComplianceMiddleware(
     const checker = new BackendSecurityChecklist();
 
     // Verificar autenticação
-    const hasAuth = !!request.user;
+    const hasAuth = !!(request as any).user;
     checker.checkAuthentication(hasAuth);
 
     // Verificar schema
-    const hasSchema = !!request.routeOptions?.schema;
+    const hasSchema = !!(request as any).routeOptions?.schema;
     checker.checkSchemaValidation(hasSchema);
 
     // Verificar rate limit
-    const hasRateLimit = !!request.routeOptions?.config?.rateLimit;
+    const hasRateLimit = !!(request as any).routeOptions?.config?.rateLimit;
     checker.checkRateLimiting(hasRateLimit);
 
     const result = checker.getResult();

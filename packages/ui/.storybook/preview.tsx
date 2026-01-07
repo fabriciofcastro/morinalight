@@ -1,6 +1,8 @@
+import { withThemeByClassName } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
 import "../src/styles/accessibility.css";
 import "../src/styles/animations.css";
+import "../src/theme.css";
 
 const preview: Preview = {
   parameters: {
@@ -22,21 +24,22 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: "light",
-      values: [
-        {
-          name: "light",
-          value: "#ffffff",
-        },
-        {
-          name: "dark",
-          value: "#0c1019",
-        },
-      ],
+      disable: true,
     },
   },
+  decorators: [
+    withThemeByClassName({
+      themes: {
+        light: "light",
+        dark: "dark",
+        "high-contrast": "high-contrast",
+      },
+      defaultTheme: "dark",
+    }),
+  ],
   tags: ["autodocs"],
 };
 
 export default preview;
+
 

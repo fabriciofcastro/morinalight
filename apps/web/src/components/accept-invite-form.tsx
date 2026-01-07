@@ -10,15 +10,18 @@ import { z } from "zod";
 
 const acceptSchema = z.object({
   email: z
-    .string({ required_error: "Informe o e-mail convidado." })
+    .string()
+    .min(1, "Informe o e-mail convidado.")
     .trim()
     .email("Formato inválido."),
   displayName: z
-    .string({ required_error: "Informe como deseja ser identificado." })
+    .string()
+    .min(1, "Informe como deseja ser identificado.")
     .min(2, "Nome muito curto.")
     .max(120, "Nome muito longo."),
   password: z
-    .string({ required_error: "Defina uma senha forte." })
+    .string()
+    .min(1, "Defina uma senha forte.")
     .min(8, "Mínimo de 8 caracteres.")
     .regex(/[A-Z]/, "Inclua ao menos uma letra maiúscula.")
     .regex(/[a-z]/, "Inclua ao menos uma letra minúscula.")

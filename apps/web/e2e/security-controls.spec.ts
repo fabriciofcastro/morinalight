@@ -2,6 +2,12 @@
 import { test, expect } from "@playwright/test";
 import { mockAuth } from "./helpers/auth-mock";
 
+declare global {
+    interface Window {
+        ability?: any;
+    }
+}
+
 /**
  * Security Controls Verification (ACL, ABAC, Policies)
  */
@@ -27,7 +33,6 @@ test.describe("Security Controls", () => {
         // while others are hidden or disabled.
         // For this test, we can use a helper script to check the ability directly if exposed.
         const canEditOwn = await page.evaluate((uid) => {
-            // @ts-ignore - access ability if exposed on window for tests
             if (window.ability) {
                 return window.ability.can('update', { __typename: 'Product', ownerId: uid });
             }
@@ -37,7 +42,6 @@ test.describe("Security Controls", () => {
         expect(canEditOwn).toBe(true);
 
         const canEditOther = await page.evaluate(() => {
-            // @ts-ignore
             if (window.ability) {
                 return window.ability.can('update', { __typename: 'Product', ownerId: 'other-user' });
             }
@@ -59,8 +63,7 @@ test.describe("Security Controls", () => {
         // Outside business hours (23:00)
         await page.addInitScript(() => {
             const now = new Date(2025, 0, 1, 23, 0, 0);
-            // @ts-ignore
-            window.Date = class extends Date { constructor(a) { super(a || now); } static now() { return now.getTime(); } };
+            (window as any).Date = class extends Date { constructor(a: any) { super(a || now); } static now() { return now.getTime(); } };
         });
 
         await page.goto("/catalog");
@@ -106,7 +109,6 @@ test.describe("Security Controls", () => {
         await page.waitForLoadState("networkidle");
 
         const canUpdateSpecial = await page.evaluate((pid) => {
-            // @ts-ignore
             if (window.ability) {
                 return window.ability.can('update', { __typename: 'Product', id: pid });
             }
@@ -116,7 +118,6 @@ test.describe("Security Controls", () => {
         expect(canUpdateSpecial).toBe(true);
 
         const canUpdateOther = await page.evaluate(() => {
-            // @ts-ignore
             if (window.ability) {
                 return window.ability.can('update', { __typename: 'Product', id: 'other-id' });
             }

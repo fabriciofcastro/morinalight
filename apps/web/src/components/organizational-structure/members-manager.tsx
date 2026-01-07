@@ -1,11 +1,11 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { Button, cn, FormSelect, GlassCard, Input } from "@morina/ui";
 import { Plus, Search, User, X } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 
 type MemberInfo = {
   membershipId: string;
@@ -71,9 +71,7 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
     team: `/api/teams/${entityId}/members`,
   }[entityType];
 
-  useEffect(() => {
-    void loadMembers();
-  }, [loadMembers]);
+
 
   const loadAvailableUsers = useCallback(async (currentMembers: MemberInfo[]) => {
     try {
@@ -130,6 +128,10 @@ export function MembersManager({ entityType, entityId, entityName, onClose }: Me
       setLoading(false);
     }
   }, [apiBasePath, loadAvailableUsers]);
+
+  useEffect(() => {
+    void loadMembers();
+  }, [loadMembers]);
 
   async function handleAddMember() {
     if (!selectedUserId) {

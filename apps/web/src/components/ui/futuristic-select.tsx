@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useId, useState } from "react";
 
 export interface FuturisticSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
@@ -34,7 +34,7 @@ export function FuturisticSelect({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <select
           id={selectId}
-          {...props}
+          {...(props as any)}
           onFocus={() => setShowTooltip(error && !!errorMessage)}
           onBlur={() => setShowTooltip(false)}
           className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer`}

@@ -25,7 +25,7 @@ export const queryClient = new QueryClient({
             // Refetch ao reconectar
             refetchOnReconnect: true,
             // Refetch em mount apenas se stale
-            refetchOnMount: "if-stale",
+            refetchOnMount: true,
         },
         mutations: {
             // Retry mutations 2 vezes

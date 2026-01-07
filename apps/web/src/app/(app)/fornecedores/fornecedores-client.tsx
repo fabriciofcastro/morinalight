@@ -1,26 +1,26 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { suppliersApi, type CreateSupplierInput, type Supplier } from "@/lib/api/suppliers";
 import { Button } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Building2,
-  Plus,
-  Trash2,
-  Save,
   ArrowLeft,
-  Search,
-  Edit,
-  Mail,
-  Phone,
-  MapPin,
-  FileText,
+  Building2,
   CheckCircle2,
+  Edit,
+  FileText,
+  Mail,
+  MapPin,
+  Phone,
+  Plus,
+  Save,
+  Search,
+  Trash2,
   XCircle,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition, useMemo, useId } from "react";
 import { useRouter } from "next/navigation";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { suppliersApi, type Supplier, type CreateSupplierInput, type UpdateSupplierInput } from "@/lib/api/suppliers";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useId, useMemo, useState, useTransition } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -35,7 +35,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing
@@ -49,12 +49,13 @@ const FuturisticInput = ({
   label,
   required = false,
   id,
+  className,
   ...props
 }: {
   label: string;
   required?: boolean;
   id?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>) => {
+} & React.ComponentPropsWithoutRef<"input">) => {
   const generatedId = useId();
   const inputId = id || generatedId;
   return (
@@ -66,8 +67,8 @@ const FuturisticInput = ({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300" />
         <input
           id={inputId}
-          {...props}
-          className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300"
+          {...(props as any)}
+          className={`relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 ${className || ""}`}
         />
       </div>
     </div>
@@ -79,13 +80,14 @@ const FuturisticSelect = ({
   required = false,
   id,
   children,
+  className,
   ...props
 }: {
   label: string;
   required?: boolean;
   id?: string;
   children: React.ReactNode;
-} & React.SelectHTMLAttributes<HTMLSelectElement>) => {
+} & React.ComponentPropsWithoutRef<"select">) => {
   const generatedId = useId();
   const selectId = id || generatedId;
   return (
@@ -97,8 +99,8 @@ const FuturisticSelect = ({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300" />
         <select
           id={selectId}
-          {...props}
-          className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer"
+          {...(props as any)}
+          className={`relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer ${className || ""}`}
         >
           {children}
         </select>
@@ -111,12 +113,13 @@ const FuturisticTextarea = ({
   label,
   required = false,
   id,
+  className,
   ...props
 }: {
   label: string;
   required?: boolean;
   id?: string;
-} & React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
+} & React.ComponentPropsWithoutRef<"textarea">) => {
   const generatedId = useId();
   const textareaId = id || generatedId;
   return (
@@ -128,8 +131,8 @@ const FuturisticTextarea = ({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300" />
         <textarea
           id={textareaId}
-          {...props}
-          className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 resize-none"
+          {...(props as any)}
+          className={`relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 resize-none ${className || ""}`}
         />
       </div>
     </div>

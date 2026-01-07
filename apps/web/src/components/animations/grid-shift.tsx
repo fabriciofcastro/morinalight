@@ -16,6 +16,7 @@ export function GridShift() {
                 }}
             />
 
+            {/* @ts-ignore */}
             <style jsx>{`
         @keyframes grid-shift {
           0% { transform: translate(0, 0); }

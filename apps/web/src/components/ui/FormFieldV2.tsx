@@ -1,8 +1,8 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, Check, Loader2 } from "lucide-react";
 import { forwardRef, type ReactNode, useId } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertCircle, Loader2 } from "lucide-react";
 import { validationAnimations } from "./validation";
 
 export type FormFieldV2State = "idle" | "valid" | "invalid" | "pending" | "disabled";
@@ -124,7 +124,7 @@ export const FormFieldV2 = forwardRef<HTMLInputElement, FormFieldV2Props>(
             id={inputId}
             disabled={disabled}
             className={`flex-1 bg-transparent border-0 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses[size]} px-3 ${className || ""}`}
-            {...inputProps}
+            {...(inputProps as any)}
           />
 
           {/* Right Icon - Validation Status */}

@@ -166,7 +166,7 @@ export function useWhyDidYouUpdate<P extends object>(
     componentName: string,
     props: P,
 ) {
-    const previousProps = React.useRef<P>();
+    const previousProps = React.useRef<P | undefined>(undefined);
 
     React.useEffect(() => {
         if (previousProps.current && process.env.NODE_ENV === "development") {

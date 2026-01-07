@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Input } from "./input";
 import { FormField } from "./form-field";
+import { Input } from "./input";
 
 const meta: Meta<typeof Input> = {
   title: "Components/Input",
@@ -108,4 +108,3 @@ export const Types: Story = {
     </div>
   ),
 };
-

@@ -5,8 +5,8 @@
  */
 
 import type { AppError } from "./app-error";
-import type { ErrorCorrelationContext } from "./error-correlation";
 import { getErrorCategory, type ErrorCode } from "./error-codes";
+import type { ErrorCorrelationContext } from "./error-correlation";
 
 /**
  * Agrupamento de erros similares
@@ -105,7 +105,7 @@ export class ErrorAnalyticsManager {
       if (this.groups.size >= this.MAX_GROUPS) {
         const oldestGroup = Array.from(this.groups.values()).sort(
           (a, b) => a.lastSeen - b.lastSeen,
-        )[0];
+        )[0]!;
         this.groups.delete(oldestGroup.id);
       }
 
@@ -159,7 +159,7 @@ export class ErrorAnalyticsManager {
       errorsBySeverity[severity] = (errorsBySeverity[severity] || 0) + 1;
 
       const hour = new Date(timestamp).getHours();
-      errorsByHour[hour].count++;
+      errorsByHour[hour]!.count++;
     });
 
     const topErrors = Array.from(this.groups.values())

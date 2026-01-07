@@ -7,11 +7,11 @@
 
 "use client";
 
-import React, { useState } from "react";
-import { ErrorDisplay, SuccessDisplay } from "./ErrorDisplay";
-import { useErrorHandler, useAsyncError } from "@/lib/errors";
-import { Button } from "@morina/ui";
 import { apiClient } from "@/lib/api/base";
+import { useAsyncError, useErrorHandler } from "@/lib/errors";
+import { Button } from "@morina/ui";
+import { useState } from "react";
+import { ErrorDisplay, SuccessDisplay } from "./ErrorDisplay";
 
 /**
  * Exemplo 1: Uso básico com ErrorDisplay
@@ -32,9 +32,9 @@ export function ErrorExampleBasic() {
     <div className="space-y-4">
       <Button onClick={handleAction}>Testar Erro</Button>
       
-      {error && (
+      {!!error && (
         <ErrorDisplay
-          error={error}
+          error={error as any}
           onRetry={handleAction}
           variant="card"
         />
@@ -89,7 +89,7 @@ export function ErrorExampleWithRetry() {
         {loading ? "Carregando..." : "Carregar Dados"}
       </Button>
 
-      {error && (
+      {!!error && (
         <ErrorDisplay
           error={error}
           onRetry={retry}
@@ -135,7 +135,7 @@ export function ErrorExampleValidation() {
         Testar Validação
       </Button>
 
-      {error && (
+      {!!error && (
         <ErrorDisplay
           error={error}
           variant="card"
@@ -178,7 +178,7 @@ export function ErrorExampleSuccess() {
         />
       )}
 
-      {error && (
+      {!!error && (
         <ErrorDisplay
           error={error}
           onRetry={handleAction}

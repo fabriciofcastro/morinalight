@@ -3,8 +3,7 @@
  */
 
 import { z } from "zod";
-import { validateCpf, validateCnpj, validateCep, validatePhone, validateEmail } from "./brazilian";
-import { validatePasswordStrength } from "./brazilian";
+import { validateCep, validateCnpj, validateCpf, validateEmail, validatePasswordStrength, validatePhone } from "./brazilian";
 
 /**
  * Schema para CPF
@@ -72,11 +71,8 @@ export const passwordSchema = z
       const validation = validatePasswordStrength(password);
       return validation.valid;
     },
-    (password) => {
-      const validation = validatePasswordStrength(password);
-      return {
-        message: validation.errors.join(", "),
-      };
+    {
+      message: "Senha não atende aos requisitos de segurança",
     },
   );
 
@@ -87,7 +83,10 @@ export const dateSchema = z
   .string()
   .regex(/^\d{2}\/\d{2}\/\d{4}$/, "Data deve estar no formato DD/MM/YYYY")
   .refine((date) => {
-    const [day, month, year] = date.split("/").map(Number);
+    const parts = date.split("/").map(Number);
+    const day = parts[0]!;
+    const month = parts[1]!;
+    const year = parts[2]!;
     const d = new Date(year, month - 1, day);
     return (
       d.getDate() === day &&

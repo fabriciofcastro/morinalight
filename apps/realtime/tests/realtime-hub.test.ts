@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { FastifyBaseLogger } from "fastify";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WebSocket } from "ws";
 
 const redisInstances = vi.hoisted(() => [] as Array<Record<string, any>>);
@@ -30,10 +30,10 @@ vi.mock("ioredis", () => {
 import { Redis } from "ioredis";
 import { RealtimeHub } from "../src/hub/realtime-hub";
 import {
-  broadcastCounter,
-  connectionsGauge,
-  connectionsPerOrgGauge,
-  pendingMessagesGauge,
+    broadcastCounter,
+    connectionsGauge,
+    connectionsPerOrgGauge,
+    pendingMessagesGauge,
 } from "../src/observability/metrics";
 
 const logger = {
@@ -160,7 +160,7 @@ describe("RealtimeHub", () => {
     });
 
     const instances = getRedisInstances();
-    const instance = instances[0];
+    const instance = instances[0]!;
     instance.xpending = vi.fn().mockResolvedValue(["42", null, null, []] as const);
 
     // @ts-expect-error - acessando método privado para verificar métrica diretamente

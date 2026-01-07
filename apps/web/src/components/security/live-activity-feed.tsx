@@ -1,7 +1,7 @@
 'use client';
 
 import { useSecurityEvents } from '@/hooks/use-security-websocket';
-import { Activity, Wifi, WifiOff, Bell, TrendingUp, Ban } from 'lucide-react';
+import { Activity, Ban, Wifi, WifiOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface LiveActivityFeedProps {
@@ -50,7 +50,15 @@ export function LiveActivityFeed({ orgId }: LiveActivityFeedProps) {
     };
 
     const getEventTitle = (type: string) => {
-        // ... switch existente
+        switch (type) {
+            case 'session_created': return 'Nova Sessão';
+            case 'session_ended': return 'Sessão Encerrada';
+            case 'alert_created': return 'Alerta';
+            case 'access_denied': return 'Acesso Negado';
+            case 'anomaly_detected': return 'Anomalia';
+            case 'high_risk_access': return 'Alto Risco';
+            default: return 'Evento';
+        }
     };
 
     const handleBlockIp = async (ip: string) => {

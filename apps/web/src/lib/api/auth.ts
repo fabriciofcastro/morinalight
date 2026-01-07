@@ -2,8 +2,8 @@
  * Auth API - Migrated with httpOnly Cookies Support
  */
 
-import { apiClient } from "./base";
 import type { AxiosRequestConfig } from "axios";
+import { apiClient } from "./base";
 
 export interface LoginRequest {
   email: string;
@@ -93,8 +93,8 @@ export const authApi = {
   /**
    * Logout - Remove httpOnly cookie
    */
-  logout: async (): Promise<void> => {
-    await apiClient.post<void>("/auth/logout", {});
+  logout: async (allDevices?: boolean): Promise<void> => {
+    await apiClient.post<void>("/auth/logout", { all: allDevices });
 
     // Limpar qualquer estado local
     if (typeof window !== "undefined") {

@@ -4,9 +4,9 @@
  * Provides aggregated security metrics and analytics data
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getPrismaClient } from '@/lib/prisma';
 import { adminRouteMiddleware } from '@/lib/middleware/security-middleware';
+import { getPrismaClient } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
     // Apply security middleware
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
         // Time series data (alerts per day)
         const timeSeriesMap = new Map<string, number>();
         alerts.forEach(alert => {
-            const date = alert.createdAt.toISOString().split('T')[0];
+            const date = alert.createdAt.toISOString().split('T')[0]!;
             timeSeriesMap.set(date, (timeSeriesMap.get(date) || 0) + 1);
         });
 

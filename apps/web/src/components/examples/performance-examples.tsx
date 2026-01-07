@@ -6,23 +6,23 @@
 
 "use client";
 
-import { Suspense } from "react";
 import {
-    lazyWithRetry,
     DefaultLoadingFallback,
+    lazyWithRetry,
     memoListItem,
-    useVirtualScroll,
-    VirtualList,
     useDebounce,
     useRenderTime,
+    useVirtualScroll,
     useWhyDidYouUpdate,
+    VirtualList,
 } from "@/lib/performance";
+import { Suspense } from "react";
 
 // ===== LAZY LOADING =====
 
 // Lazy load com retry automático
 const HeavyDashboard = lazyWithRetry(
-    () => import("@/components/admin/dashboard"),
+    () => import("@/components/admin/security/security-dashboard").then(mod => ({ default: mod.SecurityDashboard })),
     3, // 3 tentativas
 );
 
@@ -164,7 +164,7 @@ export function CustomVirtualScrollExample() {
             >
                 <div style={{ height: `${totalHeight}px`, position: "relative" }}>
                     {virtualItems.map(({ index, data, style }) => (
-                        <div key={index} style={style} className="border-b px-4 py-2">
+                        <div key={index} style={style as any} className="border-b px-4 py-2">
                             <p className="font-semibold">{data.name}</p>
                             <p className="text-sm text-muted-foreground">ID: {data.id}</p>
                         </div>

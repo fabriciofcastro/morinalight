@@ -50,6 +50,7 @@ export function CertificationsBanner() {
       </div>
 
       {/* CSS for shine animation */}
+      {/* @ts-ignore */}
       <style jsx>{`
         @keyframes shine {
           0% {

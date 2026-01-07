@@ -9,13 +9,16 @@ import { usePathname, useSearchParams } from "next/navigation";
  */
 export function usePerformanceMonitoring(componentName: string) {
     useEffect(() => {
-        const transaction = Sentry.startSpan({
-            name: `Mount: ${componentName}`,
-            op: "ui.mount",
-        }, () => { });
+        // Using startInactiveSpan for manual timing if supported, or just logging.
+        // For simple component mount tracking, we can just leave a breadcrumb or simpler span.
+
+        // Fix: startSpan executes callback immediately.
+        // To track mount duration, we can capture start time.
+        const start = performance.now();
 
         return () => {
-            transaction?.end();
+            const duration = performance.now() - start;
+            // Optionally log duration
         };
     }, [componentName]);
 }

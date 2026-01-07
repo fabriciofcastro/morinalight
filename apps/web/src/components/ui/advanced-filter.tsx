@@ -1,8 +1,7 @@
 "use client"
 
-import * as React from "react"
-import { X, Plus, Save, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -12,9 +11,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { DateRangePicker } from "@/components/ui/date-range-picker"
-import { DateRange } from "react-day-picker"
 import { cn } from "@/lib/utils"
+import { Filter, Plus, Save, X } from "lucide-react"
+import * as React from "react"
+import { DateRange } from "react-day-picker"
 
 export interface FilterField {
     id: string
@@ -55,7 +55,7 @@ export function AdvancedFilter({
     className,
 }: AdvancedFilterProps) {
     const [filterValues, setFilterValues] = React.useState<FilterValue[]>(values)
-    const [activeFilters, setActiveFilters] = React.useState<string[]>([])
+    const [activeFilters, setActiveFilters] = React.useState<string[]>(values.map(v => v.fieldId))
 
     // Update internal state when external values change
     React.useEffect(() => {

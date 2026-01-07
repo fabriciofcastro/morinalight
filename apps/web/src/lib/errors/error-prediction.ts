@@ -101,7 +101,7 @@ export class ErrorPredictionSystem {
         const errorGroups = errorAggregator.getTopGroups(10);
         for (const group of errorGroups) {
             const recentErrors = group.errors.filter(
-                (e) => Date.now() - new Date(e.timestamp || 0).getTime() < 300000, // Últimos 5 min
+                (e) => Date.now() - new Date((e as any).timestamp || 0).getTime() < 300000, // Últimos 5 min
             );
 
             if (recentErrors.length > 5) {

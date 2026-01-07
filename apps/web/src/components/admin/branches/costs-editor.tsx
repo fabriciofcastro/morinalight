@@ -1,18 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { DollarSign, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
+import { AlertTriangle, DollarSign, TrendingDown, TrendingUp } from "lucide-react";
 import {
-    BarChart,
     Bar,
+    BarChart,
+    CartesianGrid,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
     XAxis,
     YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    LineChart,
-    Line,
 } from "recharts";
 
 interface CostsEditorProps {
@@ -49,7 +48,7 @@ export function CostsEditor({ value, onChange }: CostsEditorProps) {
         value: value[cat.key] || 0,
     })).filter(item => item.value > 0);
 
-    const variation = total > 0 ? ((total - historicalData[historicalData.length - 2].total) / historicalData[historicalData.length - 2].total) * 100 : 0;
+    const variation = total > 0 ? ((total - historicalData[historicalData.length - 2]!.total) / historicalData[historicalData.length - 2]!.total) * 100 : 0;
 
     return (
         <div className="space-y-6">
@@ -79,10 +78,10 @@ export function CostsEditor({ value, onChange }: CostsEditorProps) {
                     {categoryData.length > 0 ? (
                         <>
                             <p className="text-2xl font-bold text-white mb-1">
-                                {categoryData.reduce((max, cat) => cat.value > max.value ? cat : max, categoryData[0]).name}
+                                {categoryData.reduce((max, cat) => cat.value > max.value ? cat : max, categoryData[0]!).name}
                             </p>
                             <p className="text-sm text-white/60">
-                                R$ {categoryData.reduce((max, cat) => cat.value > max.value ? cat : max, categoryData[0]).value.toLocaleString("pt-BR")}
+                                R$ {categoryData.reduce((max, cat) => cat.value > max.value ? cat : max, categoryData[0]!).value.toLocaleString("pt-BR")}
                             </p>
                         </>
                     ) : (
@@ -117,7 +116,7 @@ export function CostsEditor({ value, onChange }: CostsEditorProps) {
                             label={category.label}
                             type="number"
                             value={value[category.key] || 0}
-                            onChange={(e) =>
+                            onChange={(e: any) =>
                                 onChange({ ...value, [category.key]: Number(e.target.value) })
                             }
                             placeholder="0.00"

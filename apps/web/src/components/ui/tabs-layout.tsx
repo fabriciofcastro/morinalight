@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 interface Tab {
     id: string;
@@ -17,7 +17,8 @@ interface TabsLayoutProps {
 }
 
 export function TabsLayout({ tabs, children, className }: TabsLayoutProps) {
-    const [activeTab, setActiveTab] = useState(tabs[0].id);
+    const defaultTab = tabs[0]?.id || "";
+    const [activeTab, setActiveTab] = useState(defaultTab);
 
     return (
         <div className={cn("space-y-6", className)}>

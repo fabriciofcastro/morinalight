@@ -44,7 +44,7 @@ export function AnimatedParticles() {
         size: 3 + seededRandom(seed + 2) * 6,
         duration: 12 + seededRandom(seed + 3) * 18,
         delay: seededRandom(seed + 4) * 5,
-        color: colors[Math.floor(seededRandom(seed + 5) * colors.length)],
+        color: colors[Math.floor(seededRandom(seed + 5) * colors.length)]!,
       };
     });
   }, []);

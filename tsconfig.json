@@ -6,6 +6,10 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
     "baseUrl": ".",
     "paths": {
       "@morina/ui": [

@@ -1,54 +1,54 @@
 "use client";
 
 import { Button, GlassCard, Input, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  AlertTriangle,
-  Building2,
-  CheckCircle2,
-  ChevronRight,
-  Download,
-  Edit,
-  FolderTree,
-  Plus,
-  RefreshCw,
-  Search,
-  Shield,
-  Trash2,
-  Upload,
-  Users,
-  X,
-  XCircle,
+    AlertTriangle,
+    ArrowLeftRight,
+    Building2,
+    CheckCircle2,
+    ChevronRight,
+    Download,
+    Edit,
+    FolderTree,
+    Plus,
+    RefreshCw,
+    Search,
+    Shield,
+    Trash2,
+    Users,
+    X,
+    XCircle
 } from "lucide-react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { DateRangePicker, type DateRangePreset } from "@/components/dashboard/DateRangePicker";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import {
-  OrganizationTree,
-  type DepartmentNode,
-  type SubdepartmentNode,
-  type PositionNode,
-  type SectorNode,
+    OrganizationTree,
+    type DepartmentNode,
+    type PositionNode,
+    type SectorNode,
+    type SubdepartmentNode,
 } from "@/components/organizational-structure/organization-tree";
 import { OrganizationalToolbar } from "@/components/organizational-structure/OrganizationalToolbar";
-import { OrganizationalAuditPanel } from "@/features/organizational-structure/components/Panels/AuditPanel";
-import { ImportExportPanel } from "@/features/organizational-structure/components/Panels/ImportExportPanel";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { OrgTree } from "@/features/organizational-structure/components/Tree/OrgTree";
 import { DepartmentForm } from "@/features/organizational-structure/components/Forms/DepartmentForm";
-import { SectorForm } from "@/features/organizational-structure/components/Forms/SectorForm";
 import { PositionForm } from "@/features/organizational-structure/components/Forms/PositionForm";
-import { Department, Sector, Subdepartment, Position } from "@morina/organizational-structure-domain";
-import { organizationalService } from "@/features/organizational-structure/services/OrganizationalService";
-import { OverviewPanel } from "@/features/organizational-structure/components/Panels/OverviewPanel";
-import { AdvancedMetricsPanel } from "@/features/organizational-structure/components/Panels/AdvancedMetricsPanel";
-import { PredictiveInsightsPanel } from "@/features/organizational-structure/components/Panels/PredictiveInsightsPanel";
+import { SectorForm } from "@/features/organizational-structure/components/Forms/SectorForm";
 import { ActivityFeedPanel } from "@/features/organizational-structure/components/Panels/ActivityFeedPanel";
+import { AdvancedMetricsPanel } from "@/features/organizational-structure/components/Panels/AdvancedMetricsPanel";
+import { OrganizationalAuditPanel } from "@/features/organizational-structure/components/Panels/AuditPanel";
 import { ComparisonPanel } from "@/features/organizational-structure/components/Panels/ComparisonPanel";
-import { DateRangePicker, type DateRangePreset } from "@/components/dashboard/DateRangePicker";
-import { generatePDFReport } from "@/lib/reports/pdf-generator";
+import { ImportExportPanel } from "@/features/organizational-structure/components/Panels/ImportExportPanel";
+import { OverviewPanel } from "@/features/organizational-structure/components/Panels/OverviewPanel";
+import { PredictiveInsightsPanel } from "@/features/organizational-structure/components/Panels/PredictiveInsightsPanel";
+import { OrgTree } from "@/features/organizational-structure/components/Tree/OrgTree";
+import { organizationalService } from "@/features/organizational-structure/services/OrganizationalService";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { generateExcelReport } from "@/lib/reports/excel-generator";
+import { generatePDFReport } from "@/lib/reports/pdf-generator";
+import { Department, Position, Sector, Subdepartment } from "@morina/organizational-structure-domain";
 
 // Local types removed in favor of Domain types
 
@@ -1508,6 +1508,7 @@ export function OrganizationalCommandCenter() {
                   departments={departments}
                   sectors={sectors}
                   positions={positions}
+                  members={members}
                 />
               ) : tab === "members" ? (
                 <div className="space-y-3">
@@ -1879,7 +1880,7 @@ export function OrganizationalCommandCenter() {
                     await loadAll();
                   }}
                 />
-              ) : (
+              ) : selected ? (
                 <MovePanel
                   selected={selected}
                   departments={departments}
@@ -1890,7 +1891,7 @@ export function OrganizationalCommandCenter() {
                     await loadAll();
                   }}
                 />
-              )}
+              ) : null}
             </div>
           </GlassCard>
         </div>

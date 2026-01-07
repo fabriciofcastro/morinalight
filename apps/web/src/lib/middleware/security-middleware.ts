@@ -4,13 +4,20 @@
  * Sistema de middleware modular para segurança de rotas API
  */
 
-import { NextRequest, NextResponse, NextFetchEvent } from "next/server";
-import { logger } from "@/lib/observability";
-import { intrusionDetector } from "@/lib/security/intrusion-detection";
 import { verifyAccessToken } from "@/lib/auth/jwt";
-import { userRepository } from "@/lib/repositories";
+import { logger } from "@/lib/observability";
+import { getRateLimitConfig } from "@/lib/rate-limit/rate-limit-config";
 import { redisRateLimiter } from "@/lib/rate-limit/redis-rate-limiter";
-import { getRateLimitConfig, getRateLimitKey } from "@/lib/rate-limit/rate-limit-config";
+import { intrusionDetector } from "@/lib/security/intrusion-detection";
+import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+
+export interface AuthenticatedUser {
+    id: string;
+    email: string;
+    role: string;
+}
+
+export type AuthenticatedRequest = NextRequest & { user: AuthenticatedUser };
 
 export type MiddlewareContext = NextFetchEvent | { params?: Record<string, string | string[]> } | unknown;
 
@@ -57,10 +64,12 @@ export function authMiddleware(): MiddlewareFunction {
             // Verificar JWT
             const payload = verifyAccessToken(authToken);
 
-            // Buscar usuário
-            const user = await userRepository.findById(payload.userId);
+            // Buscar usuário via DI
+            const container = getContainer();
+            const userRepository = container.resolve<IUserRepository>("UserRepository");
+            const userOption = await userRepository.findById(payload.userId);
 
-            if (!user) {
+            if (!isSome(userOption)) {
                 logger.warn("User not found for valid token", {
                     userId: payload.userId,
                 });
@@ -71,27 +80,13 @@ export function authMiddleware(): MiddlewareFunction {
                 );
             }
 
-            // Verificar se usuário está bloqueado
-            if (user.blockedUntil && new Date(user.blockedUntil) > new Date()) {
-                logger.warn("Blocked user attempted access", {
-                    userId: user.id,
-                    blockedUntil: user.blockedUntil,
-                });
-
-                return NextResponse.json(
-                    {
-                        error: "Account temporarily blocked",
-                        blockedUntil: user.blockedUntil,
-                    },
-                    { status: 403 }
-                );
-            }
+            const user = userOption;
 
             // Adicionar usuário ao contexto (para próximos middlewares)
             (request as any).user = {
                 id: user.id,
-                email: user.email,
-                role: user.role,
+                email: user.email.getValue(),
+                role: user.role.getValue(),
             };
 
             return null; // Autenticação bem-sucedida

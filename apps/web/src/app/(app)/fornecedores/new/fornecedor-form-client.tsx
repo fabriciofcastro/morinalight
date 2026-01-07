@@ -1,33 +1,22 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  Building2,
-  Save,
-  ArrowLeft,
-  Upload,
-  FileText,
-  Mail,
-  Phone,
-  MapPin,
-  Globe,
-  CreditCard,
-  AlertCircle,
-  CheckCircle2,
-  XCircle,
-  Search,
-  Plus,
-  Trash2,
-} from "lucide-react";
-import { useCallback, useEffect, useState, useTransition, useMemo, useId } from "react";
-import { useRouter } from "next/navigation";
 import { notificationCenter } from "@/components/notifications/notification-center";
-import { useSupplier } from "@/hooks/use-suppliers";
-import type { CreateSupplierInput } from "@/lib/api/suppliers";
-import { motion } from "framer-motion";
-import { fichasCustoApi } from "@/lib/api/fichas-custo";
-import { useViaCep } from "@/hooks/use-viacep";
 import { useCnpj } from "@/hooks/use-cnpj";
+import { useSupplier } from "@/hooks/use-suppliers";
+import { useViaCep } from "@/hooks/use-viacep";
+import type { CreateSupplierInput } from "@/lib/api/suppliers";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Building2,
+  FileText,
+  MapPin,
+  Save,
+  Search
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useId, useState, useTransition } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -42,7 +31,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing
@@ -58,6 +47,7 @@ const FuturisticInput = ({
   id,
   error = false,
   errorMessage,
+  className,
   ...props 
 }: { 
   label: string;
@@ -65,7 +55,7 @@ const FuturisticInput = ({
   id?: string;
   error?: boolean;
   errorMessage?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>) => {
+} & React.ComponentPropsWithoutRef<"input">) => {
   const generatedId = useId();
   const inputId = id || generatedId;
   const [showTooltip, setShowTooltip] = useState(false);
@@ -79,12 +69,12 @@ const FuturisticInput = ({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <input
           id={inputId}
-          {...props}
+          {...(props as any)}
           onFocus={() => {
             setShowTooltip(error && !!errorMessage);
           }}
           onBlur={() => setShowTooltip(false)}
-          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300`}
+          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 ${className || ""}`}
           aria-invalid={error}
           aria-describedby={error && errorMessage ? `${inputId}-error` : undefined}
         />
@@ -111,6 +101,7 @@ const FuturisticSelect = ({
   error = false,
   errorMessage,
   children, 
+  className,
   ...props 
 }: { 
   label: string;
@@ -119,7 +110,7 @@ const FuturisticSelect = ({
   error?: boolean;
   errorMessage?: string;
   children: React.ReactNode;
-} & React.SelectHTMLAttributes<HTMLSelectElement>) => {
+} & React.ComponentPropsWithoutRef<"select">) => {
   const generatedId = useId();
   const selectId = id || generatedId;
   const [showTooltip, setShowTooltip] = useState(false);
@@ -133,10 +124,10 @@ const FuturisticSelect = ({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <select
           id={selectId}
-          {...props}
+          {...(props as any)}
           onFocus={() => setShowTooltip(error && !!errorMessage)}
           onBlur={() => setShowTooltip(false)}
-          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer`}
+          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer ${className || ""}`}
           aria-invalid={error}
           aria-describedby={error && errorMessage ? `${selectId}-error` : undefined}
         >
@@ -164,6 +155,7 @@ const FuturisticTextarea = ({
   id,
   error = false,
   errorMessage,
+  className,
   ...props 
 }: { 
   label: string;
@@ -171,7 +163,7 @@ const FuturisticTextarea = ({
   id?: string;
   error?: boolean;
   errorMessage?: string;
-} & React.TextareaHTMLAttributes<HTMLTextAreaElement>) => {
+} & React.ComponentPropsWithoutRef<"textarea">) => {
   const generatedId = useId();
   const textareaId = id || generatedId;
   return (
@@ -183,8 +175,8 @@ const FuturisticTextarea = ({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <textarea
           id={textareaId}
-          {...props}
-          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 resize-none`}
+          {...(props as any)}
+          className={`relative w-full px-4 py-3 rounded-lg border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 resize-none ${className || ""}`}
         />
       </div>
     </div>
@@ -467,7 +459,7 @@ export function FornecedorFormClient() {
         type: "error",
         title: "Erro de validação",
         message: validacao.erros.length === 1 
-          ? validacao.erros[0] 
+          ? validacao.erros[0] || "" 
           : `${validacao.erros.length} erros encontrados: ${validacao.erros.slice(0, 3).join(", ")}${validacao.erros.length > 3 ? "..." : ""}`,
       });
       return;

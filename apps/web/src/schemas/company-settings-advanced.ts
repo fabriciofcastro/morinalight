@@ -59,7 +59,7 @@ const addressSchema = z.object({
 
 // Schema de certificado digital
 const digitalCertificateSchema = z.object({
-  type: z.enum(["A1", "A3"], { required_error: "Tipo de certificado é obrigatório" }),
+  type: z.enum(["A1", "A3"]),
   serialNumber: z.string().optional(),
   issuer: z.string().optional(),
   validFrom: z.string().date().optional(),
@@ -183,9 +183,7 @@ const themeSchema = z.object({
 
 // Schema de configurações fiscais
 const fiscalSchema = z.object({
-  taxRegime: z.enum(["SIMPLES", "PRESUMIDO", "REAL", "MEI"], {
-    required_error: "Regime tributário é obrigatório",
-  }),
+  taxRegime: z.enum(["SIMPLES", "PRESUMIDO", "REAL", "MEI"]),
   icmsRate: z.number().min(0).max(100).default(0),
   issRate: z.number().min(0).max(100).default(0),
   pisRate: z.number().min(0).max(100).optional(),
@@ -205,9 +203,7 @@ export const companySettingsSchema = z.object({
   cnpj: cnpjSchema,
   
   // Dados corporativos
-  companySize: z.enum(["MEI", "ME", "EPP", "MEDIO", "GRANDE"], {
-    required_error: "Porte da empresa é obrigatório",
-  }),
+  companySize: z.enum(["MEI", "ME", "EPP", "MEDIO", "GRANDE"]),
   foundedAt: z.string().date("Data de fundação inválida"),
   cnaePrincipal: z.string().optional(),
   cnaesSecundarios: z.array(z.string()).optional(),

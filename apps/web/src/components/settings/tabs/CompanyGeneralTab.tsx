@@ -250,7 +250,7 @@ export function CompanyGeneralTab() {
           <div className="grid gap-6 md:grid-cols-2">
             {/* Logo Upload */}
             <div>
-              <Label>Logo da Empresa</Label>
+              <Label htmlFor="logoUpload">Logo da Empresa</Label>
               <div className="mt-2 flex flex-col gap-3">
                 {logoPreview ? (
                   <div className="relative">
@@ -275,6 +275,7 @@ export function CompanyGeneralTab() {
                   <label className="flex h-32 w-32 cursor-pointer items-center justify-center border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors">
                     <Upload className="h-6 w-6 text-white/40" />
                     <input
+                      id="logoUpload"
                       type="file"
                       accept="image/png,image/jpeg,image/svg+xml"
                       onChange={handleLogoUpload}

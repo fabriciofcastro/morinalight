@@ -96,11 +96,13 @@ export function useKeyboardNavigation(options: KeyboardNavigationOptions = {}) {
   useEffect(() => {
     if (attachToElement && elementRef.current) {
       const element = elementRef.current;
-      element.addEventListener("keydown", handleKeyDown as EventListener);
+      element.addEventListener("keydown", handleKeyDown as unknown as EventListener);
       return () => {
-        element.removeEventListener("keydown", handleKeyDown as EventListener);
+        element.removeEventListener("keydown", handleKeyDown as unknown as EventListener);
       };
+
     }
+    return undefined;
   }, [attachToElement, handleKeyDown]);
 
   // Retorna handler para usar em elementos React
@@ -126,8 +128,8 @@ export function useFocusTrap(isActive: boolean = false) {
 
     if (focusableElements.length === 0) return;
 
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
+    const firstElement = focusableElements[0]!;
+    const lastElement = focusableElements[focusableElements.length - 1]!;
 
     const handleTabKey = (e: KeyboardEvent) => {
       if (e.key !== "Tab") return;
@@ -174,4 +176,3 @@ export function useSkipLink(targetId: string = "main-content") {
 
   return { handleSkip };
 }
-

@@ -1,50 +1,66 @@
 "use client";
 
-import { Button, GlassCard } from "@morina/ui";
-import {
-  UserPlus,
-  ArrowLeft,
-  Save,
-  Eye,
-  EyeOff,
-  Building2,
-  Mail,
-  User,
-  Upload,
-  X,
-  Key,
-  Search,
-  Sparkles,
-  ChevronDown,
-  ChevronUp,
-  Shield,
-  Copy,
-  RefreshCw,
-  Calendar,
-  Phone,
-  FileText,
-  CheckCircle2,
-} from "lucide-react";
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useUser, type CreateUserRequest } from "@/hooks/use-user";
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
+import { FileUpload } from "@/components/ui/file-upload";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { useUser, type CreateUserRequest } from "@/hooks/use-user";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { companySettingsAPI } from "@/lib/api/company-settings";
 import { organizationalStructureApi } from "@/lib/api/organizational-structure";
 import { permissionsApi } from "@/lib/api/permissions";
-import { companySettingsAPI } from "@/lib/api/company-settings";
 import { useKeyboardShortcuts } from "@/lib/hooks/use-keyboard-shortcuts";
 import { triggerConfetti } from "@/lib/utils/confetti";
-import { Progress } from "@morina/ui";
-import { StandardFormPage } from "@/components/templates";
-import { useAutoSave } from "@/hooks/useAutoSave";
-import { FileUpload } from "@/components/ui/file-upload";
-import { Can } from "@/lib/auth";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { Button, GlassCard, Progress } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Building2,
+  Calendar,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Eye,
+  EyeOff,
+  FileText,
+  Key,
+  Mail,
+  Phone,
+  RefreshCw,
+  Save,
+  Search,
+  Shield,
+  Sparkles,
+  Upload,
+  User,
+  UserPlus,
+  X
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+interface UserFormData {
+  displayName: string;
+  email: string;
+  password?: string;
+  confirmPassword?: string;
+  status: "active" | "inactive" | "suspended" | "pending";
+  departmentId?: string;
+  sectorId?: string;
+  positionId?: string;
+  cpf?: string;
+  phone?: string;
+  birthDate?: string;
+  admissionDate?: string;
+  observations?: string;
+  requirePasswordChange?: boolean;
+  sendWelcomeEmail?: boolean;
+  photoUrl?: string;
+  initialPermissions?: string[];
+}
 
 interface Department {
   id: string;
@@ -213,7 +229,7 @@ export function UsersFormClient() {
 
   const handleRestoreDraft = useCallback(() => {
     if (pendingDraftData) {
-      setFormData(pendingDraftData);
+      setFormData(pendingDraftData as any);
       if (pendingDraftData.photoUrl) {
         setPhotoPreview(pendingDraftData.photoUrl);
       }
@@ -548,7 +564,7 @@ export function UsersFormClient() {
     if (!acc[perm.module]) {
       acc[perm.module] = [];
     }
-    acc[perm.module].push(perm);
+    acc[perm.module]!.push(perm);
     return acc;
   }, {} as Record<string, Permission[]>);
 

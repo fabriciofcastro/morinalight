@@ -44,6 +44,7 @@ export async function createServer() {
     }
   }
 
+  // @ts-expect-error - Fastify websocket plugin type compatibility issue
   await app.register(websocket, {
     options: {
       maxPayload: 1024 * 256,
@@ -58,6 +59,7 @@ export async function createServer() {
     timestamp: new Date().toISOString(),
   }));
 
+  // @ts-expect-error - Fastify websocket route options type compatibility
   app.get("/ws", { websocket: true }, (connection: unknown, request: FastifyRequest) => {
     try {
       const query = connectionSchema.parse(request.query);

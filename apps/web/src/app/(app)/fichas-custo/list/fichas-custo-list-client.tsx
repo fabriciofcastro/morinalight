@@ -1,38 +1,42 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  FileText,
-  Plus,
-  Search,
-  Eye,
-  Edit,
-  FileCheck,
-  XCircle,
-  Clock,
-  Grid,
-  List as ListIcon,
-  Filter,
-  Calendar,
-  X,
-  Download,
-  CheckCircle2,
-  Trash2,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useFichasCusto } from "@/hooks/use-fichas-custo";
-import type { FichaCusto, StatusFichaCusto } from "@/lib/api/fichas-custo";
-import { motion } from "framer-motion";
-import { InlineLoader } from "@/components/ui/PageLoader";
-import { useDebounce } from "@/hooks/use-debounce";
-import { FichaGridSkeleton, FichaListSkeleton } from "@/components/ui/Skeleton";
-import { exportFichasToCSV, exportFichasToExcel, exportFichasToJSON, exportFichasToPDF } from "@/lib/utils/export-fichas-custo";
-import { notificationCenter } from "@/components/notifications/notification-center";
 import { DuplicarFichaModal } from "@/components/fichas-custo/DuplicarFichaModal";
 import { FiltrosPresetsModal } from "@/components/fichas-custo/FiltrosPresetsModal";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { Copy } from "lucide-react";
+import { FichaGridSkeleton, FichaListSkeleton } from "@/components/ui/Skeleton";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useFichasCusto } from "@/hooks/use-fichas-custo";
+import type { FichaCusto, FiltroFichasCusto, StatusFichaCusto } from "@/lib/api/fichas-custo";
+import { exportFichasToCSV, exportFichasToExcel, exportFichasToJSON, exportFichasToPDF } from "@/lib/utils/export-fichas-custo";
+import {
+  Badge,
+  BulkActionsBar,
+  Button,
+  DataTable,
+  ListPageLayout,
+  StatCard,
+  StatsGroup,
+  ViewToggle,
+  cn,
+} from "@morina/ui";
+import type { ColumnDef } from "@tanstack/react-table";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  CheckCircle2,
+  Clock,
+  Copy,
+  Download,
+  Edit,
+  Eye,
+  FileText,
+  Filter,
+  Plus,
+  Trash2,
+  XCircle
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -47,7 +51,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing
@@ -102,7 +106,130 @@ export function FichasCustoListClient() {
   const [fichaParaDuplicar, setFichaParaDuplicar] = useState<FichaCusto | null>(null);
   const [mostrarPresets, setMostrarPresets] = useState(false);
   const [excluirEmLoteAberto, setExcluirEmLoteAberto] = useState(false);
-  const { fichas, total, totalPaginas, loading, listar } = useFichasCusto(orgId);
+  const { fichas: fichasRaw, total, totalPaginas, loading, listar } = useFichasCusto(orgId);
+
+  // Ordenar fichas de forma crescente
+  const fichas = useMemo(() => {
+    const sorted = [...fichasRaw];
+
+    switch (ordenacao) {
+      case "data":
+        return sorted.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case "valor":
+        return sorted.sort((a, b) => a.totalCustos - b.totalCustos);
+      case "nome":
+        return sorted.sort((a, b) => a.nomePeca.localeCompare(b.nomePeca));
+      default:
+        return sorted;
+    }
+  }, [fichasRaw, ordenacao]);
+
+  const columns = useMemo<ColumnDef<FichaCusto>[]>(
+    () => [
+      {
+        id: "selection",
+        header: ({ table }) => (
+          <input
+            type="checkbox"
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+            className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 checked:bg-blue-500"
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={(e) => row.toggleSelected(!!e.target.checked)}
+            className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 checked:bg-blue-500"
+          />
+        ),
+      },
+      {
+        accessorKey: "numeroSequencial",
+        header: "#",
+        cell: ({ row }) => <span className="font-mono text-white/60">#{row.original.numeroSequencial}</span>,
+      },
+      {
+        accessorKey: "nomePeca",
+        header: "Peça",
+        cell: ({ row }) => (
+          <div className="flex flex-col">
+            <span className="font-medium text-white">{row.original.nomePeca}</span>
+            <span className="text-xs text-white/40">Ref: {row.original.referenciaPeca}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.original.status;
+          let variant: "success" | "warning" | "danger" | "secondary" = "secondary";
+          let Icon = Clock;
+
+          if (status === "aprovada") {
+            variant = "success";
+            Icon = CheckCircle2;
+          } else if (status === "enviada_para_conferencia") {
+            variant = "warning";
+            Icon = Clock;
+          } else if (status === "reprovada") {
+            variant = "danger";
+            Icon = XCircle;
+          }
+
+          return (
+            <Badge variant={variant} icon={<Icon className="h-3 w-3" />} size="sm">
+              {status.replace(/_/g, " ")}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "totalCustos",
+        header: "Custo Total",
+        cell: ({ row }) => formatCurrency(row.original.totalCustos),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Data",
+        cell: ({ row }) => formatDate(row.original.createdAt),
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push(`/fichas-custo/${row.original.id}`)}
+              className="h-8 w-8 p-0"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push(`/fichas-custo/${row.original.id}/edit`)}
+              className="h-8 w-8 p-0"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFichaParaDuplicar(row.original)}
+              className="h-8 w-8 p-0 text-purple-400"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+        )
+      }
+    ],
+    [router]
+  );
 
   // Stats
   const stats = {
@@ -114,7 +241,7 @@ export function FichasCustoListClient() {
   const loadFichas = useCallback(async () => {
     if (!orgId) return;
 
-    const filtro: any = {
+    const filtro: FiltroFichasCusto = {
       pagina,
       tamanhoPagina: 20,
     };
@@ -288,263 +415,180 @@ export function FichasCustoListClient() {
   };
 
   return (
-    <div className="relative min-h-screen p-6 space-y-8">
-      {/* Header Futurista */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.15)] via-transparent to-[hsl(var(--accent)/0.15)] blur-3xl -z-10" />
-
-        <div className="relative flex items-center justify-between p-8 rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/[0.02] to-transparent backdrop-blur-xl shadow-2xl">
-          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[hsl(var(--primary)/0.6)]" />
-          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-[hsl(var(--primary)/0.6)]" />
-
-          <div className="relative z-10 flex-1">
-            <div className="flex items-center gap-4 mb-3">
-              <FileText className="h-8 w-8 text-[hsl(var(--primary))]" />
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent tracking-tight">
-                  Fichas de Custo de Aviamento
-                </h1>
-                <p className="text-sm text-white/60 font-medium mt-1">
-                  Sistema Avançado de Gestão e Controle de Custos
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-6 mt-4">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                <FileCheck className="h-4 w-4 text-green-400" />
-                <span className="text-sm font-medium text-white/80">{stats.concluidas} Concluídas</span>
-              </div>
-              <div className="h-4 w-px bg-white/20" />
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                <XCircle className="h-4 w-4 text-red-400" />
-                <span className="text-sm font-medium text-white/80">{stats.canceladas} Canceladas</span>
-              </div>
-              <div className="h-4 w-px bg-white/20" />
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
-                <Clock className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-medium text-white/80">{stats.aguardandoInsumos} Aguardando</span>
-              </div>
-            </div>
+    <ListPageLayout
+      header={{
+        icon: FileText,
+        title: "Fichas de Custo de Aviamento",
+        description: "Sistema Avançado de Gestão e Controle de Custos",
+        breadcrumbs: [
+          { label: "Home", href: "/" },
+          { label: "Fichas de Custo", href: "/fichas-custo/list" },
+        ],
+        stats: (
+          <StatsGroup layout="horizontal" showSeparators>
+            <StatCard
+              icon={CheckCircle2}
+              label="Concluídas"
+              value={stats.concluidas}
+              variant="success"
+              subtitle="Fichas aprovadas"
+            />
+            <StatCard
+              icon={Clock}
+              label="Aguardando"
+              value={stats.aguardandoInsumos}
+              variant="warning"
+              subtitle="Em rascunho"
+            />
+            <StatCard
+              icon={XCircle}
+              label="Canceladas"
+              value={stats.canceladas}
+              variant="danger"
+              subtitle="Reprovadas"
+            />
+          </StatsGroup>
+        ),
+      }}
+      controls={{
+        searchValue: search,
+        onSearchChange: (val) => setSearch(val),
+        searchPlaceholder: "Buscar fichas...",
+        filterButton: (
+          <div className="flex gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as FiltroStatus)}
+              className="px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white text-sm focus:outline-none focus:border-blue-500 appearance-none cursor-pointer"
+            >
+              <option value="all" className="bg-[#1a1f3a]">Status</option>
+              <option value="rascunho" className="bg-[#1a1f3a]">Rascunho</option>
+              <option value="enviada_para_conferencia" className="bg-[#1a1f3a]">Conferência</option>
+              <option value="aprovada" className="bg-[#1a1f3a]">Aprovada</option>
+              <option value="reprovada" className="bg-[#1a1f3a]">Reprovada</option>
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn("gap-2", showAdvancedFilters && "bg-blue-500/20")}
+              onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            >
+              <Filter className="h-4 w-4" />
+              Filtros
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 text-purple-400 border-purple-500/30"
+              onClick={() => setMostrarPresets(true)}
+            >
+              <Filter className="h-4 w-4" />
+              Presets
+            </Button>
           </div>
-        </div>
-      </motion.div>
-
-      {/* Barra de Busca e Filtros */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="relative flex-1 max-w-md">
-            <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-            <div className="relative flex items-center gap-2 px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 focus-within:border-blue-500">
-              <Search className="h-4 w-4 text-white/60" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar fichas..."
-                className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-white/30"
-              />
-            </div>
+        ),
+        viewToggle: (
+          <ViewToggle
+            value={viewMode}
+            onChange={setViewMode}
+          />
+        ),
+        actions: (
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleBulkExport}
+              disabled={selectedFichas.size === 0}
+            >
+              <Download className="h-4 w-4" />
+              Exportar
+            </Button>
+            <Button
+              onClick={() => router.push("/fichas-custo/new")}
+              className="gap-2 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] border-0"
+            >
+              <Plus className="h-4 w-4" />
+              Nova Ficha
+            </Button>
           </div>
-          <div className="flex gap-3 items-center">
-            <div className="relative group">
-              <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as FiltroStatus)}
-                className="relative px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer h-[48px]"
-              >
-                <option value="all" className="bg-[#1a1f3a]">Todos os Status</option>
-                <option value="rascunho" className="bg-[#1a1f3a]">Rascunho</option>
-                <option value="enviada_para_conferencia" className="bg-[#1a1f3a]">Enviada para Conferência</option>
-                <option value="aprovada" className="bg-[#1a1f3a]">Aprovada</option>
-                <option value="reprovada" className="bg-[#1a1f3a]">Reprovada</option>
-              </select>
-            </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                className={`bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4 ${showAdvancedFilters ? "bg-blue-500/20 border-blue-500/30" : ""}`}
-                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filtros
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                className="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-400 backdrop-blur-sm cursor-pointer h-[48px] px-4"
-                onClick={() => setMostrarPresets(true)}
-                title="Filtros salvos"
-              >
-                <Filter className="h-4 w-4 mr-2" />
-                Filtros Salvos
-              </Button>
-            </motion.div>
-            <div className="flex gap-2 border border-white/20 rounded-lg p-1 bg-white/5 backdrop-blur-sm">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  className={`cursor-pointer h-[40px] w-[40px] p-0 ${viewMode === "grid" ? "bg-blue-500/20 border-blue-500/30 text-blue-400" : "bg-transparent border-transparent text-white/60 hover:text-white"}`}
-                  onClick={() => setViewMode("grid")}
-                  aria-label="Visualização em grid"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  className={`cursor-pointer h-[40px] w-[40px] p-0 ${viewMode === "list" ? "bg-blue-500/20 border-blue-500/30 text-blue-400" : "bg-transparent border-transparent text-white/60 hover:text-white"}`}
-                  onClick={() => setViewMode("list")}
-                  aria-label="Visualização em lista"
-                >
-                  <ListIcon className="h-4 w-4" />
-                </Button>
-              </motion.div>
-            </div>
-            <div className="flex gap-2">
-              {fichas.length > 0 && (
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[48px] px-4"
-                    onClick={() => {
-                      const format = window.prompt("Escolha o formato:\n1 - CSV\n2 - Excel\n3 - PDF\n4 - JSON");
-                      try {
-                        if (format === "1") {
-                          exportFichasToCSV(fichas);
-                          notificationCenter.add({
-                            type: "success",
-                            title: "Exportação concluída",
-                            message: `${fichas.length} ficha(s) exportada(s) em CSV.`,
-                          });
-                        } else if (format === "2") {
-                          exportFichasToExcel(fichas);
-                          notificationCenter.add({
-                            type: "success",
-                            title: "Exportação concluída",
-                            message: `${fichas.length} ficha(s) exportada(s) em Excel.`,
-                          });
-                        } else if (format === "3") {
-                          exportFichasToPDF(fichas);
-                          notificationCenter.add({
-                            type: "info",
-                            title: "Exportação PDF",
-                            message: "Arquivo HTML gerado. Use 'Imprimir' no navegador e salve como PDF.",
-                          });
-                        } else if (format === "4") {
-                          exportFichasToJSON(fichas);
-                          notificationCenter.add({
-                            type: "success",
-                            title: "Exportação concluída",
-                            message: `${fichas.length} ficha(s) exportada(s) em JSON.`,
-                          });
-                        }
-                      } catch (error) {
-                        notificationCenter.add({
-                          type: "error",
-                          title: "Erro ao exportar",
-                          message: error instanceof Error ? error.message : "Erro desconhecido",
-                        });
-                      }
-                    }}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Exportar
-                  </Button>
-                </motion.div>
-              )}
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.6)] cursor-pointer h-[48px] px-4"
-                  onClick={() => router.push("/fichas-custo/new")}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nova Ficha
-                </Button>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-
+        ),
+        bulkActions: (
+          <BulkActionsBar
+            selectedCount={selectedFichas.size}
+            onCancel={() => setSelectedFichas(new Set())}
+            actions={[
+              {
+                label: "PDF/CSV",
+                icon: <Download className="h-4 w-4" />,
+                onClick: handleBulkExport,
+                variant: "outline",
+              },
+              {
+                label: "Excluir",
+                icon: <Trash2 className="h-4 w-4" />,
+                onClick: () => setExcluirEmLoteAberto(true),
+                variant: "destructive",
+              },
+            ]}
+          />
+        ),
+        hasSelection: selectedFichas.size > 0,
+      }}
+      pagination={{
+        total: total,
+        page: pagina,
+        pageSize: 20,
+        onPageChange: setPagina,
+      }}
+    >
+      <div className="space-y-6">
         {/* Filtros Avançados */}
-        {showAdvancedFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="p-4 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-sm"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-sm font-semibold text-white/90 flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filtros Avançados
-              </h4>
-              <button
-                onClick={() => setShowAdvancedFilters(false)}
-                className="text-white/60 hover:text-white transition-colors"
-                aria-label="Fechar filtros"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-white/70 mb-2">Data Início</label>
-                <div className="relative">
-                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-                  <div className="relative flex items-center gap-2 px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 focus-within:border-blue-500">
-                    <Calendar className="h-4 w-4 text-white/60" />
-                    <input
-                      type="date"
-                      value={filtroDataInicio}
-                      onChange={(e) => setFiltroDataInicio(e.target.value)}
-                      className="flex-1 bg-transparent border-none outline-none text-white text-sm"
-                    />
-                  </div>
+        <AnimatePresence>
+          {showAdvancedFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="p-6 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-sm overflow-hidden"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/70 uppercase">Início</label>
+                  <input
+                    type="date"
+                    value={filtroDataInicio}
+                    onChange={(e) => setFiltroDataInicio(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white text-sm"
+                  />
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-white/70 mb-2">Data Fim</label>
-                <div className="relative">
-                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
-                  <div className="relative flex items-center gap-2 px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 focus-within:border-blue-500">
-                    <Calendar className="h-4 w-4 text-white/60" />
-                    <input
-                      type="date"
-                      value={filtroDataFim}
-                      onChange={(e) => setFiltroDataFim(e.target.value)}
-                      className="flex-1 bg-transparent border-none outline-none text-white text-sm"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/70 uppercase">Fim</label>
+                  <input
+                    type="date"
+                    value={filtroDataFim}
+                    onChange={(e) => setFiltroDataFim(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white text-sm"
+                  />
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-white/70 mb-2">Coleção</label>
-                <div className="relative group">
-                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/70 uppercase">Coleção</label>
                   <select
                     value={filtroColecao}
                     onChange={(e) => setFiltroColecao(e.target.value)}
-                    className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer h-[48px]"
+                    className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white text-sm"
                   >
                     <option value="" className="bg-[#1a1f3a]">Todas</option>
                     <option value="inverno" className="bg-[#1a1f3a]">Inverno</option>
                     <option value="verao" className="bg-[#1a1f3a]">Verão</option>
                   </select>
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-white/70 mb-2">Ordenar por</label>
-                <div className="relative group">
-                  <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-white/70 uppercase">Ordenação</label>
                   <select
                     value={ordenacao}
                     onChange={(e) => setOrdenacao(e.target.value as "data" | "valor" | "nome")}
-                    className="relative w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer h-[48px]"
+                    className="w-full px-4 py-2 rounded-lg border border-white/20 bg-white/5 text-white text-sm"
                   >
                     <option value="data" className="bg-[#1a1f3a]">Data</option>
                     <option value="valor" className="bg-[#1a1f3a]">Valor</option>
@@ -552,269 +596,158 @@ export function FichasCustoListClient() {
                   </select>
                 </div>
               </div>
-            </div>
-            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-white/10">
-              <Button
-                className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[36px] px-4"
-                onClick={() => {
-                  setFiltroDataInicio("");
-                  setFiltroDataFim("");
-                  setFiltroColecao("");
-                  setOrdenacao("data");
-                }}
-              >
-                Limpar
-              </Button>
-              <Button
-                className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white border-0 cursor-pointer h-[36px] px-4"
-                onClick={() => {
-                  // Aplicar filtros
-                  void loadFichas();
-                }}
-              >
-                Aplicar
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </div>
+              <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-white/10">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setFiltroDataInicio("");
+                    setFiltroDataFim("");
+                    setFiltroColecao("");
+                    setOrdenacao("data");
+                  }}
+                >
+                  Limpar
+                </Button>
+                <Button size="sm" onClick={() => loadFichas()}>
+                  Aplicar Filtros
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Barra de Ações em Lote */}
-      {selectedFichas.size > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-xl border border-blue-500/30 bg-blue-500/10 backdrop-blur-sm flex items-center justify-between"
-        >
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-5 w-5 text-blue-400" />
-            <span className="text-sm font-medium text-white/90">
-              {selectedFichas.size} ficha{selectedFichas.size > 1 ? "s" : ""} selecionada{selectedFichas.size > 1 ? "s" : ""}
-            </span>
+        {loading ? (
+          viewMode === "grid" ? (
+            <FichaGridSkeleton count={6} />
+          ) : (
+            <FichaListSkeleton count={5} />
+          )
+        ) : fichas.length === 0 ? (
+          <div className="p-20 text-center rounded-xl border border-white/10 bg-white/[0.03]">
+            <FileText className="h-12 w-12 mx-auto text-white/20 mb-4" />
+            <h3 className="text-lg font-medium text-white/80">Nenhuma ficha encontrada</h3>
+            <p className="text-white/40 mt-1 max-w-xs mx-auto">
+              Tente ajustar seus filtros ou buscar por outro termo.
+            </p>
           </div>
-          <div className="flex gap-2">
-            <Button
-              className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[36px] px-4"
-              onClick={() => setSelectedFichas(new Set())}
-            >
-              Desmarcar
-            </Button>
-            <Button
-              className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 backdrop-blur-sm cursor-pointer h-[36px] px-4"
-              onClick={handleBulkExport}
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Exportar
-            </Button>
-            <Button
-              className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 backdrop-blur-sm cursor-pointer h-[36px] px-4"
-              onClick={() => setExcluirEmLoteAberto(true)}
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Excluir
-            </Button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Lista de Fichas */}
-      {loading ? (
-        viewMode === "grid" ? (
-          <FichaGridSkeleton count={6} />
-        ) : (
-          <FichaListSkeleton count={5} />
-        )
-      ) : fichas.length === 0 ? (
-        <div className="p-12 text-center rounded-xl border border-white/10 bg-white/[0.03]">
-          <FileText className="h-12 w-12 mx-auto text-white/30 mb-4" />
-          <p className="text-white/60">
-            {search || statusFilter !== "all"
-              ? "Nenhuma ficha encontrada com os filtros aplicados."
-              : "Nenhuma ficha cadastrada. Clique em 'Nova Ficha' para começar."}
-          </p>
-        </div>
-      ) : (
-        <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-3"}>
-          {fichas.map((ficha) => (
-            <motion.div
-              key={ficha.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`${viewMode === "grid" ? "p-6 rounded-xl border border-white/10 bg-white/[0.05] backdrop-blur-sm hover:bg-white/[0.08] transition-all" : "p-4 rounded-lg border border-white/10 bg-white/[0.05] backdrop-blur-sm hover:bg-white/[0.08] transition-all flex items-center gap-4"}`}
-            >
-              {viewMode === "grid" ? (
-                <>
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-2 flex-1">
-                      <input
-                        type="checkbox"
-                        checked={selectedFichas.has(ficha.id)}
-                        onChange={() => handleToggleSelect(ficha.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 checked:bg-blue-500 checked:border-blue-500 focus:ring-2 focus:ring-blue-500/50"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-semibold text-white/90">#{ficha.numeroSequencial}</h3>
-                          <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${getStatusBadgeStyle(ficha.status)}`}>
-                            {ficha.status.replace(/_/g, " ")}
-                          </span>
-                        </div>
-                        <h4 className="text-base font-medium text-white/80 mb-1">{ficha.nomePeca}</h4>
-                        <p className="text-sm text-white/60">
-                          Ref: {ficha.referenciaPeca}
-                          {ficha.categoria && ` • ${ficha.categoria}`}
-                        </p>
-                      </div>
-                    </div>
-                    {ficha.fotoPecaUrl && (
-                      <img
-                        src={ficha.fotoPecaUrl}
-                        alt={ficha.nomePeca}
-                        className="w-16 h-16 object-cover rounded border border-white/10"
-                      />
-                    )}
-                  </div>
-
-                  <div className="space-y-2 mb-4 text-sm text-white/70">
-                    <div className="flex justify-between">
-                      <span>Total de Custos:</span>
-                      <span className="font-semibold text-white/90">{formatCurrency(ficha.totalCustos)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Custo por Peça:</span>
-                      <span className="font-semibold text-white/90">{formatCurrency(ficha.custoFinalPeca)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Insumos:</span>
-                      <span className="font-semibold text-white/90">{ficha.insumos.length}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 pt-4 border-t border-white/10">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
-                      <Button
-                        className="w-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 backdrop-blur-sm cursor-pointer h-[40px]"
-                        onClick={() => router.push(`/fichas-custo/${ficha.id}`)}
+        ) : viewMode === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {fichas.map((ficha) => (
+              <motion.div
+                key={ficha.id}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={cn(
+                  "group relative p-6 rounded-xl border border-white/10 bg-white/[0.05] transition-all",
+                  "hover:bg-white/[0.08] hover:border-white/20",
+                  selectedFichas.has(ficha.id) && "border-blue-500/50 bg-blue-500/5"
+                )}
+                onClick={() => handleToggleSelect(ficha.id)}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono text-white/40 uppercase tracking-wider">
+                        #{ficha.numeroSequencial}
+                      </span>
+                      <Badge
+                        variant={
+                          ficha.status === "aprovada" ? "success" :
+                            ficha.status === "reprovada" ? "danger" :
+                              ficha.status === "enviada_para_conferencia" ? "warning" : "secondary"
+                        }
+                        size="sm"
                       >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Ver
-                      </Button>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
-                      <Button
-                        className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[40px]"
-                        onClick={() => router.push(`/fichas-custo/${ficha.id}/edit`)}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Editar
-                      </Button>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        className="bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 text-purple-400 backdrop-blur-sm cursor-pointer h-[40px] w-[40px] p-0"
-                        onClick={() => setFichaParaDuplicar(ficha)}
-                        title="Duplicar ficha"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </motion.div>
+                        {ficha.status.replace(/_/g, " ")}
+                      </Badge>
+                    </div>
+                    <h3 className="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">
+                      {ficha.nomePeca}
+                    </h3>
                   </div>
-                </>
-              ) : (
-                <>
-                  <input
-                    type="checkbox"
-                    checked={selectedFichas.has(ficha.id)}
-                    onChange={() => handleToggleSelect(ficha.id)}
-                    onClick={(e) => e.stopPropagation()}
-                    className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 checked:bg-blue-500 checked:border-blue-500 focus:ring-2 focus:ring-blue-500/50 flex-shrink-0"
-                  />
                   {ficha.fotoPecaUrl && (
                     <img
                       src={ficha.fotoPecaUrl}
                       alt={ficha.nomePeca}
-                      className="w-20 h-20 object-cover rounded border border-white/10 flex-shrink-0"
+                      className="w-16 h-16 object-cover rounded-lg border border-white/10"
                     />
                   )}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-white/90">#{ficha.numeroSequencial}</h3>
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium border ${getStatusBadgeStyle(ficha.status)}`}>
-                        {ficha.status.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                    <h4 className="text-base font-medium text-white/80 mb-1">{ficha.nomePeca}</h4>
-                    <p className="text-sm text-white/60 mb-2">
-                      Ref: {ficha.referenciaPeca}
-                      {ficha.categoria && ` • ${ficha.categoria}`}
-                    </p>
-                    <div className="flex items-center gap-6 text-sm text-white/70">
-                      <div>
-                        <span className="text-white/50">Total: </span>
-                        <span className="font-semibold text-white/90">{formatCurrency(ficha.totalCustos)}</span>
-                      </div>
-                      <div>
-                        <span className="text-white/50">Por Peça: </span>
-                        <span className="font-semibold text-white/90">{formatCurrency(ficha.custoFinalPeca)}</span>
-                      </div>
-                      <div>
-                        <span className="text-white/50">Insumos: </span>
-                        <span className="font-semibold text-white/90">{ficha.insumos.length}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 flex-shrink-0">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        className="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 backdrop-blur-sm cursor-pointer h-[40px] px-4"
-                        onClick={() => router.push(`/fichas-custo/${ficha.id}`)}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Ver
-                      </Button>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm cursor-pointer h-[40px] px-4"
-                        onClick={() => router.push(`/fichas-custo/${ficha.id}/edit`)}
-                      >
-                        <Edit className="h-4 w-4 mr-1" />
-                        Editar
-                      </Button>
-                    </motion.div>
-                  </div>
-                </>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      )}
+                </div>
 
-      {/* Paginação */}
-      {totalPaginas > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
-            onClick={() => setPagina((p) => Math.max(1, p - 1))}
-            disabled={pagina === 1}
-          >
-            Anterior
-          </Button>
-          <span className="text-white/60">
-            Página {pagina} de {totalPaginas}
-          </span>
-          <Button
-            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm"
-            onClick={() => setPagina((p) => Math.min(totalPaginas, p + 1))}
-            disabled={pagina === totalPaginas}
-          >
-            Próxima
-          </Button>
-        </div>
-      )}
+                <div className="space-y-3 py-4 border-y border-white/5">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/40">Referência</span>
+                    <span className="text-white/80 font-mono">{ficha.referenciaPeca}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/40">Custo Total</span>
+                    <span className="text-white/80 font-bold">{formatCurrency(ficha.totalCustos)}</span>
+                  </div>
+                </div>
 
-      {/* Modal de Duplicação */}
+                <div className="mt-6 flex items-center justify-between">
+                  <div className="flex items-center -space-x-2">
+                    {/* Placeholder for avatars if needed */}
+                  </div>
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/fichas-custo/${ficha.id}`);
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/fichas-custo/${ficha.id}/edit`);
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={fichas}
+            emptyMessage="Nenhuma ficha encontrada"
+            enableRowSelection
+            state={{
+              rowSelection: Object.fromEntries(
+                Array.from(selectedFichas).map((id) => [
+                  fichas.findIndex((f) => f.id === id),
+                  true
+                ]).filter(([index]) => index !== -1)
+              )
+            }}
+            onRowSelectionChange={(updater) => {
+              if (typeof updater === "function") {
+                const newState = updater({});
+                const newSelected = new Set<string>();
+                Object.keys(newState).forEach((key) => {
+                  const index = parseInt(key);
+                  if (fichas[index]) newSelected.add(fichas[index].id);
+                });
+                setSelectedFichas(newSelected);
+              }
+            }}
+          />
+        )}
+      </div>
+
+      {/* Modals */}
       {fichaParaDuplicar && (
         <DuplicarFichaModal
           ficha={fichaParaDuplicar}
@@ -823,14 +756,13 @@ export function FichasCustoListClient() {
         />
       )}
 
-      {/* Modal de Filtros Presets */}
       <FiltrosPresetsModal
         isOpen={mostrarPresets}
         onClose={() => setMostrarPresets(false)}
         filtrosAtuais={{
           status: statusFilter !== "all" ? statusFilter : undefined,
           colecao: filtroColecao || undefined,
-          busca: debouncedSearch || undefined,
+          busca: search || undefined,
           ordenacao: ordenacao || undefined,
         }}
         onAplicarPreset={handleAplicarPreset}
@@ -843,7 +775,7 @@ export function FichasCustoListClient() {
         itemName={`${selectedFichas.size} ficha(s)`}
         itemType="fichas"
       />
-    </div>
+    </ListPageLayout>
   );
-}
+};
 

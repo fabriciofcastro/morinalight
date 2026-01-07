@@ -26,10 +26,10 @@ export function FuturisticAreaChart({ data, isLoading, error }: FuturisticAreaCh
     // Loading skeleton
     if (isLoading) {
         return (
-            <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32 animate-pulse" />
+            <div className="h-full w-full p-4 rounded-none bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-none blur-3xl -translate-y-32 translate-x-32 animate-pulse" />
                 <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
-                    <span className="w-2 h-6 bg-blue-500 rounded-full animate-pulse" />
+                    <span className="w-2 h-6 bg-blue-500 rounded-none animate-pulse" />
                     Faturamento Anual
                 </h3>
                 <div className="h-[300px] w-full relative z-10 flex items-center justify-center">
@@ -42,10 +42,10 @@ export function FuturisticAreaChart({ data, isLoading, error }: FuturisticAreaCh
     // Error state
     if (error) {
         return (
-            <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-red-500/20 backdrop-blur-md relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+            <div className="h-full w-full p-4 rounded-none bg-white/5 border border-red-500/20 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-none blur-3xl -translate-y-32 translate-x-32" />
                 <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
-                    <span className="w-2 h-6 bg-red-500 rounded-full" />
+                    <span className="w-2 h-6 bg-red-500 rounded-none" />
                     Faturamento Anual
                 </h3>
                 <div className="h-[300px] w-full relative z-10 flex items-center justify-center">
@@ -61,10 +61,10 @@ export function FuturisticAreaChart({ data, isLoading, error }: FuturisticAreaCh
     // No data state
     if (!data || data.length === 0) {
         return (
-            <div className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+            <div className="h-full w-full p-4 rounded-none bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-none blur-3xl -translate-y-32 translate-x-32" />
                 <h3 className="text-lg font-semibold text-white mb-6 relative z-10 flex items-center gap-2">
-                    <span className="w-2 h-6 bg-blue-500 rounded-full" />
+                    <span className="w-2 h-6 bg-blue-500 rounded-none" />
                     Faturamento Anual
                 </h3>
                 <div className="h-[300px] w-full relative z-10 flex items-center justify-center">
@@ -75,13 +75,13 @@ export function FuturisticAreaChart({ data, isLoading, error }: FuturisticAreaCh
     }
 
     return (
-        <div id="revenue-chart" className="h-full w-full p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden group">
+        <div id="revenue-chart" className="h-full w-full p-4 rounded-none bg-white/5 border border-white/10 backdrop-blur-md relative overflow-hidden group">
             {/* Decorative background glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-32 translate-x-32" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-none blur-3xl -translate-y-32 translate-x-32" />
 
             <div className="flex items-center justify-between mb-6 relative z-10">
                 <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                    <span className="w-2 h-6 bg-blue-500 rounded-full" />
+                    <span className="w-2 h-6 bg-blue-500 rounded-none" />
                     Faturamento Anual
                 </h3>
                 <ExportButton chartId="revenue-chart" chartData={data} chartName="faturamento-anual" />
@@ -125,7 +125,7 @@ export function FuturisticAreaChart({ data, isLoading, error }: FuturisticAreaCh
                             contentStyle={{
                                 backgroundColor: "rgba(15, 23, 42, 0.9)",
                                 borderColor: "rgba(255, 255, 255, 0.1)",
-                                borderRadius: "8px",
+                                borderRadius: "0px",
                                 color: "#fff",
                             }}
                             itemStyle={{ color: "#fff" }}

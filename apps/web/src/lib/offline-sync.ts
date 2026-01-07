@@ -2,21 +2,21 @@
 
 import { getAuthHeaders } from "@/lib/auth-client";
 import {
-  cleanupOldOperations,
-  getPendingOperations,
-  type OfflineOperation,
-  removeOperation,
-  updateOperationStatus,
+    cleanupOldOperations,
+    getPendingOperations,
+    type OfflineOperation,
+    removeOperation,
+    updateOperationStatus,
 } from "./offline-queue";
 
-type SyncProgress = {
+export type SyncProgress = {
   total: number;
   completed: number;
   failed: number;
   current?: OfflineOperation;
 };
 
-type SyncCallbacks = {
+export type SyncCallbacks = {
   onProgress?: (progress: SyncProgress) => void;
   onComplete?: (stats: { synced: number; failed: number }) => void;
   onError?: (error: Error) => void;

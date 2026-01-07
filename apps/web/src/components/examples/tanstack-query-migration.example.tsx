@@ -6,16 +6,20 @@
 
 "use client";
 
-import { useUsers, useCreateUser, useDeleteUser } from "@/hooks/queries";
+import { useCreateProduct, useDeleteProduct, useProducts, useUser, useUsers } from "@/hooks/queries";
+import { usersApi } from "@/lib/api/users";
+import { useDebounce } from "@/lib/performance";
+import { useQueryClient } from "@tanstack/react-query";
+import React from "react";
 import { toast } from "sonner";
 
 // ===== EXEMPLO 1: Users List (ANTES vs DEPOIS) =====
 
 // ❌ ANTES (useEffect + useState)
 function UsersListOld() {
-    const [users, setUsers] = React.useState([]);
+    const [users, setUsers] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState(null);
+    const [error, setError] = React.useState<any>(null);
 
     React.useEffect(() => {
         fetch("/api/users")
@@ -52,7 +56,7 @@ function UsersListNew() {
     return (
         <div>
             {users?.map((user) => (
-                <div key={user.userId}>{user.displayName}</div>
+                <div key={user.id}>{user.name}</div>
             ))}
         </div>
     );
@@ -70,10 +74,12 @@ function ProductsList() {
             await createProduct.mutateAsync({
                 name: "New Product",
                 sku: "SKU-001",
-                categoryId: "cat-1",
-                unit: "un",
-                costPrice: 10,
-                sellingPrice: 20,
+                category: "cat-1",
+                // unit: "un", // Not in interface
+                // costPrice: 10,
+                // sellingPrice: 20,
+                price: 20,
+                status: "active"
             });
             toast.success("Produto criado!");
         } catch (error) {
@@ -95,7 +101,7 @@ function ProductsList() {
     return (
         <div>
             <button onClick={handleCreate}>Criar Produto</button>
-            {products?.items.map((product) => (
+            {products?.map((product) => (
                 <div key={product.id}>
                     {product.name}
                     <button onClick={() => handleDelete(product.id)}>Deletar</button>
@@ -123,7 +129,7 @@ function UserDetails({ userId }: { userId: string }) {
 
     return (
         <div onMouseEnter={handleMouseEnter}>
-            <h1>{user?.displayName}</h1>
+            <h1>{user?.name}</h1>
             <p>{user?.email}</p>
         </div>
     );
@@ -147,7 +153,7 @@ function ProductSearch() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar produtos..."
             />
-            {products?.items.map((product) => (
+            {products?.map((product) => (
                 <div key={product.id}>{product.name}</div>
             ))}
         </div>
@@ -156,7 +162,7 @@ function ProductSearch() {
 
 /**
  * IMPLEMENTADO ✅
- * 
+ *
  * Componentes migrados para TanStack Query:
  * - UsersList
  * - ProductsList
@@ -164,7 +170,7 @@ function ProductSearch() {
  * - ProductSearch
  * - OrganizationSelector
  * - NotificationCenter
- * 
+ *
  * Benefícios:
  * - Cache automático (menos requisições)
  * - Loading/Error states gerenciados
@@ -172,14 +178,9 @@ function ProductSearch() {
  * - Optimistic updates
  * - Prefetching
  * - Deduplicação de requests
- * 
+ *
  * Redução de código: ~40%
  * Redução de requisições: ~60%
  */
 
-import React from "react";
-import { useProducts, useCreateProduct, useDeleteProduct } from "@/hooks/queries";
-import { useQueryClient } from "@tanstack/react-query";
-import { useDebounce } from "@/lib/performance";
-import { usersApi } from "@/lib/api/users";
-import { useUser } from "@/hooks/queries";
+// Imports moved to top or removed to avoid duplicates

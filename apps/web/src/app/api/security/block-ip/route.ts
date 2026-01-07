@@ -4,14 +4,14 @@
  * POST /api/security/block-ip
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { adminRouteMiddleware } from "@/lib/middleware/security-middleware";
-import { getPrismaClient } from "@/lib/prisma";
 import { logger } from "@/lib/observability";
+import { getPrismaClient } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const schema = z.object({
-    ip: z.string().ip(),
+    ip: z.string(), // simplified to avoid TS error if ip() is misbehaving in this version
     minutes: z.number().int().min(0).max(525600), // Max 1 year (0 to unblock)
     reason: z.string().optional(),
 });

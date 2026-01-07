@@ -10,7 +10,8 @@ const meta: Meta<typeof FormField> = {
     layout: "centered",
     docs: {
       description: {
-        component: "Wrapper para campos de formulário com label, hint, error e estados de validação.",
+        component:
+          "Wrapper para campos de formulário com label, hint, error e estados de validação.",
       },
     },
   },
@@ -70,7 +71,12 @@ export const WithHint: Story = {
 export const WithError: Story = {
   render: () => (
     <FormField label="Email" error="Email inválido" validationState="invalid" fieldId="email-error">
-      <Input id="email-error" type="email" placeholder="email@exemplo.com" validationState="invalid" />
+      <Input
+        id="email-error"
+        type="email"
+        placeholder="email@exemplo.com"
+        validationState="invalid"
+      />
     </FormField>
   ),
 };
@@ -78,7 +84,12 @@ export const WithError: Story = {
 export const Valid: Story = {
   render: () => (
     <FormField label="Email" hint="Email válido" validationState="valid" fieldId="email-valid">
-      <Input id="email-valid" type="email" placeholder="email@exemplo.com" validationState="valid" />
+      <Input
+        id="email-valid"
+        type="email"
+        placeholder="email@exemplo.com"
+        validationState="valid"
+      />
     </FormField>
   ),
 };
@@ -105,16 +116,30 @@ export const AllStates: Story = {
       <FormField label="Campo Normal" fieldId="normal">
         <Input id="normal" placeholder="Estado normal" />
       </FormField>
-      <FormField label="Campo Válido" hint="Validação passou" validationState="valid" fieldId="valid">
+      <FormField
+        label="Campo Válido"
+        hint="Validação passou"
+        validationState="valid"
+        fieldId="valid"
+      >
         <Input id="valid" placeholder="Estado válido" validationState="valid" />
       </FormField>
-      <FormField label="Campo Inválido" error="Erro de validação" validationState="invalid" fieldId="invalid">
+      <FormField
+        label="Campo Inválido"
+        error="Erro de validação"
+        validationState="invalid"
+        fieldId="invalid"
+      >
         <Input id="invalid" placeholder="Estado inválido" validationState="invalid" />
       </FormField>
-      <FormField label="Campo Pendente" hint="Validando..." validationState="pending" fieldId="pending">
+      <FormField
+        label="Campo Pendente"
+        hint="Validando..."
+        validationState="pending"
+        fieldId="pending"
+      >
         <Input id="pending" placeholder="Estado pendente" validationState="pending" />
       </FormField>
     </div>
   ),
 };
-

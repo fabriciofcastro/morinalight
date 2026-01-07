@@ -19,17 +19,21 @@ interface RadarChartData {
 }
 
 interface FuturisticRadarChartProps {
-    data?: RadarChartData[];
+    data?: any[]; // Accept any array structure
     isLoading?: boolean;
     error?: Error | null;
     title?: string;
+    dataKeys?: string[]; // Optional: keys for data series
+    indexBy?: string; // Optional: key for angle axis
 }
 
 export function FuturisticRadarChart({
     data,
     isLoading,
     error,
-    title = "Métricas de Performance"
+    title = "Métricas de Performance",
+    dataKeys = ["A"],
+    indexBy = "subject"
 }: FuturisticRadarChartProps) {
     // Loading skeleton
     if (isLoading) {
@@ -109,7 +113,7 @@ export function FuturisticRadarChart({
                             strokeDasharray="3 3"
                         />
                         <PolarAngleAxis
-                            dataKey="metric"
+                            dataKey={indexBy}
                             stroke="rgba(255,255,255,0.5)"
                             fontSize={12}
                             tick={{ fill: "rgba(255,255,255,0.7)" }}
@@ -135,15 +139,18 @@ export function FuturisticRadarChart({
                             height={36}
                             formatter={(value) => <span style={{ color: "rgba(255,255,255,0.7)" }}>{value}</span>}
                         />
-                        <Radar
-                            name="Performance"
-                            dataKey="value"
-                            stroke="#8b5cf6"
-                            fill="url(#radarGradient)"
-                            fillOpacity={0.6}
-                            strokeWidth={2}
-                            dot={{ fill: "#8b5cf6", r: 4 }}
-                        />
+                        {dataKeys.map((key, index) => (
+                            <Radar
+                                key={key}
+                                name={key}
+                                dataKey={key}
+                                stroke={`hsl(${index * 60 + 270}, 70%, 60%)`}
+                                fill="url(#radarGradient)"
+                                fillOpacity={0.6}
+                                strokeWidth={2}
+                                dot={{ fill: `hsl(${index * 60 + 270}, 70%, 60%)`, r: 4 }}
+                            />
+                        ))}
                     </RadarChart>
                 </ResponsiveContainer>
             </div>

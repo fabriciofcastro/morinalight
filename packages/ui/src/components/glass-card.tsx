@@ -2,14 +2,14 @@ import type { PropsWithChildren } from "react";
 
 import { cn } from "../lib/cn";
 
-type GlassCardProps = PropsWithChildren<{
-  className?: string;
+interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
   glow?: boolean;
-}>;
+}
 
-export function GlassCard({ children, className, glow = true }: GlassCardProps) {
+export function GlassCard({ children, className, glow = true, ...props }: GlassCardProps) {
   return (
     <div
+      {...props}
       className={cn(
         "relative overflow-hidden",
         "bg-[color-mix(in_oklab,hsl(var(--surface))_82%,transparent_18%)] border border-[color-mix(in_oklab,hsl(var(--border))_60%,transparent_40%)]",

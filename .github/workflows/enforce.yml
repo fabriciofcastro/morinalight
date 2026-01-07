@@ -1,0 +1,70 @@
+name: Enforcement
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies (locked)
+        run: pnpm install --frozen-lockfile
+
+      # 🔒 GATE ARQUITETURAL — FALHA RÁPIDA
+      - name: Enterprise Guard
+        run: pnpm guard
+
+      # 🧱 Validação estrutural
+      - name: Validate FSD
+        run: node scripts/validate-fsd.js
+
+      # 🧠 Segurança de tipos
+      - name: Type Check
+        run: pnpm type-check
+
+      # 🧹 Qualidade de código
+      - name: Lint
+        run: pnpm lint
+
+      # 🚫 Regras duras (sem ESLint custom ainda)
+      - name: Check console.log
+        run: |
+          if grep -r "console\\.log" src/ --include="*.ts" --include="*.tsx" --exclude-dir=node_modules; then
+            echo "❌ console.log encontrado!"
+            exit 1
+          fi
+
+      - name: Check 'any'
+        run: |
+          if grep -r ": any" src/ --include="*.ts" --include="*.tsx"; then
+            echo "❌ 'any' encontrado!"
+            exit 1
+          fi
+
+      # 🧪 Testes
+      - name: Tests
+        run: pnpm test
+
+      # 🏗️ Build
+      - name: Build
+        run: pnpm build
+
+      # 🌐 E2E (último — mais caro)
+      - name: E2E
+        run: pnpm test:e2e

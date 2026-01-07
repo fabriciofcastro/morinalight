@@ -18,6 +18,7 @@ export default defineConfig({
       "@/": `${path.resolve(__dirname, "src")}/`,
       "@morina/ui": path.resolve(__dirname, "../..", "packages/ui/src"),
       "@morina/realtime-client": path.resolve(__dirname, "../..", "packages/realtime-client/src"),
+      "@morina/shared-kernel": path.resolve(__dirname, "../..", "packages/shared-kernel/src"),
     },
   },
 });

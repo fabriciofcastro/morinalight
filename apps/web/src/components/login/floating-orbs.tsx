@@ -42,7 +42,7 @@ export function FloatingOrbs() {
         size: 100 + seededRandom(seed + 2) * 150,
         duration: 18 + seededRandom(seed + 3) * 12,
         delay: seededRandom(seed + 4) * 3,
-        color: colors[Math.floor(seededRandom(seed + 5) * colors.length)],
+        color: colors[Math.floor(seededRandom(seed + 5) * colors.length)]!,
       };
     });
   }, []);

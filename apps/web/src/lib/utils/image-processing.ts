@@ -261,7 +261,7 @@ export function formatFileSize(bytes: number): string {
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]}`;
+  return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]!}`;
 }
 
 /**
@@ -297,9 +297,9 @@ export async function extractDominantColor(file: File): Promise<string> {
       let count = 0;
 
       for (let i = 0; i < data.length; i += 4) {
-        r += data[i];
-        g += data[i + 1];
-        b += data[i + 2];
+        r += data[i]!;
+        g += data[i + 1]!;
+        b += data[i + 2]!;
         count++;
       }
 

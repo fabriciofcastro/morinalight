@@ -55,6 +55,9 @@ export const PermissionKeys = {
 
     // Workflow
     WORKFLOWS_VIEW: 'workflows:view',
+    WORKFLOWS_CREATE: 'workflows:create',
+    WORKFLOWS_EDIT: 'workflows:edit',
+    WORKFLOWS_DELETE: 'workflows:delete',
     WORKFLOWS_MANAGE: 'workflows:manage',
 
     // Company
@@ -63,21 +66,42 @@ export const PermissionKeys = {
 
     // Organizational Structure
     BRANCHES_VIEW: 'branches:view',
+    BRANCHES_CREATE: 'branches:create',
+    BRANCHES_EDIT: 'branches:edit',
+    BRANCHES_DELETE: 'branches:delete',
     BRANCHES_MANAGE: 'branches:manage',
     DEPARTMENTS_VIEW: 'departments:view',
+    DEPARTMENTS_CREATE: 'departments:create',
+    DEPARTMENTS_EDIT: 'departments:edit',
+    DEPARTMENTS_DELETE: 'departments:delete',
     DEPARTMENTS_MANAGE: 'departments:manage',
     SECTORS_VIEW: 'sectors:view',
+    SECTORS_CREATE: 'sectors:create',
+    SECTORS_EDIT: 'sectors:edit',
+    SECTORS_DELETE: 'sectors:delete',
     SECTORS_MANAGE: 'sectors:manage',
     POSITIONS_VIEW: 'positions:view',
+    POSITIONS_CREATE: 'positions:create',
+    POSITIONS_EDIT: 'positions:edit',
+    POSITIONS_DELETE: 'positions:delete',
     POSITIONS_MANAGE: 'positions:manage',
 
     // Access Control
     SETTINGS_TEAM_VIEW: 'settings:team:view',
     USERS_VIEW: 'users:view',
+    USERS_CREATE: 'users:create',
+    USERS_EDIT: 'users:edit',
+    USERS_DELETE: 'users:delete',
     USERS_MANAGE: 'users:manage',
     ROLES_VIEW: 'roles:view',
+    ROLES_CREATE: 'roles:create',
+    ROLES_EDIT: 'roles:edit',
+    ROLES_DELETE: 'roles:delete',
     ROLES_MANAGE: 'roles:manage',
     PERMISSIONS_VIEW: 'permissions:view', // Correctly mapped now!
+    PERMISSIONS_CREATE: 'permissions:create',
+    PERMISSIONS_EDIT: 'permissions:edit',
+    PERMISSIONS_DELETE: 'permissions:delete',
     PERMISSIONS_MANAGE: 'permissions:manage',
 
     // Audit

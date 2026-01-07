@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Eye, EyeOff, Lock, Mail, User, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Button, Input, Label, Alert, Checkbox } from '@morina/ui';
 import { authApi } from '@/lib/api/auth';
+import { Alert, Button, Checkbox, Input, Label } from '@morina/ui';
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function RegisterForm() {
     const router = useRouter();
@@ -52,7 +52,7 @@ export function RegisterForm() {
         try {
             const response = await authApi.register({ email, password, displayName });
 
-            if (response.organizations.length > 1) {
+            if (response?.organizations && response.organizations.length > 1) {
                 router.push('/select-organization');
             } else {
                 router.push('/dashboard');

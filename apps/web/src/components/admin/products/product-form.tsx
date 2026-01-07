@@ -1,25 +1,23 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { CodeValidator } from "@/components/ui/code-validator";
+import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { BusinessSegment } from "@/lib/api/organizational-structure";
+import { CreateProductInput, productsApi } from "@/lib/api/products";
 import { Button, cn } from "@morina/ui";
 import {
     ArrowLeft,
-    Package,
-    Save,
-    Loader2,
-    FileText,
-    DollarSign,
     Box,
+    DollarSign,
     Image as ImageIcon,
-    Tag
+    Loader2,
+    Package,
+    Save
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { productsApi, CreateProductInput } from "@/lib/api/products";
-import { organizationalStructureApi, BusinessSegment } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
-import { CodeValidator } from "@/components/ui/code-validator";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface ProductFormProps {
     mode: "create" | "edit";
@@ -156,7 +154,7 @@ export function ProductForm({ mode, productId }: ProductFormProps) {
                                 />
                                 <CodeValidator
                                     value={formData.sku}
-                                    onChange={(value) => setFormData({ ...formData, sku: value })}
+                                    onChange={(value: string) => setFormData({ ...formData, sku: value })}
                                     entity="product"
                                     currentId={productId}
                                     label="SKU / Código"

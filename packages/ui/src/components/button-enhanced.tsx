@@ -63,7 +63,10 @@ export interface ButtonEnhancedProps
 }
 
 export const ButtonEnhanced = forwardRef<HTMLButtonElement, ButtonEnhancedProps>(
-  ({ className, variant, size, isLoading, children, disabled, "aria-label": ariaLabel, ...props }, ref) => {
+  (
+    { className, variant, size, isLoading, children, disabled, "aria-label": ariaLabel, ...props },
+    ref,
+  ) => {
     // Se isLoading e não há aria-label, adiciona automaticamente
     const buttonAriaLabel = isLoading && !ariaLabel ? "Carregando..." : ariaLabel;
 

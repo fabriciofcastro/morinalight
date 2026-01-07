@@ -1,8 +1,8 @@
 "use client";
 
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, HelpCircle, Loader2 } from "lucide-react";
 import { forwardRef, ReactNode } from "react";
-import { Tooltip } from "./tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
 
 type FormFieldElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
@@ -62,7 +62,25 @@ export const FormField = forwardRef<FormFieldElement, FormFieldProps>(
                         }`}
                 >
                     {label}
-                    {tooltip && <Tooltip content={tooltip} id={tooltipId} />}
+                    {tooltip && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <button
+                                        type="button"
+                                        className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/10 text-white/50 hover:bg-white/20 hover:text-white/70 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-colors"
+                                        aria-label="Mais informações"
+                                        tabIndex={0}
+                                    >
+                                        <HelpCircle className="h-3 w-3" aria-hidden="true" />
+                                    </button>
+                                </TooltipTrigger>
+                                <TooltipContent id={tooltipId}>
+                                    <p>{tooltip}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    )}
                 </label>
 
                 <div className="relative">
@@ -76,7 +94,7 @@ export const FormField = forwardRef<FormFieldElement, FormFieldProps>(
                         <select
                             id={inputId}
                             name={name}
-                            ref={ref as unknown as React.Ref<HTMLSelectElement>}
+                            ref={ref as React.ComponentProps<'select'>['ref']}
                             required={required}
                             aria-required={required}
                             aria-invalid={error ? "true" : "false"}
@@ -99,7 +117,7 @@ export const FormField = forwardRef<FormFieldElement, FormFieldProps>(
                         <textarea
                             id={inputId}
                             name={name}
-                            ref={ref as unknown as React.Ref<HTMLTextAreaElement>}
+                            ref={ref as React.ComponentProps<'textarea'>['ref']}
                             required={required}
                             rows={rows}
                             aria-required={required}
@@ -115,7 +133,7 @@ export const FormField = forwardRef<FormFieldElement, FormFieldProps>(
                             id={inputId}
                             name={name}
                             type={type}
-                            ref={ref as unknown as React.Ref<HTMLInputElement>}
+                            ref={ref as React.Ref<any>}
                             required={required}
                             aria-required={required}
                             aria-invalid={error ? "true" : "false"}
@@ -123,7 +141,7 @@ export const FormField = forwardRef<FormFieldElement, FormFieldProps>(
                                 .filter(Boolean)
                                 .join(" ")}
                             className={inputClasses}
-                            {...(props as unknown as React.InputHTMLAttributes<HTMLInputElement>)}
+                            {...(props as any)}
                         />
                     )}
 

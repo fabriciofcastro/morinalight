@@ -89,14 +89,14 @@ export async function decrypt(encrypted: string): Promise<string> {
       throw new Error("Formato de valor criptografado inválido");
     }
 
-    const [ivBase64, authTagBase64, encryptedData] = parts;
-    const iv = Buffer.from(ivBase64, "base64");
-    const authTag = Buffer.from(authTagBase64, "base64");
+    const [ivBase64, authTagBase64, encryptedData] = parts as [string, string, string];
+    const iv = Buffer.from(ivBase64!, "base64");
+    const authTag = Buffer.from(authTagBase64!, "base64");
 
     const decipher = createDecipheriv(ALGORITHM, key, iv);
     decipher.setAuthTag(authTag);
 
-    let decrypted = decipher.update(encryptedData, "base64", "utf8");
+    let decrypted = decipher.update(encryptedData!, "base64", "utf8");
     decrypted += decipher.final("utf8");
 
     return decrypted;

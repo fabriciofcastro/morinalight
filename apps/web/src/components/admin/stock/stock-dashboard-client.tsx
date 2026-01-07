@@ -1,22 +1,19 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { ProductStock, stockApi, StockMovement } from "@/lib/api/stock";
 import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {
-    ArrowUpRight,
-    ArrowDownLeft,
     AlertTriangle,
-    History,
+    ArrowDownLeft,
+    ArrowUpRight,
     Box,
-    RefreshCw,
-    Search,
-    Filter
+    History,
+    RefreshCw
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { stockApi, StockMovement, ProductStock } from "@/lib/api/stock";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 export function StockDashboardClient() {
     const router = useRouter();
@@ -67,7 +64,7 @@ export function StockDashboardClient() {
     }, [loadData]);
 
     return (
-        <AllowedGuard I="read" a="Stock" redirectTo="/admin">
+        <AllowedGuard I="read" a={"Stock" as any} redirectTo="/admin">
             <div className="p-8 space-y-8 min-h-screen text-white pb-20">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>

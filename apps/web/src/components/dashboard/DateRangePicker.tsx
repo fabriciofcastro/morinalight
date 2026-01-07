@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 export type DateRangePreset = "7d" | "30d" | "90d" | "12m" | "custom";
 
@@ -11,7 +11,7 @@ interface DateRangePickerProps {
     onChange: (value: DateRangePreset) => void;
 }
 
-const presets: Array<{ value: string; label: string }> = [
+const presets: Array<{ value: DateRangePreset; label: string }> = [
     { value: "7d", label: "Últimos 7 dias" },
     { value: "30d", label: "Últimos 30 dias" },
     { value: "90d", label: "Últimos 90 dias" },

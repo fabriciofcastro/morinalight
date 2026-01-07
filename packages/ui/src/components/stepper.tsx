@@ -1,9 +1,9 @@
 "use client";
 
-import * as React from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronRight } from "lucide-react";
+import type * as React from "react";
 import { cn } from "../lib/cn";
-import { motion, AnimatePresence } from "framer-motion";
 
 export interface Step {
   id: string;
@@ -54,7 +54,7 @@ export function Stepper({
                         ? "border-[var(--primary)] bg-[color-mix(in oklab,var(--primary)_10%,transparent)] text-[var(--primary)]"
                         : "border-[color-mix(in oklab,var(--muted-soft)_30%,var(--fg)_70%)] bg-transparent text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
                     isClickable && "cursor-pointer hover:scale-110",
-                    !isClickable && "cursor-not-allowed"
+                    !isClickable && "cursor-not-allowed",
                   )}
                 >
                   {isCompleted ? (
@@ -73,7 +73,7 @@ export function Stepper({
                         ? "text-[var(--primary)]"
                         : isCompleted
                           ? "text-[var(--fg)]"
-                          : "text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]"
+                          : "text-[color-mix(in oklab,var(--muted-soft)_70%,var(--fg)_30%)]",
                     )}
                   >
                     {step.label}
@@ -91,7 +91,7 @@ export function Stepper({
                     "flex-1 h-0.5 mx-2 transition-colors",
                     index < currentStep
                       ? "bg-[var(--primary)]"
-                      : "bg-[color-mix(in oklab,var(--muted-soft)_20%,transparent)]"
+                      : "bg-[color-mix(in oklab,var(--muted-soft)_20%,transparent)]",
                   )}
                 />
               )}
@@ -188,7 +188,7 @@ export function Wizard({
               "px-4 py-2 rounded-lg transition-colors",
               isFirstStep
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-[color-mix(in oklab,var(--muted-soft)_10%,transparent)]"
+                : "hover:bg-[color-mix(in oklab,var(--muted-soft)_10%,transparent)]",
             )}
           >
             Anterior
@@ -204,7 +204,7 @@ export function Wizard({
             disabled={!canGoNext}
             className={cn(
               "px-4 py-2 rounded-lg bg-[var(--primary)] text-white transition-colors flex items-center gap-2",
-              !canGoNext ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+              !canGoNext ? "opacity-50 cursor-not-allowed" : "hover:opacity-90",
             )}
           >
             {isLastStep ? "Finalizar" : "Próximo"}
@@ -215,10 +215,3 @@ export function Wizard({
     </div>
   );
 }
-
-
-
-
-
-
-

@@ -1,26 +1,24 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { PasskeySettings } from "@/components/profile/passkey-settings";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { Button, GlassCard, Input, Label, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";
 import {
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  History,
-  Key,
-  Lock,
-  LogOut,
-  QrCode,
-  Shield,
-  Smartphone,
-  Trash2,
-  X,
-  Download,
-  FileJson,
+    AlertTriangle,
+    CheckCircle2,
+    Clock,
+    Download,
+    History,
+    Key,
+    LogOut,
+    QrCode,
+    Shield,
+    Smartphone,
+    Trash2,
+    X
 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { PasskeySettings } from "@/components/profile/passkey-settings";
+import { useCallback, useEffect, useState } from "react";
 
 export function SecurityTab() {
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
@@ -77,6 +75,15 @@ export function SecurityTab() {
     expiresAt: Date | null;
     createdAt: Date;
   }>>([]);
+  
+  interface ApiToken {
+    id: string;
+    name: string;
+    tokenPrefix: string;
+    lastUsed: string | null;
+    expiresAt: string | null;
+    createdAt: string;
+  }
   const [loadingApiTokens, setLoadingApiTokens] = useState(false);
   const [creatingToken, setCreatingToken] = useState(false);
   const [newTokenName, setNewTokenName] = useState("");
@@ -426,7 +433,7 @@ export function SecurityTab() {
           if (response.ok) {
             const data = await response.json();
             setApiTokens(
-              (data.tokens || []).map((token: any) => ({
+              (data.tokens || []).map((token: ApiToken) => ({
                 ...token,
                 lastUsed: token.lastUsed ? new Date(token.lastUsed) : null,
                 expiresAt: token.expiresAt ? new Date(token.expiresAt) : null,

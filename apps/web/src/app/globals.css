@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./theme.css";
 @import "tw-animate-css";
 @import "../styles/themes/clean-vibrant.css";
 
@@ -216,13 +217,11 @@
 
   .cinematic-scanlines {
     opacity: var(--cinematic-scanlines-opacity, 0.04);
-    background-image: repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.08) 0px,
-      rgba(255, 255, 255, 0.08) 1px,
-      transparent 1px,
-      transparent 3px
-    );
+    background-image: repeating-linear-gradient(0deg,
+        rgba(255, 255, 255, 0.08) 0px,
+        rgba(255, 255, 255, 0.08) 1px,
+        transparent 1px,
+        transparent 3px);
     mix-blend-mode: overlay;
   }
 
@@ -234,28 +233,44 @@
   }
 
   @keyframes jarvis-hud-sweep {
-    0% { transform: translateX(-40%); opacity: 0; }
-    12% { opacity: 0.35; }
-    45% { opacity: 0.7; }
-    100% { transform: translateX(40%); opacity: 0; }
+    0% {
+      transform: translateX(-40%);
+      opacity: 0;
+    }
+
+    12% {
+      opacity: 0.35;
+    }
+
+    45% {
+      opacity: 0.7;
+    }
+
+    100% {
+      transform: translateX(40%);
+      opacity: 0;
+    }
   }
 
   .jarvis-hud-sweep {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      hsla(var(--primary) / 0.35) 30%,
-      hsla(var(--accent) / 0.28) 55%,
-      transparent 100%
-    );
+    background: linear-gradient(90deg,
+        transparent 0%,
+        hsla(var(--primary) / 0.35) 30%,
+        hsla(var(--accent) / 0.28) 55%,
+        transparent 100%);
     animation: jarvis-hud-sweep 6.5s linear infinite;
     filter: blur(0.2px);
     mix-blend-mode: screen;
   }
 
   @keyframes jarvis-telemetry {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
   }
 
   .jarvis-telemetry {
@@ -263,15 +278,42 @@
   }
 
   @keyframes jarvis-404-glitch {
-    0% { transform: translateX(0); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
-    6% { transform: translateX(-1px); }
-    7% { transform: translateX(2px); }
-    8% { transform: translateX(0); }
-    46% { transform: translateX(0); }
-    47% { transform: translateX(1px); }
-    48% { transform: translateX(-2px); }
-    49% { transform: translateX(0); }
-    100% { transform: translateX(0); }
+    0% {
+      transform: translateX(0);
+      filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0));
+    }
+
+    6% {
+      transform: translateX(-1px);
+    }
+
+    7% {
+      transform: translateX(2px);
+    }
+
+    8% {
+      transform: translateX(0);
+    }
+
+    46% {
+      transform: translateX(0);
+    }
+
+    47% {
+      transform: translateX(1px);
+    }
+
+    48% {
+      transform: translateX(-2px);
+    }
+
+    49% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(0);
+    }
   }
 
   .jarvis-404 {
@@ -300,18 +342,33 @@
   }
 
   @keyframes auth-mirror-glint {
-    0% { transform: translateX(-160%) rotate(18deg); opacity: 0; }
-    12% { opacity: 0.35; }
-    40% { opacity: 0.9; }
-    65% { opacity: 0.35; }
-    100% { transform: translateX(220%) rotate(18deg); opacity: 0; }
+    0% {
+      transform: translateX(-160%) rotate(18deg);
+      opacity: 0;
+    }
+
+    12% {
+      opacity: 0.35;
+    }
+
+    40% {
+      opacity: 0.9;
+    }
+
+    65% {
+      opacity: 0.35;
+    }
+
+    100% {
+      transform: translateX(220%) rotate(18deg);
+      opacity: 0;
+    }
   }
 
   /* Reflexo contínuo “luz no vidro” no formulário */
   .auth-mirror-glint {
     opacity: var(--auth-mirror-glint-opacity, 0.12);
-    animation: auth-mirror-glint var(--auth-mirror-glint-duration, 5.2s)
-      cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+    animation: auth-mirror-glint var(--auth-mirror-glint-duration, 5.2s) cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
     animation-delay: var(--auth-mirror-glint-delay, 0.6s);
     will-change: transform, opacity;
   }
@@ -321,9 +378,19 @@
   }
 
   @keyframes auth-scanline {
-    0% { transform: translateY(-120%); opacity: 0; }
-    20% { opacity: 0.6; }
-    100% { transform: translateY(120%); opacity: 0; }
+    0% {
+      transform: translateY(-120%);
+      opacity: 0;
+    }
+
+    20% {
+      opacity: 0.6;
+    }
+
+    100% {
+      transform: translateY(120%);
+      opacity: 0;
+    }
   }
 
   .animate-auth-scanline {

@@ -40,7 +40,7 @@ export function SectorForm({ initialData, departmentId, onSubmit, onSuccess, onC
                     label="Nome"
                     value={formData.name}
                     onChange={(e) => setValue("name", e.target.value)}
-                    error={errors.name}
+                    error={!!errors.name}
                     startIcon={<Layers className="h-4 w-4" />}
                     placeholder="Ex: Desenvolvimento Backend"
                     required
@@ -49,7 +49,7 @@ export function SectorForm({ initialData, departmentId, onSubmit, onSuccess, onC
                     label="Código"
                     value={formData.code}
                     onChange={(e) => setValue("code", e.target.value)}
-                    error={errors.code}
+                    error={!!errors.code}
                     startIcon={<Code className="h-4 w-4" />}
                     placeholder="Ex: DEV-BE"
                     required
@@ -59,7 +59,7 @@ export function SectorForm({ initialData, departmentId, onSubmit, onSuccess, onC
                         label="Descrição"
                         value={formData.description || ""}
                         onChange={(e) => setValue("description", e.target.value)}
-                        error={errors.description}
+                        error={!!errors.description}
                         startIcon={<FileText className="h-4 w-4" />}
                         placeholder="Descrição das responsabilidades do setor"
                     />
@@ -67,7 +67,7 @@ export function SectorForm({ initialData, departmentId, onSubmit, onSuccess, onC
                 <FuturisticSelect
                     label="Status"
                     value={formData.active ? "ativo" : "inativo"}
-                    onChange={(val) => setValue("active", val === "ativo")}
+                    onChange={(e) => setValue("active", e.target.value === "ativo")}
                     options={[
                         { value: "ativo", label: "Ativo" },
                         { value: "inativo", label: "Inativo" },

@@ -1,14 +1,15 @@
 "use client";
 
-import { Department, Sector, Position } from "@morina/organizational-structure-domain";
-import { GlassCard, Select, cn } from "@morina/ui";
-import { ArrowLeftRight, TrendingUp, TrendingDown, Minus, DollarSign, Users, Briefcase } from "lucide-react";
+import { Department, Position, Sector } from "@morina/organizational-structure-domain";
+import { GlassCard, cn } from "@morina/ui";
+import { ArrowLeftRight, Briefcase, DollarSign, TrendingUp, Users } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface ComparisonPanelProps {
     departments: Department[];
     sectors: Sector[];
     positions: Position[];
+    members: any[];
 }
 
 type EntityOption = {
@@ -18,19 +19,23 @@ type EntityOption = {
     data: Department | Sector;
 };
 
-export function ComparisonPanel({ departments, sectors, positions }: ComparisonPanelProps) {
+export function ComparisonPanel({ departments, sectors, positions, members }: ComparisonPanelProps) {
     const [entityAId, setEntityAId] = useState<string>("");
     const [entityBId, setEntityBId] = useState<string>("");
 
     const options = useMemo(() => {
         const opts: EntityOption[] = [];
-        departments.forEach(d => opts.push({ id: d.id, label: `Dep: ${d.name}`, type: 'department', data: d }));
-        sectors.forEach(s => opts.push({ id: s.id, label: `Set: ${s.name}`, type: 'sector', data: s }));
+        departments.forEach(d => {
+            if (d.id) opts.push({ id: d.id, label: `Dep: ${d.name}`, type: 'department', data: d });
+        });
+        sectors.forEach(s => {
+            if (s.id) opts.push({ id: s.id, label: `Set: ${s.name}`, type: 'sector', data: s });
+        });
         return opts.sort((a, b) => a.label.localeCompare(b.label));
     }, [departments, sectors]);
 
-    const metricsA = useMemo(() => calculateMetrics(entityAId, options, positions, sectors), [entityAId, options, positions, sectors]);
-    const metricsB = useMemo(() => calculateMetrics(entityBId, options, positions, sectors), [entityBId, options, positions, sectors]);
+    const metricsA = useMemo(() => calculateMetrics(entityAId, options, positions, sectors, members), [entityAId, options, positions, sectors, members]);
+    const metricsB = useMemo(() => calculateMetrics(entityBId, options, positions, sectors, members), [entityBId, options, positions, sectors, members]);
 
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
@@ -200,7 +205,8 @@ function calculateMetrics(
     id: string,
     options: EntityOption[],
     allPositions: Position[],
-    allSectors: Sector[]
+    allSectors: Sector[],
+    allMembers: any[]
 ) {
     if (!id) return { name: '-', type: '-', headcount: 0, totalCost: 0, avgSalary: 0, positionCount: 0, vacancyRate: 0 };
 
@@ -213,37 +219,32 @@ function calculateMetrics(
         relevantPositions = allPositions.filter(p => p.sectorId === entity.id);
     } else {
         // Find all sectors for this dept
-        const deptSectors = allSectors.filter(s => s.departmentId === entity.id).map(s => s.id);
-        relevantPositions = allPositions.filter(p => deptSectors.includes(p.sectorId));
+        const deptSectors = allSectors
+            .filter(s => s.departmentId === entity.id)
+            .map(s => s.id)
+            .filter((id): id is string => !!id);
+        relevantPositions = allPositions.filter(p => p.sectorId && deptSectors.includes(p.sectorId));
     }
 
     const positionCount = relevantPositions.length;
-    const activePositions = relevantPositions.filter(p => p.active); // Assuming active means filled or available? 
-    // In our domain, typically 'active' position means the slot exists. Member count check implies filled.
-    // For simplicity, let's assume active = slot exists.
-    // Vacancy typically requires checking memberships. Since we don't have memberships passed here directly (only positions), 
-    // we'll approximate based on `p.active` flag being used as "filled" or pass memberships too.
-    // Wait, OverviewPanel uses `members` count.
-    // Let's rely on `p.status` if it exists or cost. The schema has `active`.
-    // Actually, `OverviewPanel` calculates vacancy based on something else.
-    // Looking at `AdvancedMetricsPanel`, it uses `p.status === 'vacant'`. Let's assume that field exists or logic.
-    // But `Position` domain type might differ.
-    // Let's stick to simple aggregation. Cost is strictly `baseSalary`. 
+    
+    const relevantMembers = allMembers.filter(m => {
+        const posIds = relevantPositions.map(p => p.id);
+        return posIds.includes(m.positionId);
+    });
 
     const totalCost = relevantPositions.reduce((acc, p) => acc + (p.baseSalary || 0), 0);
     const avgSalary = positionCount > 0 ? totalCost / positionCount : 0;
-
-    // Using a fake vacancy for now as we don't have members list in props
-    // Or we update props to include members.
-    // I'll update props to include members to be accurate.
+    const headcount = relevantMembers.length;
+    const vacancyRate = positionCount > 0 ? ((positionCount - headcount) / positionCount) * 100 : 0;
 
     return {
         name: entity.data.name,
         type: entity.type === 'department' ? 'Departamento' : 'Setor',
-        headcount: positionCount, // Total slots
+        headcount,
         totalCost,
         avgSalary,
         positionCount,
-        vacancyRate: 0 // Placeholder until we add members
+        vacancyRate: parseFloat(vacancyRate.toFixed(1))
     };
 }

@@ -180,7 +180,7 @@ export function CompanyDocumentsTab() {
         <div className="flex flex-col gap-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>Certidão Negativa de Débitos (Federal)</Label>
+              <Label htmlFor="certidaoFederal">Certidão Negativa de Débitos (Federal)</Label>
               <label className="mt-2 flex h-24 cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors">
                 <Upload className="h-5 w-5 text-white/40" />
                 <span className="text-xs text-white/60">Upload</span>
@@ -199,7 +199,7 @@ export function CompanyDocumentsTab() {
             </div>
 
             <div>
-              <Label>Certidão Negativa de Débitos (Estadual)</Label>
+              <Label htmlFor="certidaoEstadual">Certidão Negativa de Débitos (Estadual)</Label>
               <label className="mt-2 flex h-24 cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors">
                 <Upload className="h-5 w-5 text-white/40" />
                 <span className="text-xs text-white/60">Upload</span>

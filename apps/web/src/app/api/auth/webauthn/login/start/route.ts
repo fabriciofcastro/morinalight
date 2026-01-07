@@ -1,9 +1,9 @@
 
-import { generateAuthenticationOptions } from '@simplewebauthn/server';
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 import { RP_ID } from '@/lib/auth/webauthn-config';
+import prisma from '@/lib/prisma';
+import { generateAuthenticationOptions } from '@simplewebauthn/server';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
     try {
@@ -34,7 +34,8 @@ export async function POST(req: Request) {
         });
 
         // Salvar challenge
-        cookies().set('webauthn_challenge', options.challenge, {
+        const cookieStore = await cookies();
+        cookieStore.set('webauthn_challenge', options.challenge, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',

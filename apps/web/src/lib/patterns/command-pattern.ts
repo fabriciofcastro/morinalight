@@ -35,7 +35,7 @@ export class CommandInvoker {
             throw new Error("Nothing to undo");
         }
 
-        const command = this.history[this.currentIndex];
+        const command = this.history[this.currentIndex]!;
 
         if (!command.undo) {
             throw new Error("Command does not support undo");
@@ -51,7 +51,7 @@ export class CommandInvoker {
         }
 
         this.currentIndex++;
-        const command = this.history[this.currentIndex];
+        const command = this.history[this.currentIndex]!;
 
         if (command.redo) {
             return await command.redo();
@@ -186,7 +186,7 @@ export class MacroCommand implements Command<void> {
     async undo(): Promise<void> {
         // Desfazer na ordem reversa
         for (let i = this.commands.length - 1; i >= 0; i--) {
-            const command = this.commands[i];
+            const command = this.commands[i]!;
             if (command.undo) {
                 await command.undo();
             }

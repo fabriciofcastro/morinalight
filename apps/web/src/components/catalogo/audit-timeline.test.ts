@@ -33,7 +33,7 @@ describe("groupByDate", () => {
     const groups = groupByDate(items);
 
     expect(groups).toHaveLength(2);
-    expect(groups[0].entries).toHaveLength(2);
-    expect(groups[1].entries).toHaveLength(1);
+    expect(groups[0]!.entries).toHaveLength(2);
+    expect(groups[1]!.entries).toHaveLength(1);
   });
 });

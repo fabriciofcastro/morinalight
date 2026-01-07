@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
 import { getPrismaClient } from "@/lib/prisma"
+import { NextRequest, NextResponse } from "next/server"
 
 /**
  * Cron job endpoint to process scheduled reports
@@ -176,7 +176,7 @@ async function generateAndSendReport(schedule: any) {
             headStyles: { fillColor: [37, 99, 235] }, // blue-600
         })
 
-        const pdfBase64 = doc.output("datauristring").split(",")[1]
+        const pdfBase64 = doc.output("datauristring").split(",")[1] as string
         attachment = {
             content: pdfBase64,
             filename: `${schedule.name.replace(/\s+/g, "_")}.pdf`,
@@ -227,7 +227,7 @@ async function generateAndSendReport(schedule: any) {
                 attachments: attachment ? [
                     {
                         filename: attachment.filename,
-                        content: attachment.content,
+                        content: attachment.content as any,
                     }
                 ] : []
             })
@@ -250,7 +250,7 @@ function calculateNextRun(
     timeOfDay?: string | null
 ): Date {
     const now = new Date()
-    const [hours, minutes] = (timeOfDay || "09:00").split(":").map(Number)
+    const [hours = 9, minutes = 0] = (timeOfDay || "09:00").split(":").map(Number)
 
     const nextRun = new Date(now)
     nextRun.setHours(hours, minutes, 0, 0)

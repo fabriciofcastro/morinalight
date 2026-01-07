@@ -36,7 +36,7 @@ export const FuturisticInput = ({
                     {multiline ? (
                         <textarea
                             id={inputId}
-                            {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+                            {...(props as any)}
                             rows={rows}
                             className={`relative w-full ${startIcon ? "pl-10" : "pl-4"} pr-4 py-3 border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300`}
                             aria-invalid={error}
@@ -44,7 +44,7 @@ export const FuturisticInput = ({
                     ) : (
                         <input
                             id={inputId}
-                            {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
+                            {...(props as any)}
                             className={`relative w-full ${startIcon ? "pl-10" : "pl-4"} pr-4 py-3 border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300`}
                             aria-invalid={error}
                         />
@@ -91,7 +91,7 @@ export const FuturisticSelect = ({
                 <div className="absolute -inset-px bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
                 <select
                     id={selectId}
-                    {...props}
+                    {...(props as any)}
                     className={`relative w-full px-4 py-3 border ${error ? "border-red-500 border-2" : "border-white/20"} bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer`}
                 >
                     {options ? options.map(opt => (

@@ -1,15 +1,14 @@
 "use client"
 
-import React from "react"
-import {
-    ResponsiveContainer,
-    FunnelChart,
-    Funnel,
-    LabelList,
-    Tooltip,
-    Cell,
-} from "recharts"
 import { motion } from "framer-motion"
+import {
+    Cell,
+    Funnel,
+    FunnelChart,
+    LabelList,
+    ResponsiveContainer,
+    Tooltip,
+} from "recharts"
 
 interface FunnelDataPoint {
     name: string
@@ -57,10 +56,10 @@ export function FuturisticFunnelChart({
                             borderRadius: "8px",
                             color: "hsl(var(--popover-foreground))",
                         }}
-                        formatter={(value: number) => [
+                        formatter={((value: number) => [
                             value.toLocaleString("pt-BR"),
                             "Valor",
-                        ]}
+                        ]) as any}
                     />
                     <Funnel
                         dataKey="value"

@@ -3,10 +3,10 @@
  * Facilita a aplicação de animações consistentes
  */
 
-import { cn } from "./cn";
 import type { AnimationPreset } from "../theme/animation-tokens";
 import { getAnimationClasses } from "../theme/animation-tokens";
 import { designTokens } from "../theme/design-tokens";
+import { cn } from "./cn";
 
 /**
  * Props para componentes que suportam animações
@@ -88,4 +88,3 @@ export const animations = {
     fade: "transition-opacity duration-200 ease-out hover:opacity-80",
   },
 } as const;
-

@@ -1,10 +1,10 @@
 "use client";
 
-import { createRealtimeClient, type RealtimeEvent } from "@morina/realtime-client";
-import { useEffect, useRef, useState } from "react";
 import { invalidatePermissionsCache, refreshPermissionsCache } from "@/hooks/use-permissions";
 import { getAuthUser } from "@/lib/auth-client";
 import { defaultActorId, defaultOrgId, realtimeUrl } from "@/lib/env";
+import { createRealtimeClient, type RealtimeEvent } from "@morina/realtime-client";
+import { useEffect, useRef, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -21,7 +21,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // ignore
@@ -65,8 +65,8 @@ export function RealtimePermissionsProvider() {
     const nextOrgId = getCurrentOrgId() ?? defaultOrgId;
     const nextUserId = user?.userId ?? defaultActorId;
     queueMicrotask(() => {
-      setOrgId(nextOrgId);
-      setUserId(nextUserId);
+      setOrgId(nextOrgId || null);
+      setUserId(nextUserId || null);
     });
   }, [mounted]);
 

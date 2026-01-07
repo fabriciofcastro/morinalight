@@ -1,76 +1,72 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  Building2,
-  ArrowLeft,
-  Edit,
-  MoreVertical,
-  Mail,
-  Phone,
-  MapPin,
-  Globe,
-  FileText,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-  Calendar,
-  DollarSign,
-  TrendingUp,
-  Star,
-  Package,
-  Receipt,
-  History,
-  FileCheck,
-  MessageSquare,
-  Bell,
-  Copy,
-  ExternalLink,
-  Download,
-  Share2,
-  Trash2,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-  GitBranch,
-  FileStack,
-  Eye,
-  X,
-  Upload,
-} from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  useSupplier,
-  useSupplierAuditoria,
-  useSupplierVersoes,
-  useSupplierEstatisticas,
-  useSupplierFichasCusto,
-  useSupplierInsumos,
-  useSupplierBoletos,
-  useSupplierDocumentos,
-  useSupplierTags,
-  useSupplierTagsRelation,
-  useSupplierAvaliacoes,
-  useSupplierHistoricoPrecos,
-  useSupplierAlertas,
-  useSupplierNotas,
-  useSupplierContatos,
-} from "@/hooks/use-suppliers";
-import { ContatosTab } from "./contatos-tab";
-import { suppliersApi } from "@/lib/api/suppliers";
-import type { Supplier } from "@/lib/api/suppliers";
 import { notificationCenter } from "@/components/notifications/notification-center";
-import { exportSupplierToPDF } from "@/lib/utils/export-suppliers";
-import { apiUrl } from "@/lib/env";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    useSupplier,
+    useSupplierAlertas,
+    useSupplierAuditoria,
+    useSupplierAvaliacoes,
+    useSupplierBoletos,
+    useSupplierDocumentos,
+    useSupplierEstatisticas,
+    useSupplierFichasCusto,
+    useSupplierHistoricoPrecos,
+    useSupplierInsumos,
+    useSupplierNotas,
+    useSupplierTags,
+    useSupplierTagsRelation,
+    useSupplierVersoes
+} from "@/hooks/use-suppliers";
+import type { Supplier } from "@/lib/api/suppliers";
+import { suppliersApi } from "@/lib/api/suppliers";
+import { apiUrl } from "@/lib/env";
+import { exportSupplierToPDF } from "@/lib/utils/export-suppliers";
+import {
+    Button, DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
 } from "@morina/ui";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+    AlertCircle,
+    ArrowLeft,
+    Bell,
+    Building2,
+    Calendar,
+    CheckCircle2,
+    ChevronLeft,
+    ChevronRight,
+    Copy,
+    DollarSign,
+    Download,
+    Edit,
+    ExternalLink,
+    Eye,
+    FileCheck,
+    FileStack,
+    FileText,
+    Globe,
+    History,
+    Mail,
+    MapPin,
+    MessageSquare,
+    MoreVertical,
+    Package,
+    Phone,
+    Receipt,
+    RefreshCw,
+    Share2,
+    Star,
+    Trash2,
+    TrendingUp,
+    Upload,
+    X
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { ContatosTab } from "./contatos-tab";
 
 interface FornecedorDetailClientProps {
   supplierId: string;
@@ -121,7 +117,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

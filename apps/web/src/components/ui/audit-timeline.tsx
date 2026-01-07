@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import {
-    Clock,
-    User,
-    Edit,
-    Plus,
-    Trash,
-    ChevronDown,
-    ChevronUp,
-    Download,
-    RefreshCw,
-} from "lucide-react";
-import type { AuditLogEntry, FieldChange } from "@/types/audit-log";
+import type { AuditLogEntry } from "@/types/audit-log";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import {
+    ChevronDown,
+    ChevronUp,
+    Clock,
+    Download,
+    Edit,
+    Plus,
+    RefreshCw,
+    Trash,
+    User,
+} from "lucide-react";
+import { useState } from "react";
 
 interface AuditTimelineProps {
     entries: AuditLogEntry[];
@@ -82,7 +82,7 @@ function AuditLogEntryCard({ entry }: { entry: AuditLogEntry }) {
                             </span>
                             {hasChanges && (
                                 <span className="text-xs text-white/60">
-                                    • {entry.changes.length} alteraç{entry.changes.length === 1 ? "ão" : "ões"}
+                                    • {entry.changes?.length || 0} alteraç{(entry.changes?.length || 0) === 1 ? "ão" : "ões"}
                                 </span>
                             )}
                         </div>
@@ -127,7 +127,7 @@ function AuditLogEntryCard({ entry }: { entry: AuditLogEntry }) {
                 {/* Changes detail */}
                 {expanded && hasChanges && (
                     <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
-                        {entry.changes!.map((change, idx) => (
+                        {entry.changes?.map((change, idx) => (
                             <div key={idx} className="text-sm">
                                 <div className="flex items-center gap-2 mb-1">
                                     <span className="font-medium text-white/90">{change.fieldLabel}</span>

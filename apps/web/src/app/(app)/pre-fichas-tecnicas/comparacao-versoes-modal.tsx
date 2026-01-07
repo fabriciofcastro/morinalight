@@ -1,8 +1,8 @@
 "use client";
 
-import { Button, GlassCard } from "@morina/ui";
-import { X, ArrowRight } from "lucide-react";
 import type { ComparacaoVersoes } from "@/lib/api/pre-fichas-tecnicas";
+import { Button, GlassCard } from "@morina/ui";
+import { X } from "lucide-react";
 
 export function ComparacaoVersoesModal({
   comparacao,
@@ -11,7 +11,7 @@ export function ComparacaoVersoesModal({
   comparacao: ComparacaoVersoes;
   onClose: () => void;
 }) {
-  const formatValue = (value: any): string => {
+  const formatValue = (value: unknown): string => {
     if (value === null || value === undefined) return "-";
     if (typeof value === "boolean") return value ? "Sim" : "Não";
     if (typeof value === "object") return JSON.stringify(value, null, 2);

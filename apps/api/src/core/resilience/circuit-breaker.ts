@@ -134,7 +134,14 @@ class CircuitBreakerRegistry {
 
   getOrCreate(name: string, options?: CircuitBreakerOptions): CircuitBreaker {
     if (!this.breakers.has(name)) {
-      this.breakers.set(name, new CircuitBreaker(name, options));
+      const defaultOptions: Required<CircuitBreakerOptions> = {
+        failureThreshold: 5,
+        successThreshold: 2,
+        timeout: 60000,
+        resetTimeout: 30000,
+        ...options,
+      };
+      this.breakers.set(name, new CircuitBreaker(name, defaultOptions));
     }
     return this.breakers.get(name)!;
   }

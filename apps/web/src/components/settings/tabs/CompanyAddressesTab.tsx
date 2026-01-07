@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, GlassCard, Input, Label } from "@morina/ui";
+import { Button, GlassCard, Input } from "@morina/ui";
+import { Label } from "@/components/ui/label";
 import { MapPin, Plus, Search, Trash2, Map } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,6 +26,8 @@ interface CompanyAddressesForm {
 
 export function CompanyAddressesTab() {
   const [searchingCep, setSearchingCep] = useState<string | null>(null);
+  const [mapOpen, setMapOpen] = useState(false);
+  const [selectedAddressForMap, setSelectedAddressForMap] = useState<Address | null>(null);
 
   const form = useForm<CompanyAddressesForm>({
     defaultValues: {

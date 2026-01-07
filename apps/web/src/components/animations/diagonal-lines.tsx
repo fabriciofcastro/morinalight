@@ -16,6 +16,7 @@ export function DiagonalLines() {
                 }}
             />
 
+            {/* @ts-ignore */}
             <style jsx>{`
         @keyframes diagonal-move {
           0% { transform: translate(0, 0); }

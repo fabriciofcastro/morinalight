@@ -31,24 +31,24 @@ export async function GET(request: Request) {
   let sum = 0;
   let multiplier = 5;
   for (let i = 0; i < 12; i++) {
-    sum += parseInt(cnpjLimpo[i]) * multiplier;
+    sum += parseInt(cnpjLimpo[i]!) * multiplier;
     multiplier = multiplier === 2 ? 9 : multiplier - 1;
   }
   let remainder = sum % 11;
   const firstDigit = remainder < 2 ? 0 : 11 - remainder;
-  if (parseInt(cnpjLimpo[12]) !== firstDigit) {
+  if (parseInt(cnpjLimpo[12]!) !== firstDigit) {
     return NextResponse.json({ message: "CNPJ inválido. Dígito verificador incorreto." }, { status: 400 });
   }
 
   sum = 0;
   multiplier = 6;
   for (let i = 0; i < 13; i++) {
-    sum += parseInt(cnpjLimpo[i]) * multiplier;
+    sum += parseInt(cnpjLimpo[i]!) * multiplier;
     multiplier = multiplier === 2 ? 9 : multiplier - 1;
   }
   remainder = sum % 11;
   const secondDigit = remainder < 2 ? 0 : 11 - remainder;
-  if (parseInt(cnpjLimpo[13]) !== secondDigit) {
+  if (parseInt(cnpjLimpo[13]!) !== secondDigit) {
     return NextResponse.json({ message: "CNPJ inválido. Dígito verificador incorreto." }, { status: 400 });
   }
 

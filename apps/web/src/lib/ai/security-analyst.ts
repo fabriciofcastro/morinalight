@@ -60,9 +60,8 @@ export class AiSecurityAnalyst {
             get_ip_reputation: tool({
                 description: "Get location and reputation information for an IP address.",
                 parameters: z.object({ ip: z.string() }),
-                execute: async ({ ip }) => {
+                execute: async ({ ip }: { ip: string }): Promise<any> => {
                     const geo = GeoIPService.lookup(ip);
-                    // In a real scenario, this would also query VirusTotal or AbuseIPDB
                     return {
                         ip,
                         location: geo ? `${geo.city}, ${geo.country}` : "Unknown",
@@ -74,13 +73,13 @@ export class AiSecurityAnalyst {
             get_user_activity: tool({
                 description: "Get recent activity logs for a specific user.",
                 parameters: z.object({ email: z.string() }),
-                execute: async ({ email }) => {
+                execute: async ({ email }: { email: string }): Promise<any> => {
                     const user = await prisma.user.findUnique({ where: { email } });
                     if (!user) return { error: "User not found" };
 
                     const logs = await prisma.usageLog.findMany({
                         where: { userId: user.id },
-                        orderBy: { timestamp: 'desc' },
+                        orderBy: { createdAt: 'desc' },
                         take: 10
                     });
                     return logs;
@@ -89,7 +88,7 @@ export class AiSecurityAnalyst {
             list_blocked_ips: tool({
                 description: "List currently blocked IP addresses in the firewall.",
                 parameters: z.object({}),
-                execute: async () => {
+                execute: async (): Promise<any> => {
                     return await prisma.blockedIP.findMany({
                         orderBy: { blockedAt: 'desc' }
                     });
@@ -102,7 +101,7 @@ export class AiSecurityAnalyst {
                     reason: z.string(),
                     durationMinutes: z.number().optional()
                 }),
-                execute: async ({ ip, reason, durationMinutes }) => {
+                execute: async ({ ip, reason, durationMinutes }: { ip: string; reason: string; durationMinutes?: number }): Promise<any> => {
                     try {
                         // Use the API to ensure internal consistency (cache warmup, SIEM logging, etc.)
                         const response = await fetch('/api/security/blocked-ips', {
@@ -136,7 +135,6 @@ export class AiSecurityAnalyst {
             system,
             messages,
             tools: this.getTools(),
-            maxSteps: 5 // Allow multi-step reasoning (e.g. find user -> get logs -> analyze)
         });
     }
 }

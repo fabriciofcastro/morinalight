@@ -24,22 +24,22 @@ export function validateCpf(cpf: string): boolean {
   // Calcular primeiro dígito verificador
   let sum = 0;
   for (let i = 0; i < 9; i++) {
-    sum += parseInt(cleaned[i]) * (10 - i);
+    sum += parseInt(cleaned[i]!) * (10 - i);
   }
   let remainder = (sum * 10) % 11;
   if (remainder === 10 || remainder === 11) remainder = 0;
-  if (remainder !== parseInt(cleaned[9])) {
+  if (remainder !== parseInt(cleaned[9]!)) {
     return false;
   }
 
   // Calcular segundo dígito verificador
   sum = 0;
   for (let i = 0; i < 10; i++) {
-    sum += parseInt(cleaned[i]) * (11 - i);
+    sum += parseInt(cleaned[i]!) * (11 - i);
   }
   remainder = (sum * 10) % 11;
   if (remainder === 10 || remainder === 11) remainder = 0;
-  if (remainder !== parseInt(cleaned[10])) {
+  if (remainder !== parseInt(cleaned[10]!)) {
     return false;
   }
 
@@ -78,14 +78,14 @@ export function validateCnpj(cnpj: string): boolean {
   let multiplier = 5;
 
   for (let i = 0; i < 12; i++) {
-    sum += parseInt(cleaned[i]) * multiplier;
+    sum += parseInt(cleaned[i]!) * multiplier;
     multiplier = multiplier === 2 ? 9 : multiplier - 1;
   }
 
   let remainder = sum % 11;
   const firstDigit = remainder < 2 ? 0 : 11 - remainder;
 
-  if (parseInt(cleaned[12]) !== firstDigit) {
+  if (parseInt(cleaned[12]!) !== firstDigit) {
     return false;
   }
 
@@ -94,14 +94,14 @@ export function validateCnpj(cnpj: string): boolean {
   multiplier = 6;
 
   for (let i = 0; i < 13; i++) {
-    sum += parseInt(cleaned[i]) * multiplier;
+    sum += parseInt(cleaned[i]!) * multiplier;
     multiplier = multiplier === 2 ? 9 : multiplier - 1;
   }
 
   remainder = sum % 11;
   const secondDigit = remainder < 2 ? 0 : 11 - remainder;
 
-  if (parseInt(cleaned[13]) !== secondDigit) {
+  if (parseInt(cleaned[13]!) !== secondDigit) {
     return false;
   }
 
@@ -170,7 +170,7 @@ export function validateEmail(email: string, checkDomain = false): boolean {
   }
 
   if (checkDomain) {
-    const domain = email.split("@")[1];
+    const domain = email.split("@")[1]!;
     // Verificar se o domínio tem pelo menos um ponto
     if (!domain || !domain.includes(".")) {
       return false;
@@ -189,13 +189,27 @@ export function validateEmail(email: string, checkDomain = false): boolean {
  * Valida data brasileira (DD/MM/YYYY)
  */
 export function validateDate(dateStr: string): boolean {
-  const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-  const match = dateStr.match(dateRegex);
-  if (!match) return false;
+  // DD/MM/YYYY format
+  const dateRegexBR = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  // YYYY-MM-DD format (ISO)
+  const dateRegexISO = /^(\d{4})-(\d{2})-(\d{2})$/;
 
-  const day = parseInt(match[1], 10);
-  const month = parseInt(match[2], 10);
-  const year = parseInt(match[3], 10);
+  let day, month, year;
+
+  const matchBR = dateStr.match(dateRegexBR);
+  const matchISO = dateStr.match(dateRegexISO);
+
+  if (matchBR) {
+    day = parseInt(matchBR[1]!, 10);
+    month = parseInt(matchBR[2]!, 10);
+    year = parseInt(matchBR[3]!, 10);
+  } else if (matchISO) {
+    year = parseInt(matchISO[1]!, 10);
+    month = parseInt(matchISO[2]!, 10);
+    day = parseInt(matchISO[3]!, 10);
+  } else {
+    return false;
+  }
 
   if (month < 1 || month > 12) return false;
   if (day < 1 || day > 31) return false;

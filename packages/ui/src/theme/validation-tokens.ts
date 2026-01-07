@@ -120,4 +120,3 @@ export function getValidationClasses(
     focusRing: `focus:ring-[${tokens.focusRing}] focus:ring-opacity-[${tokens.focusRingOpacity}]`,
   };
 }
-

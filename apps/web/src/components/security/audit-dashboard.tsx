@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FileText, Search, Download, AlertTriangle, TrendingUp, Filter } from 'lucide-react';
+import { AlertTriangle, Download, FileText, Filter, Search, TrendingUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface AccessLog {
     id: string;
@@ -26,7 +26,11 @@ interface SearchFilters {
     hasAnomalies?: boolean;
 }
 
-export function AuditDashboard() {
+interface AuditDashboardProps {
+    orgId?: string;
+}
+
+export function AuditDashboard({ orgId }: AuditDashboardProps) {
     const [logs, setLogs] = useState<AccessLog[]>([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState<SearchFilters>({});

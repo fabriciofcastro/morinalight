@@ -1,21 +1,20 @@
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { CreatePositionInput, organizationalStructureApi } from "@/lib/api/organizational-structure";
 import { Button, cn } from "@morina/ui";
-import { motion } from "framer-motion";
 import {
     ArrowLeft,
     Briefcase,
     CheckCircle2,
     DollarSign,
-    Save,
+    FileText,
     Loader2,
-    FileText
+    Save
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { organizationalStructureApi, CreatePositionInput } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
 
 interface PositionFormProps {
     mode: "create" | "edit";
@@ -44,6 +43,7 @@ export function PositionForm({ mode, positionId }: PositionFormProps) {
         seniority: "JUNIOR",
         baseSalary: 0,
         active: true,
+        sectorId: "",
         responsabilidades: "",
         requisitos: "",
         salarioMin: 0,
@@ -62,6 +62,7 @@ export function PositionForm({ mode, positionId }: PositionFormProps) {
                 seniority: data.seniority,
                 baseSalary: data.baseSalary || 0,
                 active: data.active,
+                sectorId: data.sectorId || "",
                 responsabilidades: data.responsabilidades || "",
                 requisitos: data.requisitos || "",
                 salarioMin: data.salarioMin || 0,

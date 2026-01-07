@@ -1,0 +1,102 @@
+Total pages found in apps/web/src/app: 167
+Eligible pages for sidebar: 112
+Unique paths/hrefs found in sidebar: 79
+
+❌ Missing pages in sidebar:
+- /admin/branches (apps/web/src/app/(app)/admin/branches/page.tsx)
+- /admin/business-segments (apps/web/src/app/(app)/admin/business-segments/page.tsx)
+- /admin/company (apps/web/src/app/(app)/admin/company/page.tsx)
+- /admin/departments (apps/web/src/app/(app)/admin/departments/page.tsx)
+- /admin/permissions (apps/web/src/app/(app)/admin/permissions/page.tsx)
+- /admin/positions (apps/web/src/app/(app)/admin/positions/page.tsx)
+- /admin/roles (apps/web/src/app/(app)/admin/roles/page.tsx)
+- /admin/sectors (apps/web/src/app/(app)/admin/sectors/page.tsx)
+- /admin/workflow-policies (apps/web/src/app/(app)/admin/workflow-policies/page.tsx)
+- /admin/realtime-lab (apps/web/src/app/(app)/admin/realtime-lab/page.tsx)
+- /admin/users/export (apps/web/src/app/(app)/admin/users/export/page.tsx)
+- /admin/users/checklist (apps/web/src/app/(app)/admin/users/checklist/page.tsx)
+- /admin/users (apps/web/src/app/(app)/admin/users/page.tsx)
+- /admin/status-customizados-ficha-custo/new (apps/web/src/app/(app)/admin/status-customizados-ficha-custo/new/page.tsx)
+- /admin/status-customizados-ficha-custo (apps/web/src/app/(app)/admin/status-customizados-ficha-custo/page.tsx)
+- /admin/subdepartments/new (apps/web/src/app/(app)/admin/subdepartments/new/page.tsx)
+- /admin/notifications (apps/web/src/app/(app)/admin/notifications/page.tsx)
+- /admin/products/list (apps/web/src/app/(app)/admin/products/list/page.tsx)
+- /admin/products/new (apps/web/src/app/(app)/admin/products/new/page.tsx)
+- /admin/products/export (apps/web/src/app/(app)/admin/products/export/page.tsx)
+- /admin/products/import (apps/web/src/app/(app)/admin/products/import/page.tsx)
+- /admin/stock (apps/web/src/app/(app)/admin/stock/page.tsx)
+- /admin/suppliers/list (apps/web/src/app/(app)/admin/suppliers/list/page.tsx)
+- /admin/suppliers/new (apps/web/src/app/(app)/admin/suppliers/new/page.tsx)
+- /admin/security (apps/web/src/app/(app)/admin/security/page.tsx)
+- /clientes (apps/web/src/app/(app)/clientes/page.tsx)
+- /clients (apps/web/src/app/(app)/clients/page.tsx)
+- /comissoes (apps/web/src/app/(app)/comissoes/page.tsx)
+- /design/colecoes (apps/web/src/app/(app)/design/colecoes/page.tsx)
+- /logistica/expedicao (apps/web/src/app/(app)/logistica/expedicao/page.tsx)
+- /producao/qualidade (apps/web/src/app/(app)/producao/qualidade/page.tsx)
+- /products (apps/web/src/app/(app)/products/page.tsx)
+- /representantes (apps/web/src/app/(app)/representantes/page.tsx)
+- /settings/company (apps/web/src/app/(app)/settings/company/page.tsx)
+- /settings/organizational-structure (apps/web/src/app/(app)/settings/organizational-structure/page.tsx)
+- /settings/permissions (apps/web/src/app/(app)/settings/permissions/page.tsx)
+- /settings/invites (apps/web/src/app/(app)/settings/invites/page.tsx)
+- /settings/notifications/history (apps/web/src/app/(app)/settings/notifications/history/page.tsx)
+- /settings/notifications/preferences (apps/web/src/app/(app)/settings/notifications/preferences/page.tsx)
+- /settings/profiles (apps/web/src/app/(app)/settings/profiles/page.tsx)
+- /settings/users (apps/web/src/app/(app)/settings/users/page.tsx)
+- /settings (apps/web/src/app/(app)/settings/page.tsx)
+- /settings/security (apps/web/src/app/(app)/settings/security/page.tsx)
+- /users (apps/web/src/app/(app)/users/page.tsx)
+- /fichas-custo/status-customizados (apps/web/src/app/(app)/fichas-custo/status-customizados/page.tsx)
+- /fichas-custo (apps/web/src/app/(app)/fichas-custo/page.tsx)
+- /pre-fichas-tecnicas (apps/web/src/app/(app)/pre-fichas-tecnicas/page.tsx)
+- /profile (apps/web/src/app/(app)/profile/page.tsx)
+- /fornecedores/import (apps/web/src/app/(app)/fornecedores/import/page.tsx)
+- /fornecedores (apps/web/src/app/(app)/fornecedores/page.tsx)
+- /insumos/new (apps/web/src/app/(app)/insumos/new/page.tsx)
+- /insumos (apps/web/src/app/(app)/insumos/page.tsx)
+- /analytics/reports (apps/web/src/app/(app)/analytics/reports/page.tsx)
+- /catalogo/auditoria (apps/web/src/app/catalogo/auditoria/page.tsx)
+- /suppliers (apps/web/src/app/suppliers/page.tsx)
+- /certifications/iso27001 (apps/web/src/app/certifications/iso27001/page.tsx)
+- /certifications/soc2 (apps/web/src/app/certifications/soc2/page.tsx)
+- /certifications/pci-dss (apps/web/src/app/certifications/pci-dss/page.tsx)
+- /certifications (apps/web/src/app/certifications/page.tsx)
+- /demo/future-improvements (apps/web/src/app/demo/future-improvements/page.tsx)
+- /admin/permissions/audit (apps/web/src/app/(dashboard)/admin/permissions/audit/page.tsx)
+
+Summary:
+Missing: 61
+Covered: 51
+Coverage: 45.54%
+
+⚠️ Sidebar items without matching (eligible) route:
+- /products/list
+- /products/new
+- /pre-fichas-tecnicas/list
+- /pre-fichas-tecnicas/new
+- /admin/categories/new
+- /suppliers/list
+- /suppliers/new
+- /representantes/list
+- /representantes/new
+- /sales/list
+- /sales/new
+- /commissions/reports
+- /reports
+- /reports/financial
+- /reports/operational
+- /admin/users/inactive
+- /invite
+- /invite/new
+- /admin/security/monitor
+- /admin/security/login-attempts
+- /admin/security/blocked-ips
+- /admin/security/sessions
+- /admin/security/settings
+- /demo
+- /notifications/history
+- /settings/profile
+- /settings/preferences
+- /settings/integrations
+- /settings/backup

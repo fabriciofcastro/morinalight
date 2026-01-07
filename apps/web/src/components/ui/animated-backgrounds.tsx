@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo } from "react";
+
+import { useEffect, useMemo, useState } from "react";
 
 interface Particle {
     id: number;
@@ -21,15 +22,17 @@ export function GridAnimatedBackground({
     variant = "default",
     className = ""
 }: GridAnimatedBackgroundProps) {
-    const particles = useMemo(() => {
-        return Array.from({ length: 40 }, (_, i) => ({
+    const [particles, setParticles] = useState<Particle[]>([]);
+
+    useEffect(() => {
+        setParticles(Array.from({ length: 40 }, (_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
             size: Math.random() * 3 + 1,
             duration: Math.random() * 20 + 15,
             delay: Math.random() * 5,
-        }));
+        })));
     }, []);
 
     const gradientColors = useMemo(() => {
@@ -195,13 +198,15 @@ export function WaveAnimatedBackground({ variant = "default", className = "" }: 
 }
 
 export function DotMatrixBackground({ variant = "default", className = "" }: GridAnimatedBackgroundProps) {
-    const dots = useMemo(() => {
-        return Array.from({ length: 200 }, (_, i) => ({
+    const [dots, setDots] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+
+    useEffect(() => {
+        setDots(Array.from({ length: 200 }, (_, i) => ({
             id: i,
             x: (i % 20) * 5,
             y: Math.floor(i / 20) * 5,
             delay: Math.random() * 2,
-        }));
+        })));
     }, []);
 
     return (

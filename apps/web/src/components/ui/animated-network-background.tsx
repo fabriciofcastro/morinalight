@@ -94,6 +94,7 @@ export function AnimatedNetworkBackground({
                 // Draw connections between particles
                 for (let j = i + 1; j < particlesRef.current.length; j++) {
                     const p2 = particlesRef.current[j];
+                    if (!p2) continue;
                     const dx = p.x - p2.x;
                     const dy = p.y - p2.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -103,7 +104,7 @@ export function AnimatedNetworkBackground({
                         ctx.strokeStyle = `rgba(${color}, ${1 - dist / 120})`;
                         ctx.lineWidth = 0.5;
                         ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
+                        ctx.lineTo(p2!.x, p2!.y);
                         ctx.stroke();
                     }
                 }

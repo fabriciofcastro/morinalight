@@ -41,7 +41,7 @@ export interface VirtualScrollResult<T> {
     /**
      * Ref para o container
      */
-    containerRef: React.RefObject<HTMLDivElement>;
+    containerRef: React.RefObject<HTMLDivElement | null>;
 
     /**
      * Scroll para um índice específico
@@ -157,7 +157,7 @@ export function VirtualList<T>({
         >
             <div style={{ height: `${totalHeight}px`, position: "relative" }}>
                 {virtualItems.map(({ index, data, style }) => (
-                    <div key={index} style={style}>
+                    <div key={index} style={style as any}>
                         {renderItem(data, index)}
                     </div>
                 ))}

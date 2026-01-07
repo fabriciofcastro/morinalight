@@ -1,27 +1,26 @@
 "use client";
 
-import { Button, GlassCard, Input, Label, cn } from "@morina/ui";
-import {
-  Calendar,
-  CreditCard,
-  FileText,
-  GitCompare,
-  GraduationCap,
-  Home,
-  Lock,
-  Mail,
-  MapPin,
-  Phone,
-  Plus,
-  Search,
-  Settings,
-  User,
-  Upload,
-  X,
-} from "lucide-react";
-import { useState, useEffect } from "react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { notificationCenter } from "@/components/notifications/notification-center";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { Button, Input, Label, cn } from "@morina/ui";
+import {
+    CreditCard,
+    FileText,
+    GitCompare,
+    GraduationCap,
+    Home,
+    Lock,
+    Mail,
+    MapPin,
+    Phone,
+    Plus,
+    Search,
+    Settings,
+    Upload,
+    User,
+    X
+} from "lucide-react";
+import { useState } from "react";
 
 type UserProfileTabProps = {
   userId: string;
@@ -1409,7 +1408,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                         value={inst.nome}
                         onChange={(e) => {
                           const newInst = [...academicData.instituicoes];
-                          newInst[idx] = { ...newInst[idx], nome: e.target.value };
+                          newInst[idx] = { ...newInst[idx]!, nome: e.target.value } as any;
                           setAcademicData((prev) => ({ ...prev, instituicoes: newInst }));
                         }}
                         placeholder="Nome da instituição"
@@ -1418,7 +1417,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                         value={inst.curso}
                         onChange={(e) => {
                           const newInst = [...academicData.instituicoes];
-                          newInst[idx] = { ...newInst[idx], curso: e.target.value };
+                          newInst[idx] = { ...newInst[idx]!, curso: e.target.value } as any;
                           setAcademicData((prev) => ({ ...prev, instituicoes: newInst }));
                         }}
                         placeholder="Curso"
@@ -1428,7 +1427,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                           value={inst.anoConclusao}
                           onChange={(e) => {
                             const newInst = [...academicData.instituicoes];
-                            newInst[idx] = { ...newInst[idx], anoConclusao: e.target.value };
+                            newInst[idx] = { ...newInst[idx]!, anoConclusao: e.target.value } as any;
                             setAcademicData((prev) => ({ ...prev, instituicoes: newInst }));
                           }}
                           placeholder="Ano de conclusão"
@@ -1530,7 +1529,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                             const file = e.target.files?.[0];
                             if (file) {
                               const newCerts = [...academicData.certificacoes];
-                              newCerts[idx] = { ...newCerts[idx], arquivo: file };
+                              newCerts[idx] = { ...newCerts[idx]!, arquivo: file } as any;
                               setAcademicData((prev) => ({ ...prev, certificacoes: newCerts }));
                             }
                           }}
@@ -1584,7 +1583,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                         value={idioma.idioma}
                         onChange={(e) => {
                           const newIdiomas = [...academicData.idiomas];
-                          newIdiomas[idx] = { ...newIdiomas[idx], idioma: e.target.value };
+                          newIdiomas[idx] = { ...newIdiomas[idx]!, idioma: e.target.value } as any;
                           setAcademicData((prev) => ({ ...prev, idiomas: newIdiomas }));
                         }}
                         placeholder="Idioma"
@@ -1594,7 +1593,7 @@ export function UserProfileTab({ userId, user, onUserUpdated }: UserProfileTabPr
                           value={idioma.nivel}
                           onChange={(e) => {
                             const newIdiomas = [...academicData.idiomas];
-                            newIdiomas[idx] = { ...newIdiomas[idx], nivel: e.target.value };
+                            newIdiomas[idx] = { ...newIdiomas[idx]!, nivel: e.target.value } as any;
                             setAcademicData((prev) => ({ ...prev, idiomas: newIdiomas }));
                           }}
                           className="flex h-10 w-full border border-white/10 bg-white/5 px-3 text-sm text-white focus:border-[hsl(var(--primary))] focus:outline-none"

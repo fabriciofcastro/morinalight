@@ -1,38 +1,48 @@
 "use client";
 
+import { BrazilSalesMap } from "@/components/analytics/brazil-sales-map";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { GridAnimatedBackground } from "@/components/ui/animated-backgrounds";
+import { analyticsApi, CustomerSegment, InventoryInsight, SalesData, SupplierPerformance } from "@/lib/api/analytics";
+import { Button, cn } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+    Activity,
+    ArrowUpRight,
+    BarChart3,
+    DollarSign,
     Download,
     FileText,
-    TrendingUp,
-    Filter,
-    Calendar,
-    BarChart3,
-    PieChart,
-    Activity,
-    DollarSign,
-    Package,
-    Users,
-    Truck,
-    Settings,
-    ArrowUpRight,
-    ChevronDown,
-    Zap,
     Layers,
+    LocateFixed,
     MapPin,
-    LocateFixed
+    Package,
+    PieChart,
+    Settings,
+    TrendingUp,
+    Truck,
+    Users,
+    Zap
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
-    LineChart, Line, BarChart, Bar, PieChart as RechartsPie, Pie, Cell,
-    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, ComposedChart, Rectangle
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    ComposedChart,
+    Legend,
+    Line,
+    Pie,
+    PieChart as RechartsPie,
+    Rectangle,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis, YAxis
 } from 'recharts';
-import { Button, cn } from "@morina/ui";
-import { analyticsApi, SalesData, SupplierPerformance, InventoryInsight, CustomerSegment } from "@/lib/api/analytics";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { GridAnimatedBackground } from "@/components/ui/animated-backgrounds";
-import { BrazilSalesMap } from "@/components/analytics/brazil-sales-map";
 
 type ReportType = 'sales' | 'suppliers' | 'inventory' | 'customers';
 
@@ -80,7 +90,7 @@ export function AnalyticsDashboardClient() {
             if (activeReport === 'sales') {
                 // Get sales data from API
                 const data = await analyticsApi.getSalesChart(orgId, period);
-                setSalesData(data);
+                setSalesData(data as any);
             } else if (activeReport === 'suppliers') {
                 const data = await analyticsApi.getSupplierPerformance(orgId);
                 setSupplierPerformance(data);
@@ -783,7 +793,7 @@ function MetricCard({ title, value, icon: Icon, color, change }: any) {
             whileHover={{ y: -4 }}
             className="p-6 rounded-2xl bg-[#090b16]/40 border border-white/5 backdrop-blur-md shadow-lg hover:shadow-xl hover:border-white/10 transition-all cursor-pointer group relative overflow-hidden"
         >
-            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-20 ${colorClasses[color]?.split(" ")[0].replace("text", "bg")}`} />
+            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-20 ${colorClasses[color]?.split(" ")[0]!.replace("text", "bg")}`} />
 
             <div className="flex justify-between items-start mb-4 relative z-10">
                 <p className="text-sm font-medium text-white/50">{title}</p>

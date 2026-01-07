@@ -78,7 +78,7 @@ export const suppliersImportApi = {
       }
     );
 
-    return response.data.preview;
+    return response.preview;
   },
 
   /**
@@ -95,7 +95,7 @@ export const suppliersImportApi = {
       }
     );
 
-    return response.data.result;
+    return response.result;
   },
 
   /**
@@ -106,7 +106,7 @@ export const suppliersImportApi = {
       responseType: "blob",
     });
 
-    const blob = new Blob([response.data], { type: "text/csv" });
+    const blob = new Blob([response as unknown as BlobPart], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;

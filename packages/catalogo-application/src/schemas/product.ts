@@ -27,7 +27,7 @@ export const produtoViewSchema = produtoBaseSchema.extend({
   atualizadoEm: z.date(),
 });
 
-export const varianteAtributosSchema = z.record(z.union([z.string(), z.number(), z.boolean()]));
+export const varianteAtributosSchema = z.record(z.string(), z.union([z.string(), z.number(), z.boolean()]));
 
 export const criarVarianteInputSchema = z.object({
   orgId: z.string().min(1),

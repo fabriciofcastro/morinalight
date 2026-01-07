@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Alert } from '@/components/ui/Alert';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Alert } from '@/components/ui/Alert';
-import { Loader2, Shield, Copy, Check } from 'lucide-react';
+import { Check, Copy, Loader2, Shield } from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
 
-interface MFASetupProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+interface MFASetupModalProps {
+    onClose: () => void;
     onSuccess?: () => void;
 }
 
-export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
+export function MFASetupModal({ onClose, onSuccess }: MFASetupModalProps) {
     const [step, setStep] = useState<'setup' | 'verify' | 'backup'>('setup');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -83,7 +82,7 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
     };
 
     const handleComplete = () => {
-        onOpenChange(false);
+        onClose();
         onSuccess?.();
         // Reset state
         setTimeout(() => {
@@ -108,7 +107,7 @@ export function MFASetup({ open, onOpenChange, onSuccess }: MFASetupProps) {
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">

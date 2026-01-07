@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "./popover";
 import { Button } from "./button";
 import { Input } from "./input";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 const meta: Meta<typeof Popover> = {
   title: "Components/Popover",
@@ -89,12 +85,3 @@ export const WithList: Story = {
     </Popover>
   ),
 };
-
-
-
-
-
-
-
-
-

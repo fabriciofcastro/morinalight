@@ -3,16 +3,13 @@
  * Utilitários para aplicar focus rings consistentes e acessíveis
  */
 
+import { type FocusRingConfig, focusRingSpecs } from "../theme/token-scales";
 import { cn } from "./cn";
-import { focusRingSpecs, type FocusRingConfig } from "../theme/token-scales";
 
 /**
  * Gera classes Tailwind para focus ring
  */
-export function getFocusRingClasses(
-  config: FocusRingConfig = {},
-  className?: string,
-): string {
+export function getFocusRingClasses(config: FocusRingConfig = {}, className?: string): string {
   const {
     width = "base",
     offset = "base",
@@ -53,7 +50,9 @@ export function getFocusRingStyles(config: FocusRingConfig = {}): React.CSSPrope
 
   const widthValue = focusRingSpecs.width[width];
   const offsetValue = focusRingSpecs.offset[offset];
-  const colorWithOpacity = `${color}${Math.round(opacity * 255).toString(16).padStart(2, "0")}`;
+  const colorWithOpacity = `${color}${Math.round(opacity * 255)
+    .toString(16)
+    .padStart(2, "0")}`;
 
   return {
     outline: "none",
@@ -71,4 +70,3 @@ export function useFocusRing(config: FocusRingConfig = {}) {
     style: getFocusRingStyles(config),
   };
 }
-

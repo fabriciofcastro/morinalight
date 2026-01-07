@@ -27,15 +27,14 @@ eventBus.on(USER_EVENTS.CREATED, async (event) => {
 
 // Handler: Criar audit log
 eventBus.on(USER_EVENTS.CREATED, async (event) => {
-    await auditService.logSuccess(
-        "user_created",
-        event.userId || "system",
-        "user",
-        {
-            resourceId: event.payload.userId,
-            metadata: event.payload,
-        },
-    );
+    await auditService.log({
+        action: "user_created",
+        userId: event.userId || "system",
+        resource: "user",
+        resourceId: event.payload.userId,
+        success: true,
+        metadata: event.payload,
+    });
 
     console.log(`[Handler] Audit log created for user ${event.payload.userId}`);
 });

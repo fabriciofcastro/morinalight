@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import {
-    Clock,
-    Save,
-    X,
-    Globe,
-    CalendarDays
-} from "lucide-react";
-import {
-    GlassCard,
-    GlassInput,
-    Button,
-    GlassSelect
-} from "@/components/ui/futuristic";
 import { TimeWindow } from "@morina/shared-kernel";
+import {
+    Button,
+    GlassCard,
+    Input,
+    NativeSelect
+} from "@morina/ui";
+import {
+    CalendarDays,
+    Clock,
+    Globe,
+    Save,
+    X
+} from "lucide-react";
+import { useState } from "react";
 
 interface TimeWindowFormProps {
     initialData?: Partial<TimeWindow>;
@@ -81,7 +81,7 @@ export function TimeWindowForm({ initialData, onSave, onCancel }: TimeWindowForm
                     <div className="space-y-4">
                         <div>
                             <label className="text-xs font-semibold text-white/60 mb-1.5 block uppercase tracking-wider">Nome da Regra</label>
-                            <GlassInput
+                            <Input
                                 placeholder="Ex: Horário Comercial"
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -91,7 +91,7 @@ export function TimeWindowForm({ initialData, onSave, onCancel }: TimeWindowForm
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-xs font-semibold text-white/60 mb-1.5 block uppercase tracking-wider">Início</label>
-                                <GlassInput
+                                <Input
                                     type="time"
                                     value={formData.startTime}
                                     onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
@@ -100,7 +100,7 @@ export function TimeWindowForm({ initialData, onSave, onCancel }: TimeWindowForm
                             </div>
                             <div>
                                 <label className="text-xs font-semibold text-white/60 mb-1.5 block uppercase tracking-wider">Fim</label>
-                                <GlassInput
+                                <Input
                                     type="time"
                                     value={formData.endTime}
                                     onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
@@ -112,16 +112,15 @@ export function TimeWindowForm({ initialData, onSave, onCancel }: TimeWindowForm
                             <label className="text-xs font-semibold text-white/60 mb-1.5 block uppercase tracking-wider flex items-center gap-2">
                                 <Globe className="h-3 w-3" /> Fuso Horário
                             </label>
-                            <GlassSelect
+                            <NativeSelect
                                 value={formData.timezone || "America/Sao_Paulo"}
-                                onChange={(val: string) => setFormData({ ...formData, timezone: val })}
-                                options={[
-                                    { value: "America/Sao_Paulo", label: "Brasília (BRT)" },
-                                    { value: "UTC", label: "UTC / GMT" },
-                                    { value: "America/New_York", label: "New York (EST)" },
-                                    { value: "Europe/London", label: "London (GMT)" },
-                                ]}
-                            />
+                                onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
+                            >
+                                <option value="America/Sao_Paulo" className="bg-[#1a1f3a]">Brasília (BRT)</option>
+                                <option value="UTC" className="bg-[#1a1f3a]">UTC / GMT</option>
+                                <option value="America/New_York" className="bg-[#1a1f3a]">New York (EST)</option>
+                                <option value="Europe/London" className="bg-[#1a1f3a]">London (GMT)</option>
+                            </NativeSelect>
                         </div>
                     </div>
 
@@ -158,7 +157,7 @@ export function TimeWindowForm({ initialData, onSave, onCancel }: TimeWindowForm
                     <Button variant="secondary" type="button" onClick={onCancel}>
                         Descartar
                     </Button>
-                    <Button variant="primary" type="submit" className="min-w-[120px] bg-amber-500 hover:bg-amber-400 text-black border-none">
+                    <Button variant="default" type="submit" className="min-w-[120px] bg-amber-500 hover:bg-amber-400 text-black border-none">
                         <Save className="mr-2 h-4 w-4" />
                         Salvar Janela
                     </Button>

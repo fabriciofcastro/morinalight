@@ -1,9 +1,11 @@
 "use client";
 
+import { useEventBus } from "@/hooks/use-event-bus";
+import { USER_EVENTS } from "@/lib/events";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, cn, Input, Label } from "@morina/ui";
-import { AnimatePresence, motion } from "framer-motion";
 import { startAuthentication } from "@simplewebauthn/browser";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Fingerprint, Loader2, ShieldCheck, ShieldX } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -12,13 +14,13 @@ import { z } from "zod";
 
 const loginSchema = z.object({
   email: z
-    .string({ required_error: "Informe um e-mail corporativo." })
+    .string()
     .trim()
-    .min(1, "Informe um e-mail corporativo.")
-    .email("Formato de e-mail inválido."),
+    .min(1, { message: "Informe um e-mail corporativo." })
+    .email({ message: "Formato de e-mail inválido." }),
   password: z
-    .string({ required_error: "A senha precisa de pelo menos 8 caracteres." })
-    .min(8, "A senha precisa de pelo menos 8 caracteres."),
+    .string()
+    .min(8, { message: "A senha precisa de pelo menos 8 caracteres." }),
   remember: z.boolean(),
 });
 
@@ -41,6 +43,7 @@ type LoginFormProps = {
 
 export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFormProps) {
   const router = useRouter();
+  const { emit } = useEventBus();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -79,6 +82,13 @@ export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFo
         setStatus("success");
         setMessage("Acesso autorizado. Redirecionando...");
         reset({ ...data, password: "" });
+
+        await emit(USER_EVENTS.LOGIN, {
+          email: data.email,
+          method: 'custom_handler',
+          timestamp: new Date()
+        });
+
         setTimeout(() => {
           router.push("/dashboard");
         }, 1500);
@@ -122,6 +132,13 @@ export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFo
             user: payload.user,
             organizations: payload.organizations ?? [],
           });
+
+          await emit(USER_EVENTS.LOGIN, {
+            userId: payload.user.id,
+            email: payload.user.email,
+            timestamp: new Date(),
+            method: 'email_password'
+          });
         }
 
         setTimeout(() => {
@@ -156,58 +173,61 @@ export function LoginForm({ onAuthenticate, onNotice, onDismissNotice }: LoginFo
         setMessage(errorMessage);
       }
     });
-    const handlePasskeyLogin = async () => {
-      setStatus("idle");
-      setMessage(null);
-      startTransition(async () => {
-        try {
-          // 1. Get options
-          const emailValue = watch("email");
-          const resp = await fetch("/api/auth/webauthn/login/start", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: emailValue }),
-          });
-          const options = await resp.json();
-          if (options.error) throw new Error(options.error);
+  };
 
-          // 2. Browser Prompt
-          const authResp = await startAuthentication(options);
+  const handlePasskeyLogin = async () => {
+    setStatus("idle");
+    setMessage(null);
+    startTransition(async () => {
+      try {
+        // 1. Get options
+        const emailValue = watch("email");
+        const resp = await fetch("/api/auth/webauthn/login/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailValue }),
+        });
+        const options = await resp.json();
+        if (options.error) throw new Error(options.error);
 
-          // 3. Verify
-          const verifyResp = await fetch("/api/auth/webauthn/login/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ response: authResp }),
-          });
+        // 2. Browser Prompt
+        const authResp = await startAuthentication(options);
 
-          const verifyJson = await verifyResp.json();
-          console.log("Verify Answer", verifyJson)
-          if (!verifyJson.verified) throw new Error("Falha na autenticação via Passkey.");
+        // 3. Verify
+        const verifyResp = await fetch("/api/auth/webauthn/login/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ response: authResp }),
+        });
+
+        const verifyJson = await verifyResp.json();
+        console.log("Verify Answer", verifyJson)
+        if (!verifyJson.verified) throw new Error("Falha na autenticação via Passkey.");
 
 
-          // 4. Success -> Redirect
-          setStatus("success");
-          setMessage("Autenticado via Passkey! Redirecionando...");
+        // 4. Success -> Redirect
+        setStatus("success");
+        setMessage("Autenticado via Passkey! Redirecionando...");
 
-          // Definir sessão no cliente também se necessário (embora cookie httpOnly já resolva)
-          // setAuthSession({ token: "cookie-handled", user: {}, organizations: [] }); 
+        await emit(USER_EVENTS.LOGIN, {
+          email: emailValue,
+          timestamp: new Date(),
+          method: 'passkey'
+        });
 
-          if (verifyJson.redirect) {
-            window.location.href = verifyJson.redirect;
-          } else {
-            router.push("/dashboard");
-          }
-
-        } catch (err: any) {
-          console.error(err);
-          setStatus("error");
-          setMessage("Erro ao entrar com Passkey. Tente usar senha ou verifique o dispositivo.");
+        if (verifyJson.redirect) {
+          window.location.href = verifyJson.redirect;
+        } else {
+          router.push("/dashboard");
         }
-      });
-    };
 
-  }
+      } catch (err: any) {
+        console.error(err);
+        setStatus("error");
+        setMessage("Erro ao entrar com Passkey. Tente usar senha ou verifique o dispositivo.");
+      }
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-6" noValidate>

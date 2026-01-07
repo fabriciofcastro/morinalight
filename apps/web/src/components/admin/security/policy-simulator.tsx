@@ -1,22 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import {
-    Play,
-    User,
-    Clock,
-    Box,
-    CheckCircle2,
-    XCircle,
-    Info
-} from "lucide-react";
-import {
-    GlassCard,
-    Button,
-    GlassInput,
-    Badge
-} from "@/components/ui/futuristic";
 import { PolicyCompiler } from "@morina/shared-kernel";
+import {
+    Badge,
+    Button,
+    GlassCard,
+    Input
+} from "@morina/ui";
+import {
+    Clock,
+    Info,
+    Play,
+    User
+} from "lucide-react";
+import { useState } from "react";
 
 /**
  * Policy Simulator
@@ -67,7 +64,7 @@ export function PolicySimulator({ policy }: { policy: any }) {
                         <div className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase">
                             <User className="h-3 w-3" /> Perfil do Usuário
                         </div>
-                        <GlassInput
+                        <Input
                             value={context.userRole}
                             onChange={(e) => setContext({ ...context, userRole: e.target.value })}
                             placeholder="Cargo (ex: MANAGER, ADMIN)"
@@ -78,14 +75,14 @@ export function PolicySimulator({ policy }: { policy: any }) {
                         <div className="flex items-center gap-2 text-xs font-bold text-white/40 uppercase">
                             <Clock className="h-3 w-3" /> Horário do Evento
                         </div>
-                        <GlassInput
+                        <Input
                             type="time"
                             value={context.time}
                             onChange={(e) => setContext({ ...context, time: e.target.value })}
                         />
                     </div>
 
-                    <Button variant="primary" className="w-full bg-blue-600 hover:bg-blue-500" onClick={runSimulation}>
+                    <Button variant="default" className="w-full bg-blue-600 hover:bg-blue-500" onClick={runSimulation}>
                         <Play className="mr-2 h-4 w-4" /> Executar Dry-Run
                     </Button>
                 </div>
@@ -94,7 +91,7 @@ export function PolicySimulator({ policy }: { policy: any }) {
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Resultado do Teste</span>
                         {result !== null && (
-                            <Badge variant={result ? "success" : "destructive"}>
+                            <Badge variant={result ? "success" : "danger"}>
                                 {result ? "ALLOWED" : "DENIED"}
                             </Badge>
                         )}

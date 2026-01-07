@@ -38,7 +38,7 @@ export function DepartmentForm({ initialData, onSubmit, onSuccess, onCancel }: D
                     label="Nome"
                     value={formData.name}
                     onChange={(e) => setValue("name", e.target.value)}
-                    error={errors.name}
+                    error={!!errors.name}
                     startIcon={<Building2 className="h-4 w-4" />}
                     placeholder="Ex: Recursos Humanos"
                     required
@@ -47,7 +47,7 @@ export function DepartmentForm({ initialData, onSubmit, onSuccess, onCancel }: D
                     label="Código"
                     value={formData.code}
                     onChange={(e) => setValue("code", e.target.value)}
-                    error={errors.code}
+                    error={!!errors.code}
                     startIcon={<Code className="h-4 w-4" />}
                     placeholder="Ex: RH-01"
                     required
@@ -57,7 +57,7 @@ export function DepartmentForm({ initialData, onSubmit, onSuccess, onCancel }: D
                         label="Descrição"
                         value={formData.description || ""}
                         onChange={(e) => setValue("description", e.target.value)}
-                        error={errors.description}
+                        error={!!errors.description}
                         startIcon={<FileText className="h-4 w-4" />}
                         placeholder="Descrição das atividades do departamento"
                     />
@@ -65,7 +65,7 @@ export function DepartmentForm({ initialData, onSubmit, onSuccess, onCancel }: D
                 <FuturisticSelect
                     label="Status"
                     value={formData.active ? "ativo" : "inativo"}
-                    onChange={(val) => setValue("active", val === "ativo")}
+                    onChange={(e) => setValue("active", e.target.value === "ativo")}
                     options={[
                         { value: "ativo", label: "Ativo" },
                         { value: "inativo", label: "Inativo" },

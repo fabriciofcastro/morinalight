@@ -1,1 +1,11 @@
-pnpm lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Validações rápidas antes do commit
+echo "🔍 Validando FSD..."
+node scripts/validate-fsd.js || exit 1
+
+echo "🔍 Type checking..."
+pnpm type-check || exit 1
+
+echo "✅ Validações OK!"

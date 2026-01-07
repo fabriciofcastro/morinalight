@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useId, useState } from "react";
 
 /**
  * Input Futurista Padronizado
@@ -35,11 +35,15 @@ export function FuturisticInput({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <input
           id={inputId}
-          {...props}
-          onFocus={() => {
+          {...(props as any)}
+          onFocus={(e) => {
             setShowTooltip(error && !!errorMessage);
+            props.onFocus?.(e);
           }}
-          onBlur={() => setShowTooltip(false)}
+          onBlur={(e) => {
+            setShowTooltip(false);
+            props.onBlur?.(e);
+          }}
           className={`relative w-full px-4 py-3 rounded-lg border ${
             error ? "border-red-500 border-2" : "border-white/20"
           } bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300`}
@@ -96,9 +100,15 @@ export function FuturisticSelect({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <select
           id={selectId}
-          {...props}
-          onFocus={() => setShowTooltip(error && !!errorMessage)}
-          onBlur={() => setShowTooltip(false)}
+          {...(props as any)}
+          onFocus={(e) => {
+            setShowTooltip(error && !!errorMessage);
+            props.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setShowTooltip(false);
+            props.onBlur?.(e);
+          }}
           className={`relative w-full px-4 py-3 rounded-lg border ${
             error ? "border-red-500 border-2" : "border-white/20"
           } bg-white/5 backdrop-blur-sm text-white focus:outline-none focus:border-blue-500 hover:border-blue-500/50 transition-all duration-300 appearance-none cursor-pointer`}
@@ -154,7 +164,7 @@ export function FuturisticTextarea({
         <div className="absolute -inset-px bg-linear-to-r from-blue-500/0 to-blue-500/0 rounded-lg group-hover:from-blue-500/30 group-hover:to-blue-400/30 blur-sm transition-all duration-300 group-focus-within:hidden" />
         <textarea
           id={textareaId}
-          {...props}
+          {...(props as any)}
           className={`relative w-full px-4 py-3 rounded-lg border ${
             error ? "border-red-500 border-2" : "border-white/20"
           } bg-white/5 backdrop-blur-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:border-blue-500/50 transition-all duration-300 resize-none`}

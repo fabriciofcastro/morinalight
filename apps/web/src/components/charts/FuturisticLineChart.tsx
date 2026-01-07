@@ -18,7 +18,7 @@ interface LineChartData {
 }
 
 interface FuturisticLineChartProps {
-    data?: LineChartData[];
+    data?: any[]; // Accept any array structure
     lines?: Array<{
         dataKey: string;
         name: string;
@@ -27,6 +27,9 @@ interface FuturisticLineChartProps {
     isLoading?: boolean;
     error?: Error | null;
     title?: string;
+    xKey?: string; // Optional: key for x-axis
+    yKey?: string; // Optional: key for y-axis (single line mode)
+    color?: string; // Optional: color for single line mode
 }
 
 const defaultLines = [
@@ -37,11 +40,18 @@ const defaultLines = [
 
 export function FuturisticLineChart({
     data,
-    lines = defaultLines,
+    lines,
     isLoading,
     error,
-    title = "Métricas Comparativas"
+    title = "Métricas Comparativas",
+    xKey = "name",
+    yKey,
+    color = "#3b82f6"
 }: FuturisticLineChartProps) {
+    // If yKey is provided, create a single line config
+    const effectiveLines = yKey
+        ? [{ dataKey: yKey, name: title, color }]
+        : (lines || defaultLines);
     // Loading skeleton
     if (isLoading) {
         return (
@@ -118,7 +128,7 @@ export function FuturisticLineChart({
                         }}
                     >
                         <defs>
-                            {lines.map((line) => (
+                            {effectiveLines.map((line) => (
                                 <linearGradient
                                     key={`gradient-${line.dataKey}`}
                                     id={`gradient-${line.dataKey}`}
@@ -134,7 +144,7 @@ export function FuturisticLineChart({
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                         <XAxis
-                            dataKey="name"
+                            dataKey={xKey}
                             stroke="rgba(255,255,255,0.5)"
                             fontSize={12}
                             tickLine={false}
@@ -163,7 +173,7 @@ export function FuturisticLineChart({
                             iconType="line"
                             formatter={(value) => <span style={{ color: "rgba(255,255,255,0.7)" }}>{value}</span>}
                         />
-                        {lines.map((line) => (
+                        {effectiveLines.map((line) => (
                             <Line
                                 key={line.dataKey}
                                 type="monotone"

@@ -13,4 +13,16 @@ export interface Certification {
         evidence: string[];
         score?: number;
     };
+    controls?: {
+        id: string;
+        name: string;
+        status: 'Compliant' | 'Pending' | 'Not Applicable';
+    }[];
+    metadata?: {
+        certificateNumber?: string;
+        issuedDate?: string;
+        expiryDate?: string;
+        auditScope?: string;
+    };
 }
+

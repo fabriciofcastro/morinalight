@@ -293,6 +293,7 @@ export interface Sector {
     type: string;
     active: boolean;
     departmentId: string;
+    subdepartmentId?: string;
     filialId?: string;
     parentId?: string;
     metadata?: Record<string, unknown>;
@@ -307,6 +308,7 @@ export interface CreateSectorInput {
     type: string;
     active?: boolean;
     departmentId: string;
+    subdepartmentId?: string;
     filialId?: string;
     parentId?: string;
     metadata?: Record<string, unknown>;
@@ -324,6 +326,7 @@ export interface Position {
     seniority: string;
     baseSalary?: number;
     active: boolean;
+    sectorId: string;
     responsabilidades?: string;
     requisitos?: string;
     salarioMin?: number;
@@ -339,6 +342,7 @@ export interface CreatePositionInput {
     seniority: string;
     baseSalary?: number;
     active?: boolean;
+    sectorId: string;
     responsabilidades?: string;
     requisitos?: string;
     salarioMin?: number;

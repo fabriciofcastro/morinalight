@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Calendar, Clock, Users, Shield, Plus, Edit, Trash2, AlertCircle } from 'lucide-react';
+import { AlertCircle, Calendar, Clock, Edit, Plus, Shield, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface TimeWindow {
     id: string;
@@ -15,7 +15,7 @@ interface TimeWindow {
 }
 
 interface TimeWindowManagerProps {
-    orgId: string;
+    orgId?: string;
 }
 
 const DAYS_OF_WEEK = [

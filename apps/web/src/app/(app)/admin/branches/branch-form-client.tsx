@@ -1,25 +1,21 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {
+    ArrowLeft,
     Building2,
-    Calendar,
-    CreditCard,
-    FileText,
+    Loader2,
     MapPin,
     Phone,
-    Save,
-    ArrowLeft,
-    Users,
-    Loader2,
+    Save
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Button, cn } from "@morina/ui";
 import { BranchesHeader } from "../../../../components/admin/branches/BranchesHeader";
 import { notificationCenter } from "../../../../components/notifications/notification-center";
 import { FuturisticInput } from "../../../../components/ui/futuristic-input";
@@ -70,7 +66,7 @@ export function BranchFormClient({ branchId }: BranchFormClientProps) {
     const isEditMode = !!branchId;
 
     const form = useForm<BranchFormData>({
-        resolver: zodResolver(branchSchema),
+        resolver: zodResolver(branchSchema) as any,
         defaultValues: {
             status: "ativo",
             address: {

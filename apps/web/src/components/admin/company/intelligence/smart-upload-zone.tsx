@@ -1,12 +1,12 @@
 
 "use client";
 
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { companySettingsAPI } from "@/lib/api/company-settings";
+import { cn } from "@morina/ui";
+import { FileText, Loader2, Sparkles } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadCloud, CheckCircle, FileText, Loader2, Sparkles, X } from "lucide-react";
-import { companySettingsAPI } from "@/lib/api/company-settings";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { cn } from "@morina/ui";
 
 interface SmartUploadZoneProps {
     onDataExtracted: (data: any) => void;
@@ -19,7 +19,7 @@ export function SmartUploadZone({ onDataExtracted }: SmartUploadZoneProps) {
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         if (acceptedFiles.length === 0) return;
 
-        const file = acceptedFiles[0];
+        const file = acceptedFiles[0]!;
         setAnalyzing(true);
 
         try {
@@ -63,7 +63,7 @@ export function SmartUploadZone({ onDataExtracted }: SmartUploadZoneProps) {
                     isDragActive ? "border-indigo-500 bg-indigo-500/10 scale-[1.01]" : "border-white/10 hover:border-white/20 bg-white/5"
                 )}
             >
-                <input {...getInputProps()} />
+                <input {...(getInputProps() as any)} />
 
                 {analyzing && (
                     <div className="absolute inset-0 z-10 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center animate-in fade-in duration-300">

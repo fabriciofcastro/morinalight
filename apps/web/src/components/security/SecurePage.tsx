@@ -1,8 +1,8 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useAbility } from "@/lib/auth/CaslContext";
 import { parsePermissionKey } from "@/lib/auth/ability";
+import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
@@ -49,7 +49,7 @@ export function SecurePage({
     // 3. Permission check
     const { action, subject } = parsePermissionKey(requiredPermission);
 
-    if (status === "authenticated" && !ability.can(action, subject)) {
+    if (status === "authenticated" && !ability.can(action as any, subject as any)) {
         return (
             <div className="flex h-screen items-center justify-center">
                 <div className="text-center">

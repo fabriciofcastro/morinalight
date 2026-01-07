@@ -1,16 +1,15 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import { Briefcase, FileText, DollarSign } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { organizationalStructureApi, type Position, type CreatePositionInput, type UpdatePositionInput } from "@/lib/api/organizational-structure";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { StandardFormPage } from "@/components/templates";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
-import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { organizationalStructureApi, type CreatePositionInput, type Position, type UpdatePositionInput } from "@/lib/api/organizational-structure";
+import { Briefcase, DollarSign, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface PositionFormClientProps {
   positionId?: string;
@@ -28,6 +27,7 @@ export function PositionFormClient({ positionId }: PositionFormClientProps) {
     seniority: "JUNIOR",
     baseSalary: undefined,
     active: true,
+    sectorId: "",
     description: "",
     responsabilidades: "",
     requisitos: "",
@@ -70,6 +70,7 @@ export function PositionFormClient({ positionId }: PositionFormClientProps) {
             seniority: pos.seniority || "JUNIOR",
             baseSalary: pos.baseSalary,
             active: pos.active,
+            sectorId: pos.sectorId || "",
             description: pos.description || "",
             responsabilidades: pos.responsabilidades || "",
             requisitos: pos.requisitos || "",

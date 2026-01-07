@@ -7,6 +7,16 @@
 import { getPrismaClient } from "@/lib/prisma";
 import { auditService } from "@/lib/audit/audit-service";
 
+export interface DataDeletionRequest {
+    id: string;
+    userId: string;
+    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    requestedAt: Date;
+    scheduledFor: Date;
+    completedAt?: Date;
+    reason?: string;
+}
+
 export class DataDeletionService {
 
     /**

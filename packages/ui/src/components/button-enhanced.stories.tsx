@@ -8,7 +8,8 @@ const meta: Meta<typeof ButtonEnhanced> = {
     layout: "centered",
     docs: {
       description: {
-        component: "Botão aprimorado com múltiplas variantes e estados. Suporta loading, disabled e diferentes tamanhos.",
+        component:
+          "Botão aprimorado com múltiplas variantes e estados. Suporta loading, disabled e diferentes tamanhos.",
       },
     },
   },
@@ -110,4 +111,3 @@ export const AllVariants: Story = {
     </div>
   ),
 };
-

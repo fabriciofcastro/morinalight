@@ -1,6 +1,25 @@
 "use client";
 
-import { Button, FormField, FormSelect, FormTextarea, GlassCard, Input } from "@morina/ui";
+import {
+  ActionButton,
+  ActionToolbar,
+  FilterInput,
+  Button,
+  FormField,
+  FormSelect,
+  FormTextarea,
+  GlassCard,
+  Input,
+  ListPageLayout,
+  StatsGroup,
+  StatCard,
+  BulkActionsBar,
+  ViewToggle,
+  Badge,
+  DataTable,
+  EmptyState,
+  cn,
+} from "@morina/ui";
 import {
   Building2,
   CheckCircle2,
@@ -42,6 +61,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { notificationCenter } from "@/components/notifications/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { ClienteDetailModal } from "./cliente-detail-modal";
+import { PageShell } from "@/components/layout/PageShell";
+import { type ColumnDef } from "@tanstack/react-table";
 
 type Cliente = {
   clienteId: string;
@@ -106,7 +127,7 @@ const validateCPF = (cpf: string): boolean => {
   const cleaned = cpf.replace(/\D/g, "");
   if (cleaned.length !== 11) return false;
   if (/^(\d)\1{10}$/.test(cleaned)) return false;
-  
+
   let sum = 0;
   for (let i = 0; i < 9; i++) {
     sum += parseInt(cleaned.charAt(i)) * (10 - i);
@@ -114,7 +135,7 @@ const validateCPF = (cpf: string): boolean => {
   let digit = 11 - (sum % 11);
   if (digit >= 10) digit = 0;
   if (digit !== parseInt(cleaned.charAt(9))) return false;
-  
+
   sum = 0;
   for (let i = 0; i < 10; i++) {
     sum += parseInt(cleaned.charAt(i)) * (11 - i);
@@ -128,31 +149,31 @@ const validateCNPJ = (cnpj: string): boolean => {
   const cleaned = cnpj.replace(/\D/g, "");
   if (cleaned.length !== 14) return false;
   if (/^(\d)\1{13}$/.test(cleaned)) return false;
-  
+
   let length = cleaned.length - 2;
   let numbers = cleaned.substring(0, length);
   const digits = cleaned.substring(length);
   let sum = 0;
   let pos = length - 7;
-  
+
   for (let i = length; i >= 1; i--) {
     sum += parseInt(numbers.charAt(length - i)) * pos--;
     if (pos < 2) pos = 9;
   }
-  
+
   let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
   if (result !== parseInt(digits.charAt(0))) return false;
-  
+
   length = length + 1;
   numbers = cleaned.substring(0, length);
   sum = 0;
   pos = length - 7;
-  
+
   for (let i = length; i >= 1; i--) {
     sum += parseInt(numbers.charAt(length - i)) * pos--;
     if (pos < 2) pos = 9;
   }
-  
+
   result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
   return result === parseInt(digits.charAt(1));
 };
@@ -168,11 +189,11 @@ export function ClientesClient() {
   const [sortField, setSortField] = useState<SortField>("nome");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
+  const [itemsPerPage] = useState(10);
   const [showForm, setShowForm] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedClientes, setSelectedClientes] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<"info" | "representantes" | "historico">("info");
   const [pending, startTransition] = useTransition();
@@ -191,6 +212,8 @@ export function ClientesClient() {
     cep: "",
     observacoes: "",
   });
+
+
 
   // Debounce para busca
   useEffect(() => {
@@ -624,152 +647,173 @@ export function ClientesClient() {
     return filteredAndSortedClientes.slice(start, end);
   }, [filteredAndSortedClientes, currentPage, itemsPerPage]);
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
+  // Colunas do DataTable
+  const columns = useMemo<ColumnDef<Cliente>[]>(
+    () => [
+      {
+        id: "selection",
+        header: ({ table }) => (
+          <input
+            type="checkbox"
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+            className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 checked:bg-blue-500"
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={(e) => row.toggleSelected(!!e.target.checked)}
+            className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/5 checked:bg-blue-500"
+          />
+        ),
+      },
+      {
+        accessorKey: "nome",
+        header: "Cliente",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-none bg-white/5">
+              {row.original.tipo === "juridica" ? (
+                <Building2 className="h-4 w-4 text-blue-400" />
+              ) : (
+                <User className="h-4 w-4 text-purple-400" />
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="font-medium text-white">{row.original.nome}</span>
+              {row.original.razaoSocial && (
+                <span className="text-xs text-white/40">{row.original.razaoSocial}</span>
+              )}
+            </div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "documento",
+        header: "Documento",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-mono text-white/60">
+              {row.original.tipo === "fisica"
+                ? formatCPF(row.original.documento)
+                : formatCNPJ(row.original.documento)}
+            </span>
+            <button
+              onClick={() => handleCopyDocument(row.original.documento)}
+              className="opacity-40 hover:opacity-100 transition-opacity"
+            >
+              <Copy className="h-3 w-3" />
+            </button>
+          </div>
+        )
+      },
+      {
+        accessorKey: "contato",
+        header: "Contato",
+        cell: ({ row }) => (
+          <div className="flex flex-col gap-1">
+            {row.original.email && (
+              <span className="text-xs flex items-center gap-1.5 text-white/60">
+                <Mail className="h-3 w-3" /> {row.original.email}
+              </span>
+            )}
+            {row.original.celular && (
+              <span className="text-xs flex items-center gap-1.5 text-white/60">
+                <Phone className="h-3.5 w-3.5" /> {formatPhone(row.original.celular)}
+              </span>
+            )}
+          </div>
+        )
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          const status = row.original.status;
+          const variant = status === "ativo" ? "success" : status === "inativo" ? "danger" : "warning";
+          const Icon = status === "ativo" ? CheckCircle2 : status === "inativo" ? XCircle : AlertCircle;
+
+          return (
+            <Badge variant={variant} icon={<Icon className="h-3 w-3" />} size="sm">
+              {status}
+            </Badge>
+          );
+        },
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedCliente(row.original)}
+              className="h-8 w-8 p-0"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleEdit(row.original)}
+              className="h-8 w-8 p-0"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+          </div>
+        )
+      }
+    ],
+    []
+  );
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Dashboard de Métricas */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <Users className="h-4 w-4 text-[var(--primary)]" />
-            <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Total
-            </span>
-          </div>
-          <p className="text-2xl font-semibold">{stats.total}</p>
-          <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-            {((stats.total / Math.max(stats.total, 1)) * 100).toFixed(0)}% do total
-          </p>
-        </GlassCard>
-        <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <CheckCircle2 className="h-4 w-4 text-green-500" />
-            <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Ativos
-            </span>
-          </div>
-          <p className="text-2xl font-semibold text-green-500">{stats.ativos}</p>
-          <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-            {stats.total > 0 ? ((stats.ativos / stats.total) * 100).toFixed(0) : 0}% ativos
-          </p>
-        </GlassCard>
-        <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <XCircle className="h-4 w-4 text-red-500" />
-            <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Inativos
-            </span>
-          </div>
-          <p className="text-2xl font-semibold text-red-500">{stats.inativos}</p>
-          <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-            {stats.total > 0 ? ((stats.inativos / stats.total) * 100).toFixed(0) : 0}% inativos
-          </p>
-        </GlassCard>
-        <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <AlertCircle className="h-4 w-4 text-yellow-500" />
-            <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Bloqueados
-            </span>
-          </div>
-          <p className="text-2xl font-semibold text-yellow-500">{stats.bloqueados}</p>
-          <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-            {stats.total > 0 ? ((stats.bloqueados / stats.total) * 100).toFixed(0) : 0}% bloqueados
-          </p>
-        </GlassCard>
-        <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <User className="h-4 w-4 text-[var(--primary)]" />
-            <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Pessoa Física
-            </span>
-          </div>
-          <p className="text-2xl font-semibold">{stats.fisica}</p>
-          <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-            {stats.total > 0 ? ((stats.fisica / stats.total) * 100).toFixed(0) : 0}% do total
-          </p>
-        </GlassCard>
-        <GlassCard className="p-4 hover:scale-105 transition-transform cursor-pointer">
-          <div className="flex items-center gap-2 mb-1">
-            <Building2 className="h-4 w-4 text-[var(--primary)]" />
-            <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Pessoa Jurídica
-            </span>
-          </div>
-          <p className="text-2xl font-semibold">{stats.juridica}</p>
-          <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mt-1">
-            {stats.total > 0 ? ((stats.juridica / stats.total) * 100).toFixed(0) : 0}% do total
-          </p>
-        </GlassCard>
-      </div>
-
-      {/* Barra de ações em massa */}
-      {selectedClientes.size > 0 && (
-        <GlassCard className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium">
-                {selectedClientes.size} cliente(s) selecionado(s)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBulkAction("activate")}
-                className="gap-2"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                Ativar
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBulkAction("deactivate")}
-                className="gap-2"
-              >
-                <XCircle className="h-4 w-4" />
-                Desativar
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleBulkAction("delete")}
-                className="gap-2 text-red-500 hover:text-red-600"
-              >
-                <Trash2 className="h-4 w-4" />
-                Excluir
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => setSelectedClientes(new Set())}>
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        </GlassCard>
-      )}
-
-      {/* Barra de ferramentas */}
-      <GlassCard className="p-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-1 items-center gap-3 flex-wrap">
-            <div className="relative flex-1 min-w-[200px] max-w-md">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]" />
-              <Input
-                type="search"
-                placeholder="Buscar por nome, documento, email..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9"
-              />
-            </div>
+    <ListPageLayout
+      header={{
+        title: "Clientes",
+        description: "Gerencie o cadastro de clientes da sua organização.",
+        icon: Users,
+        breadcrumbs: [
+          { label: "Home", href: "/" },
+          { label: "Clientes", href: "/clientes" },
+        ],
+        stats: (
+          <StatsGroup>
+            <StatCard
+              icon={Users}
+              label="Total"
+              value={stats.total}
+              variant="primary"
+            />
+            <StatCard
+              icon={CheckCircle2}
+              label="Ativos"
+              value={stats.ativos}
+              variant="success"
+            />
+            <StatCard
+              icon={XCircle}
+              label="Inativos"
+              value={stats.inativos}
+              variant="danger"
+            />
+            <StatCard
+              icon={AlertCircle}
+              label="Bloqueados"
+              value={stats.bloqueados}
+              variant="warning"
+            />
+          </StatsGroup>
+        ),
+      }}
+      controls={{
+        searchValue: search,
+        onSearchChange: setSearch,
+        searchPlaceholder: "Buscar por nome, documento, email...",
+        filterButton: (
+          <div className="flex gap-2">
             <FormSelect
               value={statusFilter}
               onChange={(e) => {
@@ -795,318 +839,295 @@ export function ClientesClient() {
               <option value="fisica">Pessoa Física</option>
               <option value="juridica">Pessoa Jurídica</option>
             </FormSelect>
+          </div>
+        ),
+        viewToggle: (
+          <ViewToggle
+            value={viewMode === "table" ? "list" : "grid"}
+            onChange={(mode) => setViewMode(mode === "list" ? "table" : "cards")}
+          />
+        ),
+        actions: (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => handleExport("csv")} className="gap-2">
+              <Download className="h-4 w-4" />
+              Exportar
+            </Button>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="gap-2"
+              onClick={() => setShowForm(true)}
+              className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] border-0 text-white"
             >
-              <Filter className="h-4 w-4" />
-              Filtros
-            </Button>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 border border-[color-mix(in oklab,var(--muted-soft) 30%,var(--fg) 70%)] rounded-lg p-1">
-              <Button
-                variant={viewMode === "cards" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("cards")}
-                className="h-8 px-3"
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "table" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("table")}
-                className="h-8 px-3"
-              >
-                <List className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => handleExport("csv")} className="gap-2">
-                <Download className="h-4 w-4" />
-                CSV
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => handleExport("pdf")} className="gap-2">
-                <FileDown className="h-4 w-4" />
-                PDF
-              </Button>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => loadClientes()}
-              className="gap-2"
-              disabled={loading}
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-            </Button>
-            <Button onClick={() => setShowForm(!showForm)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Novo Cliente
-            </Button>
-          </div>
-        </div>
-      </GlassCard>
-
-      {/* Formulário */}
-      {showForm && (
-        <GlassCard className="p-6">
-          <h2 className="mb-4 text-lg font-semibold">
-            {editingCliente ? "Editar Cliente" : "Novo Cliente"}
-          </h2>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <FormSelect
-                label="Tipo"
-                id="tipo"
-                value={formData.tipo}
-                onChange={(e) =>
-                  setFormData({ ...formData, tipo: e.target.value as "fisica" | "juridica" })
-                }
-                required
-              >
-                <option value="fisica">Pessoa Física</option>
-                <option value="juridica">Pessoa Jurídica</option>
-              </FormSelect>
-
-              <FormField
-                label={formData.tipo === "fisica" ? "CPF" : "CNPJ"}
-                required
-                fieldId="documento"
-              >
-                <Input
-                  id="documento"
-                  value={
-                    formData.tipo === "fisica"
-                      ? formatCPF(formData.documento)
-                      : formatCNPJ(formData.documento)
-                  }
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setFormData({ ...formData, documento: value });
-                  }}
-                  maxLength={formData.tipo === "fisica" ? 14 : 18}
-                  required
-                />
-              </FormField>
-
-              <FormField label="Nome" required fieldId="nome">
-                <Input
-                  id="nome"
-                  value={formData.nome}
-                  onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                  required
-                />
-              </FormField>
-
-              {formData.tipo === "juridica" && (
-                <FormField label="Razão Social" fieldId="razaoSocial">
-                  <Input
-                    id="razaoSocial"
-                    value={formData.razaoSocial}
-                    onChange={(e) => setFormData({ ...formData, razaoSocial: e.target.value })}
-                  />
-                </FormField>
-              )}
-
-              <FormField label="Email" fieldId="email">
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Telefone" fieldId="telefone">
-                <Input
-                  id="telefone"
-                  value={formatPhone(formData.telefone)}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setFormData({ ...formData, telefone: value });
-                  }}
-                  maxLength={14}
-                />
-              </FormField>
-
-              <FormField label="Celular" fieldId="celular">
-                <Input
-                  id="celular"
-                  value={formatPhone(formData.celular)}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setFormData({ ...formData, celular: value });
-                  }}
-                  maxLength={15}
-                />
-              </FormField>
-
-              <FormField label="CEP" fieldId="cep">
-                <Input
-                  id="cep"
-                  value={formatCEP(formData.cep)}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setFormData({ ...formData, cep: value });
-                  }}
-                  maxLength={9}
-                />
-              </FormField>
-
-              <FormField label="Endereço" fieldId="endereco" className="md:col-span-2">
-                <Input
-                  id="endereco"
-                  value={formData.endereco}
-                  onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Cidade" fieldId="cidade">
-                <Input
-                  id="cidade"
-                  value={formData.cidade}
-                  onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                />
-              </FormField>
-
-              <FormField label="Estado (UF)" fieldId="estado">
-                <Input
-                  id="estado"
-                  value={formData.estado}
-                  onChange={(e) =>
-                    setFormData({ ...formData, estado: e.target.value.toUpperCase().slice(0, 2) })
-                  }
-                  maxLength={2}
-                />
-              </FormField>
-
-              <FormTextarea
-                label="Observações"
-                id="observacoes"
-                value={formData.observacoes}
-                onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-                className="md:col-span-2"
-              />
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="secondary" onClick={handleCancel}>
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={pending}>
-                {pending ? "Salvando..." : editingCliente ? "Atualizar" : "Criar"}
-              </Button>
-            </div>
-          </form>
-        </GlassCard>
-      )}
-
-      {/* Lista de clientes */}
-      {loading ? (
-        <GlassCard className="p-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-[var(--primary)] border-t-transparent mx-auto mb-4" />
-            <p className="text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-              Carregando clientes...
-            </p>
-          </div>
-        </GlassCard>
-      ) : filteredAndSortedClientes.length === 0 ? (
-        <GlassCard className="p-12 text-center">
-          <User className="mx-auto h-16 w-16 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Nenhum cliente encontrado</h3>
-          <p className="text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)] mb-4">
-            {search || statusFilter !== "all" || tipoFilter !== "all"
-              ? "Tente ajustar os filtros de busca"
-              : "Comece adicionando seu primeiro cliente"}
-          </p>
-          {!search && statusFilter === "all" && tipoFilter === "all" && (
-            <Button onClick={() => setShowForm(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Novo Cliente
             </Button>
+          </div>
+        ),
+        bulkActions: (
+          <BulkActionsBar
+            selectedCount={selectedClientes.size}
+            onCancel={() => setSelectedClientes(new Set())}
+            actions={[
+              {
+                label: "Ativar",
+                icon: <CheckCircle2 className="h-4 w-4" />,
+                onClick: () => handleBulkAction("activate"),
+              },
+              {
+                label: "Excluir",
+                icon: <Trash2 className="h-4 w-4" />,
+                onClick: () => handleBulkAction("delete"),
+                variant: "destructive",
+              },
+            ]}
+          />
+        ),
+        hasSelection: selectedClientes.size > 0,
+      }}
+      pagination={{
+        total: filteredAndSortedClientes.length,
+        page: currentPage,
+        pageSize: itemsPerPage,
+        onPageChange: setCurrentPage,
+      }}
+    >
+      <div className="space-y-6">
+        {/* Formulário */}
+        <AnimatePresence>
+          {showForm && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <GlassCard className="p-6">
+                <h2 className="mb-4 text-lg font-semibold text-white">
+                  {editingCliente ? "Editar Cliente" : "Novo Cliente"}
+                </h2>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <FormSelect
+                      label="Tipo"
+                      id="tipo"
+                      value={formData.tipo}
+                      onChange={(e) =>
+                        setFormData({ ...formData, tipo: e.target.value as "fisica" | "juridica" })
+                      }
+                      required
+                    >
+                      <option value="fisica">Pessoa Física</option>
+                      <option value="juridica">Pessoa Jurídica</option>
+                    </FormSelect>
+
+                    <FormField
+                      label={formData.tipo === "fisica" ? "CPF" : "CNPJ"}
+                      required
+                      fieldId="documento"
+                    >
+                      <Input
+                        id="documento"
+                        value={
+                          formData.tipo === "fisica"
+                            ? formatCPF(formData.documento)
+                            : formatCNPJ(formData.documento)
+                        }
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          setFormData({ ...formData, documento: value });
+                        }}
+                        maxLength={formData.tipo === "fisica" ? 14 : 18}
+                        required
+                      />
+                    </FormField>
+
+                    <FormField label="Nome" required fieldId="nome">
+                      <Input
+                        id="nome"
+                        value={formData.nome}
+                        onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                        required
+                      />
+                    </FormField>
+
+                    {formData.tipo === "juridica" && (
+                      <FormField label="Razão Social" fieldId="razaoSocial">
+                        <Input
+                          id="razaoSocial"
+                          value={formData.razaoSocial}
+                          onChange={(e) => setFormData({ ...formData, razaoSocial: e.target.value })}
+                        />
+                      </FormField>
+                    )}
+
+                    <FormField label="Email" fieldId="email">
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      />
+                    </FormField>
+
+                    <FormField label="Telefone" fieldId="telefone">
+                      <Input
+                        id="telefone"
+                        value={formatPhone(formData.telefone)}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          setFormData({ ...formData, telefone: value });
+                        }}
+                        maxLength={14}
+                      />
+                    </FormField>
+
+                    <FormField label="Celular" fieldId="celular">
+                      <Input
+                        id="celular"
+                        value={formatPhone(formData.celular)}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          setFormData({ ...formData, celular: value });
+                        }}
+                        maxLength={15}
+                      />
+                    </FormField>
+
+                    <FormField label="CEP" fieldId="cep">
+                      <Input
+                        id="cep"
+                        value={formatCEP(formData.cep)}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "");
+                          setFormData({ ...formData, cep: value });
+                        }}
+                        maxLength={9}
+                      />
+                    </FormField>
+
+                    <FormField label="Endereço" fieldId="endereco" className="md:col-span-2">
+                      <Input
+                        id="endereco"
+                        value={formData.endereco}
+                        onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
+                      />
+                    </FormField>
+
+                    <FormField label="Cidade" fieldId="cidade">
+                      <Input
+                        id="cidade"
+                        value={formData.cidade}
+                        onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                      />
+                    </FormField>
+
+                    <FormField label="Estado (UF)" fieldId="estado">
+                      <Input
+                        id="estado"
+                        value={formData.estado}
+                        onChange={(e) =>
+                          setFormData({ ...formData, estado: e.target.value.toUpperCase().slice(0, 2) })
+                        }
+                        maxLength={2}
+                        className="bg-white/5 border-white/10"
+                      />
+                    </FormField>
+
+                    <FormTextarea
+                      label="Observações"
+                      id="observacoes"
+                      value={formData.observacoes}
+                      onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+                      className="md:col-span-2 bg-white/5 border-white/10"
+                    />
+                  </div>
+                  <div className="flex justify-end gap-3 mt-4">
+                    <Button type="button" variant="outline" onClick={handleCancel}>
+                      Cancelar
+                    </Button>
+                    <Button type="submit" disabled={pending}>
+                      {pending ? "Salvando..." : editingCliente ? "Atualizar" : "Criar"}
+                    </Button>
+                  </div>
+                </form>
+              </GlassCard>
+            </motion.div>
           )}
-        </GlassCard>
-      ) : viewMode === "cards" ? (
-        <>
+        </AnimatePresence>
+
+        {/* Lista de clientes */}
+        {loading ? (
+          <div className="flex h-64 items-center justify-center">
+            <RefreshCw className="h-8 w-8 animate-spin text-[var(--primary)]" />
+          </div>
+        ) : filteredAndSortedClientes.length === 0 ? (
+          <EmptyState
+            icon={<Users />}
+            title="Nenhum cliente encontrado"
+            description={
+              search || statusFilter !== "all" || tipoFilter !== "all"
+                ? "Tente ajustar os filtros de busca para encontrar o que procura."
+                : "Comece cadastrando seu primeiro cliente no sistema."
+            }
+            action={
+              !search && statusFilter === "all" && tipoFilter === "all" ? (
+                <Button
+                  onClick={() => setShowForm(true)}
+                  className="gap-2 bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] border-0 text-white"
+                >
+                  <Plus className="h-4 w-4" />
+                  Novo Cliente
+                </Button>
+              ) : undefined
+            }
+          />
+        ) : viewMode === "cards" ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="popLayout">
               {paginatedClientes.map((cliente, index) => (
                 <motion.div
                   key={cliente.clienteId}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.2, delay: index * 0.03 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2, delay: index * 0.02 }}
+                  onClick={() => toggleSelectCliente(cliente.clienteId)}
                 >
-                  <GlassCard className="p-6 hover:scale-[1.02] transition-transform">
+                  <GlassCard
+                    className={cn(
+                      "p-6 group relative overflow-hidden transition-all duration-300 hover:border-primary/30 cursor-pointer",
+                      selectedClientes.has(cliente.clienteId) && "border-primary/50 bg-primary/5 shadow-[0_0_20px_rgba(var(--primary-rgb),0.1)]"
+                    )}
+                  >
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3 flex-1">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleSelectCliente(cliente.clienteId);
-                          }}
-                          className="mt-1"
-                        >
-                          {selectedClientes.has(cliente.clienteId) ? (
-                            <CheckSquare className="h-5 w-5 text-[var(--primary)]" />
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-lg bg-white/5 group-hover:bg-primary/10 transition-colors">
+                          {cliente.tipo === "juridica" ? (
+                            <Building2 className="h-5 w-5 text-blue-400" />
                           ) : (
-                            <Square className="h-5 w-5 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]" />
+                            <User className="h-5 w-5 text-purple-400" />
                           )}
-                        </button>
-                        <div
-                          className="flex items-center gap-3 flex-1 cursor-pointer"
-                          onClick={() => setSelectedCliente(cliente)}
-                        >
-                          <div className="p-2 rounded-lg bg-[color-mix(in oklab,var(--primary)_10%,transparent)]">
-                            {cliente.tipo === "juridica" ? (
-                              <Building2 className="h-5 w-5 text-[var(--primary)]" />
-                            ) : (
-                              <User className="h-5 w-5 text-[var(--primary)]" />
-                            )}
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-base">{cliente.nome}</h3>
-                            {cliente.razaoSocial && (
-                              <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                                {cliente.razaoSocial}
-                              </p>
-                            )}
-                          </div>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-white group-hover:text-primary transition-colors">
+                            {cliente.nome}
+                          </h3>
+                          <p className="text-xs text-white/40 font-mono">
+                            {cliente.tipo === "fisica" ? "CPF" : "CNPJ"}:{" "}
+                            {cliente.tipo === "fisica"
+                              ? formatCPF(cliente.documento)
+                              : formatCNPJ(cliente.documento)}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[color-mix(in oklab,var(--muted-soft) 10%,transparent)]">
-                        {cliente.status === "ativo" ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                        ) : cliente.status === "inativo" ? (
-                          <XCircle className="h-3.5 w-3.5 text-red-500" />
-                        ) : (
-                          <AlertCircle className="h-3.5 w-3.5 text-yellow-500" />
-                        )}
-                        <span className="text-xs capitalize font-medium">{cliente.status}</span>
-                      </div>
+                      <Badge
+                        variant={cliente.status === "ativo" ? "success" : cliente.status === "inativo" ? "danger" : "warning"}
+                        size="sm"
+                      >
+                        {cliente.status}
+                      </Badge>
                     </div>
-                    <div className="space-y-2 text-sm mb-4">
-                      <p className="flex items-center gap-2 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                        <FileText className="h-3.5 w-3.5" />
-                        {cliente.tipo === "fisica" ? "CPF" : "CNPJ"}:{" "}
-                        {cliente.tipo === "fisica"
-                          ? formatCPF(cliente.documento)
-                          : formatCNPJ(cliente.documento)}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCopyDocument(cliente.documento);
-                          }}
-                          className="ml-auto opacity-60 hover:opacity-100 transition-opacity"
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                        </button>
-                      </p>
+
+                    <div className="space-y-2 text-sm text-white/60 mb-6">
                       {cliente.email && (
                         <p className="flex items-center gap-2">
                           <Mail className="h-3.5 w-3.5" />
@@ -1120,38 +1141,37 @@ export function ClientesClient() {
                         </p>
                       )}
                       {cliente.endereco && (
-                        <p className="flex items-center gap-2 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
+                        <p className="flex items-center gap-2">
                           <MapPin className="h-3.5 w-3.5" />
                           <span className="truncate">
-                            {cliente.endereco}, {cliente.cidade} - {cliente.estado}
+                            {cliente.cidade} - {cliente.estado}
                           </span>
                         </p>
                       )}
                     </div>
-                    <div className="flex justify-end gap-2 pt-4 border-t border-[color-mix(in oklab,var(--muted-soft) 20%,transparent)]">
+
+                    <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedCliente(cliente);
                         }}
-                        className="gap-2"
+                        className="h-8 w-8 p-0"
                       >
                         <Eye className="h-4 w-4" />
-                        Ver
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(cliente);
                         }}
-                        className="gap-2"
+                        className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
-                        Editar
                       </Button>
                     </div>
                   </GlassCard>
@@ -1159,256 +1179,52 @@ export function ClientesClient() {
               ))}
             </AnimatePresence>
           </div>
-          {/* Paginação */}
-          {totalPages > 1 && (
-            <GlassCard className="p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                  Mostrando {paginatedClientes.length} de {filteredAndSortedClientes.length} clientes
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm px-3">
-                    Página {currentPage} de {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </GlassCard>
-          )}
-        </>
-      ) : (
-        <>
-          <GlassCard className="overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-[color-mix(in oklab,var(--muted-soft) 20%,transparent)]">
-                    <th className="text-left p-4 w-12">
-                      <button
-                        onClick={toggleSelectAll}
-                        className="flex items-center justify-center"
-                      >
-                        {selectedClientes.size === paginatedClientes.length && paginatedClientes.length > 0 ? (
-                          <CheckSquare className="h-4 w-4 text-[var(--primary)]" />
-                        ) : (
-                          <Square className="h-4 w-4 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]" />
-                        )}
-                      </button>
-                    </th>
-                    <th className="text-left p-4">
-                      <button
-                        onClick={() => handleSort("nome")}
-                        className="flex items-center gap-2 hover:text-[var(--primary)] transition-colors"
-                      >
-                        Nome
-                        <ArrowUpDown className="h-3.5 w-3.5" />
-                      </button>
-                    </th>
-                    <th className="text-left p-4">
-                      <button
-                        onClick={() => handleSort("documento")}
-                        className="flex items-center gap-2 hover:text-[var(--primary)] transition-colors"
-                      >
-                        Documento
-                        <ArrowUpDown className="h-3.5 w-3.5" />
-                      </button>
-                    </th>
-                    <th className="text-left p-4">Contato</th>
-                    <th className="text-left p-4">Endereço</th>
-                    <th className="text-left p-4">
-                      <button
-                        onClick={() => handleSort("status")}
-                        className="flex items-center gap-2 hover:text-[var(--primary)] transition-colors"
-                      >
-                        Status
-                        <ArrowUpDown className="h-3.5 w-3.5" />
-                      </button>
-                    </th>
-                    <th className="text-left p-4">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paginatedClientes.map((cliente) => (
-                    <motion.tr
-                      key={cliente.clienteId}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="border-b border-[color-mix(in oklab,var(--muted-soft) 10%,transparent)] hover:bg-[color-mix(in oklab,var(--muted-soft) 5%,transparent)] transition-colors"
-                    >
-                      <td className="p-4">
-                        <button
-                          onClick={() => toggleSelectCliente(cliente.clienteId)}
-                          className="flex items-center justify-center"
-                        >
-                          {selectedClientes.has(cliente.clienteId) ? (
-                            <CheckSquare className="h-4 w-4 text-[var(--primary)]" />
-                          ) : (
-                            <Square className="h-4 w-4 text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]" />
-                          )}
-                        </button>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          {cliente.tipo === "juridica" ? (
-                            <Building2 className="h-4 w-4 text-[var(--primary)]" />
-                          ) : (
-                            <User className="h-4 w-4 text-[var(--primary)]" />
-                          )}
-                          <div>
-                            <p className="font-medium">{cliente.nome}</p>
-                            {cliente.razaoSocial && (
-                              <p className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                                {cliente.razaoSocial}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <span>
-                            {cliente.tipo === "fisica"
-                              ? formatCPF(cliente.documento)
-                              : formatCNPJ(cliente.documento)}
-                          </span>
-                          <button
-                            onClick={() => handleCopyDocument(cliente.documento)}
-                            className="opacity-60 hover:opacity-100 transition-opacity"
-                          >
-                            <Copy className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="space-y-1 text-sm">
-                          {cliente.email && (
-                            <p className="flex items-center gap-1.5">
-                              <Mail className="h-3.5 w-3.5" />
-                              {cliente.email}
-                            </p>
-                          )}
-                          {cliente.telefone && (
-                            <p className="flex items-center gap-1.5">
-                              <Phone className="h-3.5 w-3.5" />
-                              {formatPhone(cliente.telefone)}
-                            </p>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        {cliente.endereco ? (
-                          <p className="text-sm flex items-center gap-1.5">
-                            <MapPin className="h-3.5 w-3.5" />
-                            {cliente.cidade}, {cliente.estado}
-                          </p>
-                        ) : (
-                          <span className="text-xs text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                            -
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[color-mix(in oklab,var(--muted-soft) 10%,transparent)] w-fit">
-                          {cliente.status === "ativo" ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                          ) : cliente.status === "inativo" ? (
-                            <XCircle className="h-3.5 w-3.5 text-red-500" />
-                          ) : (
-                            <AlertCircle className="h-3.5 w-3.5 text-yellow-500" />
-                          )}
-                          <span className="text-xs capitalize font-medium">{cliente.status}</span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedCliente(cliente)}
-                            className="gap-1.5"
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEdit(cliente)}
-                            className="gap-1.5"
-                          >
-                            <Edit className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </GlassCard>
-          {/* Paginação */}
-          {totalPages > 1 && (
-            <GlassCard className="p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-[color-mix(in oklab,var(--muted-soft) 70%,var(--fg) 30%)]">
-                  Mostrando {paginatedClientes.length} de {filteredAndSortedClientes.length} clientes
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm px-3">
-                    Página {currentPage} de {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </GlassCard>
-          )}
-        </>
-      )}
-
-      {/* Modal de detalhes com abas */}
-      <AnimatePresence>
-        {selectedCliente && (
-          <ClienteDetailModal
-            cliente={selectedCliente}
-            onClose={() => {
-              setSelectedCliente(null);
-              setActiveTab("info");
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredAndSortedClientes}
+            emptyMessage="Nenhum cliente encontrado"
+            enableRowSelection
+            state={{
+              rowSelection: Object.fromEntries(
+                Array.from(selectedClientes).map((id) => {
+                  const index = filteredAndSortedClientes.findIndex((c) => c.clienteId === id);
+                  return index !== -1 ? [index, true] : null;
+                }).filter(Boolean) as [string | number, boolean][]
+              )
             }}
-            onEdit={handleEdit}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onRowSelectionChange={(updater) => {
+              if (typeof updater === "function") {
+                const newState = updater({});
+                const newSelected = new Set<string>();
+                Object.keys(newState).forEach((key) => {
+                  const index = parseInt(key);
+                  if (filteredAndSortedClientes[index]) {
+                    newSelected.add(filteredAndSortedClientes[index].clienteId);
+                  }
+                });
+                setSelectedClientes(newSelected);
+              }
+            }}
           />
         )}
-      </AnimatePresence>
-    </div>
+
+        {/* Modal de detalhes */}
+        <AnimatePresence>
+          {selectedCliente && (
+            <ClienteDetailModal
+              cliente={selectedCliente}
+              onClose={() => {
+                setSelectedCliente(null);
+                setActiveTab("info");
+              }}
+              onEdit={handleEdit}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+    </ListPageLayout>
   );
 }

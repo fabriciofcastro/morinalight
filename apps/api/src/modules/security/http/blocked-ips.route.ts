@@ -5,17 +5,17 @@
 
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { blockedIpService } from "../application/services/blocked-ip.service";
 import { adminRouteMiddleware } from "../../../core/auth/jwt.middleware";
+import { blockedIpService } from "../application/services/blocked-ip.service";
 
 const blockIpSchema = z.object({
-    ip: z.string().ip(),
+    ip: z.string().min(7),
     reason: z.string().min(3).max(500).optional(),
     durationMinutes: z.number().int().positive().optional(),
 });
 
 const unblockIpSchema = z.object({
-    ip: z.string().ip(),
+    ip: z.string().min(7),
 });
 
 export async function registerBlockedIpsRoutes(app: FastifyInstance) {

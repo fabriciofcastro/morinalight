@@ -1,42 +1,41 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import {
-  FileText,
-  Plus,
-  Trash2,
-  Save,
-  Upload,
-  Calculator,
-  X,
-  Eye,
-  File,
-  ExternalLink,
-  CheckCircle2,
-  CheckCheck,
-  Edit,
-  Package,
-  Clock,
-  AlertCircle,
-} from "lucide-react";
-import { useCallback, useEffect, useState, useTransition, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { notificationCenter } from "@/components/notifications/notification-center";
-import { useFichasCusto, useFichaCusto } from "@/hooks/use-fichas-custo";
-import type { CreateInsumoInput } from "@/lib/api/fichas-custo";
-import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
-import { PageLoader } from "@/components/ui/PageLoader";
-import { useKeyboardShortcuts } from "@/lib/hooks/use-keyboard-shortcuts";
-import Image from "next/image";
-import { useCnpj } from "@/hooks/use-cnpj";
-import { suppliersApi } from "@/lib/api/suppliers";
-import { Search } from "lucide-react";
+import { StandardFormPage } from "@/components/templates";
 import { FuturisticInput } from "@/components/ui/futuristic-input";
 import { FuturisticSelect } from "@/components/ui/futuristic-select";
 import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
-import { StandardFormPage } from "@/components/templates";
+import { PageLoader } from "@/components/ui/PageLoader";
+import { useCnpj } from "@/hooks/use-cnpj";
+import { useFichaCusto, useFichasCusto } from "@/hooks/use-fichas-custo";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import type { CreateInsumoInput } from "@/lib/api/fichas-custo";
+import { suppliersApi } from "@/lib/api/suppliers";
+import { useKeyboardShortcuts } from "@/lib/hooks/use-keyboard-shortcuts";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calculator,
+  CheckCheck,
+  CheckCircle2,
+  Clock,
+  Edit,
+  ExternalLink,
+  File,
+  FileText,
+  Package,
+  Plus,
+  Save,
+  Search,
+  Trash2,
+  Upload,
+  X
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -51,7 +50,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing
@@ -518,7 +517,8 @@ export function FichasCustoClient() {
       // Primeiro, buscar no sistema
       const response = await suppliersApi.list(orgId, { documento: cnpjLimpo });
       if (response?.itens && response.itens.length > 0) {
-        const supplier = response.itens[0];
+        const supplier = response.itens![0];
+        if (!supplier) return;
         atualizarNovoInsumo("fornecedor", supplier.name);
         atualizarNovoInsumo("fornecedorId", supplier.id);
         notificationCenter.add({
@@ -817,7 +817,7 @@ export function FichasCustoClient() {
         title: "Erro de validação",
         message:
           validacao.erros.length === 1
-            ? validacao.erros[0]
+            ? validacao.erros[0] || ""
             : `${validacao.erros.length} erros encontrados: ${validacao.erros.slice(0, 3).join(", ")}${validacao.erros.length > 3 ? "..." : ""}`,
       });
       return;
@@ -1023,7 +1023,7 @@ export function FichasCustoClient() {
                   <div className="w-full aspect-square max-w-[200px] rounded-lg border-2 border-blue-500/30 bg-white/5 backdrop-blur-sm hover:border-blue-500/50 transition-all duration-300 overflow-hidden shadow-[0_0_10px_rgba(59,130,246,0.2)]">
                     {formData.fotoPecaUrl ? (
                       <div className="relative w-full h-full group/photo">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        { }
                         <Image
                           src={formData.fotoPecaUrl}
                           alt="Foto da peça"
@@ -1717,8 +1717,8 @@ export function FichasCustoClient() {
                               value = parts[0] + "," + parts.slice(1).join("");
                             }
                             // Limita a 2 casas decimais após a vírgula
-                            if (parts.length === 2 && parts[1].length > 2) {
-                              value = parts[0] + "," + parts[1].substring(0, 2);
+                            if (parts.length === 2 && (parts[1]?.length ?? 0) > 2) {
+                              value = parts[0] + "," + parts[1]!.substring(0, 2);
                             }
                             // Converte para número (substitui vírgula por ponto)
                             const numValue = parseFloat(value.replace(",", ".")) || 0;
@@ -1778,8 +1778,8 @@ export function FichasCustoClient() {
                               value = parts[0] + "," + parts.slice(1).join("");
                             }
                             // Limita a 2 casas decimais após a vírgula
-                            if (parts.length === 2 && parts[1].length > 2) {
-                              value = parts[0] + "," + parts[1].substring(0, 2);
+                            if (parts.length === 2 && (parts[1]?.length ?? 0) > 2) {
+                              value = parts[0] + "," + parts[1]!.substring(0, 2);
                             }
                             // Converte e limita entre 0 e 100
                             const numValue = Math.min(100, Math.max(0, parseFloat(value.replace(",", ".")) || 0));

@@ -1,30 +1,30 @@
 "use client";
 
-import { Button, cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
+import { notificationCenter } from "@/components/notifications/notification-center";
+import { CodeValidator } from "@/components/ui/code-validator";
+import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { CreateOrganizationDto, organizationsApi, UpdateOrganizationDto } from "@/lib/api/organizations";
+import { buscarCnpj, formatarCnpj, validarCnpj } from "@/lib/integrations/cnpj";
+import { buscarEnderecoPorCep, formatarCep } from "@/lib/integrations/viacep";
+import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {
     ArrowLeft,
     Building2,
     CheckCircle2,
+    Factory,
+    Globe,
+    Loader2,
+    Mail,
     MapPin,
     Phone,
     Save,
     Settings,
     Store,
-    Factory,
-    Mail,
-    Warehouse,
-    Loader2,
-    Globe
+    Warehouse
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { organizationsApi, Organization, CreateOrganizationDto, UpdateOrganizationDto } from "@/lib/api/organizations";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
-import { CodeValidator } from "@/components/ui/code-validator";
-import { buscarCnpj, formatarCnpj, validarCnpj } from "@/lib/integrations/cnpj";
-import { buscarEnderecoPorCep, formatarCep } from "@/lib/integrations/viacep";
 
 interface BranchFormProps {
     mode: "create" | "edit";
@@ -279,7 +279,7 @@ export function BranchForm({ mode, branchId }: BranchFormProps) {
                                 />
                                 <CodeValidator
                                     value={formData.code}
-                                    onChange={(value) => setFormData({ ...formData, code: value })}
+                                    onChange={(value: string) => setFormData({ ...formData, code: value })}
                                     entity="branch"
                                     currentId={branchId}
                                     label="Código"

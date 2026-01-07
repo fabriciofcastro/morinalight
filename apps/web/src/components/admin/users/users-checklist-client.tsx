@@ -1,11 +1,11 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import { ArrowLeft, CheckSquare, FileText, Download } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import { ArrowLeft, CheckSquare, Download, FileText } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function UsersChecklistClient() {
   const router = useRouter();
@@ -83,7 +83,7 @@ Consulte o arquivo completo para mais detalhes.`;
     let inParagraph = false;
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const line = lines[i]!.trim();
 
       if (!line) {
         if (inParagraph) {

@@ -1,11 +1,11 @@
 "use client";
 
+import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Button, GlassCard } from "@morina/ui";
+import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Download } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 export function ConsolidatedChecklistClient() {
   const router = useRouter();
@@ -75,7 +75,7 @@ Consulte o arquivo completo para mais detalhes.`;
     let inList = false;
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
+      const line = lines[i]!.trim();
 
       if (!line) {
         if (inParagraph) {

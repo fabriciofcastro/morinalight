@@ -1,43 +1,76 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import {
-    Shield,
-    Clock,
-    Lock,
-    Search,
-    Plus,
-    Filter,
-    Activity,
-    AlertTriangle,
-    FileText,
-    RefreshCw,
-    Ban
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 import {
     Button,
     GlassCard,
     GlassInput,
-    GlassTabs,
-    StandardPageLayout
 } from "@/components/ui/futuristic";
-import { Badge } from "@/components/ui/badge";
-import { SecurityPolicy, TimeWindow, ObjectAccessEntry } from "@morina/shared-kernel";
 import { Can } from "@/lib/auth/CaslContext";
+import { ObjectAccessEntry, SecurityPolicy, TimeWindow } from "@morina/shared-kernel";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+    Activity,
+    AlertTriangle,
+    Ban,
+    Clock,
+    FileText,
+    Info,
+    Lock,
+    Plus,
+    RefreshCw,
+    Search,
+    Shield
+} from "lucide-react";
+import { useMemo, useState } from "react";
 
-import { AclList } from "./acl-list";
+// Local implementations for missing components
+const GlassTabs = ({ tabs, activeTab, onChange }: { tabs: { id: string; label: string; icon?: React.ReactNode }[]; activeTab: string; onChange: (id: string) => void }) => (
+    <div className="flex space-x-2 border-b border-white/10">
+        {tabs.map((tab) => (
+            <button
+                key={tab.id}
+                onClick={() => onChange(tab.id)}
+                className={`px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors border-b-2 ${activeTab === tab.id ? "border-[hsl(var(--primary))] text-[hsl(var(--primary))]" : "border-transparent text-white/60 hover:text-white"
+                    }`}
+            >
+                {tab.icon}
+                {tab.label}
+            </button>
+        ))}
+    </div>
+);
+
+const StandardPageLayout = ({ title, subtitle, icon, headerActions, children }: { title: string; subtitle: string; icon: React.ReactNode; headerActions?: React.ReactNode; children: React.ReactNode }) => (
+    <div className="min-h-screen p-6 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-[hsl(var(--primary))/0.1] border border-[hsl(var(--primary))/0.2]">
+                    {icon}
+                </div>
+                <div>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">{title}</h1>
+                    <p className="text-white/60">{subtitle}</p>
+                </div>
+            </div>
+            {headerActions && <div className="flex items-center gap-2">{headerActions}</div>}
+        </div>
+        {children}
+    </div>
+);
+
+import { useEffect } from "react";
 import { AclForm } from "./acl-form";
+import { AclList } from "./acl-list";
 import { AiSecurityAnalyst } from "./ai-security-analyst";
+import { BlockedIPsList } from "./blocked-ips-list";
 import { ComplianceReportView } from "./compliance-report-view";
-import { SecurityAlertsList } from "./security-alerts-list";
-import { ThreatGlobe, type Threat } from "./threat-globe";
 import { PolicyForm } from "./policy-form";
 import { PoliciesList } from "./policy-list";
+import { SecurityAlertsList } from "./security-alerts-list";
+import { ThreatGlobe, type Threat } from "./threat-globe";
 import { TimeWindowForm } from "./time-window-form";
 import { TimeWindowsList } from "./time-window-list";
-import { BlockedIPsList } from "./blocked-ips-list";
-import { useEffect } from "react";
 
 /**
  * Advanced Security Manager (Security Command Center)
@@ -279,7 +312,7 @@ export function AdvancedSecurityManager() {
             icon={<Shield className="h-8 w-8 text-[hsl(var(--primary))]" />}
             headerActions={
                 <Can I="create" a={currentSubject as any}>
-                    <Button variant="primary" size="lg" onClick={handleAdd} className="shadow-[0_0_20px_hsl(var(--primary)/0.3)]">
+                    <Button variant="default" size="lg" onClick={handleAdd} className="shadow-[0_0_20px_hsl(var(--primary)/0.3)]">
                         <Plus className="mr-2 h-4 w-4" />
                         Nova Regra
                     </Button>
@@ -358,7 +391,7 @@ export function AdvancedSecurityManager() {
                                                 <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
                                                     <div
                                                         className="h-full bg-red-500/50"
-                                                        style={{ width: `${(count / Math.max(1, topCountries[0][1])) * 100}%` }}
+                                                        style={{ width: `${(count / Math.max(1, topCountries[0]![1])) * 100}%` }}
                                                     />
                                                 </div>
                                                 <span className="font-mono text-white/50 w-6 text-right">{count}</span>
@@ -386,7 +419,7 @@ export function AdvancedSecurityManager() {
 
                 {/* Main Nav */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 border-y border-white/5">
-                    <GlassTabs tabs={tabs} activeTab={activeTab} onChange={(id) => { setActiveTab(id); setIsFormOpen(false); }} />
+                    <GlassTabs tabs={tabs} activeTab={activeTab} onChange={(id: string) => { setActiveTab(id); setIsFormOpen(false); }} />
                     <div className="flex items-center gap-2">
                         <div className="relative w-64">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />

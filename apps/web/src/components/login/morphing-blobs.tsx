@@ -42,7 +42,7 @@ export function MorphingBlobs() {
         size: 200 + seededRandom(seed + 2) * 300,
         duration: 25 + seededRandom(seed + 3) * 20,
         delay: seededRandom(seed + 4) * 5,
-        color: colors[Math.floor(seededRandom(seed + 5) * colors.length)],
+        color: colors[Math.floor(seededRandom(seed + 5) * colors.length)]!,
       };
     });
   }, []);

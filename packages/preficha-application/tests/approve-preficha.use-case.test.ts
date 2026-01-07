@@ -99,7 +99,7 @@ describe("AprovarPrefichaUseCase", () => {
     });
 
     expect(resultado.status).toBe("aprovado");
-    expect(resultado.aprovadores[0].aprovado).toBe(true);
+    expect(resultado.aprovadores[0]!.aprovado).toBe(true);
   });
 
   it("deve lançar erro se preficha não estiver pendente", async () => {

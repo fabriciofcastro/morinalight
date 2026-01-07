@@ -97,10 +97,10 @@ export class MLEnsembleService {
      */
     async trainEnsemble(orgId: string): Promise<{
         success: boolean;
-    modelsT rained: number;
-    averageAccuracy: number;
-    metrics: Record<string, ModelMetrics>;
-}> {
+        modelsTrained: number;
+        averageAccuracy: number;
+        metrics: Record<string, ModelMetrics>;
+    }> {
     console.log('🔄 Training ensemble models...');
 
     const trainingData = await this.collectTrainingData(orgId);

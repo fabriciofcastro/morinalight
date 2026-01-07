@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import {
-    Shield,
-    Save,
-    X,
-    AlertCircle,
-    Infinity
-} from "lucide-react";
-import {
+    Button,
     GlassCard,
     GlassInput,
-    Button,
     GlassSelect
 } from "@/components/ui/futuristic";
-import { SecurityPolicy, PolicyEffect } from "@morina/shared-kernel";
+import { PolicyEffect, SecurityPolicy } from "@morina/shared-kernel";
+import {
+    AlertCircle,
+    Infinity,
+    Save,
+    Shield,
+    X
+} from "lucide-react";
+import { useState } from "react";
 
 interface PolicyFormProps {
     initialData?: Partial<SecurityPolicy>;
@@ -137,7 +137,7 @@ export function PolicyForm({ initialData, onSave, onCancel }: PolicyFormProps) {
                     <Button variant="secondary" type="button" onClick={onCancel}>
                         Descartar
                     </Button>
-                    <Button variant="primary" type="submit" className="min-w-[120px]">
+                    <Button variant="default" type="submit" className="min-w-[120px]">
                         <Save className="mr-2 h-4 w-4" />
                         Salvar Política
                     </Button>

@@ -1,18 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { Button, GlassCard } from "@morina/ui";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { Badge } from "@/components/ui/badge";
-import {
-    X, History, Send, Check, ClipboardCheck,
-    FileText, Users, Ruler, Scissors, Package,
-    Calendar, Edit, CheckCircle2, XCircle
-} from "lucide-react";
 import { PreFichaTecnica } from "@/lib/api/pre-fichas-tecnicas";
+import { Button, FormField, GlassCard } from "@morina/ui";
+import {
+    Check,
+    CheckCircle2,
+    ClipboardCheck,
+    Edit,
+    FileText,
+    History,
+    Ruler, Scissors,
+    Send,
+    Users,
+    X,
+    XCircle
+} from "lucide-react";
+import { useState } from "react";
 import { STATUS_COLORS, STATUS_LABELS } from "../../constants";
 import { formatDate } from "../../utils";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FormField } from "@morina/ui";
+
+interface ChecklistTecnico {
+    moldeVesteCorretamente?: boolean;
+    costuraViavel?: boolean;
+    insumosCompatíveis?: boolean;
+    pecaPilotoAprovadaVisualmente?: boolean;
+}
 
 interface PreFichaDetailModalProps {
     preFicha: PreFichaTecnica;
@@ -22,8 +36,8 @@ interface PreFichaDetailModalProps {
     onReprovar: (preFicha: PreFichaTecnica, justificativa: string) => void;
     onAprovarDiretoria: (preFicha: PreFichaTecnica) => void;
     onShowHistorico: () => void;
-    onAtualizarChecklist: (id: string, checklist: any) => Promise<any>;
-    onBuscar: (id: string) => Promise<any>;
+    onAtualizarChecklist: (id: string, checklist: Partial<ChecklistTecnico>) => Promise<unknown>;
+    onBuscar: (id: string) => Promise<unknown>;
     onShowPdf?: (preFicha: PreFichaTecnica) => void;
     isLoading: boolean;
 }
@@ -350,8 +364,8 @@ export function PreFichaDetailModal({
                                         notificationCenter.add({ type: "success", title: "Checklist atualizado", message: "Conformidade salva com sucesso." });
                                         setShowChecklistForm(false);
                                         await onBuscar(preFicha.id);
-                                    } catch (error: any) {
-                                        notificationCenter.add({ type: "error", title: "Erro", message: error?.message || "Erro ao salvar checklist." });
+                                    } catch (error: unknown) {
+                                        notificationCenter.add({ type: "error", title: "Erro", message: (error instanceof Error ? error.message : "Erro ao salvar checklist.") });
                                     }
                                 }}
                             >

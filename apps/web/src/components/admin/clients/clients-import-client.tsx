@@ -1,14 +1,14 @@
 "use client";
 
-import { Button } from "@morina/ui";
-import { Upload, ArrowLeft, FileSpreadsheet, FileText, Download, CheckCircle2, XCircle } from "lucide-react";
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { getAuthHeadersWithTenant } from "@/lib/api/base";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { PageHeader } from "@/components/ui/page-header";
+import { getAuthHeadersWithTenant } from "@/lib/api/base";
+import { Button } from "@morina/ui";
+import { motion } from "framer-motion";
+import { ArrowLeft, CheckCircle2, Download, FileSpreadsheet, FileText, Upload, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 
 export function ClientsImportClient() {
     const router = useRouter();
@@ -65,7 +65,7 @@ export function ClientsImportClient() {
                 throw new Error(errorData.message || "Não foi possível importar os clientes.");
             }
 
-            const result = (await response.json()) as typeof importResult;
+            const result = (await response.json()) as Exclude<typeof importResult, null>;
             setImportResult(result);
 
             notificationCenter.add({
@@ -99,7 +99,7 @@ export function ClientsImportClient() {
     }, []);
 
     return (
-        <AllowedGuard I="create" a="Client" redirectTo="/admin/clients/list">
+        <AllowedGuard I={"create" as any} a="Client" redirectTo="/admin/clients/list">
             <div className="relative min-h-screen p-6 space-y-8">
                 {/* Modern Header */}
                 <PageHeader

@@ -34,7 +34,7 @@ export function PersonalizationPanel() {
   const normalizedTheme = useMemo(() => normalizeCompanySettings(companyTheme), [companyTheme]);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(companySettingsSchema),
+    resolver: zodResolver(companySettingsSchema) as any,
     mode: "onChange",
     defaultValues: {
       ...DEFAULT_COMPANY_SETTINGS,
@@ -42,7 +42,7 @@ export function PersonalizationPanel() {
     },
   });
 
-  const watchedValues = useWatch<FormValues>({
+  const watchedValues = useWatch({
     control: form.control,
   });
 
@@ -192,7 +192,7 @@ export function PersonalizationPanel() {
           </div>
 
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit as any)}
             className="flex flex-col gap-[var(--space-5)]"
             noValidate
           >

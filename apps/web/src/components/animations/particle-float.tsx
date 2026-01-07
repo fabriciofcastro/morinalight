@@ -47,6 +47,7 @@ export function ParticleFloat() {
                 }}
             />
 
+            {/* @ts-ignore */}
             <style jsx>{`
         @keyframes particle-float-1 {
           0%, 100% { transform: translate(0, 0); }

@@ -6,9 +6,8 @@
 
 import { auditService } from "@/lib/audit/audit-service";
 import { logger } from "@/lib/observability";
-import { securityNotificationService } from "@/lib/security/notifications";
 import { getPrismaClient } from "@/lib/prisma";
-import type { GeolocationData } from "@/lib/services/geolocation-service";
+import { securityNotificationService } from "@/lib/security/notifications";
 import { siemExporter } from "@/lib/siem/siem-exporter";
 
 export interface SecurityAlert {
@@ -124,7 +123,7 @@ export class IntrusionDetector {
                 return;
             }
 
-            const lastLogin = recentLogins[0];
+            const lastLogin = recentLogins[0]!;
 
             if (!lastLogin.latitude || !lastLogin.longitude) {
                 return; // No location data to compare

@@ -121,7 +121,7 @@ describe("Brazilian Validators", () => {
     it("should validate strong passwords", () => {
       const result = validatePasswordStrength("StrongP@ss123");
       expect(result.valid).toBe(true);
-      expect(result.score).toBeGreaterThanOrEqual(3);
+      expect(result.strength).toBeGreaterThanOrEqual(4);
     });
 
     it("should reject weak passwords", () => {
@@ -134,8 +134,8 @@ describe("Brazilian Validators", () => {
 
     it("should provide feedback", () => {
       const result = validatePasswordStrength("weak");
-      expect(result.feedback).toBeDefined();
-      expect(Array.isArray(result.feedback)).toBe(true);
+      expect(result.errors).toBeDefined();
+      expect(Array.isArray(result.errors)).toBe(true);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { GlassCard } from "@morina/ui";
+import { GlassCard } from "@morina/ui/server";
 import type { Metadata } from "next";
 import Link from "next/link";
 

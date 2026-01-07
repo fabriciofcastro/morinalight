@@ -4,8 +4,8 @@
  * Helpers e wrappers para testes
  */
 
-import { render, type RenderOptions } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render, type RenderOptions } from "@testing-library/react";
 import { ThemeProvider } from "next-themes";
 
 /**
@@ -16,7 +16,7 @@ export function createTestQueryClient() {
         defaultOptions: {
             queries: {
                 retry: false,
-                cacheTime: 0,
+                gcTime: 0,
                 staleTime: 0,
             },
             mutations: {
@@ -107,3 +107,4 @@ export const waitFor = (ms: number) =>
 // Re-export everything from testing-library
 export * from "@testing-library/react";
 export { default as userEvent } from "@testing-library/user-event";
+

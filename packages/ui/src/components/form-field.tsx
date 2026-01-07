@@ -3,10 +3,10 @@
 import type { ReactNode } from "react";
 import { forwardRef } from "react";
 import { cn } from "../lib/cn";
+import type { ValidationState } from "../theme/validation-tokens";
 import { Input, type InputProps } from "./input";
 import { Label } from "./label";
 import { Textarea, type TextareaProps } from "./textarea";
-import type { ValidationState } from "../theme/validation-tokens";
 
 export interface FormFieldProps {
   label?: string;
@@ -33,7 +33,8 @@ export function FormField({
 
   // Determina o estado de validação baseado em error e validationState
   const finalValidationState: ValidationState =
-    validationState || (error ? "invalid" : hint?.toLowerCase().includes("valid") ? "valid" : "default");
+    validationState ||
+    (error ? "invalid" : hint?.toLowerCase().includes("valid") ? "valid" : "default");
 
   // Cores de texto baseadas no estado
   const labelColorClass =
@@ -89,7 +90,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
 
     // Determina o estado de validação
     const finalValidationState: ValidationState =
-      validationState || (error ? "invalid" : hint?.toLowerCase().includes("valid") ? "valid" : "default");
+      validationState ||
+      (error ? "invalid" : hint?.toLowerCase().includes("valid") ? "valid" : "default");
 
     return (
       <FormField
@@ -131,7 +133,8 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
 
     // Determina o estado de validação
     const finalValidationState: ValidationState =
-      validationState || (error ? "invalid" : hint?.toLowerCase().includes("valid") ? "valid" : "default");
+      validationState ||
+      (error ? "invalid" : hint?.toLowerCase().includes("valid") ? "valid" : "default");
 
     return (
       <FormField

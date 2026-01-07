@@ -3,7 +3,7 @@
  * Tracks Core Web Vitals and sends to analytics
  */
 
-import { onCLS, onFID, onFCP, onLCP, onTTFB, Metric } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB, Metric } from 'web-vitals';
 
 interface AnalyticsEvent {
     name: string;
@@ -49,7 +49,7 @@ export function initWebVitals() {
 
     try {
         onCLS(sendToAnalytics);
-        onFID(sendToAnalytics);
+        onINP(sendToAnalytics);
         onFCP(sendToAnalytics);
         onLCP(sendToAnalytics);
         onTTFB(sendToAnalytics);
@@ -63,7 +63,7 @@ export function trackCustomMetric(name: string, value: number) {
     if (typeof window === 'undefined') return;
 
     const metric: Partial<Metric> = {
-        name,
+        name: name as "LCP" | "CLS" | "FCP" | "INP" | "TTFB",
         value,
         delta: value,
         id: `custom-${Date.now()}`,

@@ -178,11 +178,12 @@ export function CompanyFiscalTab() {
           <h3 className="mb-4 text-lg font-semibold text-white">Certificado Digital</h3>
           <div className="flex flex-col gap-4">
             <div>
-              <Label>Upload de Certificado Digital (.pfx ou .p12)</Label>
+              <Label htmlFor="certificadoDigital">Upload de Certificado Digital (.pfx ou .p12)</Label>
               <label className="mt-2 flex h-20 cursor-pointer items-center justify-center gap-2 border border-dashed border-white/20 bg-white/5 hover:bg-white/10 transition-colors">
                 <Upload className="h-5 w-5 text-white/40" />
                 <span className="text-sm text-white/60">Clique para fazer upload</span>
                 <input
+                  id="certificadoDigital"
                   type="file"
                   accept=".pfx,.p12"
                   className="hidden"

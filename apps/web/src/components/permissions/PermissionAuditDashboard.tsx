@@ -1,25 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from "@morina/ui";
 import {
+    AlertCircle,
     AlertTriangle,
     CheckCircle2,
-    XCircle,
-    Shield,
     Download,
+    FileText,
     Play,
     RefreshCw,
-    AlertCircle,
+    Shield,
     TrendingUp,
-    Users,
-    FileText
+    XCircle
 } from "lucide-react";
-import { authApi } from "@/lib/api/auth";
+import { useState } from "react";
 import { AuditHistoryCharts } from "./AuditHistoryCharts";
 
 interface AuditSummary {
@@ -360,11 +354,11 @@ export function PermissionAuditDashboard() {
                                     <div className="space-y-2">
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm">Críticas</span>
-                                            <Badge variant="destructive">{report.summary.criticalIssues}</Badge>
+                                            <Badge variant="danger">{report.summary.criticalIssues}</Badge>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm">Alta</span>
-                                            <Badge variant="destructive">{report.summary.highSeverityIssues}</Badge>
+                                            <Badge variant="danger">{report.summary.highSeverityIssues}</Badge>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm">Média</span>

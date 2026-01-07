@@ -4,7 +4,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export const ParticleSystem = () => {
+    const [mounted, setMounted] = React.useState(false);
     const particles = Array.from({ length: 30 });
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

@@ -1,6 +1,6 @@
-import { Metadata } from "next";
-import { PageBackground } from "@/components/layout/PageBackground";
 import { PermissionsManagerClientWrapper } from "@/components/admin/permissions/permissions-manager-client-wrapper";
+import { PageBackground } from "@/components/layout/PageBackground";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Permissões do Departamento | Administração",
@@ -11,14 +11,14 @@ export default async function DepartmentPermissionsPage({
 
   params,
 }: {
-  params: Promise<{ departmentId: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const { departmentId } = await params;
+  const { id } = await params;
   return (
     <PageBackground>
       <PermissionsManagerClientWrapper
         entityType="department"
-        entityId={departmentId}
+        entityId={id}
       />
     </PageBackground>
   );

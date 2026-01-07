@@ -1,7 +1,7 @@
 import { AbilityBuilder } from '@casl/ability';
-import { AppAbility, AppActions, AppSubjects } from './types';
-import { SecurityContext, SecurityPolicy, ObjectAccessEntry } from './advanced/types';
+import { ObjectAccessEntry, SecurityContext, SecurityPolicy } from './advanced/types';
 import { unifiedPolicyEngine } from './advanced/unified-policy-engine';
+import { AppAbility, AppActions, AppSubjects } from './types';
 
 /**
  * Sentry adapter interface for logging authorization events
@@ -255,8 +255,8 @@ export class SharedAbilityFactory {
         const actionRaw = parts[1];
         const modifier = parts[2];
 
-        const subject = this.mapSubject(subjectRaw);
-        const action = this.mapAction(actionRaw);
+        const subject = this.mapSubject(subjectRaw!);
+        const action = this.mapAction(actionRaw!);
 
         if (!action || !subject) {
             // Tentar subject composto (ex: settings:permissions:view)
@@ -266,7 +266,7 @@ export class SharedAbilityFactory {
                 const compositeModifier = parts[3]; // Pode ser undefined
 
                 const compositeSubject = this.mapSubject(compositeSubjectRaw);
-                const compositeAction = this.mapAction(compositeActionRaw);
+                const compositeAction = this.mapAction(compositeActionRaw!);
 
                 if (compositeSubject && compositeAction) {
                     let conditions: any = undefined;
@@ -344,8 +344,8 @@ export class SharedAbilityFactory {
         const actionRaw = parts[1];
 
         // Tentar mapeamento direto primeiro
-        let subject = this.mapSubject(subjectRaw);
-        let action = this.mapAction(actionRaw);
+        let subject = this.mapSubject(subjectRaw!);
+        let action = this.mapAction(actionRaw!);
 
         // Se falhar e tivermos mais partes, tentar subject composto
         if ((!subject || !action) && parts.length >= 3) {
@@ -353,7 +353,7 @@ export class SharedAbilityFactory {
             const compositeActionRaw = parts[2];
 
             const compositeSubject = this.mapSubject(compositeSubjectRaw);
-            const compositeAction = this.mapAction(compositeActionRaw);
+            const compositeAction = this.mapAction(compositeActionRaw!);
 
             if (compositeSubject && compositeAction) {
                 return { subject: compositeSubject, action: compositeAction };

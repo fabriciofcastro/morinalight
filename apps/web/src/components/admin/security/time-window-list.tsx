@@ -2,8 +2,6 @@
 
 import {
     Clock,
-    Calendar,
-    MoreVertical,
     Edit2,
     Trash2,
     Power,
@@ -11,7 +9,6 @@ import {
 } from "lucide-react";
 import {
     GlassCard,
-    Badge,
     Button
 } from "@/components/ui/futuristic";
 import { TimeWindow } from "@morina/shared-kernel";
@@ -35,7 +32,7 @@ export function TimeWindowsList({ windows, onEdit, onDelete, onToggle }: TimeWin
                 <p className="text-white/40 max-w-md mx-auto mt-2">
                     Restrinja o acesso ao sistema a horários específicos ou dias úteis.
                 </p>
-                <Button variant="primary" className="mt-6">
+                <Button variant="default" className="mt-6">
                     Configurar Horário Comercial
                 </Button>
             </div>
@@ -69,8 +66,8 @@ export function TimeWindowsList({ windows, onEdit, onDelete, onToggle }: TimeWin
                         </div>
 
                         <div className="flex items-center gap-1">
-                            <Can I="update" a="TimeWindow">
-                                <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onToggle(window.id)}>
+                            <Can I="update" a="User">
+                                <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => window.id && onToggle(window.id)}>
                                     <Power className={`h-3.5 w-3.5 ${window.active ? 'text-emerald-400' : 'text-white/40'}`} />
                                 </Button>
                                 <Button variant="secondary" size="icon" className="h-8 w-8" onClick={() => onEdit(window)}>
@@ -98,8 +95,8 @@ export function TimeWindowsList({ windows, onEdit, onDelete, onToggle }: TimeWin
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-white/5 flex justify-end">
-                        <Can I="delete" a="TimeWindow">
-                            <Button variant="link" size="sm" className="h-6 text-[10px] text-red-400/60 hover:text-red-400" onClick={() => onDelete(window.id)}>
+                        <Can I="delete" a="User">
+                            <Button variant="link" size="sm" className="h-6 text-[10px] text-red-400/60 hover:text-red-400" onClick={() => window.id && onDelete(window.id)}>
                                 <Trash2 className="mr-1 h-3 w-3" /> Excluir Janela
                             </Button>
                         </Can>

@@ -72,7 +72,7 @@ export function PageBackground({ children, className, variant }: PageBackgroundP
     if (variant) {
       // Mapear "dashboard" para "jarvis" se necessário, ou assumir tipos válidos
       if (variant === "dashboard") setBgType("jarvis");
-      else if (variant === "none") setBgType("none" as any);
+      else if ((variant as string) === "none") setBgType("none" as any);
       else setBgType(variant as any);
       return;
     }
@@ -576,6 +576,9 @@ function FichasCustoBackground() {
   const [circuitLines, setCircuitLines] = useState<
     { id: string; path: string; delay: number; duration: number }[]
   >([]);
+  const [energyParticles, setEnergyParticles] = useState<
+    { top: string; left: string; duration: number; delay: number }[]
+  >([]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -598,6 +601,16 @@ function FichasCustoBackground() {
           delay: i * 0.4,
           duration: 6 + Math.random() * 4,
         })),
+      );
+
+      // Partículas de energia
+      setEnergyParticles(
+        Array.from({ length: 20 }).map((_, i) => ({
+          top: `${Math.random() * 100}%`,
+          left: `${Math.random() * 100}%`,
+          duration: 4 + Math.random() * 3,
+          delay: Math.random() * 2,
+        }))
       );
     });
   }, []);
@@ -735,13 +748,13 @@ function FichasCustoBackground() {
       </svg>
 
       {/* Partículas de energia */}
-      {Array.from({ length: 20 }).map((_, i) => (
+      {energyParticles.map((p, i) => (
         <motion.div
           key={`particle-${i}`}
           className="absolute h-1 w-1 rounded-full bg-[hsl(var(--accent))]"
           style={{
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
+            top: p.top,
+            left: p.left,
           }}
           animate={{
             y: [0, -100, 0],
@@ -749,10 +762,10 @@ function FichasCustoBackground() {
             scale: [0.5, 1.5, 0.5],
           }}
           transition={{
-            duration: 4 + Math.random() * 3,
+            duration: p.duration,
             repeat: Infinity,
             ease: "easeOut",
-            delay: Math.random() * 2,
+            delay: p.delay,
           }}
         />
       ))}

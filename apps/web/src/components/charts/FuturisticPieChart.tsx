@@ -11,7 +11,7 @@ interface DeviceDistribution {
 }
 
 interface FuturisticPieChartProps {
-    data?: DeviceDistribution[];
+    data?: any[]; // Accept any array structure
     isLoading?: boolean;
     error?: Error | null;
 }

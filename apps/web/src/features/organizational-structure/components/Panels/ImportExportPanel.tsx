@@ -1,13 +1,13 @@
 "use client";
 
-import { Button, GlassCard, Input, Label } from "@morina/ui";
-import { Download, Upload, FileText, AlertCircle, CheckCircle2, X } from "lucide-react";
-import { useCallback, useState } from "react";
+import { notificationCenter } from "@/components/notifications/notification-center";
 import { downloadFile, exportToCSV, exportToJSON } from "@/lib/organizational-structure/export";
 import { importFromJSON, readFileAsText, type ImportResult } from "@/lib/organizational-structure/import";
 import { importFromCSV } from "@/lib/organizational-structure/import-csv";
-import { Department, Subdepartment, Sector, Position } from "@morina/organizational-structure-domain";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { Department, Position, Sector, Subdepartment } from "@morina/organizational-structure-domain";
+import { Button, GlassCard, Input, Label } from "@morina/ui";
+import { AlertCircle, CheckCircle2, Download, FileText, Upload, X } from "lucide-react";
+import { useCallback, useState } from "react";
 
 type ImportExportPanelProps = {
   departments: Department[];
@@ -137,8 +137,8 @@ export function ImportExportPanel({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Exportação */}
         <div className="space-y-3">
-          <Label className="text-white/80">Exportar</Label>
-          <div className="flex gap-2">
+          <Label htmlFor="export-options">Exportar</Label>
+          <div className="flex gap-2" id="export-options">
             <Button
               onClick={handleExportJSON}
               variant="outline"
@@ -162,8 +162,8 @@ export function ImportExportPanel({
 
         {/* Importação */}
         <div className="space-y-3">
-          <Label className="text-white/80">Importar</Label>
-          <div className="space-y-2">
+          <Label htmlFor="import-options">Importar</Label>
+          <div className="space-y-2" id="import-options">
             <div className="relative">
               <Input
                 type="file"
@@ -244,8 +244,8 @@ export function ImportExportPanel({
       {showResult && importResult && (
         <div
           className={`mt-4 p-4 rounded-lg border ${importResult.success
-              ? "bg-green-500/10 border-green-500/30"
-              : "bg-yellow-500/10 border-yellow-500/30"
+            ? "bg-green-500/10 border-green-500/30"
+            : "bg-yellow-500/10 border-yellow-500/30"
             }`}
         >
           <div className="flex items-start justify-between mb-3">

@@ -9,9 +9,8 @@
  * - Layout responsivo
  */
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@morina/ui';
-import { AlertCircle, Check, Upload, X, Loader2, CloudUpload, Info } from 'lucide-react';
+import { Avatar, Button } from '@morina/ui';
+import { AlertCircle, Check, CloudUpload, Info, Loader2, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 
@@ -108,19 +107,12 @@ export function PhotoUpload({
         <div className="flex flex-col items-center gap-6">
             {/* Avatar Preview */}
             <div className="relative group">
-                <Avatar className="w-40 h-40 ring-4 ring-white/10 shadow-xl transition-all group-hover:ring-[hsl(var(--primary))/0.5]">
-                    {preview ? (
-                        <AvatarImage
-                            src={preview}
-                            alt="Foto do usuário"
-                            className="object-cover"
-                        />
-                    ) : (
-                        <AvatarFallback className="text-5xl font-bold bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary))/0.6] text-white">
-                            {getInitials(userName)}
-                        </AvatarFallback>
-                    )}
-                </Avatar>
+                <Avatar
+                    size="xl"
+                    src={preview || undefined}
+                    fallback={getInitials(userName)}
+                    className="w-40 h-40 ring-4 ring-white/10 shadow-xl transition-all group-hover:ring-[hsl(var(--primary))/0.5]"
+                />
 
                 {preview && !disabled && (
                     <Button
@@ -147,7 +139,7 @@ export function PhotoUpload({
             <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-lg">
                 <div className="pt-6 px-6 pb-6">
                     <div
-                        {...getRootProps()}
+                        {...(getRootProps() as any)}
                         className={`
               border-2 border-dashed rounded-lg p-8 cursor-pointer text-center
               transition-all duration-200
@@ -158,7 +150,7 @@ export function PhotoUpload({
               ${disabled || isUploading ? 'opacity-50 cursor-not-allowed' : ''}
             `}
                     >
-                        <input {...getInputProps()} />
+                        <input {...(getInputProps() as any)} />
 
                         <div className="flex flex-col items-center gap-4">
                             {isDragActive ? (

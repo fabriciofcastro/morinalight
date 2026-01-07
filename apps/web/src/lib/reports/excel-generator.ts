@@ -1,13 +1,8 @@
+import type { Column } from 'exceljs';
 
-import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver';
-
-// Polyfill saveAs if not available (server-side safety)
-const saveFile = typeof saveAs !== 'undefined' ? saveAs : (blob: Blob, name: string) => { console.log('File saving mocked', name); };
-
-interface ExcelSheetConfig {
+export interface ExcelSheetConfig {
     name: string;
-    columns: Partial<ExcelJS.Column>[];
+    columns: Partial<Column>[];
     data: any[];
 }
 
@@ -15,6 +10,9 @@ export async function generateExcelReport(
     filename: string,
     sheets: ExcelSheetConfig[]
 ) {
+    const { default: ExcelJS } = await import('exceljs');
+    const { saveAs } = await import('file-saver');
+
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'MorinaLight Command Center';
     workbook.created = new Date();
@@ -58,5 +56,5 @@ export async function generateExcelReport(
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-    saveFile(blob, `${filename}.xlsx`);
+    saveAs(blob, `${filename}.xlsx`);
 }

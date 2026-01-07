@@ -1,10 +1,10 @@
 
-import { startRegistration } from '@simplewebauthn/server';
-import { NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth/server';
-import prisma from '@/lib/prisma';
 import { RP_ID, RP_NAME } from '@/lib/auth/webauthn-config';
+import prisma from '@/lib/prisma';
+import { generateRegistrationOptions } from '@simplewebauthn/server';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
@@ -15,14 +15,14 @@ export async function GET() {
 
         // Buscar autenticadores existentes para evitar duplicação (excludeCredentials)
         const userAuthenticators = await prisma.authenticator.findMany({
-            where: { userId: user.id },
+            where: { userId: user.userId },
             select: { credentialID: true, transports: true }
         });
 
-        const options = await startRegistration({
+        const options = await generateRegistrationOptions({
             rpName: RP_NAME,
             rpID: RP_ID,
-            userID: user.id,
+            userID: Buffer.from(user.userId),
             userName: user.email || user.displayName || 'User',
             // Prevenir registrar o mesmo dispositivo de novo
             excludeCredentials: userAuthenticators.map(auth => ({
@@ -41,7 +41,8 @@ export async function GET() {
         // Aqui usaremos um cookie assinado/criptografado é uma boa prática stateless.
         // Por simplicidade, usaremos um cookie httpOnly temporário.
 
-        cookies().set('webauthn_challenge', options.challenge, {
+        const cookieStore = await cookies();
+        cookieStore.set('webauthn_challenge', options.challenge, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',

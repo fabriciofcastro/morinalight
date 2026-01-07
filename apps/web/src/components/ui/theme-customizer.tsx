@@ -1,16 +1,15 @@
 "use client"
 
-import * as React from "react"
-import { Palette, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
+import { Check, Palette } from "lucide-react"
+import * as React from "react"
 
 interface ThemeColor {
     name: string
@@ -141,7 +140,7 @@ export function ThemeCustomizer({
     }
 
     const resetToDefault = () => {
-        handlePresetClick(presetThemes[0])
+        handlePresetClick(presetThemes[0]!)
     }
 
     return (

@@ -5,18 +5,18 @@
  * Gera novos backup codes para o usuário (requer MFA habilitado)
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { protectedRouteMiddleware } from "@/lib/middleware/security-middleware";
 import { generateBackupCodes, hashBackupCode } from "@/lib/auth/mfa";
+import { AuthenticatedRequest, protectedRouteMiddleware } from "@/lib/middleware/security-middleware";
 import { logger } from "@/lib/observability";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest, context: any) {
+export async function POST(request: NextRequest, context: unknown) {
     // Aplicar middleware de segurança
     const middlewareResult = await protectedRouteMiddleware(request, context);
     if (middlewareResult) return middlewareResult;
 
     try {
-        const user = (request as any).user;
+        const user = (request as AuthenticatedRequest).user;
 
         if (!user) {
             return NextResponse.json(

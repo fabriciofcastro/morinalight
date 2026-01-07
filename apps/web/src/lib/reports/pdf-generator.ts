@@ -1,12 +1,16 @@
-
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-
 export async function generatePDFReport(
     elementId: string,
     filename: string,
     title?: string
 ) {
+    // Dynamic imports to reduce bundle size
+    const jsPDFModule = await import('jspdf');
+    const html2canvasModule = await import('html2canvas');
+    
+    // Handle default exports compatibility
+    const jsPDF = jsPDFModule.default;
+    const html2canvas = html2canvasModule.default;
+
     const element = document.getElementById(elementId);
     if (!element) {
         console.error(`Element not found: ${elementId}`);

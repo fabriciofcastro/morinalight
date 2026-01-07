@@ -134,7 +134,7 @@ export interface CreatePreFichaTecnicaInput {
   piloteiroNome?: string | null;
 }
 
-export interface UpdatePreFichaTecnicaInput extends Partial<CreatePreFichaTecnicaInput> {}
+export interface UpdatePreFichaTecnicaInput extends Partial<CreatePreFichaTecnicaInput> { }
 
 // ============================================
 // API Functions
@@ -167,14 +167,14 @@ export async function listarPreFichasTecnicas(
     totalPaginas: number;
   }>(`/organizations/${orgId}/pre-fichas-tecnicas?${params.toString()}`);
 
-  return response.data;
+  return response;
 }
 
 export async function buscarPreFichaTecnica(orgId: string, id: string): Promise<PreFichaTecnica> {
   const response = await api.get<PreFichaTecnica>(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}`,
   );
-  return response.data;
+  return response;
 }
 
 export async function criarPreFichaTecnica(
@@ -185,7 +185,7 @@ export async function criarPreFichaTecnica(
     `/organizations/${orgId}/pre-fichas-tecnicas`,
     input,
   );
-  return response.data;
+  return response;
 }
 
 export async function submeterPreFichaTecnica(
@@ -195,7 +195,7 @@ export async function submeterPreFichaTecnica(
   const response = await api.post<{ id: string; status: StatusPreFichaTecnica }>(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}/submeter`,
   );
-  return response.data;
+  return response;
 }
 
 export async function aprovarTecnicamentePreFichaTecnica(
@@ -207,7 +207,7 @@ export async function aprovarTecnicamentePreFichaTecnica(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}/aprovar-tecnicamente`,
     { aprovadorNome },
   );
-  return response.data;
+  return response;
 }
 
 export async function reprovarPreFichaTecnica(
@@ -220,7 +220,7 @@ export async function reprovarPreFichaTecnica(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}/reprovar`,
     { justificativa, reprovadorNome },
   );
-  return response.data;
+  return response;
 }
 
 export async function aprovarDiretoriaPreFichaTecnica(
@@ -232,7 +232,7 @@ export async function aprovarDiretoriaPreFichaTecnica(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}/aprovar-diretoria`,
     { aprovadorNome },
   );
-  return response.data;
+  return response;
 }
 
 export interface VersaoPreFichaTecnica {
@@ -268,7 +268,7 @@ export async function listarVersoesPreFichaTecnica(
     totalPaginas: number;
   }>(`/organizations/${orgId}/pre-fichas-tecnicas/${preFichaTecnicaId}/versoes?${params.toString()}`);
 
-  return response.data;
+  return response;
 }
 
 export async function atualizarPreFichaTecnica(
@@ -280,7 +280,7 @@ export async function atualizarPreFichaTecnica(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}`,
     input,
   );
-  return response.data;
+  return response;
 }
 
 export async function atualizarChecklistTecnico(
@@ -297,7 +297,7 @@ export async function atualizarChecklistTecnico(
     `/organizations/${orgId}/pre-fichas-tecnicas/${id}/checklist-tecnico`,
     { checklist },
   );
-  return response.data;
+  return response;
 }
 
 export async function exportarPdfPreFichaTecnica(
@@ -341,7 +341,7 @@ export async function compararVersoesPreFichaTecnica(
   const response = await api.get<ComparacaoVersoes>(
     `/organizations/${orgId}/pre-fichas-tecnicas/${preFichaTecnicaId}/comparar-versoes?${params.toString()}`,
   );
-  return response.data;
+  return response;
 }
 
 

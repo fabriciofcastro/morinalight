@@ -1,8 +1,8 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { createServer } from "../../src/core/server/create-server";
-import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
 import { InMemoryOrganizationAuditLogRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization-audit-log.repository";
+import { InMemoryOrganizationRepository } from "../../src/modules/organizations/infra/memory/in-memory-organization.repository";
 import { InMemoryUserInviteRepository } from "../../src/modules/organizations/infra/memory/in-memory-user-invite.repository";
 import { InMemoryUserRepository } from "../../src/modules/users/infra/memory/in-memory-user.repository";
 
@@ -130,7 +130,7 @@ describe("Organizations Invites HTTP", () => {
     expect(response.statusCode).toBe(200);
     const body = response.json() as { itens: Array<{ email: string; status: string }> };
     expect(body.itens).toHaveLength(1);
-    expect(body.itens[0].email).toBe("guest@example.com");
+    expect(body.itens[0]!.email).toBe("guest@example.com");
   });
 
   it("cancela convite pendente", async () => {
