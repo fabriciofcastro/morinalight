@@ -6,7 +6,7 @@ import type {
 } from "@morina/preficha-domain";
 import { PrefichaAuditoria } from "@morina/preficha-domain";
 
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 
 const prisma = getPrisma();

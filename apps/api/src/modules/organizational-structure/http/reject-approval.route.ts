@@ -2,9 +2,12 @@
  * Rota HTTP: Rejeitar Approval
  */
 
-import type { FastifyInstance } from "fastify";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import { rejeitarApprovalInputSchema, approvalViewSchema } from "../application/schemas/approval.schema";
+import type { FastifyInstance } from "fastify";
+import {
+  approvalViewSchema,
+  rejeitarApprovalInputSchema,
+} from "../application/schemas/approval.schema";
 import { RejeitarApprovalUseCase } from "../application/use-cases/rejeitar-approval.use-case";
 import type { ApprovalRepository } from "../domain/repositories/approval-repository";
 
@@ -38,12 +41,3 @@ export async function registerRejectApprovalRoute(
     }
   });
 }
-
-
-
-
-
-
-
-
-

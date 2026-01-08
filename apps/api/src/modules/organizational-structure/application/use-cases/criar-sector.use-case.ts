@@ -4,8 +4,8 @@ import { Sector } from "../../domain/entities/sector";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
-import { criarSectorInputSchema, sectorViewSchema } from "../schemas/sector.schema";
 import { calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
+import { criarSectorInputSchema, sectorViewSchema } from "../schemas/sector.schema";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -50,13 +50,10 @@ export class CriarSectorUseCase {
       }
 
       // Verificar profundidade máxima
-      const parentDepth = await calculateHierarchyDepth(
-        input.parentId,
-        async (id: string) => {
-          const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
-          return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
-        },
-      );
+      const parentDepth = await calculateHierarchyDepth(input.parentId, async (id: string) => {
+        const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
+        return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
+      });
 
       if (parentDepth >= 9) {
         throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");

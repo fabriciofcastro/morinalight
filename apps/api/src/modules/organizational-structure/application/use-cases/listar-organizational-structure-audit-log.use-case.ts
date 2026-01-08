@@ -1,9 +1,11 @@
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories/organizational-structure-audit-log.repository";
 import { z } from "zod";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories/organizational-structure-audit-log.repository";
 
 const listarOrganizationalStructureAuditLogInputSchema = z.object({
   orgId: z.string().uuid(),
-  entityType: z.enum(["unit", "department", "team", "branch", "sector", "position", "subdepartment"]).optional(),
+  entityType: z
+    .enum(["unit", "department", "team", "branch", "sector", "position", "subdepartment"])
+    .optional(),
   entityId: z.string().uuid().optional(),
   action: z.string().optional(),
   cursor: z.string().optional(),
@@ -79,11 +81,3 @@ export class ListarOrganizationalStructureAuditLogUseCase {
     });
   }
 }
-
-
-
-
-
-
-
-

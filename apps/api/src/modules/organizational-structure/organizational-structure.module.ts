@@ -15,22 +15,23 @@ import type {
   SubdepartmentRepository,
 } from "./domain/repositories";
 import { registerOrganizationalStructureHttpRoutes } from "./http";
-import { registerCreateBranchRoute } from "./http/create-branch.route";
-import { registerUpdateBranchRoute } from "./http/update-branch.route";
-import { registerListBranchesRoute } from "./http/list-branches.route";
-import { registerDeleteBranchRoute } from "./http/delete-branch.route";
-import { registerCreateWorkflowPolicyRoute } from "./http/create-workflow-policy.route";
-import { registerUpdateWorkflowPolicyRoute } from "./http/update-workflow-policy.route";
-import { registerListWorkflowPoliciesRoute } from "./http/list-workflow-policies.route";
-import { registerDeleteWorkflowPolicyRoute } from "./http/delete-workflow-policy.route";
-import { registerVerifyPolicyRoute } from "./http/verify-policy.route";
-import { registerCreateApprovalRoute } from "./http/create-approval.route";
-import { registerListApprovalsRoute } from "./http/list-approvals.route";
 import { registerApproveApprovalRoute } from "./http/approve-approval.route";
-import { registerRejectApprovalRoute } from "./http/reject-approval.route";
+import { registerCreateApprovalRoute } from "./http/create-approval.route";
+import { registerCreateBranchRoute } from "./http/create-branch.route";
+import { registerCreateWorkflowPolicyRoute } from "./http/create-workflow-policy.route";
+import { registerDeleteBranchRoute } from "./http/delete-branch.route";
+import { registerDeleteWorkflowPolicyRoute } from "./http/delete-workflow-policy.route";
 import { registerDepartmentMembersRoutes } from "./http/department-members.routes";
-import { registerSectorMembersRoutes } from "./http/sector-members.routes";
+import { registerListApprovalsRoute } from "./http/list-approvals.route";
+import { registerListBranchesRoute } from "./http/list-branches.route";
+import { registerListWorkflowPoliciesRoute } from "./http/list-workflow-policies.route";
 import { registerPositionMembersRoutes } from "./http/position-members.routes";
+import { registerRejectApprovalRoute } from "./http/reject-approval.route";
+import { registerSectorMembersRoutes } from "./http/sector-members.routes";
+import { registerUpdateBranchRoute } from "./http/update-branch.route";
+import { registerUpdateWorkflowPolicyRoute } from "./http/update-workflow-policy.route";
+import { registerVerifyPolicyRoute } from "./http/verify-policy.route";
+import { PrismaApprovalRepository } from "./infra/prisma/prisma-approval.repository";
 import { PrismaBranchRepository } from "./infra/prisma/prisma-branch.repository";
 import { PrismaDepartmentRepository } from "./infra/prisma/prisma-department.repository";
 import type { DepartmentMembershipRepository } from "./infra/prisma/prisma-department-membership.repository";
@@ -44,7 +45,6 @@ import type { SectorMembershipRepository } from "./infra/prisma/prisma-sector-me
 import { PrismaSectorMembershipRepository } from "./infra/prisma/prisma-sector-membership.repository";
 import { PrismaSubdepartmentRepository } from "./infra/prisma/prisma-subdepartment.repository";
 import { PrismaWorkflowPolicyRepository } from "./infra/prisma/prisma-workflow-policy.repository";
-import { PrismaApprovalRepository } from "./infra/prisma/prisma-approval.repository";
 
 export type OrganizationalStructureModuleOptions = {
   departmentRepository?: DepartmentRepository;

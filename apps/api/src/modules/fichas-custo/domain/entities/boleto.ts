@@ -222,14 +222,3 @@ export class Boleto {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-

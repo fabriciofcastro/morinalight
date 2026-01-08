@@ -7,10 +7,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerRevokeUserSessionRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerRevokeUserSessionRoute(app: FastifyInstance, deps: Dependencies) {
   app.post(
     "/users/:userId/sessions/:sessionId/revoke",
     async (request: FastifyRequest, reply: FastifyReply) => {

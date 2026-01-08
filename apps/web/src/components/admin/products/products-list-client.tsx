@@ -19,13 +19,13 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { productsApi, Product, ListProductsQuery } from "@/lib/api/products";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticSelect } from "@/components/ui/futuristic-ui";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ViewModeToggle, ViewMode } from "@/components/ui/view-mode-toggle";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
+import { ViewModeToggle, ViewMode } from "@/shared/ui/base/view-mode-toggle";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Can } from "@/lib/auth";
-import { PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/shared/ui/base/page-header";
 
 const ProductCard = ({
     product,

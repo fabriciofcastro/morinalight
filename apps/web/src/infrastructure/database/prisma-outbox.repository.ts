@@ -44,7 +44,7 @@ export class PrismaOutboxRepository extends BasePrismaRepository implements IOut
       orderBy: { occurredAt: 'asc' },
     });
 
-    return messages.map(m => this.toDomain(m));
+    return messages.map((m: any) => this.toDomain(m));
   }
 
   async findById(id: string): Promise<Option<OutboxMessage>> {

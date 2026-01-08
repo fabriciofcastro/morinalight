@@ -41,15 +41,3 @@ export async function registerGetProfileRoute(app: FastifyInstance, deps: GetPro
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

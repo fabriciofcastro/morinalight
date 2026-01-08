@@ -34,7 +34,7 @@ export class PrismaNotaSupplierRepository implements NotaSupplierRepository {
 
   async findBySupplierId(
     supplierId: string,
-    filters?: { tipo?: string; criadoPor?: string; busca?: string }
+    filters?: { tipo?: string; criadoPor?: string; busca?: string },
   ): Promise<NotaSupplierRecord[]> {
     const where: any = { supplierId };
 
@@ -106,4 +106,3 @@ export class PrismaNotaSupplierRepository implements NotaSupplierRepository {
     };
   }
 }
-

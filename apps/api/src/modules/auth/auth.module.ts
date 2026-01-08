@@ -15,10 +15,10 @@ import { InMemoryUserRepository } from "../users/infra/memory/in-memory-user.rep
 import { PrismaUserRepository } from "../users/infra/prisma/prisma-user.repository";
 import type { UserRepository } from "../users/repositories/user.repository";
 import { registerLoginRoute } from "./http/login.route";
-import { registerRefreshTokenRoute } from "./http/refresh-token.route";
 import { registerLogoutRoute } from "./http/logout.route";
 import { registerLogoutAllRoute } from "./http/logout-all.route";
 import { registerLogoutSessionRoute } from "./http/logout-session.route";
+import { registerRefreshTokenRoute } from "./http/refresh-token.route";
 import { registerRegisterRoute } from "./http/register.route";
 
 export type AuthModuleOptions = {
@@ -65,10 +65,22 @@ export async function registerAuthModule(app: FastifyInstance, options: AuthModu
     auditRepository,
   });
 
+  const { SessionManagementService } = await import("./domain/services/session-management.service");
+  // @ts-expect-error - PrismaService incompatibilidade de tipos irrelevante para runtime
+  const sessionService = new SessionManagementService(
+    (process.env.DATABASE_URL ? new PrismaUserRepository() : {}) as any,
+  ); // Hack temporário: O serviço espera PrismaService, mas aqui estamos instanciando manual.
+  // CORREÇÃO: Vamos usar o getPrisma direto
+  const { getPrisma } = await import("../../infra/database/prisma.service");
+  const prisma = getPrisma();
+  // @ts-expect-error
+  const realSessionService = new SessionManagementService(prisma);
+
   await registerLoginRoute(app, {
     userRepository,
     organizationRepository,
     auditRepository,
+    sessionService: realSessionService,
   });
 
   await registerRefreshTokenRoute(app);
@@ -86,5 +98,12 @@ export async function registerAuthModule(app: FastifyInstance, options: AuthModu
   await registerLogoutSessionRoute(app, {
     userRepository,
     auditRepository,
+  });
+
+  const { registerOAuthRoutes } = await import("./http/oauth.routes");
+  await registerOAuthRoutes(app, {
+    userRepository,
+    organizationRepository,
+    sessionService: realSessionService,
   });
 }

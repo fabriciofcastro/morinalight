@@ -57,15 +57,3 @@ export async function registerListarVersoesPreFichaTecnicaRoute(app: FastifyInst
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

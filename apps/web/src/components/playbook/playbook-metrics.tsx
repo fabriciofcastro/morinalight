@@ -16,7 +16,7 @@ import {
     Minus
 } from "lucide-react";
 import { GlassCard } from "@morina/ui";
-import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
+import { AnimatedTechCorners } from "@/shared/ui/base/animated-tech-corners";
 
 function AnimatedCounter({ value, decimals = 0 }: { value: number; decimals?: number }) {
     const nodeRef = useRef<HTMLDivElement>(null);

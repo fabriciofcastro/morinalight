@@ -269,3 +269,4 @@ O `ImportExportPanel` está integrado como uma aba no painel de detalhes:
 3. **Template CSV**: Download de template CSV vazio
 4. **Importação em Lote**: Processar múltiplos arquivos
 5. **Histórico de Importações**: Rastrear todas as importações realizadas
+

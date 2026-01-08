@@ -2,8 +2,8 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { DeletarSubdepartmentUseCase } from "../application/use-cases/deletar-subdepartment.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 import type { SectorRepository } from "../domain/repositories/sector-repository";
+import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -15,7 +15,10 @@ type Dependencies = {
 export async function registerDeleteSubdepartmentRoute(app: FastifyInstance, deps: Dependencies) {
   app.delete(
     "/subdepartments/:subdepartmentId",
-    async (request: FastifyRequest<{ Params: { subdepartmentId: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { subdepartmentId: string } }>,
+      reply: FastifyReply,
+    ) => {
       const orgId = request.headers["x-org-id"] as string;
       const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
 
@@ -61,4 +64,3 @@ export async function registerDeleteSubdepartmentRoute(app: FastifyInstance, dep
     },
   );
 }
-

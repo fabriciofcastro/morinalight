@@ -1,22 +1,22 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import {
-  listarPreFichasTecnicas,
-  buscarPreFichaTecnica,
-  criarPreFichaTecnica,
-  submeterPreFichaTecnica,
-  aprovarTecnicamentePreFichaTecnica,
-  reprovarPreFichaTecnica,
-  aprovarDiretoriaPreFichaTecnica,
-  atualizarPreFichaTecnica,
-  atualizarChecklistTecnico,
-  exportarPdfPreFichaTecnica,
-  compararVersoesPreFichaTecnica,
-  type PreFichaTecnica,
-  type CreatePreFichaTecnicaInput,
-  type UpdatePreFichaTecnicaInput,
+    aprovarDiretoriaPreFichaTecnica,
+    aprovarTecnicamentePreFichaTecnica,
+    atualizarChecklistTecnico,
+    atualizarPreFichaTecnica,
+    buscarPreFichaTecnica,
+    compararVersoesPreFichaTecnica,
+    criarPreFichaTecnica,
+    exportarPdfPreFichaTecnica,
+    listarPreFichasTecnicas,
+    reprovarPreFichaTecnica,
+    submeterPreFichaTecnica,
+    type CreatePreFichaTecnicaInput,
+    type PreFichaTecnica,
+    type UpdatePreFichaTecnicaInput,
 } from "@/lib/api/pre-fichas-tecnicas";
+import { useCallback, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -31,7 +31,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

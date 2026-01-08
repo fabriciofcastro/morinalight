@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import { authApi } from "@/lib/api/auth";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Configuração de timeout de inatividade (em minutos)
 const INACTIVITY_TIMEOUT = 30; // 30 minutos
@@ -27,6 +27,9 @@ export function useLogout() {
       });
 
       await authApi.logout(logoutAllDevices);
+      
+      // Redirect to login page after logout
+      window.location.href = "/auth/login";
     },
     [],
   );

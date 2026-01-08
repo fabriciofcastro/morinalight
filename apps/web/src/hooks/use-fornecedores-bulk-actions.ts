@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { suppliersApi } from "@/lib/api/suppliers";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 /**
  * Custom hook for managing bulk actions on fornecedores

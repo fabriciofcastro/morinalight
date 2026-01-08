@@ -10,7 +10,7 @@ import {
   organizationalStructureApi,
   type WorkflowPolicy,
 } from "@/lib/api/organizational-structure";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 type FormState = {
   module: string;

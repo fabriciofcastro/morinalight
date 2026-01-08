@@ -59,15 +59,3 @@ export async function registerListarVersoesFichaCustoRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

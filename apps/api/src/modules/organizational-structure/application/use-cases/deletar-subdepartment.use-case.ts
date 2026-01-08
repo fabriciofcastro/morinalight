@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
-import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
+import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 
 const deletarSubdepartmentInputSchema = z.object({
   orgId: z.string().min(1),
@@ -100,4 +100,3 @@ export class DeletarSubdepartmentUseCase {
     return { success: true };
   }
 }
-

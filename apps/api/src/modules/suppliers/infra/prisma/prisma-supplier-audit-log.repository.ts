@@ -32,8 +32,12 @@ export class PrismaSupplierAuditLogRepository implements AuditoriaSupplierReposi
         orgId: input.orgId,
         acao: input.acao,
         campo: input.campo,
-        estadoAnterior: input.estadoAnterior ? (input.estadoAnterior as Prisma.InputJsonValue) : Prisma.JsonNull,
-        estadoNovo: input.estadoNovo ? (input.estadoNovo as Prisma.InputJsonValue) : Prisma.JsonNull,
+        estadoAnterior: input.estadoAnterior
+          ? (input.estadoAnterior as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+        estadoNovo: input.estadoNovo
+          ? (input.estadoNovo as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
         actorId: input.actorId,
         ipAddress: input.ipAddress,
         userAgent: input.userAgent,
@@ -102,7 +106,10 @@ export class PrismaSupplierAuditLogRepository implements AuditoriaSupplierReposi
     };
   }
 
-  async findByOrgId(orgId: string, filtro: AuditoriaSupplierFilter = {}): Promise<AuditoriaSupplierPage> {
+  async findByOrgId(
+    orgId: string,
+    filtro: AuditoriaSupplierFilter = {},
+  ): Promise<AuditoriaSupplierPage> {
     const limit = Math.min(Math.max(filtro.limite ?? 20, 1), 100);
 
     const andFilters: Prisma.AuditoriaSupplierWhereInput[] = [{ orgId }];
@@ -188,8 +195,3 @@ export class PrismaSupplierAuditLogRepository implements AuditoriaSupplierReposi
     };
   }
 }
-
-
-
-
-

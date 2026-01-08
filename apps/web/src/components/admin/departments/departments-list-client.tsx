@@ -24,9 +24,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { organizationalStructureApi, Department } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
+import { ViewModeToggle } from "@/shared/ui/base/view-mode-toggle";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Can } from "@/lib/auth";
 

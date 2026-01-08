@@ -3,6 +3,7 @@
  */
 export { Address } from './address';
 export { CPF } from './cpf';
+export { Credentials } from './credentials';
 export { Email } from './email';
 export { Money } from './money';
 export { OrderNumber } from './order-number';

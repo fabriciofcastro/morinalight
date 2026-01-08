@@ -4,7 +4,7 @@
  * Hooks para monitorar performance de componentes
  */
 
-import { useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 /**
  * Hook para medir tempo de render
@@ -47,11 +47,11 @@ export function usePerformanceMark() {
                 performance.measure(name, startMark, endMark);
                 const measure = performance.getEntriesByName(name)[0];
 
-                if (process.env.NODE_ENV === "development") {
+                if (process.env.NODE_ENV === "development" && measure) {
                     console.log(`[Performance] ${name}: ${measure.duration.toFixed(2)}ms`);
                 }
 
-                return measure.duration;
+                return measure?.duration ?? 0;
             } catch (error) {
                 console.error("Performance measure failed:", error);
             }

@@ -1,7 +1,7 @@
 import { useSmartForm } from "@/hooks/use-smart-form";
 import { BaseForm } from "@/components/common/forms/BaseForm";
 import { DepartmentSchema, Department } from "@morina/organizational-structure-domain";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { Building2, Code, FileText } from "lucide-react";
 
 type DepartmentFormProps = {

@@ -1,9 +1,9 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { CodeValidator } from "@/components/ui/code-validator";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { CodeValidator } from "@/shared/ui/base/code-validator";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { BusinessSegment } from "@/lib/api/organizational-structure";
 import { CreateProductInput, productsApi } from "@/lib/api/products";
 import { Button, cn } from "@morina/ui";

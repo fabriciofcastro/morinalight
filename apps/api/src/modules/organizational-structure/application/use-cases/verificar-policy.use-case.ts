@@ -1,11 +1,11 @@
 /**
  * Use Case: Verificar Policy (PBAC)
- * 
+ *
  * Verifica se uma ação pode ser executada baseada em políticas configuradas.
  */
 
 import { z } from "zod";
-import { PolicyService } from "../../domain/services/policy-service";
+import type { PolicyService } from "../../domain/services/policy-service";
 
 const verificarPolicyInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -61,4 +61,3 @@ export class VerificarPolicyUseCase {
     return verificarPolicyResultadoSchema.parse(result);
   }
 }
-

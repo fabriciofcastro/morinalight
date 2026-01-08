@@ -50,15 +50,3 @@ export class StatusBoletoVO {
     return this.status === outro.status;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

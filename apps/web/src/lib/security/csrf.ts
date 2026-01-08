@@ -4,7 +4,9 @@
  * Sistema de proteção contra Cross-Site Request Forgery
  */
 
+import { CookieService } from "@/shared/kernel/utils/cookie-service";
 import { randomBytes } from "crypto";
+import React from "react";
 
 /**
  * Gerar token CSRF
@@ -63,18 +65,21 @@ export function useCSRFToken() {
     const [token, setToken] = React.useState<string>("");
 
     React.useEffect(() => {
-        // Obter token do cookie
-        const cookies = document.cookie.split(";");
-        const csrfCookie = cookies.find((c) => c.trim().startsWith("csrf-token="));
+        // Obter token do CookieService
+        const csrfToken = CookieService.get("csrf-token");
 
-        if (csrfCookie) {
-            const value = csrfCookie.split("=")[1];
-            setToken(value);
+        if (csrfToken) {
+            setToken(csrfToken);
         } else {
             // Solicitar novo token
             fetch("/api/auth/csrf")
                 .then((res) => res.json())
-                .then((data) => setToken(data.token))
+                .then((data) => {
+                  setToken(data.token);
+                  // Opcional: O backend geralmente seta o cookie via Set-Cookie,
+                  // mas se precisarmos setar manualmente no cliente para testes:
+                  // CookieService.set("csrf-token", data.token);
+                })
                 .catch(console.error);
         }
     }, []);
@@ -87,17 +92,14 @@ export function useCSRFToken() {
  */
 export function setupCSRFInterceptor(axiosInstance: any) {
     axiosInstance.interceptors.request.use((config: any) => {
-        // Obter token do cookie
-        const cookies = document.cookie.split(";");
-        const csrfCookie = cookies.find((c) => c.trim().startsWith("csrf-token="));
+        // Obter token do CookieService
+        const csrfToken = CookieService.get("csrf-token");
 
-        if (csrfCookie && ["post", "put", "patch", "delete"].includes(config.method?.toLowerCase())) {
-            const token = csrfCookie.split("=")[1];
-            config.headers["x-csrf-token"] = token;
+        if (csrfToken && ["post", "put", "patch", "delete"].includes(config.method?.toLowerCase())) {
+            config.headers["x-csrf-token"] = csrfToken;
         }
 
         return config;
     });
 }
 
-import React from "react";

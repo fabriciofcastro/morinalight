@@ -115,4 +115,3 @@ export async function wouldExceedMaxDepth<T extends { id: string; parentId?: str
 
   return newDepth > MAX_HIERARCHY_DEPTH;
 }
-

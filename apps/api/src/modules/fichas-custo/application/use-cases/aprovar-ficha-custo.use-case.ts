@@ -1,9 +1,8 @@
 import { randomUUID } from "node:crypto";
 
 import type { DomainEventBus } from "@morina/shared-kernel";
-
-import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
 import type { FichaCustoAprovadaEvent } from "../../domain/events/ficha-custo-aprovada.event";
+import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
 import { aprovarFichaCustoSchema } from "../schemas/ficha-custo.schema";
 
 type Dependencies = {

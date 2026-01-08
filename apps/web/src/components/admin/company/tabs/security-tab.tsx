@@ -2,7 +2,7 @@
 
 import { Lock, Shield, Activity, Smartphone, Monitor, MapPin, AlertTriangle } from "lucide-react";
 import { useState } from "react";
-import { FuturisticSelect, FuturisticInput } from "@/components/ui/futuristic-ui";
+import { FuturisticSelect, FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { SectionShell } from "../shared/section-shell";
 
 interface SecurityTabProps {

@@ -1,5 +1,5 @@
-import { randomUUID } from "crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import { randomUUID } from "crypto";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { submeterPreFichaTecnicaSchema } from "../schemas/pre-ficha-tecnica.schema";
 
@@ -54,15 +54,3 @@ export class SubmeterPreFichaTecnicaUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

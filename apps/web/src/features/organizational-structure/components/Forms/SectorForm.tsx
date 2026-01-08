@@ -1,7 +1,7 @@
 import { useSmartForm } from "@/hooks/use-smart-form";
 import { BaseForm } from "@/components/common/forms/BaseForm";
 import { SectorSchema, Sector } from "@morina/organizational-structure-domain";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { Code, FileText, Layers } from "lucide-react";
 
 type SectorFormProps = {

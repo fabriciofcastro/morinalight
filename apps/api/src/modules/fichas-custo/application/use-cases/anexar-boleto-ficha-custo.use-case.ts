@@ -1,5 +1,5 @@
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { Boleto } from "../../domain/entities/boleto";
 import type { BoletoAnexadoFichaEvent } from "../../domain/events/boleto-anexado-ficha.event";
 import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
@@ -99,14 +99,3 @@ export class AnexarBoletoFichaCustoUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-

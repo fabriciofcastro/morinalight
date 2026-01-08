@@ -8,6 +8,8 @@ import { InMemoryEventBus } from '@/infrastructure/events';
 import { ConsoleLogger } from '@/infrastructure/logger';
 
 // Application (Only imports that don't leak server-side dependencies)
+import { LoginUseCase, LogoutUseCase } from '@/application/use-cases';
+import { CustomAuthService } from '@/infrastructure/auth/custom-auth.service';
 
 /**
  * Dependency Injection Container
@@ -49,6 +51,16 @@ function initializeDIContainer(): DIContainer {
   const container = new DIContainer();
   const eventBus = new InMemoryEventBus();
   const logger = new ConsoleLogger();
+
+  // Register Auth services
+  const authService = new CustomAuthService();
+  const loginUseCase = new LoginUseCase(authService, logger);
+  const logoutUseCase = new LogoutUseCase(authService, logger);
+
+  container.register('AuthService', authService);
+  container.register('LoginUseCase', loginUseCase);
+  container.register('LogoutUseCase', logoutUseCase);
+
   container.register('EventBus', eventBus);
   container.register('Logger', logger);
   return container;

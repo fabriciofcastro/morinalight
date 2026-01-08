@@ -97,5 +97,15 @@ export interface SecurityContext {
         ip?: string;
         userAgent?: string;
         mfaVerified: boolean;
+        riskScore?: number; // 0-100 (Dynamic Risk Scoring)
     };
 }
+
+/**
+ * Interface for external decision providers (e.g., OPA)
+ */
+export interface DecisionProvider {
+    name: string;
+    evaluate(action: string, subject: string, context: SecurityContext, resource?: any): Promise<boolean | null>;
+}
+

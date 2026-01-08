@@ -5,8 +5,8 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { lgpdDeletionService } from "../application/services/lgpd-deletion.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { lgpdDeletionService } from "../application/services/lgpd-deletion.service";
 
 const paramsSchema = z.object({
   userId: z.string().uuid(),

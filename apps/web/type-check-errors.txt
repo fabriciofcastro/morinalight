@@ -1,0 +1,146 @@
+
+> web@0.1.0 type-check
+> tsc --project tsconfig.json --noEmit
+
+e2e/authorization.spec.ts(90,28): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '{ departmentId?: string | undefined; sectorId?: string | undefined; positionId?: string | undefined; attributes?: Record<string, any> | undefined; mfaVerified?: boolean | undefined; }'.
+e2e/authorization.spec.ts(110,28): error TS2353: Object literal may only specify known properties, and 'organizationId' does not exist in type '{ departmentId?: string | undefined; sectorId?: string | undefined; positionId?: string | undefined; attributes?: Record<string, any> | undefined; mfaVerified?: boolean | undefined; }'.
+e2e/security-controls.spec.ts(26,24): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '{ departmentId?: string | undefined; sectorId?: string | undefined; positionId?: string | undefined; attributes?: Record<string, any> | undefined; mfaVerified?: boolean | undefined; }'.
+e2e/security-controls.spec.ts(97,24): error TS2353: Object literal may only specify known properties, and 'userId' does not exist in type '{ departmentId?: string | undefined; sectorId?: string | undefined; positionId?: string | undefined; attributes?: Record<string, any> | undefined; mfaVerified?: boolean | undefined; }'.
+src/__tests__/encryption.test.ts(2,10): error TS2305: Module '"../lib/crypto/encryption"' has no exported member 'encryptionService'.
+src/__tests__/intrusion-detection.test.ts(50,79): error TS2554: Expected 2 arguments, but got 4.
+src/__tests__/mfa.test.ts(78,57): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/__tests__/recovery-flow.test.ts(61,32): error TS2532: Object is possibly 'undefined'.
+src/app/(app)/admin/branches/branch-form-client.tsx(21,33): error TS2307: Cannot find module '../../../../components/ui/futuristic-input' or its corresponding type declarations.
+src/app/(app)/admin/branches/branch-form-client.tsx(22,34): error TS2307: Cannot find module '../../../../components/ui/futuristic-select' or its corresponding type declarations.
+src/app/(app)/admin/branches/branch-form-client.tsx(23,36): error TS2307: Cannot find module '../../../../components/ui/futuristic-textarea' or its corresponding type declarations.
+src/app/(app)/clean-arch-demo/users/new/page.tsx(1,32): error TS2307: Cannot find module '@/widgets/create-user-form' or its corresponding type declarations.
+src/app/(app)/orders/orders-client.tsx(3,54): error TS2307: Cannot find module '@/components/ui' or its corresponding type declarations.
+src/app/(app)/settings/users/page.tsx(5,30): error TS2307: Cannot find module '@/components/ui' or its corresponding type declarations.
+src/app/(app)/users/new/page.tsx(1,32): error TS2307: Cannot find module '@/widgets/create-user-form' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-order.integration.spec.ts(121,5): error TS2532: Object is possibly 'undefined'.
+src/application/use-cases/__tests__/create-order.integration.spec.ts(126,19): error TS2339: Property 'error' does not exist on type 'Result<OrderResponseDTO, Error>'.
+  Property 'error' does not exist on type '{ success: true; value: OrderResponseDTO; }'.
+src/application/use-cases/__tests__/create-order.integration.spec.ts(127,19): error TS2339: Property 'error' does not exist on type 'Result<OrderResponseDTO, Error>'.
+  Property 'error' does not exist on type '{ success: true; value: OrderResponseDTO; }'.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(28,45): error TS2554: Expected 0 arguments, but got 1.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(30,15): error TS2554: Expected 7 arguments, but got 6.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(54,11): error TS2739: Type '{ customerId: string; customerName: string; customerEmail: string; items: never[]; }' is missing the following properties from type 'CreateOrderDTO': paymentMethod, shippingAddress, billingAddress
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(74,11): error TS2739: Type '{ customerId: string; customerName: string; customerEmail: string; items: never[]; }' is missing the following properties from type 'CreateOrderDTO': paymentMethod, shippingAddress, billingAddress
+src/application/use-cases/__tests__/create-order.use-case.spec.ts(6,32): error TS2307: Cannot find module '../dto' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-order.use-case.spec.ts(7,87): error TS2307: Cannot find module '../ports' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(3,47): error TS2307: Cannot find module '@/domain/repositories' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(10,9): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(11,14): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(15,10): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(15,19): error TS7006: Parameter 'callback' implicitly has an 'any' type.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(16,11): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(17,13): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(18,16): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(27,5): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(51,19): error TS2339: Property 'isOk' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isOk' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(52,16): error TS2339: Property 'isOk' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isOk' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(53,21): error TS2339: Property 'value' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'value' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(54,21): error TS2339: Property 'value' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'value' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(67,46): error TS2694: Namespace 'global.jest' has no exported member 'Mock'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(80,19): error TS2339: Property 'isErr' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isErr' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(81,16): error TS2339: Property 'isErr' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isErr' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(82,23): error TS2339: Property 'error' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'error' does not exist on type '{ success: true; value: ProductResponseDTO; }'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(21,15): error TS2554: Expected 4 arguments, but got 3.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(41,7): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(57,27): error TS2339: Property 'price' does not exist on type 'ProductResponseDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(57,43): error TS2339: Property 'price' does not exist on type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(78,7): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-user.integration.spec.ts(25,5): error TS2739: Type '{ publish: Mock<Procedure>; subscribe: Mock<Procedure>; }' is missing the following properties from type 'IEventBus': unsubscribe, clear
+src/application/use-cases/__tests__/create-user.use-case.integration.test.ts(46,39): error TS2345: Argument of type '() => void' is not assignable to parameter of type 'EventHandler<BaseDomainEvent>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/application/use-cases/__tests__/update-product.use-case.spec.ts(3,35): error TS2307: Cannot find module '@/domain/repositories' or its corresponding type declarations.
+src/application/use-cases/create-user.use-case.ts(41,5): error TS2322: Type '{ success: false; error: Error; } | { success: true; value: { id: string; name: string; email: string; role: string; isActive: boolean; createdAt: Date; updatedAt: Date; }; }' is not assignable to type 'Result<UserResponseDTO>'.
+  Type '{ success: true; value: { id: string; name: string; email: string; role: string; isActive: boolean; createdAt: Date; updatedAt: Date; }; }' is not assignable to type 'Result<UserResponseDTO>'.
+    Type '{ success: true; value: { id: string; name: string; email: string; role: string; isActive: boolean; createdAt: Date; updatedAt: Date; }; }' is not assignable to type '{ success: true; value: UserResponseDTO; }'.
+      The types of 'value.createdAt' are incompatible between these types.
+        Type 'Date' is not assignable to type 'string'.
+src/application/use-cases/create-user.use-case.ts(51,20): error TS18048: 'firstIssue' is possibly 'undefined'.
+src/application/use-cases/create-user.use-case.ts(51,50): error TS18048: 'firstIssue' is possibly 'undefined'.
+src/application/use-cases/create-user.use-case.ts(64,15): error TS18049: 'existingUser' is possibly 'null' or 'undefined'.
+src/application/use-cases/create-user.use-case.ts(64,28): error TS2339: Property 'isSome' does not exist on type 'UserEntity'.
+src/application/use-cases/create-user.use-case.ts(70,39): error TS2576: Property 'canRegister' does not exist on type 'UserRegistrationPolicy'. Did you mean to access the static member 'UserRegistrationPolicy.canRegister' instead?
+src/application/use-cases/create-user.use-case.ts(79,13): error TS2322: Type 'Email' is not assignable to type 'string'.
+src/application/use-cases/create-user.use-case.ts(91,25): error TS2554: Expected 4 arguments, but got 1.
+src/application/use-cases/create-user.use-case.ts(110,19): error TS2352: Conversion of type 'UserRole' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/application/use-cases/create-user.use-case.ts(116,56): error TS2353: Object literal may only specify known properties, and 'error' does not exist in type 'Error'.
+src/domain/value-objects/__tests__/cpf.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/domain/value-objects/__tests__/email.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/domain/value-objects/__tests__/user-role.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/features/user-create/CreateUserFeatureV2.tsx(11,11): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: readonly ["admin", "user", "manager"], params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>> | undefined; message?: string | undefined; } | undefined): ZodEnum<...>', gave the following error.
+    Object literal may only specify known properties, and 'required_error' does not exist in type '{ error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>> | undefined; message?: string | undefined; }'.
+  Overload 2 of 2, '(entries: Readonly<Record<string, EnumValue>>, params?: string | { error?: string | $ZodErrorMap<$ZodIssueInvalidValue<unknown>> | undefined; message?: string | undefined; } | undefined): ZodEnum<...>', gave the following error.
+    Argument of type 'string[]' is not assignable to parameter of type 'Readonly<Record<string, EnumValue>>'.
+      Index signature for type 'string' is missing in type 'string[]'.
+src/features/user-create/CreateUserFeatureV2.tsx(51,15): error TS2322: Type 'UseFormReturn<{ name: string; email: string; role: "admin" | "user" | "manager"; }>' is not assignable to type 'string'.
+src/features/user-create/CreateUserFeatureV2.tsx(58,15): error TS2322: Type 'UseFormReturn<{ name: string; email: string; role: "admin" | "user" | "manager"; }>' is not assignable to type 'string'.
+src/hooks/queries/use-users.test.tsx(12,26): error TS2307: Cannot find module '../utils' or its corresponding type declarations.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(33,7): error TS2322: Type 'Email' is not assignable to type 'string'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(46,19): error TS2339: Property 'name' does not exist on type '{ positionId: string | null; status: UserStatus; displayName: string | null; id: string; createdAt: Date; email: string; avatarUrl: string | null; passwordHash: string | null; ... 15 more ...; tokenVersion: number; }'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(54,7): error TS2322: Type 'Email' is not assignable to type 'string'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(64,12): error TS18049: 'found' is possibly 'null' or 'undefined'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(64,18): error TS2339: Property 'isSome' does not exist on type 'UserEntity'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(65,9): error TS18049: 'found' is possibly 'null' or 'undefined'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(65,15): error TS2339: Property 'isSome' does not exist on type 'UserEntity'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(66,14): error TS18049: 'found' is possibly 'null' or 'undefined'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(66,20): error TS2339: Property 'value' does not exist on type 'UserEntity'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(78,12): error TS18049: 'found' is possibly 'null' or 'undefined'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(78,18): error TS2339: Property 'isNone' does not exist on type 'UserEntity'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(86,7): error TS2322: Type 'Email' is not assignable to type 'string'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(98,19): error TS2339: Property 'role' does not exist on type '{ positionId: string | null; status: UserStatus; displayName: string | null; id: string; createdAt: Date; email: string; avatarUrl: string | null; passwordHash: string | null; ... 15 more ...; tokenVersion: number; }'.
+src/infrastructure/database/__tests__/prisma-user.repository.test.ts(99,19): error TS2339: Property 'isActive' does not exist on type '{ positionId: string | null; status: UserStatus; displayName: string | null; id: string; createdAt: Date; email: string; avatarUrl: string | null; passwordHash: string | null; ... 15 more ...; tokenVersion: number; }'.
+src/lib/errors/error-handling.test.ts(82,16): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/integration.test.ts(53,13): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/integration.test.ts(54,20): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/patterns.test.ts(185,16): error TS2532: Object is possibly 'undefined'.
+src/presentation/components/Products/index.tsx(127,16): error TS2304: Cannot find name 'Edit'.
+src/presentation/components/__tests__/create-user-form.spec.tsx(4,32): error TS2307: Cannot find module '../create-user-form' or its corresponding type declarations.
+src/presentation/components/optimizations.example.tsx(7,54): error TS2304: Cannot find name 'Product'.
+src/presentation/components/optimizations.example.tsx(27,57): error TS2304: Cannot find name 'ProductCardProps'.
+src/presentation/hooks/use-enterprise-sidebar.ts(7,29): error TS2307: Cannot find module '../components/EnterpriseSidebar/EnterpriseSidebar.constants' or its corresponding type declarations.
+src/presentation/hooks/use-enterprise-sidebar.ts(78,26): error TS7006: Parameter 'dept' implicitly has an 'any' type.
+src/presentation/hooks/use-enterprise-sidebar.ts(86,55): error TS7006: Parameter 'sol' implicitly has an 'any' type.
+src/presentation/hooks/use-enterprise-sidebar.ts(98,43): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/shared/kernel/utils/performance-monitor.ts(43,9): error TS2353: Object literal may only specify known properties, and 'duration' does not exist in type 'Error'.
+src/shared/ui/FormFactory.tsx(26,5): error TS2322: Type 'Resolver<FieldValues, any, T>' is not assignable to type 'Resolver<T, any, T>'.
+  Types of parameters 'options' and 'options' are incompatible.
+    Type 'ResolverOptions<T>' is not assignable to type 'ResolverOptions<FieldValues>'.
+      Type 'FieldValues' is not assignable to type 'T'.
+        'FieldValues' is assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'FieldValues'.
+src/shared/ui/FormFactory.tsx(26,27): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(schema: Zod3Type<T, FieldValues>, schemaOptions?: ParseParams | undefined, resolverOptions?: NonRawResolverOptions | undefined): Resolver<...>', gave the following error.
+    Argument of type 'ZodType<T, unknown, $ZodTypeInternals<T, unknown>>' is not assignable to parameter of type 'Zod3Type<T, FieldValues>'.
+      Types of property '_input' are incompatible.
+        Type 'unknown' is not assignable to type 'FieldValues'.
+  Overload 2 of 4, '(schema: $ZodType<unknown, FieldValues, $ZodTypeInternals<unknown, FieldValues>>, schemaOptions?: ParseContext<$ZodIssue> | undefined, resolverOptions?: NonRawResolverOptions | undefined): Resolver<...>', gave the following error.
+    Argument of type 'ZodType<T, unknown, $ZodTypeInternals<T, unknown>>' is not assignable to parameter of type '$ZodType<unknown, FieldValues, $ZodTypeInternals<unknown, FieldValues>>'.
+      Types of property '_zod' are incompatible.
+        Type '$ZodTypeInternals<T, unknown>' is not assignable to type '$ZodTypeInternals<unknown, FieldValues>'.
+          Type 'unknown' is not assignable to type 'FieldValues'.
+src/shared/ui/FormFactory.tsx(31,20): error TS2345: Argument of type 'TFieldValues' is not assignable to parameter of type 'T'.
+  'TFieldValues' is assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'FieldValues'.
+src/shared/ui/FormFactory.tsx(37,19): error TS2345: Argument of type 'UseFormReturn<T, any, TFieldValues>' is not assignable to parameter of type 'UseFormReturn<T>'.
+  Types of property 'handleSubmit' are incompatible.
+    Type 'UseFormHandleSubmit<T, TFieldValues>' is not assignable to type 'UseFormHandleSubmit<T, T>'.
+      Types of parameters 'onValid' and 'onValid' are incompatible.
+        Types of parameters 'data' and 'data' are incompatible.
+          Type 'TFieldValues' is not assignable to type 'T'.
+            'TFieldValues' is assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'FieldValues'.
+src/shared/ui/base/index.ts(35,1): error TS2308: Module './futuristic-input' has already exported a member named 'FuturisticInput'. Consider explicitly re-exporting to resolve the ambiguity.
+src/shared/ui/base/index.ts(35,1): error TS2308: Module './futuristic-select' has already exported a member named 'FuturisticSelect'. Consider explicitly re-exporting to resolve the ambiguity.
+src/shared/ui/base/index.ts(54,1): error TS2308: Module './status-badge' has already exported a member named 'StatusBadge'. Consider explicitly re-exporting to resolve the ambiguity.
+src/widgets/OrdersReport.tsx(54,17): error TS2322: Type '{ children: string; variant: "error" | "success" | "warning"; }' is not assignable to type 'IntrinsicAttributes & { status: "pending" | "active" | "warning" | "inactive"; label?: string | undefined; }'.
+  Property 'children' does not exist on type 'IntrinsicAttributes & { status: "pending" | "active" | "warning" | "inactive"; label?: string | undefined; }'.

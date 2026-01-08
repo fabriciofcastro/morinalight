@@ -108,6 +108,13 @@ export async function verifyPassword(
 }
 
 /**
+ * Hash genérico (SHA-256)
+ */
+export function hash(data: string): string {
+    return crypto.createHash("sha256").update(data).digest("hex");
+}
+
+/**
  * Helpers para campos específicos
  */
 

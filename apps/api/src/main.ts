@@ -11,8 +11,12 @@ async function bootstrap() {
   });
 
   // Warmup blocked IP cache before starting
-  const { blockedIpService } = await import("./modules/security/application/services/blocked-ip.service");
-  await blockedIpService.warmupCache().catch(e => console.error("Failed to warmup blocked IP cache:", e));
+  const { blockedIpService } = await import(
+    "./modules/security/application/services/blocked-ip.service"
+  );
+  await blockedIpService
+    .warmupCache()
+    .catch((e) => console.error("Failed to warmup blocked IP cache:", e));
 
   try {
     await server.listen({ port: env.API_PORT, host: env.API_HOST });
@@ -21,14 +25,13 @@ async function bootstrap() {
     if (env.NODE_ENV !== "production") {
       server.log.info(
         { url: `http://localhost:${env.API_PORT}/docs` },
-        "📚 Documentação Swagger disponível em"
+        "📚 Documentação Swagger disponível em",
       );
     }
 
     // Start Governance Scheduler
     const { GovernanceScheduler } = await import("./modules/governance/scheduler.service");
     GovernanceScheduler.start();
-
   } catch (error) {
     server.log.error(error, "Falha ao iniciar servidor HTTP");
     process.exit(1);

@@ -1,7 +1,7 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import {
     type WorkflowPolicy,

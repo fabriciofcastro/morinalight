@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { buscarCnpj, type CnpjData, validarCnpj } from "@/lib/integrations/cnpj";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 /**
  * Hook para busca de CNPJ usando BrasilAPI

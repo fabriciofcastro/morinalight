@@ -1,8 +1,8 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { CreateSupplierInput, suppliersApi } from "@/lib/api/suppliers";
 import { Button, cn } from "@morina/ui";
 import {

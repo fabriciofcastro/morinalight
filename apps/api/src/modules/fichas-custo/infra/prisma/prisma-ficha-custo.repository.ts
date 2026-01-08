@@ -1,13 +1,13 @@
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { FichaCustoProps } from "../../domain/entities/ficha-custo";
 import { FichaCusto } from "../../domain/entities/ficha-custo";
+import type { InsumoProps } from "../../domain/entities/insumo";
 import { Insumo } from "../../domain/entities/insumo";
 import type {
   FichaCustoFiltro,
   FichaCustoPagina,
   FichaCustoRepository,
 } from "../../domain/repositories/ficha-custo.repository";
-import type { FichaCustoProps } from "../../domain/entities/ficha-custo";
-import type { InsumoProps } from "../../domain/entities/insumo";
 
 const prisma = getPrisma();
 
@@ -52,9 +52,9 @@ function toDomain(record: {
     quantidade: any;
     unidadeMedida: string;
     custoUnitario: any;
-      custoTotal: any;
-      observacoes: string | null;
-    }>;
+    custoTotal: any;
+    observacoes: string | null;
+  }>;
   boletos?: Array<{
     id: string;
     insumoId: string | null;
@@ -318,10 +318,7 @@ export class PrismaFichaCustoRepository implements FichaCustoRepository {
     return toDomain(record);
   }
 
-  async buscarPorNumeroSequencial(
-    numero: number,
-    orgId: string,
-  ): Promise<FichaCusto | null> {
+  async buscarPorNumeroSequencial(numero: number, orgId: string): Promise<FichaCusto | null> {
     const record = await prisma.fichaCusto.findFirst({
       where: {
         numeroSequencial: numero,
@@ -342,10 +339,7 @@ export class PrismaFichaCustoRepository implements FichaCustoRepository {
     return toDomain(record);
   }
 
-  async buscarPorReferencia(
-    referencia: string,
-    orgId: string,
-  ): Promise<FichaCusto[]> {
+  async buscarPorReferencia(referencia: string, orgId: string): Promise<FichaCusto[]> {
     const records = await prisma.fichaCusto.findMany({
       where: {
         referenciaPeca: {

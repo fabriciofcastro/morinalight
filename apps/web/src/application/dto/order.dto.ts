@@ -62,3 +62,5 @@ export interface OrderResponseDTO {
     shippedAt?: string;
     deliveredAt?: string;
 }
+
+export type OrderDTO = OrderResponseDTO;

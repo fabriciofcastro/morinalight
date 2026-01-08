@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { Copy, Download, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/base/button";
 
 interface MFABackupCodesProps {
     codes: string[];

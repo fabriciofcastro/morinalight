@@ -10,7 +10,7 @@ import {
 import {
     GlassCard,
     Button
-} from "@/components/ui/futuristic";
+} from "@/shared/ui/base/futuristic";
 import { TimeWindow } from "@morina/shared-kernel";
 import { Can } from "@/lib/auth/CaslContext";
 

@@ -6,7 +6,7 @@ import { SectionShell } from "../shared/section-shell";
 import { governanceAPI, ApprovalWorkflow, ApprovalRequest } from "@/lib/api/governance";
 import { CheckCircle, XCircle, Shield, FileText, Settings, Loader2, AlertTriangle, User } from "lucide-react";
 import { format } from "date-fns";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { RequestDetailsDialog } from "../governance/request-details-dialog";
 
 export function GovernanceTab() {

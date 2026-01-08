@@ -7,10 +7,7 @@ type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;
 };
 
-export async function registerGetFichaCustoRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerGetFichaCustoRoute(app: FastifyInstance, deps: Dependencies) {
   app.get(
     "/organizations/:orgId/fichas-custo/:fichaCustoId",
     async (

@@ -34,15 +34,3 @@ export class BuscarPreFichaTecnicaUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

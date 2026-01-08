@@ -1,7 +1,7 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { useUser } from "@/hooks/use-user";
 import { useUserPermissions } from "@/hooks/use-user-permissions";
 import { Can } from "@/lib/auth";

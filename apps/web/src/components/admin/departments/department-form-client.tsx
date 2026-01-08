@@ -1,11 +1,11 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { StandardFormPage } from "@/components/templates";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
-import { FuturisticSelect } from "@/components/ui/futuristic-select";
-import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-select";
+import { FuturisticTextarea } from "@/shared/ui/base/futuristic-textarea";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { organizationalStructureApi, type CreateDepartmentInput, type Department, type UpdateDepartmentInput } from "@/lib/api/organizational-structure";
 import { Building2 } from "lucide-react";

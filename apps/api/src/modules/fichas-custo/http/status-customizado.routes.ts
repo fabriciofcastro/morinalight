@@ -1,7 +1,8 @@
-import type { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { PrismaClient } from "@prisma/client";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { getPrisma } from "../../../infra/database/prisma.service";
+import { PrismaStatusCustomizadoRepository } from "../infra/prisma/prisma-status-customizado.repository";
 
-const prisma = new PrismaClient();
+const statusCustomizadoRepository = new PrismaStatusCustomizadoRepository(getPrisma());
 
 type StatusCustomizadoInput = {
   nome: string;
@@ -117,7 +118,9 @@ export async function registerCreateStatusCustomizadoRoute(app: FastifyInstance)
         }
 
         if (!cor || !/^#[0-9A-Fa-f]{6}$/.test(cor)) {
-          return reply.status(400).send({ message: "Cor deve ser um código hexadecimal válido (ex: #3b82f6)" });
+          return reply
+            .status(400)
+            .send({ message: "Cor deve ser um código hexadecimal válido (ex: #3b82f6)" });
         }
 
         // Verificar se já existe status com mesmo nome
@@ -206,7 +209,9 @@ export async function registerUpdateStatusCustomizadoRoute(app: FastifyInstance)
 
         // Validar cor se fornecida
         if (cor && !/^#[0-9A-Fa-f]{6}$/.test(cor)) {
-          return reply.status(400).send({ message: "Cor deve ser um código hexadecimal válido (ex: #3b82f6)" });
+          return reply
+            .status(400)
+            .send({ message: "Cor deve ser um código hexadecimal válido (ex: #3b82f6)" });
         }
 
         // Verificar se nome já existe (exceto o próprio status)
@@ -301,4 +306,3 @@ export async function registerDeleteStatusCustomizadoRoute(app: FastifyInstance)
     },
   );
 }
-

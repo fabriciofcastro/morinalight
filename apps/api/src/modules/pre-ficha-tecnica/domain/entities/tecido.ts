@@ -81,15 +81,3 @@ export class Tecido {
     return new Tecido(props);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

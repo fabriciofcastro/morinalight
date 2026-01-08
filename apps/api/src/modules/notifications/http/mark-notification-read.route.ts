@@ -7,10 +7,7 @@ type Dependencies = {
   notificationRepository: NotificationRepository;
 };
 
-export async function registerMarkNotificationReadRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerMarkNotificationReadRoute(app: FastifyInstance, deps: Dependencies) {
   app.put("/notifications/:id/read", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -51,6 +48,3 @@ export async function registerMarkNotificationReadRoute(
     return reply.send({ notification });
   });
 }
-
-
-

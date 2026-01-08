@@ -1,6 +1,10 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
-import type { OrganizationAuditLogRepository } from "../../organizations/repositories/organization-audit-log.repository";
+import { addToBlacklist } from "../../../core/auth/token-blacklist.service";
+import {
+  type AuditContext,
+  UnifiedAuditService,
+} from "../../../core/security/unified-audit.service";
 import type { UserRepository } from "../../users/repositories/user.repository";
 
 type LogoutDeps = {
@@ -23,23 +27,27 @@ export async function registerLogoutRoute(app: FastifyInstance, deps: LogoutDeps
     const userId = request.auth.userId;
     const orgId = request.headers["x-org-id"] as string | undefined;
 
-    // Registrar evento de logout na auditoria
-    try {
-      if (deps.auditRepository) {
-        await deps.auditRepository.registrar({
-          orgId: orgId ?? "system",
-          action: "auth.logout",
-          actorId: userId,
-          targetId: userId,
-          payload: {
-            email: request.auth.email,
-            timestamp: new Date().toISOString(),
-          },
-        });
-      }
-    } catch (auditError) {
-      app.log.error({ error: auditError }, "Erro ao registrar auditoria de logout (ignorado)");
+    const auditContext: AuditContext = {
+      ipAddress: request.ip,
+      userAgent: request.headers["user-agent"],
+      userId: userId,
+      orgId: orgId || "system",
+    };
+
+    // 1. Registrar evento de logout na auditoria universal
+    await UnifiedAuditService.logSecurity("LOGOUT", auditContext, {
+      email: request.auth.email,
+    });
+
+    // 2. Adicionar token à blacklist (Revogação Real)
+    if (request.auth.jti) {
+      // 15 minutos é o tempo padrão de vida do access token
+      await addToBlacklist(request.auth.jti, 15 * 60);
     }
+
+    // 3. Limpar Cookies
+    reply.clearCookie("access_token", { path: "/" });
+    reply.clearCookie("refresh_token", { path: "/" });
 
     // TODO: Implementar blacklist de tokens JWT quando necessário
     // Por enquanto, o token JWT continuará válido até expirar naturalmente
@@ -50,15 +58,3 @@ export async function registerLogoutRoute(app: FastifyInstance, deps: LogoutDeps
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

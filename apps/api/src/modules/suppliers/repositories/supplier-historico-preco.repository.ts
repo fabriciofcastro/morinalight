@@ -27,9 +27,15 @@ export type CreateHistoricoPrecoSupplierInput = {
 
 export interface HistoricoPrecoSupplierRepository {
   create(input: CreateHistoricoPrecoSupplierInput): Promise<HistoricoPrecoSupplierRecord>;
-  findBySupplierId(supplierId: string, filters?: { insumoId?: string; dataInicio?: Date; dataFim?: Date }): Promise<HistoricoPrecoSupplierRecord[]>;
+  findBySupplierId(
+    supplierId: string,
+    filters?: { insumoId?: string; dataInicio?: Date; dataFim?: Date },
+  ): Promise<HistoricoPrecoSupplierRecord[]>;
   getPriceHistory(supplierId: string, insumoId?: string): Promise<HistoricoPrecoSupplierRecord[]>;
-  getPriceStats(supplierId: string, insumoId?: string): Promise<{ min: number; max: number; avg: number; count: number }>;
+  getPriceStats(
+    supplierId: string,
+    insumoId?: string,
+  ): Promise<{ min: number; max: number; avg: number; count: number }>;
 }
 
 export class PrismaHistoricoPrecoSupplierRepository implements HistoricoPrecoSupplierRepository {
@@ -76,7 +82,10 @@ export class PrismaHistoricoPrecoSupplierRepository implements HistoricoPrecoSup
     return historicos.map(this.mapToRecord);
   }
 
-  async getPriceHistory(supplierId: string, insumoId?: string): Promise<HistoricoPrecoSupplierRecord[]> {
+  async getPriceHistory(
+    supplierId: string,
+    insumoId?: string,
+  ): Promise<HistoricoPrecoSupplierRecord[]> {
     const where: any = { supplierId };
     if (insumoId) {
       where.insumoId = insumoId;
@@ -88,7 +97,10 @@ export class PrismaHistoricoPrecoSupplierRepository implements HistoricoPrecoSup
     return historicos.map(this.mapToRecord);
   }
 
-  async getPriceStats(supplierId: string, insumoId?: string): Promise<{ min: number; max: number; avg: number; count: number }> {
+  async getPriceStats(
+    supplierId: string,
+    insumoId?: string,
+  ): Promise<{ min: number; max: number; avg: number; count: number }> {
     const where: any = { supplierId };
     if (insumoId) {
       where.insumoId = insumoId;
@@ -136,5 +148,3 @@ export class PrismaHistoricoPrecoSupplierRepository implements HistoricoPrecoSup
     };
   }
 }
-
-

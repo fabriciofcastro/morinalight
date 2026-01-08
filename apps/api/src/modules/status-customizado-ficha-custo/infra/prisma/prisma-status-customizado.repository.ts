@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
+import type { StatusCustomizado } from "../../domain/entities/status-customizado";
 import type {
-  StatusCustomizadoRepository,
   ListarStatusCustomizadosInput,
   ListarStatusCustomizadosOutput,
+  StatusCustomizadoRepository,
 } from "../../domain/repositories/status-customizado.repository";
-import type { StatusCustomizado } from "../../domain/entities/status-customizado";
 
 export class PrismaStatusCustomizadoRepository implements StatusCustomizadoRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -167,4 +167,3 @@ export class PrismaStatusCustomizadoRepository implements StatusCustomizadoRepos
     };
   }
 }
-

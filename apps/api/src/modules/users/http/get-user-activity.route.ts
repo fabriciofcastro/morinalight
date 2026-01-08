@@ -15,10 +15,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerGetUserActivityRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerGetUserActivityRoute(app: FastifyInstance, deps: Dependencies) {
   app.get("/users/:userId/activity", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;

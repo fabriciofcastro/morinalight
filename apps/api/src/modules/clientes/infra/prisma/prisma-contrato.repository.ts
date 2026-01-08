@@ -1,5 +1,5 @@
-import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { Prisma } from "@prisma/client";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { ContratoProps, ContratoStatus } from "../../domain/entities/contrato";
 import { Contrato } from "../../domain/entities/contrato";
 import type { ContratoRepository } from "../../domain/repositories/contrato-repository";

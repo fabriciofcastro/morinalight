@@ -1,11 +1,11 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/base/badge";
 import {
     Button,
     GlassCard,
     GlassInput,
-} from "@/components/ui/futuristic";
+} from "@/shared/ui/base/futuristic";
 import { Can } from "@/lib/auth/CaslContext";
 import { ObjectAccessEntry, SecurityPolicy, TimeWindow } from "@morina/shared-kernel";
 import { AnimatePresence, motion } from "framer-motion";

@@ -72,15 +72,3 @@ export class ListarVersoesPreFichaTecnicaUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

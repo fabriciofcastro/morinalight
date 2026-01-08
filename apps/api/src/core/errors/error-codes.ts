@@ -1,6 +1,6 @@
 /**
  * Sistema de Códigos de Erro Padronizados
- * 
+ *
  * Este arquivo define todos os códigos de erro utilizados no sistema,
  * garantindo consistência e facilitando a documentação e rastreamento.
  */
@@ -137,7 +137,7 @@ export const ErrorCodes = {
 /**
  * Tipo para códigos de erro
  */
-export type ErrorCode = typeof ErrorCodes[keyof typeof ErrorCodes];
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
 
 /**
  * Mapeamento de códigos para categorias
@@ -273,18 +273,7 @@ export function isRecoverableError(code: ErrorCode): boolean {
  */
 export function isCriticalError(code: ErrorCode): boolean {
   const category = getErrorCategory(code);
-  return [
-    ErrorCategory.DATABASE,
-    ErrorCategory.CONFIGURATION,
-    ErrorCategory.INTERNAL,
-  ].includes(category);
+  return [ErrorCategory.DATABASE, ErrorCategory.CONFIGURATION, ErrorCategory.INTERNAL].includes(
+    category,
+  );
 }
-
-
-
-
-
-
-
-
-

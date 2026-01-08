@@ -29,14 +29,3 @@ export class BoletoId {
     return this.value;
   }
 }
-
-
-
-
-
-
-
-
-
-
-

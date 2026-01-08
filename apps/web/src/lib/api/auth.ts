@@ -163,8 +163,10 @@ export const authApi = {
   setCurrentOrganization: (orgId: string) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("selected_org_id", orgId);
-      // Setar cookie para SSR e Middleware
-      document.cookie = `selected_org_id=${orgId}; path=/; max-age=31536000; SameSite=Lax`;
+      // Setar cookie para SSR e Middleware usando CookieService
+      import("@/shared/kernel/utils/cookie-service").then(({ CookieService }) => {
+        CookieService.set("selected_org_id", orgId, { expires: 365, sameSite: 'Lax' });
+      });
     }
   },
 };

@@ -51,6 +51,3 @@ export async function registerMarkNotificationUnreadRoute(
     return reply.send({ notification });
   });
 }
-
-
-

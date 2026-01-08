@@ -4,7 +4,7 @@
  * Gerencia versões e snapshots das configurações da empresa.
  */
 
-import { Caretaker, Originator, Memento } from "@/lib/patterns/memento-pattern";
+import { Caretaker, Memento, Originator } from "@/lib/patterns/memento-pattern";
 import { getPrismaClient } from "@/lib/prisma";
 import { CompanySettings } from "@prisma/client";
 
@@ -53,6 +53,9 @@ export class SettingsCaretaker extends Caretaker<CompanySettings> {
 
         // 2. Persiste no banco como CompanySettingsVersion
         const memento = this.getHistory()[this.getHistory().length - 1]; // pega o último
+        if (!memento) {
+            throw new Error("No history available to save");
+        }
         const state = memento.getState();
         const prisma = await getPrismaClient();
 

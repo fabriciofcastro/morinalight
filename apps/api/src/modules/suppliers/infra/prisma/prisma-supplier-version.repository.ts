@@ -78,8 +78,3 @@ export class PrismaSupplierVersionRepository implements VersaoSupplierRepository
     };
   }
 }
-
-
-
-
-

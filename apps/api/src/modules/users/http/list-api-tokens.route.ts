@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { getPrisma } from "../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -47,14 +47,3 @@ export async function registerListApiTokensRoute(app: FastifyInstance) {
     return reply.send({ tokens });
   });
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -1,19 +1,19 @@
 "use client";
 
-import { cn, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
+import { NavItem, navItems } from "@/config/navigation";
+import { useAbility } from "@/lib/auth/CaslContext";
+import { parsePermissionKey } from "@/lib/auth/ability";
+import { cn, TooltipProvider } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { navItems, NavItem } from "@/config/navigation";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { useAbility } from "@/lib/auth/CaslContext";
-import { parsePermissionKey } from "@/lib/auth/ability";
+import { useEffect, useState } from "react";
 import { SidebarCoachAI } from "./sidebar-coach-ai";
 import { SidebarQuickCreate } from "./sidebar-quick-create";
 
 export function AppSidebar() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   // Expandir automaticamente itens do menu quando o usuário está em uma página filha
@@ -155,7 +155,7 @@ function NavItemComponent({
             "group flex h-10 items-center gap-3 rounded-lg px-3 transition-all cursor-pointer",
             isActive
               ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
-              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] hover:text-[var(--primary)]",
           )}
         >
           <item.icon className="h-5 w-5 shrink-0" />
@@ -241,7 +241,7 @@ function ChildNavItem({
             "flex h-9 items-center gap-2 rounded-lg px-3 text-sm transition-all cursor-pointer",
             isActive
               ? "bg-[color-mix(in_oklab,var(--primary)_15%,transparent)] text-[var(--primary)] font-medium"
-              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)] hover:text-[var(--fg)]",
+              : "text-[color-mix(in_oklab,var(--muted)_70%,var(--fg)_30%)] hover:bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] hover:text-[var(--primary)]",
           )}
         >
           <item.icon className="h-4 w-4 shrink-0" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { CnpjLookup } from "@/components/admin/company/CnpjLookup";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { suppliersApi, type Supplier } from "@/lib/api/suppliers";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, Loader2, Plus, Search } from "lucide-react";

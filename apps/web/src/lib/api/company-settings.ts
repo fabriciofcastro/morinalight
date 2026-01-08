@@ -71,7 +71,11 @@ class CompanySettingsAPI {
       reader.onloadend = () => {
         const result = reader.result as string;
         const base64Data = result.split(",")[1];
-        resolve(base64Data);
+        if (base64Data) {
+          resolve(base64Data);
+        } else {
+          reject(new Error("Failed to extract base64 data"));
+        }
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
@@ -229,6 +233,7 @@ class CompanySettingsAPI {
 }
 
 export const companySettingsAPI = new CompanySettingsAPI();
+
 
 
 

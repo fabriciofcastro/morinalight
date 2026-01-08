@@ -7,16 +7,15 @@ import {
   AuthorizationError,
   ConflictError,
   DatabaseError,
-  ExternalServiceError,
   NotFoundError,
   RateLimitError,
   ValidationError,
 } from "./app-error";
+import { ErrorAnalyticsManager } from "./error-analytics";
+import { ErrorContextManager } from "./error-context";
 import { ErrorCorrelationManager } from "./error-correlation";
 import { ErrorMetricsManager } from "./error-metrics";
 import { ErrorNotificationManager } from "./error-notification";
-import { ErrorAnalyticsManager } from "./error-analytics";
-import { ErrorContextManager } from "./error-context";
 import { ErrorPreventionManager } from "./error-prevention";
 
 /**
@@ -38,7 +37,7 @@ function sanitizeError(error: unknown): AppError {
   }
 
   if (error instanceof ZodError) {
-    const fields = error.errors.map((err) => ({
+    const fields = error.issues.map((err) => ({
       field: err.path.join("."),
       message: err.message,
     }));
@@ -59,7 +58,10 @@ function sanitizeError(error: unknown): AppError {
       case "P2014":
         return new ConflictError("Required relation missing");
       default:
-        return new DatabaseError("Database operation failed", error instanceof Error ? error : new Error(String(error)));
+        return new DatabaseError(
+          "Database operation failed",
+          error instanceof Error ? error : new Error(String(error)),
+        );
     }
   }
 
@@ -146,10 +148,7 @@ export async function errorHandler(
   });
 
   // Enriquecer erro com contexto de correlação
-  const errorWithContext = ErrorCorrelationManager.enrichError(
-    sanitizedError,
-    correlationContext,
-  );
+  const errorWithContext = ErrorCorrelationManager.enrichError(sanitizedError, correlationContext);
 
   // Enriquecer com contexto rico
   const richContext = ErrorContextManager.enrichError(
@@ -190,10 +189,7 @@ export async function errorHandler(
     await ErrorNotificationManager.notify(enrichedError, correlationContext).catch(
       (notificationError) => {
         // Não falhar se a notificação falhar
-        request.log.warn(
-          { err: notificationError },
-          "Failed to send error notification",
-        );
+        request.log.warn({ err: notificationError }, "Failed to send error notification");
       },
     );
   }
@@ -221,7 +217,11 @@ export async function errorHandler(
       if (error instanceof Error && error.stack) {
         request.log.debug({ stack: error.stack }, "Error stack trace");
       }
-      if (enrichedError.cause && enrichedError.cause instanceof Error && enrichedError.cause.stack) {
+      if (
+        enrichedError.cause &&
+        enrichedError.cause instanceof Error &&
+        enrichedError.cause.stack
+      ) {
         request.log.debug({ stack: enrichedError.cause.stack }, "Caused by");
       }
     }
@@ -237,6 +237,11 @@ export async function errorHandler(
   // Send error response
   const statusCode = enrichedError.statusCode;
   const body = enrichedError.toJSON();
+
+  // Strict Contract Compliance: Inject traceId at top level
+  if (body.error) {
+    (body.error as any).traceId = correlationContext.traceId || requestId;
+  }
 
   // Add retry-after header for rate limit errors
   if (enrichedError instanceof RateLimitError) {
@@ -279,10 +284,3 @@ export function asyncHandler<T extends Array<unknown>>(
     }
   };
 }
-
-
-
-
-
-
-

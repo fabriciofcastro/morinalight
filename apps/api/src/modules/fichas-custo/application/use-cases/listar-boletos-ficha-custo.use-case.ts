@@ -32,15 +32,3 @@ export class ListarBoletosFichaCustoUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

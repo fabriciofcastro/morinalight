@@ -118,12 +118,14 @@ describe('CreateOrderUseCase Integration', () => {
     mockProductRepo.findById.mockResolvedValue({ isNone: () => false, value: product });
 
     const dto = getValidDto();
-    dto.items[0].quantity = 5;
+    dto.items[0]!.quantity = 5;
 
     const result = await useCase.execute(dto as any);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBeInstanceOf(ValidationError);
-    expect(result.error?.message).toContain('Insufficient stock');
+    if (!result.success) {
+      expect(result.error).toBeInstanceOf(ValidationError);
+      expect(result.error?.message).toContain('Insufficient stock');
+    }
   });
 });

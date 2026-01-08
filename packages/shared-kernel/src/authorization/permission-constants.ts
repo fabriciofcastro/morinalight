@@ -15,6 +15,10 @@ export const PermissionKeys = {
     PRODUCTS_EDIT_OWN: 'products:edit:own',
     PRODUCTS_DELETE: 'products:delete',
     CATALOG_VIEW: 'catalog:view',
+    CATEGORIES_VIEW: 'categories:view',
+    CATEGORIES_CREATE: 'categories:create',
+    CATEGORIES_EDIT: 'categories:edit',
+    CATEGORIES_DELETE: 'categories:delete',
     CATEGORIES_MANAGE: 'categories:manage',
 
     // --- CLIENTS ---
@@ -85,6 +89,11 @@ export const PermissionKeys = {
     POSITIONS_EDIT: 'positions:edit',
     POSITIONS_DELETE: 'positions:delete',
     POSITIONS_MANAGE: 'positions:manage',
+    BUSINESS_SEGMENTS_VIEW: 'business-segments:view',
+    BUSINESS_SEGMENTS_CREATE: 'business-segments:create',
+    BUSINESS_SEGMENTS_EDIT: 'business-segments:edit',
+    BUSINESS_SEGMENTS_DELETE: 'business-segments:delete',
+    BUSINESS_SEGMENTS_MANAGE: 'business-segments:manage',
 
     // Access Control
     SETTINGS_TEAM_VIEW: 'settings:team:view',

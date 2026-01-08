@@ -17,7 +17,7 @@ import {
     Cpu
 } from "lucide-react";
 import { GlassCard } from "@morina/ui";
-import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
+import { AnimatedTechCorners } from "@/shared/ui/base/animated-tech-corners";
 import { HexagonGrid } from "@/components/login/hexagon-grid";
 
 interface ArchitectureLayer {

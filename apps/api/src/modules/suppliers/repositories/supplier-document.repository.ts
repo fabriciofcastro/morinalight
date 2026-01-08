@@ -25,7 +25,10 @@ export type CreateDocumentoSupplierInput = {
 };
 
 export type UpdateDocumentoSupplierInput = Partial<
-  Omit<CreateDocumentoSupplierInput, "supplierId" | "arquivoUrl" | "arquivoStorageKey" | "tamanhoBytes" | "mimeType">
+  Omit<
+    CreateDocumentoSupplierInput,
+    "supplierId" | "arquivoUrl" | "arquivoStorageKey" | "tamanhoBytes" | "mimeType"
+  >
 >;
 
 export interface DocumentoSupplierRepository {
@@ -36,8 +39,3 @@ export interface DocumentoSupplierRepository {
   update(id: string, input: UpdateDocumentoSupplierInput): Promise<DocumentoSupplierRecord>;
   delete(id: string): Promise<void>;
 }
-
-
-
-
-

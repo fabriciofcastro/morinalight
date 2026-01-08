@@ -1,12 +1,12 @@
 import type { SupplierRepository } from "../repositories/supplier.repository";
-import { parseCSV, detectColumnMapping as detectCSVMapping } from "../utils/csv-parser";
-import { parseExcel, detectColumnMapping as detectExcelMapping } from "../utils/excel-parser";
+import { detectColumnMapping as detectCSVMapping, parseCSV } from "../utils/csv-parser";
+import { detectColumnMapping as detectExcelMapping, parseExcel } from "../utils/excel-parser";
 import {
   mapToSupplierRow,
-  validateSupplierRow,
-  validateSupplierRows,
   type SupplierImportRow,
   type ValidationResult,
+  validateSupplierRow,
+  validateSupplierRows,
 } from "../utils/import-validator";
 
 export interface ImportPreview {
@@ -41,7 +41,7 @@ export class SupplierImportService {
     fileContent: Buffer | string,
     fileName: string,
     orgId: string,
-    columnMapping?: Record<string, string>
+    columnMapping?: Record<string, string>,
   ): Promise<ImportPreview> {
     // Detect file type
     const isCSV = fileName.endsWith(".csv");
@@ -73,15 +73,15 @@ export class SupplierImportService {
     if (columnMapping) {
       finalMapping = columnMapping;
     } else {
-      finalMapping = isCSV ? detectCSVMapping(detectedHeaders) : detectExcelMapping(detectedHeaders);
+      finalMapping = isCSV
+        ? detectCSVMapping(detectedHeaders)
+        : detectExcelMapping(detectedHeaders);
     }
 
     // Get existing documents for duplicate check
     const existingSuppliers = await this.supplierRepository.findByOrgId(orgId, { limit: 10000 });
     const existingDocuments = new Set(
-      existingSuppliers
-        .map((s) => s.document?.replace(/\D/g, ""))
-        .filter((d): d is string => !!d)
+      existingSuppliers.map((s) => s.document?.replace(/\D/g, "")).filter((d): d is string => !!d),
     );
 
     // Map and validate rows
@@ -126,7 +126,7 @@ export class SupplierImportService {
   async executeImport(
     rows: SupplierImportRow[],
     orgId: string,
-    userId: string
+    userId: string,
   ): Promise<ImportResult> {
     const result: ImportResult = {
       success: 0,
@@ -157,7 +157,7 @@ export class SupplierImportService {
           const cleanDocument = row.document.replace(/\D/g, "");
           const suppliers = await this.supplierRepository.findByOrgId(orgId, { limit: 10000 });
           existingSupplier = suppliers.find(
-            (s) => s.document?.replace(/\D/g, "") === cleanDocument
+            (s) => s.document?.replace(/\D/g, "") === cleanDocument,
           );
         }
 
@@ -185,7 +185,7 @@ export class SupplierImportService {
               notes: row.notes ?? existingSupplier.notes,
               updatedBy: userId,
             },
-            { userId, action: "import_update" }
+            { userId, action: "import_update" },
           );
         } else {
           // Create new supplier
@@ -213,7 +213,7 @@ export class SupplierImportService {
               createdBy: userId,
               updatedBy: userId,
             },
-            { userId, action: "import_create" }
+            { userId, action: "import_create" },
           );
         }
 
@@ -230,4 +230,3 @@ export class SupplierImportService {
     return result;
   }
 }
-

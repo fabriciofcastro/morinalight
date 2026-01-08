@@ -1,6 +1,6 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { Button, Input, Label, cn } from "@morina/ui";
 import {

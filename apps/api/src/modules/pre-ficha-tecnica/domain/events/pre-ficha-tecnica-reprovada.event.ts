@@ -10,15 +10,3 @@ export class PreFichaTecnicaReprovada {
     public readonly timestamp: Date = new Date(),
   ) {}
 }
-
-
-
-
-
-
-
-
-
-
-
-

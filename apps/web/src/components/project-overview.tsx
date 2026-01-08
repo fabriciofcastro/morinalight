@@ -2,8 +2,8 @@ import { faker } from "@faker-js/faker";
 import { GlassCard } from "@morina/ui";
 import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/shared/ui/base/badge";
+import { Progress } from "@/shared/ui/base/progress";
 
 faker.seed(2025);
 

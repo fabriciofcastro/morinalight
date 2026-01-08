@@ -1,11 +1,10 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 
-import type { DomainEventBus } from "@morina/shared-kernel";
-
 import { Insumo } from "../../domain/entities/insumo";
-import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
 import type { FichaCustoAtualizadaEvent } from "../../domain/events/ficha-custo-atualizada.event";
+import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
 import { atualizarFichaCustoSchema, fichaCustoViewSchema } from "../schemas/ficha-custo.schema";
 
 type Dependencies = {

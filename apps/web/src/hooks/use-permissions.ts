@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getAuthHeadersWithTenant, getAuthUser } from "../lib/auth-client";
-import type { SecurityPolicy, ObjectAccessEntry } from "@morina/shared-kernel";
+import type { ObjectAccessEntry, SecurityPolicy } from "@morina/shared-kernel";
+import { getAuthHeadersWithTenant } from "../lib/auth-client";
 
 // Cache de permissões em memória
 export type PermissionGrant = {
@@ -124,67 +123,6 @@ function getDefaultPermissions(): string[] {
   ];
 }
 
-import { useAbility } from "../lib/auth/CaslContext";
-import { parsePermissionKey } from "../lib/auth/ability";
 
-/**
- * @deprecated Use useAbility() from @/lib/auth/CaslContext instead.
- * Example: const ability = useAbility(); const canView = ability.can('read', 'Product');
- */
-export function useHasPermission(permission: string): boolean {
-  const ability = useAbility();
 
-  // Compatibilidade: se não passar permissão, retorna true (comportamento antigo)
-  if (!permission) return true;
 
-  const { action, subject } = parsePermissionKey(permission);
-
-  if (!action || !subject) {
-    // Se não conseguir fazer o parse (ex: permissão customizada antiga), 
-    // retorna false por segurança
-    return false;
-  }
-
-  return ability.can(action, subject);
-}
-
-/**
- * @deprecated This hook returns raw strings. Use useAbility() for robust checks.
- */
-export function usePermissions(): string[] {
-  // Mantemos a implementação antiga por enquanto para não quebrar quem lista permissões,
-  // mas o ideal é migrar para usar o Ability.
-  // Como o usePermissions retorna array de strings, não tem como mapear 1:1 do ability (que é um objeto de regras).
-  // Vamos manter a lógica existente de fetch/cache mas marcar como deprecated.
-
-  const [permissions, setPermissions] = useState<string[]>([]);
-  const [ready, setReady] = useState(false);
-  const user = getAuthUser();
-
-  useEffect(() => {
-    queueMicrotask(() => setReady(true));
-  }, []);
-
-  useEffect(() => {
-    if (!ready || !user) {
-      return;
-    }
-
-    // Verificar cache primeiro
-    const cached = permissionsCache.get(user.userId);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      // Map back to strings for backward compatibility
-      const next = cached.effective.filter(p => p.granted).map(p => p.permissionKey);
-      queueMicrotask(() => setPermissions(next));
-      return;
-    }
-
-    // Buscar permissões da API
-    fetchUserPermissions(user.userId).then(({ effective }) => {
-      const next = effective.filter(p => p.granted).map(p => p.permissionKey);
-      setPermissions(next);
-    });
-  }, [user, ready]);
-
-  return permissions;
-}

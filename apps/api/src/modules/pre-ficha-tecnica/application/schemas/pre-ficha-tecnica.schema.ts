@@ -41,10 +41,7 @@ export const criarInsumoTecnicoSchema = z.object({
   descricao: z.string().min(1, "Descrição é obrigatória").max(500),
   tipo: tipoInsumoTecnicoSchema,
   quantidadeBase: z.number().positive("Quantidade base deve ser maior que zero"),
-  consumoPorTamanho: z
-    .record(z.string(), z.number().positive())
-    .nullable()
-    .optional(), // { "PP": 10, "P": 12, ... }
+  consumoPorTamanho: z.record(z.string(), z.number().positive()).nullable().optional(), // { "PP": 10, "P": 12, ... }
   unidadeMedida: unidadeMedidaSchema,
   observacoesTecnicas: z.string().max(5000).nullable().optional(),
   ordem: z.number().int().nonnegative().optional(),
@@ -120,10 +117,7 @@ export const reprovarPreFichaTecnicaSchema = z.object({
   preFichaTecnicaId: z.string().uuid(),
   reprovadorId: z.string().uuid(),
   reprovadorNome: z.string().min(1),
-  justificativa: z
-    .string()
-    .min(10, "Justificativa deve ter pelo menos 10 caracteres")
-    .max(5000),
+  justificativa: z.string().min(10, "Justificativa deve ter pelo menos 10 caracteres").max(5000),
 });
 
 /**
@@ -168,15 +162,3 @@ export const paginacaoSchema = z.object({
   pagina: z.number().int().positive().default(1),
   tamanhoPagina: z.number().int().positive().max(100).default(20),
 });
-
-
-
-
-
-
-
-
-
-
-
-

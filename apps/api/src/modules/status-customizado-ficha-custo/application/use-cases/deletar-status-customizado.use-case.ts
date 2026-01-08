@@ -16,5 +16,3 @@ export class DeletarStatusCustomizadoUseCase {
     await this.statusCustomizadoRepository.deletar(id, this.orgId, this.actorId);
   }
 }
-
-

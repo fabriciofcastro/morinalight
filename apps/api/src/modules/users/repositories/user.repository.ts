@@ -17,6 +17,13 @@ export type UserRecord = {
   positionId?: string | null;
 };
 
+export type AuditContext = {
+  ipAddress?: string;
+  userAgent?: string;
+  actorId?: string;
+  orgId?: string;
+};
+
 export type CreateUserInput = {
   userId: string;
   email: string;
@@ -27,7 +34,6 @@ export type CreateUserInput = {
   phone?: string | null;
   birthDate?: Date | null;
   admissionDate?: Date | null;
-  observations?: string | null;
   observations?: string | null;
   avatarUrl?: string | null;
   mustChangePassword?: boolean;
@@ -49,14 +55,15 @@ export type UpdateUserInput = {
   observations?: string | null;
   branchId?: string | null;
   positionId?: string | null;
+  mustChangePassword?: boolean;
 };
 
 export interface UserRepository {
   findByEmail(email: string): Promise<UserRecord | null>;
   findById(userId: string): Promise<UserRecord | null>;
   findManyByIds(userIds: string[]): Promise<UserRecord[]>;
-  create(input: CreateUserInput): Promise<UserRecord>;
-  update?(input: UpdateUserInput): Promise<UserRecord | null>;
-  delete?(userId: string): Promise<void>;
-  setLastLogin(userId: string, date: Date): Promise<void>;
+  create(input: CreateUserInput, context?: AuditContext): Promise<UserRecord>;
+  update(input: UpdateUserInput, context?: AuditContext): Promise<UserRecord | null>;
+  delete(userId: string, context?: AuditContext): Promise<void>;
+  setLastLogin(userId: string, date: Date, context?: AuditContext): Promise<void>;
 }

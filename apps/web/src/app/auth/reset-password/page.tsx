@@ -3,8 +3,8 @@
 import { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { FuturisticInput } from '@/components/ui/futuristic-input';
-import { Button } from '@/components/ui/button';
+import { FuturisticInput } from '@/shared/ui/base/futuristic-input';
+import { Button } from '@/shared/ui/base/button';
 import { toast } from 'sonner';
 import { completePasswordResetAction } from '@/app/actions/auth-security';
 import { PasswordStrengthMeter } from '@/components/auth/password-strength';

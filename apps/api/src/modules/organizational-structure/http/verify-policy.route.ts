@@ -4,13 +4,16 @@
 
 import type { FastifyInstance } from "fastify";
 import { VerificarPolicyUseCase } from "../application/use-cases/verificar-policy.use-case";
-import { PolicyService } from "../domain/services/policy-service";
 import type { ApprovalRepository } from "../domain/repositories/approval-repository";
 import type { WorkflowPolicyRepository } from "../domain/repositories/workflow-policy-repository";
+import { PolicyService } from "../domain/services/policy-service";
 
 export async function registerVerifyPolicyRoute(
   app: FastifyInstance,
-  deps: { workflowPolicyRepository: WorkflowPolicyRepository; approvalRepository?: ApprovalRepository },
+  deps: {
+    workflowPolicyRepository: WorkflowPolicyRepository;
+    approvalRepository?: ApprovalRepository;
+  },
 ) {
   const policyService = new PolicyService(deps.workflowPolicyRepository, deps.approvalRepository);
   const useCase = new VerificarPolicyUseCase({ policyService });
@@ -36,4 +39,3 @@ export async function registerVerifyPolicyRoute(
     }
   });
 }
-

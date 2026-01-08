@@ -1,13 +1,13 @@
 /**
  * Sistema de Métricas de Erros
- * 
+ *
  * Coleta e expõe métricas detalhadas sobre erros para monitoramento
  * e alertas.
  */
 
 import { Counter, Histogram, Registry } from "prom-client";
 import type { AppError } from "./app-error";
-import { ErrorCategory, getErrorCategory, isCriticalError, type ErrorCode } from "./error-codes";
+import { ErrorCategory, type ErrorCode, getErrorCategory, isCriticalError } from "./error-codes";
 import type { ErrorCorrelationContext } from "./error-correlation";
 
 /**
@@ -141,8 +141,7 @@ export class ErrorMetricsManager {
 
     // Registrar erro de serviço externo
     if (category === ErrorCategory.EXTERNAL_SERVICE) {
-      const service =
-        (error as { service?: string }).service || "unknown";
+      const service = (error as { service?: string }).service || "unknown";
       externalServiceErrorCounter.inc({
         service,
         code,
@@ -152,8 +151,7 @@ export class ErrorMetricsManager {
 
     // Registrar erro de banco de dados
     if (category === ErrorCategory.DATABASE) {
-      const operation =
-        (error.context?.operation as string) || "unknown";
+      const operation = (error.context?.operation as string) || "unknown";
       databaseErrorCounter.inc({
         code,
         operation,
@@ -185,12 +183,3 @@ export class ErrorMetricsManager {
     errorMetricsRegistry.resetMetrics();
   }
 }
-
-
-
-
-
-
-
-
-

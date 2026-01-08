@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
-import { Queue, Job } from 'bull';
+import { Injectable } from '@nestjs/common';
+import type { Job, Queue } from 'bull';
 import type { AuditReport } from '../domain/types/audit-types';
 
 export interface AuditJob {

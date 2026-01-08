@@ -11,7 +11,7 @@ import {
     GlassInput,
     Button,
     GlassSelect
-} from "@/components/ui/futuristic";
+} from "@/shared/ui/base/futuristic";
 import { ObjectAccessEntry } from "@morina/shared-kernel";
 
 interface AclFormViewProps {

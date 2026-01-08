@@ -1,6 +1,6 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { PasskeySettings } from "@/components/profile/passkey-settings";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { Button, GlassCard, Input, Label, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";

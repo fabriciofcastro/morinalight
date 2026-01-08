@@ -83,14 +83,3 @@ export async function registerBulkActionNotificationsRoute(
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -3,8 +3,8 @@
  * Protege contra Cross-Site Request Forgery
  */
 
-import type { FastifyReply, FastifyRequest } from "fastify";
 import { randomBytes } from "node:crypto";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import { getRedisClient, isRedisAvailable } from "../../infra/cache/redis.service";
 
 // Fallback em memória caso Redis não esteja disponível
@@ -41,6 +41,14 @@ export function csrfGenerateToken() {
     const key = getCsrfKey(request);
     const token = generateCsrfToken();
     const expiresIn = 3600; // 1 hora
+    const now = Date.now();
+
+    // 🧹 Limpeza periódica do storage em memória
+    if (Math.random() < 0.01) {
+      for (const [k, v] of csrfStore.entries()) {
+        if (v.expiresAt < now) csrfStore.delete(k);
+      }
+    }
 
     try {
       const available = await isRedisAvailable();
@@ -51,7 +59,7 @@ export function csrfGenerateToken() {
         // Fallback em memória
         csrfStore.set(key, {
           token,
-          expiresAt: Date.now() + expiresIn * 1000,
+          expiresAt: now + expiresIn * 1000,
         });
       }
 
@@ -76,7 +84,7 @@ export function csrfValidateToken() {
     }
 
     // Excluir rotas públicas que não precisam de CSRF
-    const publicRoutes = ["/auth/login", "/auth/register", "/health", "/realtime/token"];
+    const publicRoutes = ["/health", "/realtime/token"];
     const isPublic = publicRoutes.some((route) => request.url.startsWith(route));
 
     if (isPublic) {

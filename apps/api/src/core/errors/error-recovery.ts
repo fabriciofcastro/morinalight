@@ -1,12 +1,12 @@
 /**
  * Sistema de Recuperação Automática de Erros
- * 
+ *
  * Estratégias inteligentes de recuperação e auto-healing.
  */
 
-import type { AppError } from "./app-error";
-import { ErrorCode, isRecoverableError, type ErrorCode as ErrorCodeType } from "./error-codes";
 import { retry } from "../resilience/retry";
+import type { AppError } from "./app-error";
+import { ErrorCode, type ErrorCode as ErrorCodeType, isRecoverableError } from "./error-codes";
 
 /**
  * Estratégia de recuperação
@@ -103,7 +103,7 @@ export class ErrorRecoveryManager {
 
     // Estratégia 2: Cache (se disponível)
     if (config.useCache && config.cacheKey) {
-      const cached = this.getFromCache<T>(config.cacheKey);
+      const cached = ErrorRecoveryManager.getFromCache<T>(config.cacheKey);
       if (cached) {
         return {
           success: true,
@@ -162,12 +162,12 @@ export class ErrorRecoveryManager {
    * Obter do cache
    */
   private static getFromCache<T>(key: string): T | null {
-    const cached = this.cache.get(key);
+    const cached = ErrorRecoveryManager.cache.get(key);
     if (!cached) return null;
 
     const now = Date.now();
     if (now - cached.timestamp > cached.ttl) {
-      this.cache.delete(key);
+      ErrorRecoveryManager.cache.delete(key);
       return null;
     }
 
@@ -178,7 +178,7 @@ export class ErrorRecoveryManager {
    * Salvar no cache
    */
   static setCache(key: string, data: unknown, ttl: number = 300000): void {
-    this.cache.set(key, {
+    ErrorRecoveryManager.cache.set(key, {
       data,
       timestamp: Date.now(),
       ttl,
@@ -189,7 +189,7 @@ export class ErrorRecoveryManager {
    * Limpar cache
    */
   static clearCache(): void {
-    this.cache.clear();
+    ErrorRecoveryManager.cache.clear();
   }
 }
 
@@ -205,11 +205,7 @@ export function withRecovery<T extends Array<unknown>, R>(
       return await fn(...args);
     } catch (error) {
       if (error instanceof AppError) {
-        const recovery = await ErrorRecoveryManager.recover(
-          error,
-          () => fn(...args),
-          config,
-        );
+        const recovery = await ErrorRecoveryManager.recover(error, () => fn(...args), config);
 
         if (recovery.success && recovery.data !== undefined) {
           return recovery.data as R;
@@ -221,12 +217,3 @@ export function withRecovery<T extends Array<unknown>, R>(
     }
   };
 }
-
-
-
-
-
-
-
-
-

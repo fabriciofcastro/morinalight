@@ -1,6 +1,6 @@
 "use client";
 
-import { FuturisticInput } from "@/components/ui/futuristic-input";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
 import type {
     BranchCustomFieldsConfig,
     CustomFieldDefinition,

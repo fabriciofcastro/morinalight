@@ -1,11 +1,11 @@
 /**
  * Sistema de Analytics e Agrupamento de Erros
- * 
+ *
  * Análise avançada, agrupamento e deduplicação de erros.
  */
 
 import type { AppError } from "./app-error";
-import { getErrorCategory, type ErrorCode } from "./error-codes";
+import { type ErrorCode, getErrorCategory } from "./error-codes";
 import type { ErrorCorrelationContext } from "./error-correlation";
 
 /**
@@ -50,7 +50,10 @@ function getErrorFingerprint(error: AppError): string {
     error.message,
     error.statusCode,
     // Hash do stack trace (primeiras 3 linhas)
-    error.stack?.split("\n").slice(0, 3).join("|"),
+    error.stack
+      ?.split("\n")
+      .slice(0, 3)
+      .join("|"),
   ].filter(Boolean);
 
   return parts.join("::");
@@ -72,21 +75,18 @@ export class ErrorAnalyticsManager {
   /**
    * Registrar erro para analytics
    */
-  static recordError(
-    error: AppError,
-    context: ErrorCorrelationContext,
-  ): void {
+  static recordError(error: AppError, context: ErrorCorrelationContext): void {
     const fingerprint = getErrorFingerprint(error);
     const now = Date.now();
 
     // Adicionar ao histórico
-    this.errorHistory.push({ error, context, timestamp: now });
-    if (this.errorHistory.length > this.MAX_HISTORY) {
-      this.errorHistory.shift();
+    ErrorAnalyticsManager.errorHistory.push({ error, context, timestamp: now });
+    if (ErrorAnalyticsManager.errorHistory.length > ErrorAnalyticsManager.MAX_HISTORY) {
+      ErrorAnalyticsManager.errorHistory.shift();
     }
 
     // Agrupar erros similares
-    let group = this.groups.get(fingerprint);
+    let group = ErrorAnalyticsManager.groups.get(fingerprint);
     if (!group) {
       group = {
         id: fingerprint,
@@ -95,21 +95,22 @@ export class ErrorAnalyticsManager {
         count: 0,
         firstSeen: now,
         lastSeen: now,
-        severity: error.statusCode >= 500 ? "critical" : error.statusCode >= 400 ? "high" : "medium",
+        severity:
+          error.statusCode >= 500 ? "critical" : error.statusCode >= 400 ? "high" : "medium",
         affectedUsers: new Set(),
         affectedOrgs: new Set(),
         sampleErrors: [],
       };
 
       // Limitar número de grupos
-      if (this.groups.size >= this.MAX_GROUPS) {
-        const oldestGroup = Array.from(this.groups.values()).sort(
+      if (ErrorAnalyticsManager.groups.size >= ErrorAnalyticsManager.MAX_GROUPS) {
+        const oldestGroup = Array.from(ErrorAnalyticsManager.groups.values()).sort(
           (a, b) => a.lastSeen - b.lastSeen,
         )[0]!;
-        this.groups.delete(oldestGroup.id);
+        ErrorAnalyticsManager.groups.delete(oldestGroup.id);
       }
 
-      this.groups.set(fingerprint, group);
+      ErrorAnalyticsManager.groups.set(fingerprint, group);
     }
 
     // Atualizar grupo
@@ -133,7 +134,7 @@ export class ErrorAnalyticsManager {
     const now = Date.now();
     const windowStart = now - timeWindow;
 
-    const recentErrors = this.errorHistory.filter(
+    const recentErrors = ErrorAnalyticsManager.errorHistory.filter(
       (e) => e.timestamp >= windowStart,
     );
 
@@ -151,18 +152,14 @@ export class ErrorAnalyticsManager {
       errorsByCode[error.code] = (errorsByCode[error.code] || 0) + 1;
 
       const severity =
-        error.statusCode >= 500
-          ? "critical"
-          : error.statusCode >= 400
-            ? "high"
-            : "medium";
+        error.statusCode >= 500 ? "critical" : error.statusCode >= 400 ? "high" : "medium";
       errorsBySeverity[severity] = (errorsBySeverity[severity] || 0) + 1;
 
       const hour = new Date(timestamp).getHours();
       errorsByHour[hour]!.count++;
     });
 
-    const topErrors = Array.from(this.groups.values())
+    const topErrors = Array.from(ErrorAnalyticsManager.groups.values())
       .filter((g) => g.lastSeen >= windowStart)
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -187,7 +184,7 @@ export class ErrorAnalyticsManager {
    * Obter grupo de erro
    */
   static getErrorGroup(fingerprint: string): ErrorGroup | undefined {
-    return this.groups.get(fingerprint);
+    return ErrorAnalyticsManager.groups.get(fingerprint);
   }
 
   /**
@@ -195,18 +192,17 @@ export class ErrorAnalyticsManager {
    */
   static getSimilarGroups(error: AppError, limit: number = 5): ErrorGroup[] {
     const fingerprint = getErrorFingerprint(error);
-    const group = this.groups.get(fingerprint);
+    const group = ErrorAnalyticsManager.groups.get(fingerprint);
 
     if (!group) return [];
 
     // Buscar grupos com mesmo código ou categoria
     const category = getErrorCategory(error.code as ErrorCode);
-    return Array.from(this.groups.values())
+    return Array.from(ErrorAnalyticsManager.groups.values())
       .filter(
         (g) =>
           g.id !== fingerprint &&
-          (g.code === error.code ||
-            getErrorCategory(g.code as ErrorCode) === category),
+          (g.code === error.code || getErrorCategory(g.code as ErrorCode) === category),
       )
       .sort((a, b) => b.count - a.count)
       .slice(0, limit);
@@ -220,12 +216,14 @@ export class ErrorAnalyticsManager {
     const cutoff = now - maxAge;
 
     // Limpar histórico
-    this.errorHistory = this.errorHistory.filter((e) => e.timestamp >= cutoff);
+    ErrorAnalyticsManager.errorHistory = ErrorAnalyticsManager.errorHistory.filter(
+      (e) => e.timestamp >= cutoff,
+    );
 
     // Limpar grupos antigos
-    for (const [id, group] of this.groups.entries()) {
+    for (const [id, group] of ErrorAnalyticsManager.groups.entries()) {
       if (group.lastSeen < cutoff) {
-        this.groups.delete(id);
+        ErrorAnalyticsManager.groups.delete(id);
       }
     }
   }
@@ -234,16 +232,7 @@ export class ErrorAnalyticsManager {
    * Resetar analytics
    */
   static reset(): void {
-    this.groups.clear();
-    this.errorHistory = [];
+    ErrorAnalyticsManager.groups.clear();
+    ErrorAnalyticsManager.errorHistory = [];
   }
 }
-
-
-
-
-
-
-
-
-

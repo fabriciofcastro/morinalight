@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { useEffect, useMemo, useState } from "react";
 
 export interface SmartSuggestion {
   field: string;
@@ -102,7 +102,7 @@ export function useSmartSuggestions(
     }
 
     // Sugestão baseada em padrões de email
-    if (currentData.email && !currentData.email.includes("@")) {
+    if (currentData.email && typeof currentData.email === "string" && !currentData.email.includes("@")) {
       const emails = allClientes
         .map((c) => c.email)
         .filter((e) => e && e.includes("@"));
@@ -210,6 +210,7 @@ function getMostCommon<T>(arr: T[]): T | null {
 
   return mostCommon;
 }
+
 
 
 

@@ -1,40 +1,36 @@
-import { useState, useCallback } from "react";
 import {
-  suppliersApi,
-  type Supplier,
-  type CreateSupplierInput,
-  type UpdateSupplierInput,
-  type ListSuppliersQuery,
-  type ListSuppliersResponse,
-  type AuditoriaSupplier,
-  type AuditoriaSupplierPage,
-  type ListAuditoriaQuery,
-  type VersaoSupplier,
-  type VersoesSupplierResponse,
-  type SupplierEstatisticas,
-  type SupplierFichasCustoResponse,
-  type ListFichasCustoQuery,
-  type SupplierInsumosResponse,
-  type SupplierBoletosResponse,
-  type ListBoletosQuery,
-  type SupplierDocumentosResponse,
-  type SupplierDocumento,
-  type CreateDocumentoInput,
-  type SupplierTag,
-  type CreateSupplierTagInput,
-  type UpdateSupplierTagInput,
-  type AvaliacaoSupplier,
-  type CreateAvaliacaoInput,
-  type HistoricoPrecoSupplier,
-  type CreateHistoricoPrecoInput,
-  type AlertaSupplier,
-  type NotaSupplier,
-  type CreateNotaInput,
-  type UpdateNotaInput,
-  type SupplierContact,
-  type CreateContatoInput,
-  type UpdateContatoInput,
+    suppliersApi,
+    type AlertaSupplier,
+    type AuditoriaSupplier,
+    type AvaliacaoSupplier,
+    type CreateAvaliacaoInput,
+    type CreateContatoInput,
+    type CreateDocumentoInput,
+    type CreateHistoricoPrecoInput,
+    type CreateNotaInput,
+    type CreateSupplierInput,
+    type CreateSupplierTagInput,
+    type HistoricoPrecoSupplier,
+    type ListAuditoriaQuery,
+    type ListBoletosQuery,
+    type ListFichasCustoQuery,
+    type ListSuppliersQuery,
+    type NotaSupplier,
+    type Supplier,
+    type SupplierBoletosResponse,
+    type SupplierContact,
+    type SupplierDocumentosResponse,
+    type SupplierEstatisticas,
+    type SupplierFichasCustoResponse,
+    type SupplierInsumosResponse,
+    type SupplierTag,
+    type UpdateContatoInput,
+    type UpdateNotaInput,
+    type UpdateSupplierInput,
+    type UpdateSupplierTagInput,
+    type VersaoSupplier
 } from "@/lib/api/suppliers";
+import { useCallback, useEffect, useState } from "react";
 
 function getCurrentOrgId(): string | null {
   if (typeof window === "undefined") {
@@ -49,7 +45,7 @@ function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]!.organizationId;
       }
     } catch {
       // Ignorar erro de parsing

@@ -17,8 +17,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { clientsApi, CreateClientInput } from "@/lib/api/clients";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface ClientFormProps {

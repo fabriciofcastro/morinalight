@@ -4,11 +4,11 @@ import { Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { organizationalStructureApi, type BusinessSegment, type CreateBusinessSegmentInput, type UpdateBusinessSegmentInput } from "@/lib/api/organizational-structure";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
-import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
+import { FuturisticTextarea } from "@/shared/ui/base/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface SegmentFormClientProps {

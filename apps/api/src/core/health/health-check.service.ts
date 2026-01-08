@@ -3,12 +3,12 @@
  * Provides comprehensive health checks for all system components
  */
 
+import { existsSync } from "fs";
+import { statfs } from "fs/promises";
+import { join } from "path";
+import { getRedisClient } from "../../infra/cache/redis.service";
 import { getPrisma } from "../../infra/database/prisma.service";
 import type { RedisEventBus } from "../../infra/events/redis-event-bus";
-import { getRedisClient } from "../../infra/cache/redis.service";
-import { statfs } from "fs/promises";
-import { existsSync } from "fs";
-import { join } from "path";
 
 export type HealthStatus = "healthy" | "degraded" | "unhealthy";
 
@@ -37,12 +37,7 @@ export class HealthCheckService {
     const startTime = Date.now();
 
     // Run all checks in parallel
-    const [
-      databaseCheck,
-      redisCheck,
-      diskSpaceCheck,
-      memoryCheck,
-    ] = await Promise.allSettled([
+    const [databaseCheck, redisCheck, diskSpaceCheck, memoryCheck] = await Promise.allSettled([
       this.checkDatabase(),
       this.checkRedis(),
       this.checkDiskSpace(),
@@ -59,12 +54,11 @@ export class HealthCheckService {
     // Redis, disk, and memory are optional/degraded
     const criticalChecks = { database: checks.database };
     const criticalStatuses = Object.values(criticalChecks).map((check) => check.status);
-    const overallStatus: HealthStatus =
-      criticalStatuses.every((s) => s === "healthy")
-        ? "healthy"
-        : criticalStatuses.some((s) => s === "unhealthy")
-          ? "unhealthy"
-          : "degraded";
+    const overallStatus: HealthStatus = criticalStatuses.every((s) => s === "healthy")
+      ? "healthy"
+      : criticalStatuses.some((s) => s === "unhealthy")
+        ? "unhealthy"
+        : "degraded";
 
     return {
       status: overallStatus,
@@ -159,7 +153,7 @@ export class HealthCheckService {
       // Check if ping was successful
       if (pingResult === "PONG") {
         // Get Redis info for additional details
-        let info: Record<string, string> = {};
+        const info: Record<string, string> = {};
         try {
           const redisInfo = await redis.info("server");
           // Parse basic info
@@ -251,11 +245,7 @@ export class HealthCheckService {
       // Degraded: 10-20% available
       // Unhealthy: < 10% available
       const status: HealthStatus =
-        availablePercent > 20
-          ? "healthy"
-          : availablePercent > 10
-            ? "degraded"
-            : "unhealthy";
+        availablePercent > 20 ? "healthy" : availablePercent > 10 ? "degraded" : "unhealthy";
 
       return {
         status,
@@ -387,14 +377,3 @@ export class HealthCheckService {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-

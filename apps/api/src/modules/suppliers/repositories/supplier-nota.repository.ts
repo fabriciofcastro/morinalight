@@ -28,9 +28,8 @@ export interface NotaSupplierRepository {
   findById(id: string): Promise<NotaSupplierRecord | null>;
   findBySupplierId(
     supplierId: string,
-    filters?: { tipo?: string; criadoPor?: string; busca?: string }
+    filters?: { tipo?: string; criadoPor?: string; busca?: string },
   ): Promise<NotaSupplierRecord[]>;
   update(id: string, input: UpdateNotaSupplierInput): Promise<NotaSupplierRecord>;
   delete(id: string): Promise<void>;
 }
-

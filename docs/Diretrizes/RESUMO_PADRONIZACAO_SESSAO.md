@@ -124,3 +124,4 @@ Ambas as telas agora seguem o padrão MORINA:
 
 **Data:** 2025-01-19  
 **Mantido por:** Equipe de Arquitetura MORINA
+

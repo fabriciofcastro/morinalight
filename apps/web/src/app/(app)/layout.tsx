@@ -29,18 +29,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <KeyboardShortcutsProvider>
       <CaslProvider>
-        {/* Mantém permissões em sync via eventos/mensageria */}
-        <RealtimePermissionsProvider />
-        
-        {/* SLA sweep best-effort (gera notificações de SLA) */}
-        <RbacApprovalSlaProvider />
+        <>
+          {/* Mantém permissões em sync via eventos/mensageria */}
+          <RealtimePermissionsProvider />
+          
+          {/* SLA sweep best-effort (gera notificações de SLA) */}
+          <RbacApprovalSlaProvider />
 
-        <LayoutShell>
-            {/* JARVIS HUD (apenas no pós-login /dashboard) */}
-            {showJarvisHud && <JarvisHudOverlay variant="dashboard" />}
-            
-            {children}
-        </LayoutShell>
+          <LayoutShell>
+            <>
+              {/* JARVIS HUD (apenas no pós-login /dashboard) */}
+              {showJarvisHud && <JarvisHudOverlay key="jarvis-hud" variant="dashboard" />}
+              
+              <div key="app-children-wrapper">
+                {children}
+              </div>
+            </>
+          </LayoutShell>
+        </>
       </CaslProvider>
     </KeyboardShortcutsProvider>
   );

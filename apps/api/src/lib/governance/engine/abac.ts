@@ -1,57 +1,91 @@
-import { GovernancePolicy, ABACPolicy } from "../types/policy.types";
-import { AccessContext } from "../types/context.types";
-import { TBACResult } from "./tbac";
+import { ConfigurationError, InternalServerError } from "../../../core/errors/app-error";
+import { GeoService } from "../services/geo.service";
+import type { AccessContext } from "../types/context.types";
+import type { ABACPolicy, GovernancePolicy } from "../types/policy.types";
+import type { TBACResult } from "./tbac";
 
 export interface ABACResult {
-    requiredEnforcements: string[]; // ["LEGAL_ACK", "AUDIT_FULL"]
+  requiredEnforcements: string[]; // ["LEGAL_ACK", "AUDIT_FULL"]
 }
 
 export class ABACModule {
-    /**
-     * Avalia as políticas contextuais.
-     */
-    static evaluate(context: AccessContext, tbacResult: TBACResult, policy: GovernancePolicy): ABACResult {
-        const activePolicyIds = policy.pbac.active_policies;
-        const enforcements = new Set<string>();
+  /**
+   * Avalia as políticas contextuais.
+   */
+  static evaluate(
+    context: AccessContext,
+    tbacResult: TBACResult,
+    policy: GovernancePolicy,
+  ): ABACResult {
+    try {
+      if (!policy || !policy.pbac) {
+        throw new ConfigurationError(
+          "GOVERNANCE_POLICY_INVALID",
+          "Invalid governance policy structure",
+        );
+      }
 
-        for (const rule of policy.policies) {
-            // 1. Verifica se a política está ativa (PBAC)
-            if (!activePolicyIds.includes(rule.id)) continue;
+      const activePolicyIds = policy.pbac.active_policies;
+      const enforcements = new Set<string>();
 
-            // 2. Avalia a condição ("when")
-            if (this.evaluateCondition(rule, context, tbacResult)) {
-                // 3. Aplica obrigações ("then")
-                this.collectEnforcements(rule, enforcements);
-            }
+      for (const rule of policy.policies) {
+        // 1. Verifica se a política está ativa (PBAC)
+        if (!activePolicyIds.includes(rule.id)) continue;
+
+        // 2. Avalia a condição ("when")
+        if (ABACModule.evaluateCondition(rule, context, tbacResult)) {
+          // 3. Aplica obrigações ("then")
+          ABACModule.collectEnforcements(rule, enforcements);
         }
+      }
 
-        return {
-            requiredEnforcements: Array.from(enforcements)
-        };
+      return {
+        requiredEnforcements: Array.from(enforcements),
+      };
+    } catch (error) {
+      if (error instanceof ConfigurationError) throw error;
+      throw new InternalServerError("Failed to evaluate ABAC policies", {
+        originalError: error instanceof Error ? error.message : String(error),
+        policyId: policy?.meta?.version,
+      });
+    }
+  }
+
+  private static evaluateCondition(
+    rule: ABACPolicy,
+    context: AccessContext,
+    tbacResult: TBACResult,
+  ): boolean {
+    const { when } = rule;
+
+    // Condition: outside_working_hours
+    if (when.outside_working_hours === true) {
+      if (tbacResult.shift !== "OVERTIME" && tbacResult.shift !== "OUTSIDE_SHIFT") {
+        return false;
+      }
     }
 
-    private static evaluateCondition(rule: ABACPolicy, context: AccessContext, tbacResult: TBACResult): boolean {
-        const { when } = rule;
-
-        // Condition: outside_working_hours
-        if (when.outside_working_hours === true) {
-            if (tbacResult.shift !== 'OVERTIME' && tbacResult.shift !== 'OUTSIDE_SHIFT') {
-                return false;
-            }
+    // Condition: foreign_ip
+    if (when.foreign_ip === true) {
+      try {
+        if (!GeoService.isForeignIp(context.ip)) {
+          return false;
         }
-
-        // Condition: foreign_ip
-        // TODO: Integrar com GeoService na Fase 6
-        // if (when.foreign_ip && context.location !== "BR") ...
-
-        return true;
+      } catch (error) {
+        // Fail closed on security check errors
+        console.error("GeoService failure:", error);
+        throw new InternalServerError("GeoService check failed during ABAC evaluation");
+      }
     }
 
-    private static collectEnforcements(rule: ABACPolicy, enforcements: Set<string>): void {
-        const { require } = rule.then;
+    return true;
+  }
 
-        if (require.legal_ack) enforcements.add("LEGAL_ACK");
-        if (require.audit_level === "FULL") enforcements.add("AUDIT_FULL");
-        if (require.backlog_event) enforcements.add("BACKLOG_EVENT");
-    }
+  private static collectEnforcements(rule: ABACPolicy, enforcements: Set<string>): void {
+    const { require } = rule.then;
+
+    if (require.legal_ack) enforcements.add("LEGAL_ACK");
+    if (require.audit_level === "FULL") enforcements.add("AUDIT_FULL");
+    if (require.backlog_event) enforcements.add("BACKLOG_EVENT");
+  }
 }

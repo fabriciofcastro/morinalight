@@ -24,8 +24,11 @@ const DEFAULT_OPTIONS: Required<Omit<RetryOptions, "onRetry" | "shouldRetry">> =
 /**
  * Calculate delay with exponential backoff and optional jitter
  */
-function calculateDelay(attempt: number, options: Required<Omit<RetryOptions, "onRetry" | "shouldRetry">>): number {
-  const exponentialDelay = options.initialDelayMs * Math.pow(options.factor, attempt - 1);
+function calculateDelay(
+  attempt: number,
+  options: Required<Omit<RetryOptions, "onRetry" | "shouldRetry">>,
+): number {
+  const exponentialDelay = options.initialDelayMs * options.factor ** (attempt - 1);
   const delay = Math.min(exponentialDelay, options.maxDelayMs);
 
   if (options.jitter) {
@@ -66,10 +69,7 @@ function defaultShouldRetry(error: Error): boolean {
 /**
  * Retry a function with exponential backoff
  */
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {},
-): Promise<T> {
+export async function retry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const shouldRetry = options.shouldRetry || defaultShouldRetry;
 
@@ -119,20 +119,12 @@ export async function retryWithTimeout<T>(
       Promise.race([
         fn(),
         new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs),
+          setTimeout(
+            () => reject(new Error(`Operation timed out after ${timeoutMs}ms`)),
+            timeoutMs,
+          ),
         ),
       ]),
     retryOptions,
   );
 }
-
-
-
-
-
-
-
-
-
-
-

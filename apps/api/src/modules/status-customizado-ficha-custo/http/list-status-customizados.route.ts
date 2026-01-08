@@ -31,7 +31,10 @@ export async function registerListStatusCustomizadosRoute(
         const orgId = request.params.orgId;
         const query = listarStatusCustomizadosQuerySchema.parse(request.query);
 
-        const useCase = new ListarStatusCustomizadosUseCase(deps.statusCustomizadoRepository, orgId);
+        const useCase = new ListarStatusCustomizadosUseCase(
+          deps.statusCustomizadoRepository,
+          orgId,
+        );
         const resultado = await useCase.execute(query);
 
         return reply.status(200).send({
@@ -55,5 +58,3 @@ export async function registerListStatusCustomizadosRoute(
     },
   );
 }
-
-

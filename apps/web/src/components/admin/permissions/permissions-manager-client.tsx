@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { permissionsApi, type Permission } from "@/lib/api/permissions";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 type PermissionsManagerClientProps = {
   entityType: "department" | "sector" | "position" | "role";

@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
 
 import { env } from "../../core/config/env";
-import { prisma } from "../../infra/prisma/client";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromHeaders } from "../../core/tenant/tenant.utils";
+import { prisma } from "../../infra/prisma/client";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import { registerCompanySettingsRoutes } from "./company-settings.routes";
 import { registerAuditRoutes } from "./http/audit.routes";

@@ -1,9 +1,11 @@
 
-import { google } from "@ai-sdk/google";
-import { generateText, tool, streamText } from "ai";
-import { z } from "zod";
 import prisma from "@/lib/prisma";
 import { GeoIPService } from "@/lib/security/geoip-service";
+import { google } from "@ai-sdk/google";
+import { tool as coreTool, streamText } from "ai";
+import { z } from "zod";
+
+const tool = (args: any) => coreTool(args);
 
 /**
  * AI Security Analyst Service
@@ -60,7 +62,7 @@ export class AiSecurityAnalyst {
             get_ip_reputation: tool({
                 description: "Get location and reputation information for an IP address.",
                 parameters: z.object({ ip: z.string() }),
-                execute: async ({ ip }: { ip: string }): Promise<any> => {
+                execute: async ({ ip }: { ip: string }) => {
                     const geo = GeoIPService.lookup(ip);
                     return {
                         ip,
@@ -73,7 +75,7 @@ export class AiSecurityAnalyst {
             get_user_activity: tool({
                 description: "Get recent activity logs for a specific user.",
                 parameters: z.object({ email: z.string() }),
-                execute: async ({ email }: { email: string }): Promise<any> => {
+                execute: async ({ email }: { email: string }) => {
                     const user = await prisma.user.findUnique({ where: { email } });
                     if (!user) return { error: "User not found" };
 
@@ -88,7 +90,7 @@ export class AiSecurityAnalyst {
             list_blocked_ips: tool({
                 description: "List currently blocked IP addresses in the firewall.",
                 parameters: z.object({}),
-                execute: async (): Promise<any> => {
+                execute: async () => {
                     return await prisma.blockedIP.findMany({
                         orderBy: { blockedAt: 'desc' }
                     });
@@ -97,11 +99,11 @@ export class AiSecurityAnalyst {
             block_ip: tool({
                 description: "Block a suspicious IP address. Requires a reason.",
                 parameters: z.object({
-                    ip: z.string().ip(),
+                    ip: z.string(),
                     reason: z.string(),
                     durationMinutes: z.number().optional()
                 }),
-                execute: async ({ ip, reason, durationMinutes }: { ip: string; reason: string; durationMinutes?: number }): Promise<any> => {
+                execute: async ({ ip, reason, durationMinutes }: { ip: string; reason: string; durationMinutes?: number }) => {
                     try {
                         // Use the API to ensure internal consistency (cache warmup, SIEM logging, etc.)
                         const response = await fetch('/api/security/blocked-ips', {

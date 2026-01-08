@@ -5,8 +5,8 @@
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { lgpdExportService } from "../application/services/lgpd-export.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { lgpdExportService } from "../application/services/lgpd-export.service";
 
 const paramsSchema = z.object({
   userId: z.string().uuid(),

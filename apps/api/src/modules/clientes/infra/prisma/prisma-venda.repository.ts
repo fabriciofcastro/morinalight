@@ -1,5 +1,5 @@
-import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { Prisma } from "@prisma/client";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { VendaProps, VendaStatus } from "../../domain/entities/venda";
 import { Venda } from "../../domain/entities/venda";
 import type { VendaRepository } from "../services/venda-sync.service";

@@ -6,10 +6,7 @@ type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
 };
 
-export async function registerGetPreFichaTecnicaRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerGetPreFichaTecnicaRoute(app: FastifyInstance, deps: Dependencies) {
   app.get(
     "/organizations/:orgId/pre-fichas-tecnicas/:id",
     async (
@@ -51,15 +48,3 @@ export async function registerGetPreFichaTecnicaRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

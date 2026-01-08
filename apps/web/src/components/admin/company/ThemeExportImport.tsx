@@ -4,8 +4,8 @@ import { useState, useCallback, useRef } from "react";
 import { Download, Upload, FileJson, CheckCircle2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../../lib/utils";
-import { notificationCenter } from "../../notifications/notification-center";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { ConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 interface ThemeData {
   colors: Record<string, string>;
@@ -206,6 +206,7 @@ export function ThemeExportImport({
     </div>
   );
 }
+
 
 
 

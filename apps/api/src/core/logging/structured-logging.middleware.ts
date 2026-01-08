@@ -3,8 +3,8 @@
  * Adiciona contexto estruturado (requestId, userId, orgId) aos logs
  */
 
-import type { FastifyRequest, FastifyReply } from "fastify";
 import { randomUUID } from "node:crypto";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -81,10 +81,7 @@ export async function structuredLoggingMiddleware(
 /**
  * Hook para logar resposta
  */
-export async function logResponse(
-  request: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
+export async function logResponse(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   // Calcular duração manualmente usando o startTime armazenado
   const duration = request.startTime
     ? Number(process.hrtime.bigint() - request.startTime) / 1_000_000 // Convert nanoseconds to milliseconds
@@ -102,9 +99,3 @@ export async function logResponse(
     `${request.method} ${request.url} - ${reply.statusCode} (${duration.toFixed(2)}ms)`,
   );
 }
-
-
-
-
-
-

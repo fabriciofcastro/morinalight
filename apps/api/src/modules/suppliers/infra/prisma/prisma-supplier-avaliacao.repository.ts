@@ -7,4 +7,3 @@ export class PrismaAvaliacaoSupplierRepositoryImpl extends PrismaAvaliacaoSuppli
     super(prisma);
   }
 }
-

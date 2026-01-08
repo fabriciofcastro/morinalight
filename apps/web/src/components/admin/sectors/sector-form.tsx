@@ -13,8 +13,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { organizationalStructureApi, CreateSectorInput } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 
 interface SectorFormProps {
     mode: "create" | "edit";

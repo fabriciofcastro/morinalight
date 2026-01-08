@@ -1,8 +1,8 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
-import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
 import { CompararVersoesPreFichaTecnicaUseCase } from "../application/use-cases/comparar-versoes-pre-ficha-tecnica.use-case";
+import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -72,15 +72,3 @@ export async function registerCompararVersoesPreFichaTecnicaRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

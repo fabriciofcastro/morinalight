@@ -9,6 +9,7 @@ const nextConfig = {
         // Otimizar imports de pacotes grandes
         optimizePackageImports: ['@morina/ui', 'lucide-react', 'recharts'],
     },
+    transpilePackages: ['@morina/ui'],
 
     // Security headers
     async headers() {
@@ -45,6 +46,44 @@ const nextConfig = {
                 hostname: '**',
             },
         ],
+    },
+
+    async redirects() {
+        return [
+            { source: '/clientes', destination: '/admin/clients/list', permanent: true },
+            { source: '/clientes/new', destination: '/admin/clients/new', permanent: true },
+            { source: '/clientes/:id', destination: '/admin/clients/:id', permanent: true },
+            { source: '/clientes/:id/edit', destination: '/admin/clients/:id/edit', permanent: true },
+            
+            { source: '/fornecedores', destination: '/admin/suppliers/list', permanent: true },
+            { source: '/fornecedores/new', destination: '/admin/suppliers/new', permanent: true },
+            { source: '/fornecedores/:id', destination: '/admin/suppliers/:id', permanent: true },
+            { source: '/fornecedores/:id/edit', destination: '/admin/suppliers/:id/edit', permanent: true },
+            
+            { source: '/catalogo', destination: '/admin/products/list', permanent: true },
+            { source: '/catalog', destination: '/admin/products/list', permanent: true },
+            
+            { source: '/pre-fichas-tecnicas', destination: '/admin/pre-technical-sheets/list', permanent: true },
+            { source: '/pre-fichas-tecnicas/new', destination: '/admin/pre-technical-sheets/new', permanent: true },
+            
+            { source: '/fichas-custo', destination: '/admin/cost-sheets/list', permanent: true },
+            { source: '/fichas-custo/new', destination: '/admin/cost-sheets/new', permanent: true },
+            
+            { source: '/insumos', destination: '/admin/inputs/list', permanent: true },
+            { source: '/insumos/new', destination: '/admin/inputs/new', permanent: true },
+            
+            { source: '/producao', destination: '/admin/production', permanent: true },
+            { source: '/logistica', destination: '/admin/logistics', permanent: true },
+            
+            { source: '/representantes', destination: '/admin/representatives/list', permanent: true },
+            { source: '/comissoes', destination: '/admin/commissions/list', permanent: true },
+            
+            { source: '/users', destination: '/admin/users/list', permanent: true },
+            { source: '/users/new', destination: '/admin/users/new', permanent: true },
+            
+            { source: '/products', destination: '/admin/products/list', permanent: true },
+            { source: '/products/new', destination: '/admin/products/new', permanent: true },
+        ];
     },
 
     // API Proxy - Redireciona /api/* para o backend

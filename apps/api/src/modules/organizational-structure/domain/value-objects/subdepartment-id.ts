@@ -17,4 +17,3 @@ export class SubdepartmentId {
     return this.value === other.value;
   }
 }
-

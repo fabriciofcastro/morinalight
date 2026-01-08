@@ -433,3 +433,4 @@ export const [module]Config = {
 ---
 
 **Última atualização:** 2025-01-19
+

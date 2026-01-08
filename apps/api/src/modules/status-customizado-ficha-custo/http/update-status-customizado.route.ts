@@ -34,7 +34,11 @@ export async function registerUpdateStatusCustomizadoRoute(
 
         const input = updateStatusCustomizadoSchema.parse(request.body);
 
-        const useCase = new AtualizarStatusCustomizadoUseCase(deps.statusCustomizadoRepository, orgId, actorId);
+        const useCase = new AtualizarStatusCustomizadoUseCase(
+          deps.statusCustomizadoRepository,
+          orgId,
+          actorId,
+        );
         const resultado = await useCase.execute(id, input);
 
         return reply.status(200).send({
@@ -63,5 +67,3 @@ export async function registerUpdateStatusCustomizadoRoute(
     },
   );
 }
-
-

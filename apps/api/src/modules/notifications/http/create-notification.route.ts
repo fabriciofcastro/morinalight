@@ -19,10 +19,7 @@ type Dependencies = {
   notificationRepository: NotificationRepository;
 };
 
-export async function registerCreateNotificationRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerCreateNotificationRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/notifications", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -60,6 +57,3 @@ export async function registerCreateNotificationRoute(
     return reply.status(201).send({ notification });
   });
 }
-
-
-

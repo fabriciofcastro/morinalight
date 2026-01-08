@@ -1,5 +1,5 @@
-import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { Prisma } from "@prisma/client";
+import { getPrisma } from "../../../../infra/database/prisma.service";
 import type { RepresentanteProps, RepresentanteStatus } from "../../domain/entities/representante";
 import { Representante } from "../../domain/entities/representante";
 import type { RepresentanteRepository } from "../../domain/repositories/representante-repository";

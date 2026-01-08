@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
 import {
+    CustomerSegment,
     DashboardKPIs,
-    SalesData,
-    TopProduct,
-    RecentActivity,
-    SupplierPerformance,
     InventoryInsight,
-    CustomerSegment
+    RecentActivity,
+    SalesData,
+    SupplierPerformance,
+    TopProduct
 } from '../api/analytics';
 
 // Helper to get random number between min and max
@@ -37,7 +37,7 @@ export const mockAnalytics = {
         for (let i = 0; i < count; i++) {
             const revenue = randomFloat(20000, 100000);
             data.push({
-                month: period === '12m' ? months[i % 12] : `${i + 1}`,
+                month: period === '12m' ? (months[i % 12] ?? `${i + 1}`) : `${i + 1}`,
                 revenue: revenue,
                 orders: randomNumber(50, 300),
                 target: 50000 + (i * 1000),
@@ -100,7 +100,7 @@ export const mockAnalytics = {
             count: randomNumber(10, 500),
             totalRevenue: randomFloat(5000, 500000),
             avgOrderValue: randomFloat(100, 5000),
-            color: colors[idx]
+            color: colors[idx] ?? '#6b7280'
         }));
     }
 };

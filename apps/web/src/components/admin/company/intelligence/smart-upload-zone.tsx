@@ -1,7 +1,7 @@
 
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { companySettingsAPI } from "@/lib/api/company-settings";
 import { cn } from "@morina/ui";
 import { FileText, Loader2, Sparkles } from "lucide-react";

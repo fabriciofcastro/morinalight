@@ -1,6 +1,6 @@
 /**
  * Sistema de Correlação e Tracing de Erros
- * 
+ *
  * Fornece rastreamento avançado de erros com correlação de requisições,
  * spans distribuídos e contexto de execução.
  */
@@ -67,14 +67,13 @@ export class ErrorCorrelationManager {
    */
   static extractFromRequest(request: FastifyRequest): ErrorCorrelationContext {
     const correlationId =
-      (request.headers[this.CORRELATION_HEADER] as string) ||
+      (request.headers[ErrorCorrelationManager.CORRELATION_HEADER] as string) ||
       (request.id as string) ||
       randomUUID();
     const traceId =
-      (request.headers[this.TRACE_HEADER] as string) || randomUUID();
-    const spanId =
-      (request.headers[this.SPAN_HEADER] as string) || randomUUID();
-    const parentSpanId = request.headers[this.PARENT_SPAN_HEADER] as
+      (request.headers[ErrorCorrelationManager.TRACE_HEADER] as string) || randomUUID();
+    const spanId = (request.headers[ErrorCorrelationManager.SPAN_HEADER] as string) || randomUUID();
+    const parentSpanId = request.headers[ErrorCorrelationManager.PARENT_SPAN_HEADER] as
       | string
       | undefined;
 
@@ -99,9 +98,7 @@ export class ErrorCorrelationManager {
   /**
    * Criar contexto de correlação
    */
-  static createContext(
-    parentContext?: ErrorCorrelationContext,
-  ): ErrorCorrelationContext {
+  static createContext(parentContext?: ErrorCorrelationContext): ErrorCorrelationContext {
     const traceId = parentContext?.traceId || randomUUID();
     const correlationId = parentContext?.correlationId || randomUUID();
 
@@ -121,23 +118,15 @@ export class ErrorCorrelationManager {
   /**
    * Adicionar contexto de correlação ao erro
    */
-  static enrichError(
-    error: AppError,
-    context: ErrorCorrelationContext,
-  ): AppError {
-    return new (error.constructor as typeof AppError)(
-      error.code,
-      error.message,
-      error.statusCode,
-      {
-        isOperational: error.isOperational,
-        context: {
-          ...error.context,
-          correlation: context,
-        },
-        cause: error.cause,
+  static enrichError(error: AppError, context: ErrorCorrelationContext): AppError {
+    return new (error.constructor as typeof AppError)(error.code, error.message, error.statusCode, {
+      isOperational: error.isOperational,
+      context: {
+        ...error.context,
+        correlation: context,
       },
-    );
+      cause: error.cause,
+    });
   }
 
   /**
@@ -156,7 +145,7 @@ export class ErrorCorrelationManager {
     // Extrair causa recursivamente
     let cause: ErrorTraceInfo | undefined;
     if (error.cause && error.cause instanceof Error) {
-      cause = this.extractTraceInfo(error.cause);
+      cause = ErrorCorrelationManager.extractTraceInfo(error.cause);
     }
 
     // Extrair spans do contexto se disponível
@@ -189,7 +178,7 @@ export class ErrorCorrelationManager {
     context: ErrorCorrelationContext;
     end: () => void;
   } {
-    const context = this.createContext(parentContext);
+    const context = ErrorCorrelationManager.createContext(parentContext);
     const startTime = Date.now();
     const spanId = context.spanId;
 
@@ -215,11 +204,7 @@ export class ErrorCorrelationManager {
   /**
    * Adicionar log ao span
    */
-  static addSpanLog(
-    span: ErrorSpan,
-    message: string,
-    level: string = "info",
-  ): void {
+  static addSpanLog(span: ErrorSpan, message: string, level: string = "info"): void {
     span.logs.push({
       timestamp: Date.now(),
       message,
@@ -230,11 +215,7 @@ export class ErrorCorrelationManager {
   /**
    * Adicionar tag ao span
    */
-  static addSpanTag(
-    span: ErrorSpan,
-    key: string,
-    value: string | number | boolean,
-  ): void {
+  static addSpanTag(span: ErrorSpan, key: string, value: string | number | boolean): void {
     span.tags[key] = value;
   }
 
@@ -243,11 +224,11 @@ export class ErrorCorrelationManager {
    */
   static markSpanAsError(span: ErrorSpan, error: Error): void {
     span.error = true;
-    this.addSpanTag(span, "error", true);
-    this.addSpanTag(span, "error.message", error.message);
-    this.addSpanTag(span, "error.type", error.constructor.name);
+    ErrorCorrelationManager.addSpanTag(span, "error", true);
+    ErrorCorrelationManager.addSpanTag(span, "error.message", error.message);
+    ErrorCorrelationManager.addSpanTag(span, "error.type", error.constructor.name);
     if (error.stack) {
-      this.addSpanLog(span, error.stack, "error");
+      ErrorCorrelationManager.addSpanLog(span, error.stack, "error");
     }
   }
 
@@ -256,21 +237,12 @@ export class ErrorCorrelationManager {
    */
   static toHeaders(context: ErrorCorrelationContext): Record<string, string> {
     return {
-      [this.CORRELATION_HEADER]: context.correlationId,
-      [this.TRACE_HEADER]: context.traceId,
-      [this.SPAN_HEADER]: context.spanId,
+      [ErrorCorrelationManager.CORRELATION_HEADER]: context.correlationId,
+      [ErrorCorrelationManager.TRACE_HEADER]: context.traceId,
+      [ErrorCorrelationManager.SPAN_HEADER]: context.spanId,
       ...(context.parentSpanId && {
-        [this.PARENT_SPAN_HEADER]: context.parentSpanId,
+        [ErrorCorrelationManager.PARENT_SPAN_HEADER]: context.parentSpanId,
       }),
     };
   }
 }
-
-
-
-
-
-
-
-
-

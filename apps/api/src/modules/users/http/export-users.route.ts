@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { getPrisma } from "../../../infra/database/prisma.service";
 
 const querySchema = z.object({
   format: z.enum(["csv", "json", "xlsx"]).default("csv"),
@@ -46,7 +46,10 @@ export async function registerExportUsersRoute(app: FastifyInstance) {
     if (query.format === "json") {
       return reply
         .header("Content-Type", "application/json")
-        .header("Content-Disposition", `attachment; filename="usuarios_${new Date().toISOString().split("T")[0]}.json"`)
+        .header(
+          "Content-Disposition",
+          `attachment; filename="usuarios_${new Date().toISOString().split("T")[0]}.json"`,
+        )
         .send(JSON.stringify(users, null, 2));
     }
 
@@ -78,7 +81,10 @@ export async function registerExportUsersRoute(app: FastifyInstance) {
 
       return reply
         .header("Content-Type", "text/csv; charset=utf-8")
-        .header("Content-Disposition", `attachment; filename="usuarios_${new Date().toISOString().split("T")[0]}.csv"`)
+        .header(
+          "Content-Disposition",
+          `attachment; filename="usuarios_${new Date().toISOString().split("T")[0]}.csv"`,
+        )
         .send(csvContent);
     }
 
@@ -90,14 +96,3 @@ export async function registerExportUsersRoute(app: FastifyInstance) {
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-

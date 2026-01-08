@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import { ListarOrganizationalStructureAuditLogUseCase } from "../application/use-cases/listar-organizational-structure-audit-log.use-case";
 import { extractOrgIdFromParamsOrHeaders } from "../../../core/tenant/tenant.utils";
+import { ListarOrganizationalStructureAuditLogUseCase } from "../application/use-cases/listar-organizational-structure-audit-log.use-case";
+import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 
 type Dependencies = {
   auditLogRepository: OrganizationalStructureAuditLogRepository;
@@ -39,11 +39,3 @@ export async function registerListOrganizationalStructureAuditLogRoute(
     return reply.send(resultado);
   });
 }
-
-
-
-
-
-
-
-

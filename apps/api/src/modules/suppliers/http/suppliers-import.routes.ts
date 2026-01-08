@@ -11,10 +11,7 @@ type ImportDeps = {
   organizationRepository: OrganizationRepository;
 };
 
-export async function registerSupplierImportRoutes(
-  app: FastifyInstance,
-  deps: ImportDeps,
-) {
+export async function registerSupplierImportRoutes(app: FastifyInstance, deps: ImportDeps) {
   const importService = new SupplierImportService(deps.supplierRepository);
 
   // Register multipart plugin if not already registered
@@ -95,7 +92,12 @@ export async function registerSupplierImportRoutes(
       const columnMapping = body.columnMapping as Record<string, string> | undefined;
 
       // Parse and validate
-      const preview = await importService.parseAndValidate(fileBuffer, fileName, orgId, columnMapping);
+      const preview = await importService.parseAndValidate(
+        fileBuffer,
+        fileName,
+        orgId,
+        columnMapping,
+      );
 
       return reply.send({
         success: true,
@@ -188,4 +190,3 @@ Fornecedor Exemplo,12345678000190,contato@exemplo.com,11999999999,Rua Exemplo 12
     return reply.send(csvTemplate);
   });
 }
-

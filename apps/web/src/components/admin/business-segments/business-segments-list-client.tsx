@@ -15,8 +15,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { organizationalStructureApi, BusinessSegment } from "@/lib/api/organizational-structure";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 const SegmentCard = ({
     segment,

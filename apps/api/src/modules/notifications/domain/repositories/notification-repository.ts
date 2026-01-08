@@ -1,4 +1,10 @@
-export type NotificationType = "system" | "security" | "approval" | "activity" | "message" | "other";
+export type NotificationType =
+  | "system"
+  | "security"
+  | "approval"
+  | "activity"
+  | "message"
+  | "other";
 export type NotificationChannel = "email" | "push" | "inApp";
 
 export type NotificationRecord = {
@@ -68,13 +74,13 @@ export interface NotificationRepository {
   archive(id: string): Promise<NotificationRecord | null>;
   unarchive(id: string): Promise<NotificationRecord | null>;
   markAllAsRead(orgId: string, userId: string): Promise<number>;
-  getStats(orgId: string, userId?: string | null): Promise<{
+  getStats(
+    orgId: string,
+    userId?: string | null,
+  ): Promise<{
     total: number;
     unread: number;
     archived: number;
     byType: Record<NotificationType, number>;
   }>;
 }
-
-
-

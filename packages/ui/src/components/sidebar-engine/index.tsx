@@ -78,7 +78,7 @@ function SidebarItem({
                 "relative flex h-10 w-10 items-center justify-center transition-all duration-300 border border-transparent rounded-none",
                 active
                     ? "bg-white/5 text-[hsl(var(--primary))] border-[hsl(var(--primary)/0.3)] shadow-[0_0_15px_hsl(var(--primary)/0.2)]"
-                    : "text-white/60 hover:bg-white/5 hover:text-white hover:border-white/10",
+                    : "text-white/60 hover:bg-[hsl(var(--primary)/0.1)] hover:text-[hsl(var(--primary))] hover:border-[hsl(var(--primary)/0.2)]",
                 isHovered &&
                 !active &&
                 "bg-white/5 text-white scale-105 border-white/20",
@@ -245,7 +245,7 @@ function SidebarItem({
                                                 activePath.startsWith(`${sub.href}/`));
 
                                         const content = (
-                                            <>
+                                            <div className="flex flex-col gap-1 w-full">
                                                 {/* Accent rail */}
                                                 <span
                                                     className={cn(
@@ -280,7 +280,7 @@ function SidebarItem({
                                                         {sub.description}
                                                     </span>
                                                 )}
-                                            </>
+                                            </div>
                                         );
 
                                         const commonClasses = cn(

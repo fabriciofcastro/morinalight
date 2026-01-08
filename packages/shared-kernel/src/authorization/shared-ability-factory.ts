@@ -1,7 +1,7 @@
 import { AbilityBuilder } from '@casl/ability';
 import { ObjectAccessEntry, SecurityContext, SecurityPolicy } from './advanced/types';
 import { unifiedPolicyEngine } from './advanced/unified-policy-engine';
-import { AppAbility, AppActions, AppSubjects } from './types';
+import { AppAbility, AppActions, AppSubjects, AppSubjectType } from './types';
 
 /**
  * Sentry adapter interface for logging authorization events
@@ -26,7 +26,9 @@ export interface UserContext {
     ipAddress?: string;
     userAgent?: string;
     mfaVerified?: boolean;
+    riskScore?: number; // 0-100
 }
+
 
 /**
  * Permission grant from API
@@ -97,12 +99,12 @@ export class SharedAbilityFactory {
 
         return build({
             detectSubjectType: (item) => {
-                if (typeof item === 'string') return item as any;
-                const subject = item as any;
+                if (typeof item === 'string') return item as AppSubjectType;
+                const subject = item as Record<string, any>;
                 if (subject && typeof subject === 'object' && '__typename' in subject) {
-                    return subject.__typename as any;
+                    return subject.__typename as AppSubjectType;
                 }
-                return (subject?.constructor?.name || 'all') as any;
+                return (subject?.constructor?.name || 'all') as AppSubjectType;
             },
         });
     }
@@ -209,12 +211,12 @@ export class SharedAbilityFactory {
 
         return build({
             detectSubjectType: (item) => {
-                if (typeof item === 'string') return item as any;
-                const subject = item as any;
+                if (typeof item === 'string') return item as AppSubjectType;
+                const subject = item as Record<string, any>;
                 if (subject && typeof subject === 'object' && '__typename' in subject) {
-                    return subject.__typename as any;
+                    return subject.__typename as AppSubjectType;
                 }
-                return (subject?.constructor?.name || 'all') as any;
+                return (subject?.constructor?.name || 'all') as AppSubjectType;
             },
         });
     }
@@ -236,8 +238,10 @@ export class SharedAbilityFactory {
                 timeWindows: userContext.attributes?.timeWindows,
                 ip: userContext.ipAddress,
                 userAgent: userContext.userAgent,
-                mfaVerified: userContext.mfaVerified || false
+                mfaVerified: userContext.mfaVerified || false,
+                riskScore: userContext.riskScore
             }
+
         };
     }
 

@@ -6,14 +6,14 @@ import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
-import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
 import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
+import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
 import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
-import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
-import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
-import type { UserPermissionRepository } from "../../domain/repositories/user-permission-repository";
 import type { PermissionAuditLogRepository } from "../../domain/repositories/permission-audit-log-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
+import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
+import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
+import type { UserPermissionRepository } from "../../domain/repositories/user-permission-repository";
 
 const bulkAssignPermissionsInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -159,7 +159,7 @@ export class BulkAssignPermissionsUseCase {
     orgId: string,
   ): Promise<void> {
     switch (entityType) {
-      case "department":
+      case "department": {
         if (!this.deps.departmentRepository) {
           throw new Error("DepartmentRepository não disponível");
         }
@@ -168,7 +168,8 @@ export class BulkAssignPermissionsUseCase {
           throw new Error("Departamento não encontrado");
         }
         break;
-      case "sector":
+      }
+      case "sector": {
         if (!this.deps.sectorRepository) {
           throw new Error("SectorRepository não disponível");
         }
@@ -177,7 +178,8 @@ export class BulkAssignPermissionsUseCase {
           throw new Error("Setor não encontrado");
         }
         break;
-      case "position":
+      }
+      case "position": {
         if (!this.deps.positionRepository) {
           throw new Error("PositionRepository não disponível");
         }
@@ -186,6 +188,7 @@ export class BulkAssignPermissionsUseCase {
           throw new Error("Cargo não encontrado");
         }
         break;
+      }
       case "user":
         // Usuário será validado pela rota de usuário, não precisamos validar aqui
         break;
@@ -204,7 +207,7 @@ export class BulkAssignPermissionsUseCase {
     const agora = new Date();
 
     switch (entityType) {
-      case "department":
+      case "department": {
         if (!this.deps.departmentPermissionRepository) {
           throw new Error("DepartmentPermissionRepository não disponível");
         }
@@ -235,7 +238,8 @@ export class BulkAssignPermissionsUseCase {
           });
         }
         break;
-      case "sector":
+      }
+      case "sector": {
         if (!this.deps.sectorPermissionRepository) {
           throw new Error("SectorPermissionRepository não disponível");
         }
@@ -266,7 +270,8 @@ export class BulkAssignPermissionsUseCase {
           });
         }
         break;
-      case "position":
+      }
+      case "position": {
         if (!this.deps.positionPermissionRepository) {
           throw new Error("PositionPermissionRepository não disponível");
         }
@@ -297,7 +302,8 @@ export class BulkAssignPermissionsUseCase {
           });
         }
         break;
-      case "user":
+      }
+      case "user": {
         if (!this.deps.userPermissionRepository) {
           throw new Error("UserPermissionRepository não disponível");
         }
@@ -327,6 +333,7 @@ export class BulkAssignPermissionsUseCase {
           });
         }
         break;
+      }
     }
 
     // Registrar auditoria
@@ -358,7 +365,7 @@ export class BulkAssignPermissionsUseCase {
     const agora = new Date();
 
     switch (entityType) {
-      case "department":
+      case "department": {
         if (!this.deps.departmentPermissionRepository) {
           throw new Error("DepartmentPermissionRepository não disponível");
         }
@@ -376,7 +383,8 @@ export class BulkAssignPermissionsUseCase {
           );
         }
         break;
-      case "sector":
+      }
+      case "sector": {
         if (!this.deps.sectorPermissionRepository) {
           throw new Error("SectorPermissionRepository não disponível");
         }
@@ -394,7 +402,8 @@ export class BulkAssignPermissionsUseCase {
           );
         }
         break;
-      case "position":
+      }
+      case "position": {
         if (!this.deps.positionPermissionRepository) {
           throw new Error("PositionPermissionRepository não disponível");
         }
@@ -412,7 +421,8 @@ export class BulkAssignPermissionsUseCase {
           );
         }
         break;
-      case "user":
+      }
+      case "user": {
         if (!this.deps.userPermissionRepository) {
           throw new Error("UserPermissionRepository não disponível");
         }
@@ -429,6 +439,7 @@ export class BulkAssignPermissionsUseCase {
           );
         }
         break;
+      }
     }
 
     // Registrar auditoria
@@ -450,12 +461,3 @@ export class BulkAssignPermissionsUseCase {
     }
   }
 }
-
-
-
-
-
-
-
-
-

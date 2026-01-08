@@ -1,24 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { PageShell } from "@/components/layout/PageShell";
-import { GlassCard } from "@morina/ui";
 import { FuturisticAreaChart } from "@/components/charts/FuturisticAreaChart";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { DateRangePreset } from "@/components/dashboard/DateRangePicker";
+import { PageShell } from "@/components/layout/PageShell";
 import { useDashboardData } from "@/hooks/use-dashboard-data";
 import { getCurrentOrgId } from "@/lib/auth-client";
+import { GlassCard } from "@morina/ui";
+import { motion } from "framer-motion";
 import {
     DollarSign,
-    Users,
     Package,
     ShoppingCart,
-    TrendingUp,
     TrendingDown,
-    ArrowUpRight
+    TrendingUp,
+    Users
 } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useState } from "react";
 
 // Squared Stat Card for Pilot
 // We keep the visual flair but enforce squared corners
@@ -128,7 +127,7 @@ export default function DashboardPilot() {
                         trend="up"
                         icon={Users}
                         color="from-blue-500 to-cyan-500"
-                        href="/clients"
+                        href="/admin/clients/list"
                     />
                     <PilotStatCard
                         title="Produtos"
@@ -137,7 +136,7 @@ export default function DashboardPilot() {
                         trend="up"
                         icon={Package}
                         color="from-purple-500 to-pink-500"
-                        href="/catalog"
+                        href="/admin/products/list"
                     />
                     <PilotStatCard
                         title="Pedidos"

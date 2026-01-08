@@ -7,10 +7,7 @@ type Dependencies = {
   notificationRepository: NotificationRepository;
 };
 
-export async function registerDeleteNotificationRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerDeleteNotificationRoute(app: FastifyInstance, deps: Dependencies) {
   app.delete("/notifications/:id", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -51,6 +48,3 @@ export async function registerDeleteNotificationRoute(
     return reply.status(204).send();
   });
 }
-
-
-

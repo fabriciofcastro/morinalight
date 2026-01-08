@@ -1,5 +1,5 @@
-import { randomUUID } from "crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import { randomUUID } from "crypto";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { aprovarDiretoriaPreFichaTecnicaSchema } from "../schemas/pre-ficha-tecnica.schema";
 
@@ -25,11 +25,7 @@ export class AprovarDiretoriaPreFichaTecnicaUseCase {
       throw new Error("Pré-ficha técnica não encontrada");
     }
 
-    preFicha.aprovarDiretoria(
-      input.aprovadorId,
-      input.aprovadorNome,
-      this.deps.actorId,
-    );
+    preFicha.aprovarDiretoria(input.aprovadorId, input.aprovadorNome, this.deps.actorId);
 
     await this.deps.preFichaTecnicaRepository.salvar(preFicha);
 
@@ -58,15 +54,3 @@ export class AprovarDiretoriaPreFichaTecnicaUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

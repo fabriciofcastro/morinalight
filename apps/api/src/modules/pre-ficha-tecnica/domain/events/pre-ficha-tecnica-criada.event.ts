@@ -11,15 +11,3 @@ export class PreFichaTecnicaCriada {
     public readonly timestamp: Date = new Date(),
   ) {}
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -97,3 +97,4 @@ export const [module]Api = {
 ---
 
 **Última atualização:** 2025-01-19
+

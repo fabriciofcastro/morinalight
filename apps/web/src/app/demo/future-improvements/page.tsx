@@ -2,17 +2,17 @@
 
 import React, { useState } from "react"
 import { DateRange } from "react-day-picker"
-import { DateRangePicker } from "@/components/ui/date-range-picker"
+import { DateRangePicker } from "@/shared/ui/base/date-range-picker"
 import {
     AdvancedFilter,
     FilterField,
     FilterValue,
-} from "@/components/ui/advanced-filter"
-import { ThemeCustomizer } from "@/components/ui/theme-customizer"
+} from "@/shared/ui/base/advanced-filter"
+import { ThemeCustomizer } from "@/shared/ui/base/theme-customizer"
 import { FuturisticFunnelChart } from "@/components/charts/FuturisticFunnelChart"
 import { FuturisticTreemap } from "@/components/charts/FuturisticTreemap"
-import { Card } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card } from "@/shared/ui/base/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/base/tabs"
 
 // Mock data for charts
 const funnelData = [

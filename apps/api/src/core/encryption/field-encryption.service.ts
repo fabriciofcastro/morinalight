@@ -114,12 +114,15 @@ export function isEncrypted(value: string): boolean {
     return false;
   }
   const parts = value.split(":");
-  return parts.length === 3 && parts.every((part) => {
-    try {
-      Buffer.from(part, "base64");
-      return true;
-    } catch {
-      return false;
-    }
-  });
+  return (
+    parts.length === 3 &&
+    parts.every((part) => {
+      try {
+        Buffer.from(part, "base64");
+        return true;
+      } catch {
+        return false;
+      }
+    })
+  );
 }

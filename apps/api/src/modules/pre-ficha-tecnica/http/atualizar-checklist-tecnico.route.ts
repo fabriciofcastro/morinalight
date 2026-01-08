@@ -1,9 +1,9 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
-import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { AtualizarChecklistTecnicoUseCase } from "../application/use-cases/atualizar-checklist-tecnico.use-case";
+import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -79,15 +79,3 @@ export async function registerAtualizarChecklistTecnicoRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

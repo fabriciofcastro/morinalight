@@ -42,4 +42,3 @@ export async function registerHealthRoute(app: FastifyInstance, deps: HealthRout
     });
   });
 }
-

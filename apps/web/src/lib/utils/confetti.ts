@@ -48,7 +48,7 @@ export function triggerConfetti() {
       y: canvas.height / 2,
       vx: (Math.random() - 0.5) * 10,
       vy: (Math.random() - 0.5) * 10 - 2,
-      color: colors[Math.floor(Math.random() * colors.length)],
+      color: colors[Math.floor(Math.random() * colors.length)] ?? '#FFD700',
       size: Math.random() * 6 + 3,
       rotation: Math.random() * Math.PI * 2,
       rotationSpeed: (Math.random() - 0.5) * 0.2,
@@ -99,6 +99,7 @@ export function triggerConfetti() {
 
   animate();
 }
+
 
 
 

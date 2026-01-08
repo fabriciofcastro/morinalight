@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle2, FileText, Target, Calendar, Shield, FileCheck, AlertCircle, Check, Download } from 'lucide-react';
 import { Certification } from './types';
-import { notificationCenter } from '@/components/notifications/notification-center';
+import { notificationCenter } from '@/shared/ui/notification-center';
 
 interface CertificationModalProps {
     certification: Certification | null;

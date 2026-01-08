@@ -30,7 +30,11 @@ export async function registerDeleteStatusCustomizadoRoute(
         const id = request.params.id;
         const actorId = request.auth.userId;
 
-        const useCase = new DeletarStatusCustomizadoUseCase(deps.statusCustomizadoRepository, orgId, actorId);
+        const useCase = new DeletarStatusCustomizadoUseCase(
+          deps.statusCustomizadoRepository,
+          orgId,
+          actorId,
+        );
         await useCase.execute(id);
 
         return reply.status(204).send();
@@ -46,5 +50,3 @@ export async function registerDeleteStatusCustomizadoRoute(
     },
   );
 }
-
-

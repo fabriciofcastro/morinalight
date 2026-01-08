@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { getPrisma } from "../../../infra/database/prisma.service";
 import type { UserRepository } from "../repositories/user.repository";
 
 const prisma = getPrisma();
@@ -10,10 +10,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerGet2FAQRCodeRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerGet2FAQRCodeRoute(app: FastifyInstance, deps: Dependencies) {
   app.get("/users/:userId/2fa/qr-code", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -73,15 +70,3 @@ export async function registerGet2FAQRCodeRoute(
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

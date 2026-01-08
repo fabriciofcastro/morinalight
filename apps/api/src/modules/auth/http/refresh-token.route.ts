@@ -1,16 +1,13 @@
 /**
  * Refresh Token Route
- * Implementa rotação de refresh tokens
+ * Implementa rotação de refresh tokens com detecção de reuso
  */
 
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { randomBytes } from "node:crypto";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { z } from "zod";
-import { getPrisma } from "../../../infra/database/prisma.service";
-import { requireAuth } from "../../../core/auth/jwt.middleware";
 import { signToken } from "../../../core/auth/jwt-rs256.service";
-import { addToBlacklist } from "../../../core/auth/token-blacklist.service";
+import { getPrisma } from "../../../infra/database/prisma.service";
 
 const prisma = getPrisma();
 
@@ -51,21 +48,41 @@ export async function registerRefreshTokenRoute(app: FastifyInstance) {
         });
       }
 
-      // Verificar se token foi revogado
+      // 🛡️ REUSE DETECTION: Se tentar usar um token já revogado,
+      // pode ser um ataque de repetição (token roubado).
+      // AÇÃO: Revogar TODAS as sessões do usuário por segurança.
       if (refreshTokenRecord.revoked) {
+        console.warn(
+          `⚠️ [SECURITY] Refresh Token REUSE detectado para usuário ${refreshTokenRecord.userId}. Revogando tudo.`,
+        );
+
+        await prisma.refreshToken.updateMany({
+          where: { userId: refreshTokenRecord.userId },
+          data: {
+            revoked: true,
+            revokedAt: new Date(),
+          },
+        });
+
+        // Revogar também as sessões web baseadas em Prisma
+        await prisma.userSession.updateMany({
+          where: { userId: refreshTokenRecord.userId },
+          data: {
+            isActive: false,
+            revokedAt: new Date(),
+            revokedBy: "reuse_detection_emergency",
+          },
+        });
+
         return reply.status(401).send({
-          message: "Refresh token revogado",
-          code: "REVOKED_REFRESH_TOKEN",
+          message: "Brecha de segurança detectada. Por favor, faça login novamente.",
+          code: "SECURITY_BREACH_REUSE",
         });
       }
 
       // Verificar se token expirou
       if (refreshTokenRecord.expiresAt && refreshTokenRecord.expiresAt < new Date()) {
-        // Deletar token expirado
-        await prisma.refreshToken.delete({
-          where: { id: refreshTokenRecord.id },
-        });
-
+        await prisma.refreshToken.delete({ where: { id: refreshTokenRecord.id } });
         return reply.status(401).send({
           message: "Refresh token expirado",
           code: "EXPIRED_REFRESH_TOKEN",
@@ -95,27 +112,24 @@ export async function registerRefreshTokenRoute(app: FastifyInstance) {
 
       const defaultOrgId = organizations[0]?.organizationId ?? null;
 
-      // Gerar novo access token
+      // Gerar novo access token (RS256)
       const accessToken = signToken(
         {
           sub: refreshTokenRecord.userId,
           email: refreshTokenRecord.user.email,
           defaultOrgId,
         },
-        "15m", // Access token expira em 15 minutos
+        "15m",
       );
 
-      // Rotação de refresh token (opcional - pode manter o mesmo)
-      // Por segurança, vamos gerar um novo e revogar o antigo
+      // 🔄 ROTAÇÃO: Gerar novo e vincular ao antigo
       const newRefreshToken = generateRefreshToken();
       const newTokenHash = hashRefreshToken(newRefreshToken);
-
-      // Calcular nova expiração (30 dias)
       const newExpiresAt = new Date();
       newExpiresAt.setDate(newExpiresAt.getDate() + 30);
 
-      // Criar novo refresh token
-      await prisma.refreshToken.create({
+      // Criar novo vinculando ao antigo
+      const newRecord = await prisma.refreshToken.create({
         data: {
           userId: refreshTokenRecord.userId,
           token: newTokenHash,
@@ -123,18 +137,19 @@ export async function registerRefreshTokenRoute(app: FastifyInstance) {
         },
       });
 
-      // Revogar token antigo
+      // Revogar token antigo vinculando ao novo
       await prisma.refreshToken.update({
         where: { id: refreshTokenRecord.id },
-        data: { revoked: true },
+        data: {
+          revoked: true,
+          revokedAt: new Date(),
+          replacedBy: newRecord.id,
+        },
       });
-
-      // Se o access token antigo tinha jti, adicionar à blacklist
-      // (não temos jti do access token antigo aqui, mas podemos melhorar isso)
 
       return reply.send({
         token: accessToken,
-        refreshToken: newRefreshToken, // Retornar apenas uma vez
+        refreshToken: newRefreshToken,
         user: {
           userId: refreshTokenRecord.userId,
           email: refreshTokenRecord.user.email,
@@ -146,7 +161,7 @@ export async function registerRefreshTokenRoute(app: FastifyInstance) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
           message: "Dados inválidos",
-          errors: error.errors,
+          errors: error.issues, // ✅ Use issues instead of errors for better type compatibility
         });
       }
 
@@ -157,4 +172,3 @@ export async function registerRefreshTokenRoute(app: FastifyInstance) {
     }
   });
 }
-

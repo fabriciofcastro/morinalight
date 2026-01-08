@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { config as loadEnv } from "dotenv";
-import { resolve, dirname } from "path";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
 // Carregar variáveis de ambiente da raiz do projeto
@@ -106,16 +106,3 @@ async function testLogin() {
 }
 
 void testLogin();
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -21,9 +21,7 @@ export type CreateSupplierContactInput = {
   notes?: string | null;
 };
 
-export type UpdateSupplierContactInput = Partial<
-  Omit<CreateSupplierContactInput, "supplierId">
->;
+export type UpdateSupplierContactInput = Partial<Omit<CreateSupplierContactInput, "supplierId">>;
 
 export interface SupplierContactRepository {
   create(input: CreateSupplierContactInput): Promise<SupplierContactRecord>;
@@ -34,12 +32,3 @@ export interface SupplierContactRepository {
   setPrincipal(supplierId: string, contactId: string): Promise<void>;
   getPrincipal(supplierId: string): Promise<SupplierContactRecord | null>;
 }
-
-
-
-
-
-
-
-
-

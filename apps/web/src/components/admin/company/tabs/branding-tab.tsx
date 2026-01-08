@@ -3,7 +3,7 @@
 import { Palette } from "lucide-react";
 import { SectionShell } from "../shared/section-shell";
 import { AdvancedLogoUpload } from "../AdvancedLogoUpload";
-import { FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 
 interface BrandingTabProps {
     formData: any;

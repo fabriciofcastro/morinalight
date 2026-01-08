@@ -49,7 +49,10 @@ export function parseExcel(buffer: Buffer, sheetIndex = 0): ParseResult {
 
     // First row is headers
     const headers = (jsonData[0] as unknown as string[]).map((h) =>
-      String(h || "").trim().toLowerCase().replace(/\s+/g, "_")
+      String(h || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "_"),
     );
 
     // Convert rows to objects
@@ -70,7 +73,9 @@ export function parseExcel(buffer: Buffer, sheetIndex = 0): ParseResult {
       return Object.values(row).some((val) => val !== undefined && val !== "" && val !== null);
     });
   } catch (error) {
-    errors.push(`Erro ao processar arquivo Excel: ${error instanceof Error ? error.message : "Erro desconhecido"}`);
+    errors.push(
+      `Erro ao processar arquivo Excel: ${error instanceof Error ? error.message : "Erro desconhecido"}`,
+    );
   }
 
   return { data, sheetNames, errors };
@@ -117,12 +122,3 @@ export function detectColumnMapping(headers: string[]): Record<string, string> {
 
   return mapping;
 }
-
-
-
-
-
-
-
-
-

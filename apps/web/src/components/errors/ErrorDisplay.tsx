@@ -6,20 +6,19 @@
 
 "use client";
 
-import React from "react";
-import {
-  AlertCircle,
-  AlertTriangle,
-  Info,
-  XCircle,
-  RefreshCw,
-  ArrowLeft,
-  CheckCircle,
-} from "lucide-react";
-import { Button, GlassCard } from "@morina/ui";
-import { parseError, type AppError } from "@/lib/errors";
+import { parseError } from "@/lib/errors";
 import { getUserFriendlyMessage } from "@/lib/errors/user-messages";
 import { cn } from "@/lib/utils";
+import { Button } from "@morina/ui";
+import {
+    AlertCircle,
+    AlertTriangle,
+    ArrowLeft,
+    CheckCircle,
+    Info,
+    RefreshCw,
+    XCircle,
+} from "lucide-react";
 
 interface ErrorDisplayProps {
   error: unknown;
@@ -56,41 +55,61 @@ export function ErrorDisplay({
 
   // Cores baseadas na severidade
   const colorMap = {
-    critical: "text-red-400 border-red-500/20 bg-red-500/10",
-    error: "text-red-400 border-red-500/20 bg-red-500/10",
-    warning: "text-yellow-400 border-yellow-500/20 bg-yellow-500/10",
-    info: "text-blue-400 border-blue-500/20 bg-blue-500/10",
+    critical: {
+      text: "text-red-400",
+      border: "border-red-500/20",
+      bg: "bg-red-500/10",
+      glow: "shadow-[0_0_20px_rgba(239,68,68,0.1)]",
+      accent: "border-red-500/60"
+    },
+    error: {
+      text: "text-red-400",
+      border: "border-red-500/20",
+      bg: "bg-red-500/10",
+      glow: "shadow-[0_0_20px_rgba(239,68,68,0.1)]",
+      accent: "border-red-500/60"
+    },
+    warning: {
+      text: "text-amber-400",
+      border: "border-amber-500/20",
+      bg: "bg-amber-500/10",
+      glow: "shadow-[0_0_20px_rgba(245,158,11,0.1)]",
+      accent: "border-amber-500/60"
+    },
+    info: {
+      text: "text-[#2957ff]",
+      border: "border-[#2957ff]/20",
+      bg: "bg-[#2957ff]/10",
+      glow: "shadow-[0_0_20px_rgba(41,87,255,0.1)]",
+      accent: "border-[#2957ff]/60"
+    },
   };
 
-  const colors = colorMap[friendly.severity] || colorMap.error;
+  const theme = colorMap[friendly.severity] || colorMap.error;
 
   // Renderizar inline
   if (variant === "inline") {
     return (
-      <div className={cn("flex items-start gap-3 rounded-lg border p-4", colors, className)}>
-        <Icon className="mt-0.5 h-5 w-5 shrink-0" />
+      <div className={cn("relative flex items-start gap-4 p-4 border overflow-hidden", theme.border, theme.bg, theme.glow, className)}>
+        {/* HUD Corner Mini Brackets */}
+        <div className={cn("absolute top-0 left-0 w-2 h-2 border-t border-l", theme.accent)} />
+        <div className={cn("absolute bottom-0 right-0 w-2 h-2 border-b border-r", theme.accent)} />
+        
+        <Icon className={cn("mt-1 h-5 w-5 shrink-0", theme.text)} />
         <div className="flex-1">
-          <h4 className="mb-1 font-semibold text-white">{friendly.title}</h4>
-          <p className="text-sm text-white/80 whitespace-pre-line">{friendly.message}</p>
-          {appError.fields && appError.fields.length > 0 && (
-            <ul className="mt-2 list-disc list-inside text-sm text-white/70">
-              {appError.fields.map((field, index) => (
-                <li key={index}>
-                  <strong>{field.field}:</strong> {field.message}
-                </li>
-              ))}
-            </ul>
-          )}
-          <div className="mt-3 flex gap-2">
+          <h4 className="font-mono text-xs uppercase tracking-widest text-white mb-1">{friendly.title}</h4>
+          <p className="text-sm text-white/60 whitespace-pre-line leading-relaxed">{friendly.message}</p>
+          
+          <div className="mt-4 flex gap-3">
             {onRetry && (
               <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
                 onClick={onRetry}
-                className="h-8"
+                className="h-8 font-mono text-[10px] uppercase tracking-widest bg-white/5 border border-white/5 hover:bg-white/10"
               >
                 <RefreshCw className="mr-2 h-3 w-3" />
-                Tentar Novamente
+                Retry_Sequence
               </Button>
             )}
             {onGoBack && (
@@ -98,10 +117,10 @@ export function ErrorDisplay({
                 size="sm"
                 variant="ghost"
                 onClick={onGoBack}
-                className="h-8"
+                className="h-8 font-mono text-[10px] uppercase tracking-widest opacity-60 hover:opacity-100"
               >
                 <ArrowLeft className="mr-2 h-3 w-3" />
-                Voltar
+                Back
               </Button>
             )}
           </div>
@@ -110,145 +129,122 @@ export function ErrorDisplay({
     );
   }
 
-  // Renderizar card
-  if (variant === "card") {
-    return (
-      <GlassCard className={cn("p-6", className)}>
-        <div className="mb-4 flex justify-center">
-          <div className={cn("flex h-16 w-16 items-center justify-center rounded-full border-2", colors)}>
-            <Icon className="h-8 w-8" />
-          </div>
-        </div>
-
-        <h2 className="mb-2 text-center text-xl font-bold text-white">
-          {friendly.title}
-        </h2>
-
-        <p className="mb-6 text-center text-white/70 whitespace-pre-line">
-          {friendly.message}
-        </p>
-
-        {appError.fields && appError.fields.length > 0 && (
-          <div className="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-            <h3 className="mb-2 text-sm font-semibold text-white">
-              Detalhes da Validação:
-            </h3>
-            <ul className="space-y-1 text-sm text-white/70">
-              {appError.fields.map((field, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-                  <span>
-                    <strong className="text-white">{field.field}:</strong> {field.message}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {showDetails && process.env.NODE_ENV === "development" && (
-          <details className="mb-6 rounded-lg border border-white/10 bg-black/20 p-4">
-            <summary className="cursor-pointer text-sm font-semibold text-white/70">
-              Detalhes Técnicos (Desenvolvimento)
-            </summary>
-            <div className="mt-2 space-y-2 text-xs text-white/60">
-              <div>
-                <strong>Código:</strong> {appError.code}
-              </div>
-              <div>
-                <strong>Status:</strong> {appError.statusCode}
-              </div>
-              <div>
-                <strong>Categoria:</strong> {appError.category}
-              </div>
-              {appError.correlationId && (
-                <div>
-                  <strong>Correlation ID:</strong> {appError.correlationId}
-                </div>
-              )}
-              {appError.traceId && (
-                <div>
-                  <strong>Trace ID:</strong> {appError.traceId}
-                </div>
-              )}
-              {appError.stack && (
-                <pre className="mt-2 max-h-40 overflow-auto rounded bg-black/40 p-2">
-                  {appError.stack}
-                </pre>
-              )}
-            </div>
-          </details>
-        )}
-
-        <div className="flex justify-center gap-3">
-          {onRetry && (
-            <Button onClick={onRetry} variant="default" className="min-w-[140px]">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              {friendly.action || "Tentar Novamente"}
-            </Button>
-          )}
-          {onGoBack && (
-            <Button onClick={onGoBack} variant="outline" className="min-w-[140px]">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          )}
-        </div>
-      </GlassCard>
-    );
-  }
-
-  // Renderizar fullscreen
+  // Renderizar card / fullscreen base styling
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <GlassCard className={cn("max-w-2xl p-8", className)}>
-        <div className="mb-6 flex justify-center">
-          <div className={cn("flex h-20 w-20 items-center justify-center rounded-full border-2", colors)}>
-            <Icon className="h-10 w-10" />
-          </div>
+    <div className={cn(
+        variant === "fullscreen" ? "flex min-h-[60vh] items-center justify-center p-4 bg-black/5" : "w-full"
+    )}>
+      <div className={cn(
+        "relative w-full overflow-hidden bg-[#0a0f1d]/90 border py-10 px-8 transition-all duration-500",
+        variant === "fullscreen" ? "max-w-2xl" : "max-w-md",
+        theme.border,
+        theme.glow,
+        className
+      )}>
+        {/* HUD Background Decorations */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:2rem_2rem]" />
+            <div className={cn("absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-current to-transparent animate-scan z-10", theme.text)} />
+            
+            {/* 90° Corner Brackets */}
+            <div className={cn("absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2", theme.accent)} />
+            <div className={cn("absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2", theme.accent)} />
+            <div className={cn("absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2", theme.accent)} />
+            <div className={cn("absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2", theme.accent)} />
         </div>
 
-        <h1 className="mb-4 text-center text-2xl font-bold text-white">
-          {friendly.title}
-        </h1>
+        <div className="relative flex flex-col items-center text-center">
+            {/* Icon HUD */}
+            <div className="mb-6">
+                <div className={cn("flex h-16 w-16 items-center justify-center rounded-full border-2 bg-white/[0.03] shadow-inner", theme.border)}>
+                    <Icon className={cn("h-8 w-8", theme.text)} />
+                </div>
+            </div>
 
-        <p className="mb-6 text-center text-white/70 whitespace-pre-line">
-          {friendly.message}
-        </p>
+            <h2 className={cn("mb-2 text-xl font-bold text-white uppercase tracking-tight", variant === "fullscreen" && "text-2xl")}>
+                {friendly.title}
+            </h2>
 
-        {appError.fields && appError.fields.length > 0 && (
-          <div className="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-white">
-              Campos com Erro:
-            </h3>
-            <ul className="space-y-2 text-sm text-white/70">
-              {appError.fields.map((field, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-                  <span>
-                    <strong className="text-white">{field.field}:</strong> {field.message}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+            <div className="flex items-center justify-center gap-2 mb-6">
+                <div className={cn("h-px w-6", theme.bg)} />
+                <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.3em]">System_Log::Alert</span>
+                <div className={cn("h-px w-6", theme.bg)} />
+            </div>
 
-        <div className="flex justify-center gap-4">
-          {onRetry && (
-            <Button onClick={onRetry} variant="default" className="min-w-[140px]">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              {friendly.action || "Tentar Novamente"}
-            </Button>
-          )}
-          {onGoBack && (
-            <Button onClick={onGoBack} variant="outline" className="min-w-[140px]">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Voltar
-            </Button>
-          )}
+            <p className="mb-8 text-sm text-white/50 leading-relaxed max-w-sm">
+                {friendly.message}
+            </p>
+
+            {appError.fields && appError.fields.length > 0 && (
+                <div className="mb-8 w-full border border-white/10 bg-white/[0.02] p-4 text-left">
+                    <h3 className="mb-3 font-mono text-[10px] uppercase tracking-widest text-white/40 border-b border-white/10 pb-2">
+                        Validation_Details
+                    </h3>
+                    <ul className="space-y-2">
+                        {appError.fields.map((field, index) => (
+                            <li key={index} className="flex items-start gap-2 text-xs">
+                                <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400" />
+                                <span>
+                                    <strong className="text-white/80">{field.field}:</strong> 
+                                    <span className="ml-1 text-white/50">{field.message}</span>
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {showDetails && process.env.NODE_ENV === "development" && (
+                <div className="mb-8 w-full">
+                    <details className="group border border-white/5 bg-black/20">
+                        <summary className="cursor-pointer p-3 font-mono text-[9px] uppercase tracking-widest text-white/30 hover:text-white/50 transition-colors">
+                            Technical_Decomposition
+                        </summary>
+                        <div className="p-4 pt-0 space-y-2 font-mono text-[10px] text-white/40">
+                            <div className="flex justify-between border-b border-white/5 pb-1">
+                                <span>Code::</span>
+                                <span className="text-red-400">{appError.code}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-white/5 pb-1">
+                                <span>Status::</span>
+                                <span className="text-amber-500">{appError.statusCode}</span>
+                            </div>
+                            {appError.stack && (
+                                <pre className="mt-2 max-h-40 overflow-auto bg-black border border-white/5 p-2 text-[9px] lowercase opacity-50 custom-scrollbar text-left">
+                                    {appError.stack}
+                                </pre>
+                            )}
+                        </div>
+                    </details>
+                </div>
+            )}
+
+            <div className="flex w-full gap-4">
+                {onRetry && (
+                    <Button 
+                        onClick={onRetry} 
+                        className={cn(
+                            "flex-1 font-mono text-[11px] uppercase tracking-widest transition-all",
+                            friendly.severity === "info" ? "bg-[#2957ff] hover:bg-[#2957ff]/80" : "bg-red-600 hover:bg-red-500"
+                        )}
+                    >
+                        <RefreshCw className="mr-2 h-3.5 w-3.5" />
+                        {friendly.action || "Retry_Sequence"}
+                    </Button>
+                )}
+                {onGoBack && (
+                    <Button 
+                        onClick={onGoBack} 
+                        variant="ghost" 
+                        className="flex-1 font-mono text-[11px] uppercase tracking-widest text-white/40 hover:text-white hover:bg-white/5 border border-white/5"
+                    >
+                        <ArrowLeft className="mr-2 h-3.5 w-3.5" />
+                        Back
+                    </Button>
+                )}
+            </div>
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 }
@@ -288,6 +284,7 @@ export function SuccessDisplay({
     </div>
   );
 }
+
 
 
 

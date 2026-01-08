@@ -86,10 +86,7 @@ export const aprovarFichaCustoSchema = z.object({
 export const reprovarFichaCustoSchema = z.object({
   fichaCustoId: z.string().uuid(),
   reprovadorId: z.string().uuid(),
-  justificativa: z
-    .string()
-    .min(10, "Justificativa deve ter pelo menos 10 caracteres")
-    .max(5000),
+  justificativa: z.string().min(10, "Justificativa deve ter pelo menos 10 caracteres").max(5000),
 });
 
 /**
@@ -207,8 +204,6 @@ export type CriarFichaCustoInput = z.infer<typeof criarFichaCustoSchema>;
 export type AtualizarFichaCustoInput = z.infer<typeof atualizarFichaCustoSchema>;
 export type AprovarFichaCustoInput = z.infer<typeof aprovarFichaCustoSchema>;
 export type ReprovarFichaCustoInput = z.infer<typeof reprovarFichaCustoSchema>;
-export type EnviarConferenciaFichaCustoInput = z.infer<
-  typeof enviarConferenciaFichaCustoSchema
->;
+export type EnviarConferenciaFichaCustoInput = z.infer<typeof enviarConferenciaFichaCustoSchema>;
 export type CriarBoletoFichaCustoInput = z.infer<typeof criarBoletoFichaCustoSchema>;
 export type FichaCustoView = z.infer<typeof fichaCustoViewSchema>;

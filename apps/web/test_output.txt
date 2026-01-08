@@ -1,0 +1,29 @@
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /home/fabricio/projects/morinalight/apps/web
+
+stdout | src/application/use-cases/__tests__/create-user.use-case.spec.ts > CreateUserUseCase > should successfully create a user
+dto.email type: string
+dto.email value: test@morina.com
+Creating user entity with: {
+  id: '...',
+  name: 'Test User',
+  email: 'test@morina.com',
+  role: 'user'
+}
+
+stdout | src/application/use-cases/__tests__/create-user.use-case.spec.ts > CreateUserUseCase > should handle repository failures gracefully
+Creating user entity with: {
+  id: '...',
+  name: 'Test User',
+  email: 'test@morina.com',
+  role: 'user'
+}
+
+ ✓ src/application/use-cases/__tests__/create-user.use-case.spec.ts (7 tests) 26ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  18:45:41
+   Duration  1.90s (transform 336ms, setup 144ms, collect 436ms, tests 26ms, environment 343ms, prepare 147ms)
+

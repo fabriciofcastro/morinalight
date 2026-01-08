@@ -13,17 +13,3 @@ export type MemberInfo = {
     status: string;
   };
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

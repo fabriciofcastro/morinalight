@@ -1,10 +1,8 @@
 "use client";
 
-import { cn } from "@morina/ui";
-import { Plus, Users, Package, Building2, FileText } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { useAbility } from "@/lib/auth/CaslContext";
-import { parsePermissionKey } from "@/lib/auth/ability";
+import { Building2, FileText, Package, Users } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 interface SidebarQuickCreateProps {
     isExpanded?: boolean;
@@ -22,28 +20,28 @@ export function SidebarQuickCreate({ isExpanded = true }: SidebarQuickCreateProp
         const canCreateSupplier = ability.can('create', 'Supplier');
         const canCreateTechnicalSheet = ability.can('create', 'TechnicalSheet');
 
-        if ((pathname.includes("/clientes") || pathname.includes("/customers")) && canCreateClient)
+        if ((pathname.includes("/admin/clients") || pathname.includes("/customers")) && canCreateClient)
             return {
                 label: "Novo Cliente",
-                href: "/clientes/new",
+                href: "/admin/clients/new",
                 icon: Users,
             };
-        if ((pathname.includes("/products") || pathname.includes("/produtos")) && canCreateProduct)
+        if ((pathname.includes("/admin/products") || pathname.includes("/produtos")) && canCreateProduct)
             return {
                 label: "Novo Produto",
-                href: "/products/new",
+                href: "/admin/products/new",
                 icon: Package,
             };
-        if (pathname.includes("/fornecedores") && canCreateSupplier)
+        if (pathname.includes("/admin/suppliers") && canCreateSupplier)
             return {
                 label: "Novo Fornecedor",
-                href: "/fornecedores/new",
+                href: "/admin/suppliers/new",
                 icon: Building2,
             };
-        if (pathname.includes("/fichas-custo") && canCreateTechnicalSheet)
+        if (pathname.includes("/admin/cost-sheets") && canCreateTechnicalSheet)
             return {
                 label: "Nova Ficha",
-                href: "/fichas-custo/new",
+                href: "/admin/cost-sheets/new",
                 icon: FileText,
             };
         if (pathname.includes("/admin/users") && canCreateUser)

@@ -136,24 +136,24 @@ export class PrefichaNotificationService {
         .filter((id): id is string => id !== undefined)
         .map((destinatario) =>
           this.eventBus!.publish({
-          name: "Preficha.NotificacaoComentario",
-          version: "v1",
-          metadata: {
-            eventId: randomUUID(),
-            orgId,
-            actorId: autorId,
-            timestamp: new Date(),
-          },
-          payload: {
-            prefichaId,
-            produtoId,
-            destinatarioId: destinatario,
-            comentario,
-            tipo: "comentario_adicionado",
-            mensagem: "Novo comentário adicionado à preficha",
-          },
-        }),
-      ),
+            name: "Preficha.NotificacaoComentario",
+            version: "v1",
+            metadata: {
+              eventId: randomUUID(),
+              orgId,
+              actorId: autorId,
+              timestamp: new Date(),
+            },
+            payload: {
+              prefichaId,
+              produtoId,
+              destinatarioId: destinatario,
+              comentario,
+              tipo: "comentario_adicionado",
+              mensagem: "Novo comentário adicionado à preficha",
+            },
+          }),
+        ),
     );
   }
 }

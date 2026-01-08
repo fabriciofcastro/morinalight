@@ -1,18 +1,14 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-
 import { CriarFichaCustoUseCase } from "../application/use-cases/criar-ficha-custo.use-case";
 import type { FichaCustoRepository } from "../domain/repositories/ficha-custo.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;
   eventBus?: DomainEventBus;
 };
 
-export async function registerCreateFichaCustoRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerCreateFichaCustoRoute(app: FastifyInstance, deps: Dependencies) {
   app.post(
     "/organizations/:orgId/fichas-custo",
     async (request: FastifyRequest<{ Params: { orgId: string } }>, reply: FastifyReply) => {

@@ -28,4 +28,3 @@ export const policyCheckResultSchema = z.object({
 });
 
 export type PolicyCheckResult = z.infer<typeof policyCheckResultSchema>;
-

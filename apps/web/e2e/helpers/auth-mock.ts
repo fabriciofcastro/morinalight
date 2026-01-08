@@ -10,6 +10,8 @@ export interface MockPermissionOptions {
     }>;
     denied?: string[];
     context?: {
+        userId?: string;
+        organizationId?: string;
         departmentId?: string;
         sectorId?: string;
         positionId?: string;

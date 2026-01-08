@@ -2,19 +2,19 @@ import { randomUUID } from "node:crypto";
 
 import type { DomainEventBus } from "@morina/shared-kernel";
 
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import { siemExporter } from "../../../../lib/siem/siem-exporter";
 import type {
   OrganizationAuditLogFilter,
   OrganizationAuditLogPage,
   OrganizationAuditLogRepository,
 } from "../../repositories/organization-audit-log.repository";
-import { siemExporter } from "../../../../lib/siem/siem-exporter";
 
 const prisma = getPrisma();
 
 export class PrismaOrganizationAuditLogRepository implements OrganizationAuditLogRepository {
-  constructor(private readonly options: { eventBus?: DomainEventBus } = {}) { }
+  constructor(private readonly options: { eventBus?: DomainEventBus } = {}) {}
 
   async registrar(entry: {
     orgId: string;
@@ -157,15 +157,19 @@ export class PrismaOrganizationAuditLogRepository implements OrganizationAuditLo
     };
   }
 
-  private mapActionToSeverity(action: string): 'low' | 'medium' | 'high' | 'critical' {
-    const criticalActions = ['auth.login_failure_critical', 'security.ids_block', 'lgpd.data_deletion'];
-    const highActions = ['auth.password_change', 'auth.mfa_disabled', 'permission.update'];
-    const mediumActions = ['organization.update', 'branch.delete', 'user.invite'];
+  private mapActionToSeverity(action: string): "low" | "medium" | "high" | "critical" {
+    const criticalActions = [
+      "auth.login_failure_critical",
+      "security.ids_block",
+      "lgpd.data_deletion",
+    ];
+    const highActions = ["auth.password_change", "auth.mfa_disabled", "permission.update"];
+    const mediumActions = ["organization.update", "branch.delete", "user.invite"];
 
-    if (criticalActions.some(a => action.includes(a))) return 'critical';
-    if (highActions.some(a => action.includes(a))) return 'high';
-    if (mediumActions.some(a => action.includes(a))) return 'medium';
-    return 'low';
+    if (criticalActions.some((a) => action.includes(a))) return "critical";
+    if (highActions.some((a) => action.includes(a))) return "high";
+    if (mediumActions.some((a) => action.includes(a))) return "medium";
+    return "low";
   }
 
   private async publishRealtime(record: {

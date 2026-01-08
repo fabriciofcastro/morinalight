@@ -52,8 +52,3 @@ export interface AuditoriaSupplierRepository {
   ): Promise<AuditoriaSupplierPage>;
   findByOrgId(orgId: string, filtro?: AuditoriaSupplierFilter): Promise<AuditoriaSupplierPage>;
 }
-
-
-
-
-

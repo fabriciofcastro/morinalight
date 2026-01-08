@@ -2,6 +2,7 @@
  * Application Ports - Barrel Export
  */
 
+export * from './auth-service.port';
 export * from './event-bus.port';
 export * from './logger.port';
 export * from './order-repository.port';

@@ -233,7 +233,11 @@ export class DataPortabilityService {
             const reader = new FileReader();
             reader.onloadend = () => {
                 const base64 = (reader.result as string).split(",")[1];
-                resolve(base64);
+                if (base64) {
+                    resolve(base64);
+                } else {
+                    reject(new Error("Failed to extract base64 data from file"));
+                }
             };
             reader.onerror = reject;
             reader.readAsDataURL(blob);

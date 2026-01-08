@@ -1,27 +1,27 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcryptjs";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { BCRYPT_ROUNDS, passwordSchema } from "../../../core/config/password-config";
 import type { UserRepository } from "../repositories/user.repository";
 
-const changePasswordSchema = z.object({
-  currentPassword: z.string().optional(),
-  newPassword: z.string().min(8, "Nova senha deve ter pelo menos 8 caracteres"),
-  confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
-  mustChangePassword: z.boolean().optional(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "As senhas não coincidem",
-  path: ["confirmPassword"],
-});
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().optional(),
+    newPassword: passwordSchema, // ✅ Usar schema robusto
+    confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
+    mustChangePassword: z.boolean().optional(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+  });
 
 type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerChangeUserPasswordRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerChangeUserPasswordRoute(app: FastifyInstance, deps: Dependencies) {
   app.post(
     "/users/:userId/change-password",
     async (request: FastifyRequest, reply: FastifyReply) => {
@@ -52,7 +52,7 @@ export async function registerChangeUserPasswordRoute(
         if (!body.currentPassword) {
           return reply.status(400).send({
             message: "Senha atual é obrigatória",
-            code: "CURRENT_PASSWORD_REQUIRED"
+            code: "CURRENT_PASSWORD_REQUIRED",
           });
         }
 
@@ -72,7 +72,7 @@ export async function registerChangeUserPasswordRoute(
       }
 
       // Atualizar senha
-      const newPasswordHash = await bcrypt.hash(body.newPassword, 10);
+      const newPasswordHash = await bcrypt.hash(body.newPassword, BCRYPT_ROUNDS); // ✅ Usar 12 rounds
 
       if (!deps.userRepository.update) {
         return reply.status(500).send({

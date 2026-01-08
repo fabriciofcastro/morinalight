@@ -4,9 +4,9 @@
  * Sistema completo de autenticação de dois fatores com TOTP
  */
 
+import crypto from "crypto";
 import { authenticator } from "otplib";
 import QRCode from "qrcode";
-import crypto from "crypto";
 
 const APP_NAME = "MorinaLight";
 
@@ -320,7 +320,7 @@ export class MFAService {
         }
 
         for (let i = 0; i < backupCodes.length; i++) {
-            const isValid = await verifyBackupCode(token, backupCodes[i]);
+            const isValid = await verifyBackupCode(token, backupCodes[i]!);
 
             if (isValid) {
                 // Remove used backup code

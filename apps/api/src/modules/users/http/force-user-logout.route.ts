@@ -7,10 +7,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerForceUserLogoutRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerForceUserLogoutRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/users/:userId/force-logout", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;

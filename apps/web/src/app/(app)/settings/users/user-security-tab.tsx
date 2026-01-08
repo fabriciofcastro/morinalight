@@ -14,10 +14,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/shared/ui/base/button";
+import { Badge } from "@/shared/ui/base/badge";
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 type UserSecurityTabProps = {
     userId: string;

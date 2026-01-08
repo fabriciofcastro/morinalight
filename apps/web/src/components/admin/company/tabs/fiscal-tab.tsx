@@ -1,7 +1,7 @@
 "use client";
 
 import { CreditCard, HelpCircle, FileText, Percent, Info } from "lucide-react";
-import { FuturisticSelect, FuturisticInput } from "@/components/ui/futuristic-ui";
+import { FuturisticSelect, FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
 import { SectionShell } from "../shared/section-shell";
 

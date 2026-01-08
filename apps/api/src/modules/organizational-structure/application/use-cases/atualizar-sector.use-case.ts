@@ -1,10 +1,14 @@
 import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
+import type { Sector } from "../../domain/entities/sector";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
+import {
+  calculateHierarchyDepth,
+  hasHierarchyLoop,
+  wouldExceedMaxDepth,
+} from "../../domain/utils/hierarchy-validator";
 import { atualizarSectorInputSchema, sectorViewSchema } from "../schemas/sector.schema";
-import { hasHierarchyLoop, wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
-import type { Sector } from "../../domain/entities/sector";
 
 type Dependencies = {
   sectorRepository: SectorRepository;
@@ -63,17 +67,16 @@ export class AtualizarSectorUseCase {
         );
 
         if (hasLoop) {
-          throw new Error("Não é possível criar hierarquia circular. O setor pai é descendente deste setor.");
+          throw new Error(
+            "Não é possível criar hierarquia circular. O setor pai é descendente deste setor.",
+          );
         }
 
         // Verificar profundidade máxima
-        const currentDepth = await calculateHierarchyDepth(
-          sector.sectorId,
-          async (id: string) => {
-            const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
-            return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
-          },
-        );
+        const currentDepth = await calculateHierarchyDepth(sector.sectorId, async (id: string) => {
+          const sect = await this.deps.sectorRepository.encontrarPorId(input.orgId, id);
+          return sect ? ({ id: sect.sectorId, parentId: sect.dados.parentId } as Sector) : null;
+        });
 
         const wouldExceed = await wouldExceedMaxDepth(
           currentDepth,

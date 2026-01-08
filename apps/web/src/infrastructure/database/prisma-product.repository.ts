@@ -1,3 +1,7 @@
+import { IProductRepository } from '@/application/ports/product-repository.port';
+import { ProductEntity, ProductStatus } from '@/domain/entities';
+import { None, Option, Some } from '@/shared/kernel/types';
+import { PrismaClient } from '@prisma/client';
 import { BasePrismaRepository } from './base-prisma.repository';
 
 /**
@@ -126,7 +130,7 @@ export class PrismaProductRepository extends BasePrismaRepository implements IPr
       orderBy: { createdAt: 'desc' },
     });
 
-    return products.map((p) => this.toDomain(p));
+    return products.map((p: any) => this.toDomain(p));
   }
 
   async findByCategory(categoryId: string): Promise<ProductEntity[]> {
@@ -135,7 +139,7 @@ export class PrismaProductRepository extends BasePrismaRepository implements IPr
       include: { variants: true },
     });
 
-    return products.map((p) => this.toDomain(p));
+    return products.map((p: any) => this.toDomain(p));
   }
 
   async findLowStock(): Promise<ProductEntity[]> {

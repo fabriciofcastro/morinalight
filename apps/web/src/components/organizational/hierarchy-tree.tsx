@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/base/badge";
 import { Button } from "@morina/ui";
 import {
     Building2,

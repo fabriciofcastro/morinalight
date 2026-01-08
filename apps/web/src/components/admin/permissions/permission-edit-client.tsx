@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { type Permission, permissionsApi } from "@/lib/api/permissions";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { Can } from "@/lib/auth";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 

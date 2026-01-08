@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { TrendingUp, Users, Zap, Clock, BarChart3, Award, Loader2, RefreshCw } from "lucide-react";
 import { SectionShell } from "../shared/section-shell";
 import { companySettingsAPI } from "@/lib/api/company-settings";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { cn } from "@morina/ui";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 

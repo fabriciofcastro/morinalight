@@ -73,7 +73,7 @@ export class PrismaUserRepository extends BasePrismaRepository implements IUserR
       orderBy: { createdAt: 'desc' },
     });
 
-    return users.map((user) => this.toDomain(user));
+    return users.map((user: any) => this.toDomain(user));
   }
 
   async findByRole(role: string): Promise<UserEntity[]> {
@@ -82,7 +82,7 @@ export class PrismaUserRepository extends BasePrismaRepository implements IUserR
       orderBy: { createdAt: 'desc' },
     });
 
-    return users.map((user) => this.toDomain(user));
+    return users.map((user: any) => this.toDomain(user));
   }
 
   async delete(id: string): Promise<void> {

@@ -2,9 +2,12 @@
  * Rota HTTP: Aprovar Approval
  */
 
-import type { FastifyInstance } from "fastify";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import { aprovarApprovalInputSchema, approvalViewSchema } from "../application/schemas/approval.schema";
+import type { FastifyInstance } from "fastify";
+import {
+  approvalViewSchema,
+  aprovarApprovalInputSchema,
+} from "../application/schemas/approval.schema";
 import { AprovarApprovalUseCase } from "../application/use-cases/aprovar-approval.use-case";
 import type { ApprovalRepository } from "../domain/repositories/approval-repository";
 
@@ -38,12 +41,3 @@ export async function registerApproveApprovalRoute(
     }
   });
 }
-
-
-
-
-
-
-
-
-

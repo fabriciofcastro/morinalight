@@ -4,8 +4,8 @@
  * Handlers específicos por módulo com mensagens e ações contextuais
  */
 
-import type { AppError } from "./types";
 import { ErrorCode } from "./error-codes";
+import type { AppError } from "./types";
 
 /**
  * Interface de handler contextual
@@ -209,9 +209,12 @@ export const formErrorHandler: ContextualErrorHandler = {
                 message: `📝 Campos inválidos: ${fieldNames}. Corrija e tente novamente.`,
                 action: () => {
                     // Focar no primeiro campo com erro
-                    const firstField = error.fields![0].field;
-                    const input = document.querySelector<HTMLInputElement>(`[name="${firstField}"]`);
-                    input?.focus();
+                    const firstErrorField = error.fields![0];
+                    if (firstErrorField) {
+                        const firstField = firstErrorField.field;
+                        const input = document.querySelector<HTMLInputElement>(`[name="${firstField}"]`);
+                        input?.focus();
+                    }
                 },
                 actionLabel: "Corrigir",
                 recoverable: true,

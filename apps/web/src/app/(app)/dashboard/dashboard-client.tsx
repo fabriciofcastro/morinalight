@@ -19,7 +19,7 @@ const stats: StatCard[] = [
     value: "1.234",
     change: "+12%",
     icon: Package,
-    href: "/products",
+    href: "/admin/products/list",
     color: "text-blue-500",
   },
   {
@@ -27,7 +27,7 @@ const stats: StatCard[] = [
     value: "567",
     change: "+8%",
     icon: Users,
-    href: "/clientes",
+    href: "/admin/clients/list",
     color: "text-green-500",
   },
   {
@@ -43,7 +43,7 @@ const stats: StatCard[] = [
     value: "R$ 2.345",
     change: "+15%",
     icon: DollarSign,
-    href: "/comissoes",
+    href: "/admin/commissions/list",
     color: "text-yellow-500",
   },
 ];
@@ -91,21 +91,21 @@ export function DashboardClient() {
         <h2 className="mb-4 text-lg font-semibold text-[var(--fg)]">Ações Rápidas</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Link
-            href="/products"
+            href="/admin/products/list"
             className="flex items-center gap-3 rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4 transition-all hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]"
           >
             <Package className="h-5 w-5 text-[var(--primary)]" />
             <span className="text-sm font-medium">Novo Produto</span>
           </Link>
           <Link
-            href="/clientes"
+            href="/admin/clients/list"
             className="flex items-center gap-3 rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4 transition-all hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]"
           >
             <Users className="h-5 w-5 text-[var(--primary)]" />
             <span className="text-sm font-medium">Novo Cliente</span>
           </Link>
           <Link
-            href="/comissoes"
+            href="/admin/commissions/list"
             className="flex items-center gap-3 rounded-lg border border-[color-mix(in_oklab,var(--border)_90%,transparent)] p-4 transition-all hover:border-[var(--primary)] hover:bg-[color-mix(in_oklab,var(--surface)_80%,transparent)]"
           >
             <DollarSign className="h-5 w-5 text-[var(--primary)]" />

@@ -1,5 +1,8 @@
 import { PreFichaTecnicaId } from "../value-objects/pre-ficha-tecnica-id";
-import { type StatusPreFichaTecnica, StatusPreFichaTecnicaVO } from "../value-objects/status-pre-ficha-tecnica";
+import {
+  type StatusPreFichaTecnica,
+  StatusPreFichaTecnicaVO,
+} from "../value-objects/status-pre-ficha-tecnica";
 import { InsumoTecnico, type InsumoTecnicoProps } from "./insumo-tecnico";
 import { Tecido, type TecidoProps } from "./tecido";
 
@@ -11,12 +14,12 @@ export type PreFichaTecnicaProps = {
   categoria?: string | null;
   versaoMolde: number;
   status: StatusPreFichaTecnica;
-  
+
   // Evidências Visuais
   fotoPecaUrl?: string | null;
   fotoPecaStorageKey?: string | null;
   fotosAdicionais?: string[] | null;
-  
+
   // Responsáveis Técnicos
   estilistaId?: string | null;
   estilistaNome?: string | null;
@@ -26,18 +29,18 @@ export type PreFichaTecnicaProps = {
   piloteiroNome?: string | null;
   liberadoPorId?: string | null;
   liberadoPorNome?: string | null;
-  
+
   // Grade de Tamanhos
   gradeTamanhos?: string[] | null;
-  
+
   // Observações
   observacoesTecnicas?: string | null;
   observacoesOficina?: string | null;
-  
+
   // Alteração Técnica
   houveAlteracao: boolean;
   descricaoAlteracao?: string | null;
-  
+
   // Checklist Técnico
   checklistTecnico?: {
     moldeVesteCorretamente?: boolean;
@@ -45,14 +48,14 @@ export type PreFichaTecnicaProps = {
     insumosCompatíveis?: boolean;
     pecaPilotoAprovadaVisualmente?: boolean;
   } | null;
-  
+
   // Medidas Críticas
   medidasCriticas?: string | null;
-  
+
   // Conclusão da Avaliação
   resultadoAvaliacao?: string | null;
   observacaoAvaliacao?: string | null;
-  
+
   // Datas importantes
   dataSubmissao?: Date | null;
   dataInicioRevisao?: Date | null;
@@ -60,11 +63,11 @@ export type PreFichaTecnicaProps = {
   dataAprovacaoDiretoria?: Date | null;
   dataReprovacao?: Date | null;
   justificativaReprovacao?: string | null;
-  
+
   // Versionamento
   versaoAtual: number;
   versaoAnteriorId?: string | null;
-  
+
   // Auditoria
   createdBy: string;
   updatedBy: string;
@@ -74,7 +77,7 @@ export type PreFichaTecnicaProps = {
 
 /**
  * Pré-Ficha Técnica - Aggregate Root
- * 
+ *
  * Representa a análise técnica de um molde aplicado à peça piloto.
  * Esta é a entidade principal do agregado, controlando todas as regras de negócio.
  */
@@ -195,9 +198,7 @@ export class PreFichaTecnica {
    */
   removerTecido(index: number, actorId: string): void {
     if (!this.statusVO.isEditavel()) {
-      throw new Error(
-        `Não é possível remover tecidos. Status atual: ${this.statusVO.formatar()}`,
-      );
+      throw new Error(`Não é possível remover tecidos. Status atual: ${this.statusVO.formatar()}`);
     }
 
     if (index < 0 || index >= this.tecidos.length) {
@@ -257,9 +258,7 @@ export class PreFichaTecnica {
     actorId: string,
   ): void {
     if (!this.statusVO.isEditavel()) {
-      throw new Error(
-        `Não é possível editar pré-ficha. Status atual: ${this.statusVO.formatar()}`,
-      );
+      throw new Error(`Não é possível editar pré-ficha. Status atual: ${this.statusVO.formatar()}`);
     }
 
     if (dados.codigoPeca !== undefined) {
@@ -343,9 +342,7 @@ export class PreFichaTecnica {
    */
   submeterParaRevisaoTecnica(actorId: string): void {
     if (!this.statusVO.podeSubmeterParaRevisao()) {
-      throw new Error(
-        `Não é possível submeter. Status atual: ${this.statusVO.formatar()}`,
-      );
+      throw new Error(`Não é possível submeter. Status atual: ${this.statusVO.formatar()}`);
     }
 
     const validacao = this.podeSerSubmetida();
@@ -364,9 +361,7 @@ export class PreFichaTecnica {
    */
   iniciarRevisaoFichaTecnica(actorId: string): void {
     if (!this.statusVO.podeIniciarRevisao()) {
-      throw new Error(
-        `Não é possível iniciar revisão. Status atual: ${this.statusVO.formatar()}`,
-      );
+      throw new Error(`Não é possível iniciar revisão. Status atual: ${this.statusVO.formatar()}`);
     }
 
     this.statusVO = StatusPreFichaTecnicaVO.emRevisaoFichaTecnica();
@@ -436,9 +431,7 @@ export class PreFichaTecnica {
     actorId: string,
   ): void {
     if (!this.statusVO.podeReprovar()) {
-      throw new Error(
-        `Não é possível reprovar. Status atual: ${this.statusVO.formatar()}`,
-      );
+      throw new Error(`Não é possível reprovar. Status atual: ${this.statusVO.formatar()}`);
     }
 
     if (!justificativa || justificativa.trim().length < 10) {
@@ -487,9 +480,7 @@ export class PreFichaTecnica {
     actorId: string,
   ): void {
     if (this.statusVO.isCongelada()) {
-      throw new Error(
-        "Responsáveis técnicos não podem ser alterados após aprovação técnica",
-      );
+      throw new Error("Responsáveis técnicos não podem ser alterados após aprovação técnica");
     }
 
     if (responsaveis.estilistaId !== undefined) {
@@ -554,15 +545,3 @@ export class PreFichaTecnica {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

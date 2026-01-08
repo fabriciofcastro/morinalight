@@ -16,9 +16,15 @@ export function getRedisClient(): Redis {
   // Use mock Redis in test environment to avoid external dependencies
   if (env.NODE_ENV === "test") {
     const mockRedis = {
-      async set(key: string, value: string, mode?: string, ttl?: number) { return 'OK'; },
-      async get(key: string) { return null; },
-      async del(key: string) { return 1; },
+      async set(key: string, value: string, mode?: string, ttl?: number) {
+        return "OK";
+      },
+      async get(key: string) {
+        return null;
+      },
+      async del(key: string) {
+        return 1;
+      },
     } as any;
     redisClient = mockRedis as unknown as Redis;
     return redisClient;
@@ -32,9 +38,15 @@ export function getRedisClient(): Redis {
         console.warn("⚠️ [REDIS] REDIS_URL não configurada. Redis será desabilitado.");
         // Return a simple mock client with no-op methods for development/testing
         const mockRedis = {
-          async set(key: string, value: string, mode?: string, ttl?: number) { return 'OK'; },
-          async get(key: string) { return null; },
-          async del(key: string) { return 1; },
+          async set(key: string, value: string, mode?: string, ttl?: number) {
+            return "OK";
+          },
+          async get(key: string) {
+            return null;
+          },
+          async del(key: string) {
+            return 1;
+          },
           // Additional methods used in code can be added as needed
         } as any;
         redisClient = mockRedis as unknown as Redis;
@@ -94,13 +106,19 @@ export function getRedisClient(): Redis {
         if (env.NODE_ENV === "development") {
           if (!redisClient?.options?.lazyConnect) {
             console.error("❌ [REDIS] Erro de autenticação:", err.message);
-            console.error("💡 [REDIS] Dica: Verifique se a senha está correta na REDIS_URL ou configure REDIS_PASSWORD");
-            console.error("   Formato da URL: redis://:senha@host:port ou redis://host:port (com REDIS_PASSWORD)");
+            console.error(
+              "💡 [REDIS] Dica: Verifique se a senha está correta na REDIS_URL ou configure REDIS_PASSWORD",
+            );
+            console.error(
+              "   Formato da URL: redis://:senha@host:port ou redis://host:port (com REDIS_PASSWORD)",
+            );
             console.warn("⚠️ [REDIS] Continuando sem Redis - alguns recursos podem não funcionar");
           }
         } else {
           console.error("❌ [REDIS] Erro de autenticação:", err.message);
-          console.error("💡 [REDIS] Dica: Verifique se a senha está correta na REDIS_URL ou configure REDIS_PASSWORD");
+          console.error(
+            "💡 [REDIS] Dica: Verifique se a senha está correta na REDIS_URL ou configure REDIS_PASSWORD",
+          );
         }
         // Parar tentativas de reconexão e desconectar
         if (redisClient) {
@@ -151,7 +169,7 @@ export function getRedisClient(): Redis {
     // Conectar (não bloquear se Redis não estiver disponível)
     redisClient.connect().catch((err) => {
       // Ignorar erros de autenticação em desenvolvimento se Redis não estiver configurado
-      if (env.NODE_ENV === "development" && (!env.REDIS_URL && !process.env.REDIS_URL)) {
+      if (env.NODE_ENV === "development" && !env.REDIS_URL && !process.env.REDIS_URL) {
         return; // Silenciosamente ignorar se não estiver configurado
       }
 
@@ -188,7 +206,9 @@ export function getRedisClient(): Redis {
         // Não repetir o aviso, já foi logado
       } else if (env.NODE_ENV === "production") {
         // Em produção, não falhar imediatamente, mas logar erro
-        console.error("⚠️ [REDIS] Redis não disponível em produção - alguns recursos podem não funcionar");
+        console.error(
+          "⚠️ [REDIS] Redis não disponível em produção - alguns recursos podem não funcionar",
+        );
       }
     });
   }
@@ -226,4 +246,3 @@ export async function isRedisAvailable(): Promise<boolean> {
     return false;
   }
 }
-

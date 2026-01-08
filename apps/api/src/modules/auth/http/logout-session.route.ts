@@ -71,15 +71,3 @@ export async function registerLogoutSessionRoute(app: FastifyInstance, deps: Log
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

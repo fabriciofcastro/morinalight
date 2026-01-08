@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { FileUploadZone, type UploadedFile } from "@/components/ui/file-upload-zone";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
+import { FileUploadZone, type UploadedFile } from "@/shared/ui/base/file-upload-zone";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
 import { branchDocumentsApi } from "@/lib/api/branch-documents";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import {
     DocumentCategory,
     DOCUMENT_CATEGORY_LABELS,
     type BranchDocument,
 } from "@/types/branch-documents";
 import { FileText, Calendar, StickyNote, Download, Trash2 } from "lucide-react";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 interface DocumentsTabProps {
     branchId?: string;

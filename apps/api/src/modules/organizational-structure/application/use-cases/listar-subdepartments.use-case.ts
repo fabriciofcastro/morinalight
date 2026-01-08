@@ -1,8 +1,8 @@
 import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import {
-  subdepartmentViewSchema,
   listarSubdepartmentsInputSchema,
   listarSubdepartmentsResultadoSchema,
+  subdepartmentViewSchema,
 } from "../schemas/subdepartment.schema";
 
 type Dependencies = {
@@ -51,4 +51,3 @@ export class ListarSubdepartmentsUseCase {
     });
   }
 }
-

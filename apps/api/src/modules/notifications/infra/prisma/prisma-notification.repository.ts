@@ -116,7 +116,10 @@ export class PrismaNotificationRepository implements NotificationRepository {
     return {
       itens: notifications.map(mapNotification),
       total,
-      proximoCursor: notifications.length === (input.limit ?? 50) ? notifications[notifications.length - 1]?.id : null,
+      proximoCursor:
+        notifications.length === (input.limit ?? 50)
+          ? notifications[notifications.length - 1]?.id
+          : null,
     };
   }
 
@@ -179,7 +182,10 @@ export class PrismaNotificationRepository implements NotificationRepository {
     return result.count;
   }
 
-  async getStats(orgId: string, userId?: string | null): Promise<{
+  async getStats(
+    orgId: string,
+    userId?: string | null,
+  ): Promise<{
     total: number;
     unread: number;
     archived: number;
@@ -214,6 +220,3 @@ export class PrismaNotificationRepository implements NotificationRepository {
     };
   }
 }
-
-
-

@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { Shield, ShieldCheck, ShieldOff, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/base/button";
 import { MFASetupModal } from "./mfa-setup";
 
 interface MFASettingsPanelProps {

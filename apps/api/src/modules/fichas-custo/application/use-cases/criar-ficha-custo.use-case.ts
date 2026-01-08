@@ -4,12 +4,9 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 
 import { FichaCusto } from "../../domain/entities/ficha-custo";
 import { Insumo } from "../../domain/entities/insumo";
-import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
 import type { FichaCustoCriadaEvent } from "../../domain/events/ficha-custo-criada.event";
-import {
-  criarFichaCustoSchema,
-  fichaCustoViewSchema,
-} from "../schemas/ficha-custo.schema";
+import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
+import { criarFichaCustoSchema, fichaCustoViewSchema } from "../schemas/ficha-custo.schema";
 
 type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;

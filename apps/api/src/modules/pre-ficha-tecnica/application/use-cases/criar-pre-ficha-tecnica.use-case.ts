@@ -1,10 +1,8 @@
-import { randomUUID } from "crypto";
-
 import type { DomainEventBus } from "@morina/shared-kernel";
-
+import { randomUUID } from "crypto";
+import { InsumoTecnico } from "../../domain/entities/insumo-tecnico";
 import { PreFichaTecnica } from "../../domain/entities/pre-ficha-tecnica";
 import { Tecido } from "../../domain/entities/tecido";
-import { InsumoTecnico } from "../../domain/entities/insumo-tecnico";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { criarPreFichaTecnicaSchema } from "../schemas/pre-ficha-tecnica.schema";
 
@@ -22,10 +20,9 @@ export class CriarPreFichaTecnicaUseCase {
     const input = criarPreFichaTecnicaSchema.parse(rawInput);
 
     // Obter próximo número sequencial
-    const numeroSequencial =
-      await this.deps.preFichaTecnicaRepository.obterProximoNumeroSequencial(
-        this.deps.orgId,
-      );
+    const numeroSequencial = await this.deps.preFichaTecnicaRepository.obterProximoNumeroSequencial(
+      this.deps.orgId,
+    );
 
     // Criar tecidos
     const tecidos = input.tecidos.map((tecidoData) =>
@@ -141,15 +138,3 @@ export class CriarPreFichaTecnicaUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

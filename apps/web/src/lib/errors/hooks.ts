@@ -9,7 +9,7 @@ import { useCallback, useState, useRef, useEffect } from "react";
 import { parseError, isRetryableError, getRetryDelay } from "./error-parser";
 import { type AppError } from "./types";
 import { getUserFriendlyMessage } from "./user-messages";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 /**
  * Opções para useErrorHandler

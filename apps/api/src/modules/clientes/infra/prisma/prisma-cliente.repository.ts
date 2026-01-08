@@ -1,12 +1,12 @@
+import type { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { ClienteProps, ClienteStatus } from "../../domain/entities/cliente";
 import { Cliente } from "../../domain/entities/cliente";
 import type {
   ClienteListaFiltro,
   ClienteListaPagina,
   ClienteRepository,
 } from "../../domain/repositories/cliente-repository";
-import type { Prisma } from "@prisma/client";
-import type { ClienteProps, ClienteStatus } from "../../domain/entities/cliente";
 
 const prisma = getPrisma();
 

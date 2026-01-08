@@ -58,7 +58,11 @@ export const suppliersImportApi = {
         const result = reader.result as string;
         // Remove data URL prefix
         const base64 = result.split(",")[1];
-        resolve(base64);
+        if (base64) {
+          resolve(base64);
+        } else {
+          reject(new Error("Failed to extract base64 data from file"));
+        }
       };
       reader.onerror = reject;
       reader.readAsDataURL(file);
@@ -117,6 +121,7 @@ export const suppliersImportApi = {
     window.URL.revokeObjectURL(url);
   },
 };
+
 
 
 

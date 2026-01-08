@@ -1,8 +1,8 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { PageHeader } from "@/components/ui/page-header";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { PageHeader } from "@/shared/ui/base/page-header";
 import { getAuthHeadersWithTenant } from "@/lib/api/base";
 import { Button } from "@morina/ui";
 import { motion } from "framer-motion";

@@ -22,7 +22,7 @@ import {
   type BusinessSegment,
   organizationalStructureApi,
 } from "@/lib/api/organizational-structure";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 type ViewMode = "grid" | "list";

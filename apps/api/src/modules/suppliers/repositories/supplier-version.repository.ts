@@ -23,8 +23,3 @@ export interface VersaoSupplierRepository {
   getLatestVersion(supplierId: string): Promise<VersaoSupplierRecord | null>;
   getNextVersionNumber(supplierId: string): Promise<number>;
 }
-
-
-
-
-

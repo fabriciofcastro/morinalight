@@ -25,6 +25,8 @@ describe('CreateUserUseCase Integration (Mocked)', () => {
     eventBus = {
       publish: vi.fn(),
       subscribe: vi.fn(),
+      unsubscribe: vi.fn(),
+      clear: vi.fn(),
     };
     logger = {
       info: vi.fn(),

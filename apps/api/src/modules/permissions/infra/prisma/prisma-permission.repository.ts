@@ -1,3 +1,4 @@
+import type { ObjectAccessEntry, SecurityPolicy } from "@morina/shared-kernel";
 import type { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import { Permission } from "../../domain/entities/permission";
@@ -5,7 +6,6 @@ import type {
   PermissionFiltro,
   PermissionRepository,
 } from "../../domain/repositories/permission-repository";
-import type { SecurityPolicy, ObjectAccessEntry } from "@morina/shared-kernel";
 
 const prisma = getPrisma();
 
@@ -151,8 +151,8 @@ export class PrismaPermissionRepository implements PermissionRepository {
       name: r.name,
       description: r.description || undefined,
       effect: r.effect as "ALLOW" | "DENY",
-      action: r.action.includes(",") ? r.action.split(",").map(a => a.trim()) : r.action,
-      subject: r.subject.includes(",") ? r.subject.split(",").map(s => s.trim()) : r.subject,
+      action: r.action.includes(",") ? r.action.split(",").map((a) => a.trim()) : r.action,
+      subject: r.subject.includes(",") ? r.subject.split(",").map((s) => s.trim()) : r.subject,
       conditions: (r.conditions as any) || undefined,
       priority: r.priority,
       orgId: r.orgId,
@@ -170,10 +170,7 @@ export class PrismaPermissionRepository implements PermissionRepository {
     const records = await prisma.accessControlList.findMany({
       where: {
         orgId,
-        OR: [
-          { userId },
-          ...(role ? [{ roleId: role }] : []),
-        ],
+        OR: [{ userId }, ...(role ? [{ roleId: role }] : [])],
       },
     });
 

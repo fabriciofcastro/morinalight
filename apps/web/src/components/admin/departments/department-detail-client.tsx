@@ -3,7 +3,7 @@
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 import { Button } from "@morina/ui";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/base/badge";
 import { ArrowLeft, Edit, Users, Building2, Layers, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -241,3 +241,4 @@ export function DepartmentDetailClient({ departmentId }: DepartmentDetailClientP
     </AllowedGuard>
   );
 }
+

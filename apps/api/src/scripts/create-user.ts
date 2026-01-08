@@ -1,11 +1,11 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { config as loadEnv } from "dotenv";
+import { getPrisma } from "../infra/database/prisma.service";
 
 // Carregar variáveis de ambiente
 loadEnv({ path: ".env", override: false });
 
-const prisma = new PrismaClient();
+const prisma = getPrisma();
 
 async function createUser() {
   const email = process.env.USER_EMAIL || "fabricio@morina.com.br";

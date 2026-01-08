@@ -249,3 +249,4 @@ Os alertas são avaliados pelo Prometheus e podem ser encaminhados para:
 3. **Dashboards Customizados**: Criar dashboards específicos por módulo
 4. **SLOs/SLIs**: Definir e monitorar Service Level Objectives
 5. **Distributed Tracing**: Integrar Jaeger para tracing completo
+

@@ -15,9 +15,9 @@ import {
 import {
     GlassCard,
     Button,
-} from "@/components/ui/futuristic";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+} from "@/shared/ui/base/futuristic";
+import { Badge } from "@/shared/ui/base/badge";
+import { Progress } from "@/shared/ui/base/progress";
 import { format } from 'date-fns';
 
 interface ComplianceControl {

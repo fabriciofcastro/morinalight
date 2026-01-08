@@ -4,8 +4,8 @@ import bcrypt from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
-
 import { env } from "../../../core/config/env";
+import { BCRYPT_ROUNDS, passwordSchema } from "../../../core/config/password-config";
 import { slugify } from "../../../utils/slugify";
 import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
 import type { OrganizationAuditLogRepository } from "../../organizations/repositories/organization-audit-log.repository";
@@ -15,7 +15,7 @@ import type { UserRepository } from "../../users/repositories/user.repository";
 const registerSchema = z
   .object({
     email: z.string().email(),
-    password: z.string().min(8),
+    password: passwordSchema, // ✅ Usar validação robusta de senha
     displayName: z.string().min(2).max(120),
     organizationName: z.string().min(3).max(180).optional(),
     inviteToken: z.string().min(16).optional(),
@@ -49,7 +49,7 @@ export async function registerRegisterRoute(app: FastifyInstance, deps: Register
       });
     }
 
-    const passwordHash = await bcrypt.hash(body.password, 10);
+    const passwordHash = await bcrypt.hash(body.password, BCRYPT_ROUNDS); // ✅ Usar 12 rounds
     const userId = randomUUID();
 
     let organizationId: string;

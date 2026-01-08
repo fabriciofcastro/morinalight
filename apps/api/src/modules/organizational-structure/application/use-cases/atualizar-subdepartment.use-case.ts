@@ -1,11 +1,18 @@
 import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
-import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
-import type { BranchRepository } from "../../domain/repositories/branch-repository";
-import { atualizarSubdepartmentInputSchema, subdepartmentViewSchema } from "../schemas/subdepartment.schema";
-import { hasHierarchyLoop, wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
 import type { Subdepartment } from "../../domain/entities/subdepartment";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { BranchRepository } from "../../domain/repositories/branch-repository";
+import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
+import {
+  calculateHierarchyDepth,
+  hasHierarchyLoop,
+  wouldExceedMaxDepth,
+} from "../../domain/utils/hierarchy-validator";
+import {
+  atualizarSubdepartmentInputSchema,
+  subdepartmentViewSchema,
+} from "../schemas/subdepartment.schema";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -44,10 +51,7 @@ export class AtualizarSubdepartmentUseCase {
 
     // Verificar se branchId existe (se fornecido)
     if (input.branchId !== undefined && input.branchId !== null && this.deps.branchRepository) {
-      const branch = await this.deps.branchRepository.encontrarPorId(
-        input.orgId,
-        input.branchId,
-      );
+      const branch = await this.deps.branchRepository.encontrarPorId(input.orgId, input.branchId);
 
       if (!branch) {
         throw new Error("Filial não encontrada");
@@ -76,12 +80,16 @@ export class AtualizarSubdepartmentUseCase {
         input.parentId,
         async (id: string) => {
           const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
-          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+          return subdept
+            ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment)
+            : null;
         },
       );
 
       if (hasLoop) {
-        throw new Error("Não é possível criar hierarquia circular. O subdepartamento pai é descendente deste subdepartamento.");
+        throw new Error(
+          "Não é possível criar hierarquia circular. O subdepartamento pai é descendente deste subdepartamento.",
+        );
       }
 
       // Verificar profundidade máxima
@@ -89,7 +97,9 @@ export class AtualizarSubdepartmentUseCase {
         subdepartment.subdepartmentId,
         async (id: string) => {
           const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
-          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+          return subdept
+            ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment)
+            : null;
         },
       );
 
@@ -98,7 +108,9 @@ export class AtualizarSubdepartmentUseCase {
         input.parentId,
         async (id: string) => {
           const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
-          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
+          return subdept
+            ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment)
+            : null;
         },
       );
 
@@ -180,4 +192,3 @@ export class AtualizarSubdepartmentUseCase {
     });
   }
 }
-

@@ -1,7 +1,7 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '@/shared/ui/base/badge';
+import { Button } from '@/shared/ui/base/button';
 import { Can } from '@/lib/auth/CaslContext';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react';

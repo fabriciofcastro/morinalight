@@ -1,14 +1,14 @@
 /**
  * Sistema de Notificação de Erros Críticos
- * 
+ *
  * Notifica sobre erros críticos através de múltiplos canais
  * (email, Slack, webhook, etc.)
  */
 
-import type { AppError } from "./app-error";
-import { isCriticalError, type ErrorCode } from "./error-codes";
-import type { ErrorCorrelationContext } from "./error-correlation";
 import { env } from "../config/env";
+import type { AppError } from "./app-error";
+import { type ErrorCode, isCriticalError } from "./error-codes";
+import type { ErrorCorrelationContext } from "./error-correlation";
 
 /**
  * Canal de notificação
@@ -102,9 +102,7 @@ class RateLimiter {
     const timestamps = this.notifications.get(key) || [];
 
     // Remover timestamps fora da janela
-    const validTimestamps = timestamps.filter(
-      (ts) => now - ts < windowMs,
-    );
+    const validTimestamps = timestamps.filter((ts) => now - ts < windowMs);
 
     if (validTimestamps.length >= max) {
       return false;
@@ -191,31 +189,26 @@ export class ErrorNotificationManager {
    * Configurar notificações
    */
   static configure(config: Partial<NotificationConfig>): void {
-    this.config = { ...this.config, ...config };
+    ErrorNotificationManager.config = { ...ErrorNotificationManager.config, ...config };
   }
 
   /**
    * Notificar sobre um erro
    */
-  static async notify(
-    error: AppError,
-    context: ErrorCorrelationContext,
-  ): Promise<void> {
+  static async notify(error: AppError, context: ErrorCorrelationContext): Promise<void> {
     const code = error.code as ErrorCode;
     const severity = determineSeverity(error, code);
 
     // Verificar se deve notificar
-    if (!shouldNotify(severity, this.config.minSeverity)) {
+    if (!shouldNotify(severity, ErrorNotificationManager.config.minSeverity)) {
       return;
     }
 
     // Verificar rate limit
     const rateLimitKey = `${code}:${context.service}`;
-    if (this.config.rateLimit) {
-      const { maxNotifications, windowMs } = this.config.rateLimit;
-      if (
-        !rateLimiter.isAllowed(rateLimitKey, maxNotifications, windowMs)
-      ) {
+    if (ErrorNotificationManager.config.rateLimit) {
+      const { maxNotifications, windowMs } = ErrorNotificationManager.config.rateLimit;
+      if (!rateLimiter.isAllowed(rateLimitKey, maxNotifications, windowMs)) {
         // Rate limit excedido, não notificar
         return;
       }
@@ -224,28 +217,25 @@ export class ErrorNotificationManager {
     const message = formatNotificationMessage(error, context, severity);
 
     // Enviar para cada canal configurado
-    for (const channel of this.config.channels) {
+    for (const channel of ErrorNotificationManager.config.channels) {
       try {
         switch (channel) {
           case NotificationChannel.LOG:
-            await this.notifyLog(error, context, severity, message);
+            await ErrorNotificationManager.notifyLog(error, context, severity, message);
             break;
           case NotificationChannel.EMAIL:
-            await this.notifyEmail(message);
+            await ErrorNotificationManager.notifyEmail(message);
             break;
           case NotificationChannel.SLACK:
-            await this.notifySlack(message);
+            await ErrorNotificationManager.notifySlack(message);
             break;
           case NotificationChannel.WEBHOOK:
-            await this.notifyWebhook(error, context, message);
+            await ErrorNotificationManager.notifyWebhook(error, context, message);
             break;
         }
       } catch (notificationError) {
         // Não falhar se a notificação falhar
-        console.error(
-          `Failed to send notification via ${channel}:`,
-          notificationError,
-        );
+        console.error(`Failed to send notification via ${channel}:`, notificationError);
       }
     }
   }
@@ -289,14 +279,17 @@ export class ErrorNotificationManager {
    * Notificar via email
    */
   private static async notifyEmail(message: string): Promise<void> {
-    if (!this.config.emailRecipients || this.config.emailRecipients.length === 0) {
+    if (
+      !ErrorNotificationManager.config.emailRecipients ||
+      ErrorNotificationManager.config.emailRecipients.length === 0
+    ) {
       return;
     }
 
     // TODO: Implementar envio de email
     // Por enquanto, apenas log
     console.log("Email notification (not implemented):", {
-      recipients: this.config.emailRecipients,
+      recipients: ErrorNotificationManager.config.emailRecipients,
       message,
     });
   }
@@ -305,12 +298,12 @@ export class ErrorNotificationManager {
    * Notificar via Slack
    */
   private static async notifySlack(message: string): Promise<void> {
-    if (!this.config.slackWebhookUrl) {
+    if (!ErrorNotificationManager.config.slackWebhookUrl) {
       return;
     }
 
     try {
-      const response = await fetch(this.config.slackWebhookUrl, {
+      const response = await fetch(ErrorNotificationManager.config.slackWebhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -339,12 +332,12 @@ export class ErrorNotificationManager {
     context: ErrorCorrelationContext,
     message: string,
   ): Promise<void> {
-    if (!this.config.webhookUrl) {
+    if (!ErrorNotificationManager.config.webhookUrl) {
       return;
     }
 
     try {
-      const response = await fetch(this.config.webhookUrl, {
+      const response = await fetch(ErrorNotificationManager.config.webhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -389,9 +382,7 @@ if (env.NODE_ENV === "production") {
 
   if (process.env.ERROR_NOTIFICATION_EMAIL_RECIPIENTS) {
     config.channels?.push(NotificationChannel.EMAIL);
-    config.emailRecipients = process.env.ERROR_NOTIFICATION_EMAIL_RECIPIENTS.split(
-      ",",
-    );
+    config.emailRecipients = process.env.ERROR_NOTIFICATION_EMAIL_RECIPIENTS.split(",");
   }
 
   if (process.env.ERROR_NOTIFICATION_SLACK_WEBHOOK) {
@@ -406,12 +397,3 @@ if (env.NODE_ENV === "production") {
 
   ErrorNotificationManager.configure(config);
 }
-
-
-
-
-
-
-
-
-

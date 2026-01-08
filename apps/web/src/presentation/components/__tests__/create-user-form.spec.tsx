@@ -1,7 +1,7 @@
+import { CreateUserForm } from '@/features/user-create/create-user-form';
 import { useCreateUser } from '@/presentation/hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { CreateUserForm } from '../create-user-form';
 
 // Mock hooks
 vi.mock('@/presentation/hooks', () => ({

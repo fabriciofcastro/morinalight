@@ -59,7 +59,10 @@ function loadKeys(): { privateKey: string; publicKey: string } {
 /**
  * Gera token JWT usando RS256
  */
-export function signToken(payload: Omit<JwtPayload, "iat" | "exp" | "jti">, expiresIn: string = "15m"): string {
+export function signToken(
+  payload: Omit<JwtPayload, "iat" | "exp" | "jti">,
+  expiresIn: string = "15m",
+): string {
   try {
     const { privateKey: key } = loadKeys();
     const jti = randomUUID(); // JWT ID para blacklist
@@ -106,13 +109,27 @@ export function verifyToken(token: string): JwtPayload | null {
     return payload;
   } catch (error) {
     // Fallback para HS256 se RS256 não estiver disponível
-    if (error instanceof Error && (error.message.includes("Chaves RSA") || error.message.includes("invalid algorithm"))) {
+    if (
+      error instanceof Error &&
+      (error.message.includes("Chaves RSA") || error.message.includes("invalid algorithm"))
+    ) {
       try {
+        // Bloquear segredo padrão em produção
+        if (env.NODE_ENV === "production" && env.JWT_SECRET.includes("change-me")) {
+          console.error(
+            "🔴 [JWT] ERRO CRÍTICO: Usando JWT_SECRET padrão em PRODUÇÃO. O sistema irá recusar tokens até que um secret forte seja configurado.",
+          );
+          return null;
+        }
+
         const payload = jwt.verify(token, env.JWT_SECRET, {
           algorithms: ["HS256"],
+          issuer: "morina-api", // ✅ Adicionado para validar origem
+          audience: "morina-web", // ✅ Adicionado para validar destino
         }) as JwtPayload;
         return payload;
-      } catch {
+      } catch (err) {
+        console.debug("HS256 fallback verification failed:", err);
         return null;
       }
     }
@@ -130,4 +147,3 @@ export function decodeToken(token: string): JwtPayload | null {
     return null;
   }
 }
-

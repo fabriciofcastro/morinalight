@@ -24,7 +24,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DateRangePicker, type DateRangePreset } from "@/components/dashboard/DateRangePicker";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import {
     OrganizationTree,
     type DepartmentNode,

@@ -1,17 +1,19 @@
 import type { FastifyInstance } from "fastify";
 import type { AuthModuleOptions as CoreAuthModuleOptions } from "../../core/auth/auth.module";
 import { registerAuthModule as registerCoreAuthModule } from "../../core/auth/auth.module";
+import governancePlugin from "../../core/security/governance.plugin";
 import type { AuthModuleOptions } from "../../modules/auth/auth.module";
 import { registerAuthModule } from "../../modules/auth/auth.module";
-import { registerComplianceModule } from "../../modules/compliance/compliance.module";
 import type { CatalogoModuleOptions } from "../../modules/catalogo/catalogo.module";
 import { registerCatalogoModule } from "../../modules/catalogo/catalogo.module";
 import type { ClientesModuleOptions } from "../../modules/clientes/clientes.module";
 import { registerClientesModule } from "../../modules/clientes/clientes.module";
 import { registerCompanySettingsModule } from "../../modules/company-settings/company-settings.module";
+import { registerComplianceModule } from "../../modules/compliance/compliance.module";
 import type { FichasCustoModuleOptions } from "../../modules/fichas-custo/fichas-custo.module";
 import { registerFichasCustoModule } from "../../modules/fichas-custo/fichas-custo.module";
-import { registerStatusCustomizadoModule } from "../../modules/status-customizado-ficha-custo/status-customizado.module";
+import { governanceRoutes } from "../../modules/governance/governance.routes";
+import { intelligenceRoutes } from "../../modules/intelligence/intelligence.routes";
 import type { NotificationsModuleOptions } from "../../modules/notifications/notifications.module";
 import { registerNotificationsModule } from "../../modules/notifications/notifications.module";
 import type { OrganizationalStructureModuleOptions } from "../../modules/organizational-structure/organizational-structure.module";
@@ -20,20 +22,18 @@ import type { OrganizationsModuleOptions } from "../../modules/organizations/org
 import { registerOrganizationsModule } from "../../modules/organizations/organizations.module";
 import type { PermissionsModuleOptions } from "../../modules/permissions/permissions.module";
 import { registerPermissionsModule } from "../../modules/permissions/permissions.module";
-import type { PrefichaModuleOptions } from "../../modules/preficha/preficha.module";
-import { registerPrefichaModule } from "../../modules/preficha/preficha.module";
 import type { PreFichaTecnicaModuleOptions } from "../../modules/pre-ficha-tecnica/pre-ficha-tecnica.module";
 import { registerPreFichaTecnicaModule } from "../../modules/pre-ficha-tecnica/pre-ficha-tecnica.module";
+import type { PrefichaModuleOptions } from "../../modules/preficha/preficha.module";
+import { registerPrefichaModule } from "../../modules/preficha/preficha.module";
 import type { ProfileModuleOptions } from "../../modules/profile/profile.module";
 import { registerProfileModule } from "../../modules/profile/profile.module";
 import { registerRealtimeRoutes } from "../../modules/realtime/realtime.routes";
+import { registerStatusCustomizadoModule } from "../../modules/status-customizado-ficha-custo/status-customizado.module";
 import type { SuppliersModuleOptions } from "../../modules/suppliers/suppliers.module";
 import { registerSuppliersModule } from "../../modules/suppliers/suppliers.module";
 import type { UsersModuleOptions } from "../../modules/users/users.module";
 import { registerUsersModule } from "../../modules/users/users.module";
-import governancePlugin from "../../core/security/governance.plugin";
-import { governanceRoutes } from "../../modules/governance/governance.routes";
-import { intelligenceRoutes } from "../../modules/intelligence/intelligence.routes";
 
 export type HttpModulesOptions = {
   catalogo?: CatalogoModuleOptions;
@@ -61,7 +61,6 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
 
   // Registrar módulo de autenticação (login/register) primeiro
   await registerAuthModule(app, options.auth);
-
 
   // Registrar módulo de organizações primeiro para obter organizationRepository
   const organizationsResult = await registerOrganizationsModule(app, options.organizations);
@@ -160,14 +159,16 @@ export async function registerHttp(app: FastifyInstance, options: HttpModulesOpt
   await intelligenceRoutes(app);
 
   // Registrar rotas de integrações (API Keys, etc)
-  const { integrationRoutes } = await import('../../modules/integrations/integration.routes');
+  const { integrationRoutes } = await import("../../modules/integrations/integration.routes");
   await integrationRoutes(app);
 
   // Registrar rotas de analytics (Phase 5)
-  const { analyticsRoutes } = await import('../../modules/analytics/analytics.routes');
+  const { analyticsRoutes } = await import("../../modules/analytics/analytics.routes");
   await analyticsRoutes(app);
 
   // Registrar rotas de segurança avançada (Phase 18)
-  const { registerBlockedIpsRoutes } = await import('../../modules/security/http/blocked-ips.route');
+  const { registerBlockedIpsRoutes } = await import(
+    "../../modules/security/http/blocked-ips.route"
+  );
   await registerBlockedIpsRoutes(app);
 }

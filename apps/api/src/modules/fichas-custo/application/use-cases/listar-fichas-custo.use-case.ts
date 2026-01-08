@@ -1,5 +1,9 @@
 import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
-import { filtroFichaCustoSchema, paginacaoFichaCustoSchema, fichaCustoViewSchema } from "../schemas/ficha-custo.schema";
+import {
+  fichaCustoViewSchema,
+  filtroFichaCustoSchema,
+  paginacaoFichaCustoSchema,
+} from "../schemas/ficha-custo.schema";
 
 type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;

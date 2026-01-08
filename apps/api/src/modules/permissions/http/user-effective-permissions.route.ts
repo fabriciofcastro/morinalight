@@ -3,6 +3,7 @@ import type { PositionRepository } from "../../organizational-structure/domain/r
 import type { DepartmentMembershipRepository } from "../../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import type { PositionMembershipRepository } from "../../organizational-structure/infra/prisma/prisma-position-membership.repository";
 import type { OrganizationRepository } from "../../organizations/repositories/organization.repository";
+import type { UserRepository } from "../../users/repositories/user.repository";
 import { ResolverPermissoesEfetivasUseCase } from "../application/use-cases/resolver-permissoes-efetivas.use-case";
 import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
 import type { PermissionRepository } from "../domain/repositories/permission-repository";
@@ -10,7 +11,6 @@ import type { PositionPermissionRepository } from "../domain/repositories/positi
 import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../domain/repositories/user-permission-repository";
 import type { PermissionInheritanceService } from "../domain/services/permission-inheritance.service";
-import type { UserRepository } from "../../users/repositories/user.repository";
 
 type Dependencies = {
   permissionRepository: PermissionRepository;

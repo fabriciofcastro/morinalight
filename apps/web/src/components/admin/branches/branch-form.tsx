@@ -1,11 +1,11 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { CodeValidator } from "@/components/ui/code-validator";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { CodeValidator } from "@/shared/ui/base/code-validator";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { CreateOrganizationDto, organizationsApi, UpdateOrganizationDto } from "@/lib/api/organizations";
 import { buscarCnpj, formatarCnpj, validarCnpj } from "@/lib/integrations/cnpj";
-import { buscarEnderecoPorCep, formatarCep } from "@/lib/integrations/viacep";
+import { buscarEnderecoPorCep, formatarCep } from "@/shared/kernel/utils/viacep";
 import { Button, cn } from "@morina/ui";
 import { motion } from "framer-motion";
 import {

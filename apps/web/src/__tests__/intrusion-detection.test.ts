@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, it, vi } from 'vitest';
 import { intrusionDetector } from '../lib/security/intrusion-detection';
 
 describe('Intrusion Detection System', () => {
@@ -47,7 +47,7 @@ describe('Intrusion Detection System', () => {
                 },
             }));
 
-            await intrusionDetector.detectImpossibleTravel(userId, currentIP, previousIP, 1);
+            await intrusionDetector.detectImpossibleTravel(userId, currentIP);
 
             // Should create critical alert
         });

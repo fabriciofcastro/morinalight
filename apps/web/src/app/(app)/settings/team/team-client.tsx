@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/base/badge";
 import type { OrganizationMember } from "@/types/organization";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 type TeamClientProps = {
   orgId: string;

@@ -338,12 +338,12 @@ model User {
   behavioralProfile UserBehavioralProfile?
   sessions          UserSession[]
 
-  @@index([branchId])
-  @@index([positionId])
   @@index([cpf])
 }
 
+
 model Authenticator {
+
   id                   String   @id @default(uuid())
   credentialID         String   @unique
   userId               String
@@ -2384,6 +2384,8 @@ model RefreshToken {
   token     String   @unique // Hash SHA-256 do token (nunca armazenar token completo)
   expiresAt DateTime
   revoked   Boolean  @default(false)
+  revokedAt DateTime? // ✅ Data de revogação para auditoria
+  replacedBy String?   // ✅ ID do novo token que substituiu este (rotação)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -2394,6 +2396,18 @@ model RefreshToken {
   @@index([token])
   @@index([expiresAt])
   @@index([revoked])
+}
+
+// ✅ NOVO: Token Blacklist para fallback quando Redis falhar
+model TokenBlacklist {
+  id        String   @id @default(uuid())
+  tokenId   String   @unique // JWT ID (jti claim)
+  expiresAt DateTime // Quando o token expira naturalmente
+  createdAt DateTime @default(now())
+
+  @@index([tokenId])
+  @@index([expiresAt])
+  @@map("token_blacklisted_ids")
 }
 
 model NotificationInteraction {
@@ -2715,23 +2729,75 @@ model UsageLog {
 
 // PBAC: Policy-Based Access Control
 model SecurityPolicy {
-  id          String   @id @default(uuid())
-  orgId       String
-  name        String   @db.VarChar(255)
-  description String?  @db.Text
-  effect      String   @db.VarChar(10) // ALLOW, DENY
-  action      String   @db.VarChar(100) // manage, read, etc. (CSV or JSON array)
-  subject     String   @db.VarChar(100) // all, User, etc.
-  conditions  Json? // Complex conditions DSL
-  priority    Int      @default(0)
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(uuid())
+  orgId            String
+  name             String   @db.VarChar(255)
+  description      String?  @db.Text
+  effect           String   @db.VarChar(10) // ALLOW, DENY
+  action           String   @db.VarChar(100) // manage, read, etc. (CSV or JSON array)
+  subject          String   @db.VarChar(100) // all, User, etc.
+  conditions       Json? // Complex conditions DSL
+  priority         Int      @default(0)
+  active           Boolean  @default(true)
+  currentVersionId String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  organization   Organization            @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  versions       SecurityPolicyVersion[] @relation("PolicyVersions")
+  currentVersion SecurityPolicyVersion?  @relation("CurrentPolicyVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
 
   @@index([orgId, active])
 }
+
+model SecurityPolicyVersion {
+  id       String @id @default(uuid())
+  policyId String
+  version  Int
+
+  // Snapshot data
+  effect     String @db.VarChar(10)
+  action     String @db.VarChar(100)
+  subject    String @db.VarChar(100)
+  conditions Json?
+
+  // Metadata
+  createdBy String
+  createdAt DateTime @default(now())
+
+  policy           SecurityPolicy   @relation("PolicyVersions", fields: [policyId], references: [id], onDelete: Cascade)
+  isCurrentFor     SecurityPolicy[] @relation("CurrentPolicyVersion")
+  creator          User             @relation("SecurityPolicyVersionCreator", fields: [createdBy], references: [id])
+
+  @@unique([policyId, version])
+  @@index([policyId, createdAt])
+}
+
+// Event-Sourced Authorization
+model AuthorizationEvent {
+  id           String   @id @default(uuid())
+  orgId        String
+  userId       String?
+  type         String   @db.VarChar(50) // PERMISSION_GRANTED, ROLE_ASSIGNED, POLICY_CREATED, etc.
+  payload      Json     // Full event payload
+  metadata     Json?    // IP, UserAgent, TraceId
+  
+  // Hash Chaining for Forensics
+  hash         String   @unique @db.VarChar(64)
+  previousHash String?  @db.VarChar(64)
+  nonce        Int      @default(0)
+  
+  timestamp    DateTime @default(now())
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, timestamp])
+  @@index([userId, timestamp])
+  @@index([type])
+  @@index([hash])
+}
+
+
 
 // TBAC: Time-Based Access Control
 model TimeWindow {
@@ -2961,6 +3027,7 @@ model UserSession {
   country   String? @db.VarChar(2)
   city      String? @db.VarChar(100)
   deviceId  String? @db.VarChar(255)
+  fingerprint String? @db.VarChar(255) // Hash imutável do dispositivo/contexto
 
   // Temporal
   createdAt    DateTime @default(now())
@@ -3327,4 +3394,41 @@ model OutboxMessage {
   updatedAt     DateTime     @updatedAt
 
   @@index([status, occurredAt])
+}
+
+// ============================================
+// SEGURANÇA E AUDITORIA UNIVERSAL (ZERO MOCKS)
+// ============================================
+
+model UniversalAuditLog {
+  id          String   @id @default(uuid())
+  orgId       String?
+  userId      String?
+  action      String   @db.VarChar(100) // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, PERMISSION_CHANGE
+  entityType  String?  @db.VarChar(100) // Product, User, OrganizationMembership, etc.
+  entityId    String?  @db.VarChar(255)
+  
+  // Traceability Antes/Depois
+  oldValue    Json?
+  newValue    Json?
+  
+  // Contexto (Quem, Onde, Como)
+  ipAddress   String?  @db.VarChar(45)
+  userAgent   String?  @db.VarChar(500)
+  deviceFingerprint String? @db.VarChar(255)
+  
+  // Rastreabilidade de Tenant (Obrigatório para HIPAA/SOC2 compliance)
+  tenant      Json?    // Snapshot do tenant no momento da ação (slug, name)
+
+  // Metadata & Escalabilidade
+  severity    String   @default("INFO") // INFO, WARNING, CRITICAL, AUDIT
+  metadata    Json?    // Campos extras flexíveis
+  
+  createdAt   DateTime @default(now())
+
+  @@index([orgId, createdAt])
+  @@index([userId, createdAt])
+  @@index([entityType, entityId])
+  @@index([severity])
+  @@index([action])
 }

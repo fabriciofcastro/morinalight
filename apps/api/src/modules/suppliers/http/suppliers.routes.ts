@@ -33,58 +33,79 @@ const updateSupplierSchema = createSupplierSchema.partial();
 
 const querySchema = z.object({
   status: z.string().optional(),
-  busca: z.string().max(120).optional().transform((val) => {
-    // Remover busca se tiver menos de 2 caracteres ou estiver vazia
-    if (!val || val.trim().length < 2) {
-      return undefined;
-    }
-    return val.trim();
-  }),
-  documento: z.string().optional().transform((val) => {
-    if (!val || val.trim().length === 0) {
-      return undefined;
-    }
-    return val.trim().replace(/\D/g, ""); // Remove formatação
-  }),
-  cidade: z.string().optional().transform((val) => {
-    if (!val || val.trim().length === 0) {
-      return undefined;
-    }
-    return val.trim();
-  }),
-  estado: z.string().max(2).optional().transform((val) => {
-    if (!val || val.trim().length === 0) {
-      return undefined;
-    }
-    return val.trim().toUpperCase();
-  }),
-  email: z.string().email().optional().transform((val) => {
-    if (!val || val.trim().length === 0) {
-      return undefined;
-    }
-    return val.trim().toLowerCase();
-  }),
-  telefone: z.string().optional().transform((val) => {
-    if (!val || val.trim().length === 0) {
-      return undefined;
-    }
-    return val.trim().replace(/\D/g, ""); // Remove formatação
-  }),
+  busca: z
+    .string()
+    .max(120)
+    .optional()
+    .transform((val) => {
+      // Remover busca se tiver menos de 2 caracteres ou estiver vazia
+      if (!val || val.trim().length < 2) {
+        return undefined;
+      }
+      return val.trim();
+    }),
+  documento: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val || val.trim().length === 0) {
+        return undefined;
+      }
+      return val.trim().replace(/\D/g, ""); // Remove formatação
+    }),
+  cidade: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val || val.trim().length === 0) {
+        return undefined;
+      }
+      return val.trim();
+    }),
+  estado: z
+    .string()
+    .max(2)
+    .optional()
+    .transform((val) => {
+      if (!val || val.trim().length === 0) {
+        return undefined;
+      }
+      return val.trim().toUpperCase();
+    }),
+  email: z
+    .string()
+    .email()
+    .optional()
+    .transform((val) => {
+      if (!val || val.trim().length === 0) {
+        return undefined;
+      }
+      return val.trim().toLowerCase();
+    }),
+  telefone: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (!val || val.trim().length === 0) {
+        return undefined;
+      }
+      return val.trim().replace(/\D/g, ""); // Remove formatação
+    }),
   pagina: z.coerce.number().int().positive().default(1).optional(),
   tamanhoPagina: z.coerce.number().int().positive().max(100).default(20).optional(),
   ordenarPor: z.enum(["name", "createdAt", "updatedAt", "status"]).default("createdAt").optional(),
   ordem: z.enum(["asc", "desc"]).default("desc").optional(),
 });
 
-import type { AuditoriaSupplierRepository } from "../repositories/supplier-audit-log.repository";
-import type { DocumentoSupplierRepository } from "../repositories/supplier-document.repository";
-import type { VersaoSupplierRepository } from "../repositories/supplier-version.repository";
-import type { SupplierTagRepository } from "../repositories/supplier-tag.repository";
-import type { AvaliacaoSupplierRepository } from "../repositories/supplier-avaliacao.repository";
-import type { HistoricoPrecoSupplierRepository } from "../repositories/supplier-historico-preco.repository";
 import type { AlertaSupplierRepository } from "../repositories/supplier-alerta.repository";
+import type { AuditoriaSupplierRepository } from "../repositories/supplier-audit-log.repository";
+import type { AvaliacaoSupplierRepository } from "../repositories/supplier-avaliacao.repository";
 import type { SupplierContactRepository } from "../repositories/supplier-contact.repository";
+import type { DocumentoSupplierRepository } from "../repositories/supplier-document.repository";
+import type { HistoricoPrecoSupplierRepository } from "../repositories/supplier-historico-preco.repository";
 import type { NotaSupplierRepository } from "../repositories/supplier-nota.repository";
+import type { SupplierTagRepository } from "../repositories/supplier-tag.repository";
+import type { VersaoSupplierRepository } from "../repositories/supplier-version.repository";
 
 type SuppliersDeps = {
   supplierRepository: SupplierRepository;
@@ -111,7 +132,7 @@ export async function registerSuppliersRoutes(
   app.get("/suppliers", async (request, reply) => {
     try {
       const tenant = getTenant(request);
-      
+
       // Validar query com tratamento de erros
       const queryResult = querySchema.safeParse(request.query ?? {});
       if (!queryResult.success) {
@@ -290,16 +311,12 @@ export async function registerSuppliersRoutes(
       return reply.status(403).send({ message: access.error || "Acesso negado à organização" });
     }
 
-    await (deps.supplierRepository as any).delete(
-      id,
-      request.auth.userId,
-      {
-        actorId: request.auth.userId,
-        orgId: existing.orgId,
-        ipAddress: request.ip || request.socket.remoteAddress || null,
-        userAgent: request.headers["user-agent"] || null,
-      },
-    );
+    await (deps.supplierRepository as any).delete(id, request.auth.userId, {
+      actorId: request.auth.userId,
+      orgId: existing.orgId,
+      ipAddress: request.ip || request.socket.remoteAddress || null,
+      userAgent: request.headers["user-agent"] || null,
+    });
 
     return reply.status(204).send();
   });
@@ -383,8 +400,16 @@ export async function registerSuppliersRoutes(
         limite: z.coerce.number().int().positive().max(100).default(20).optional(),
         cursor: z.string().optional(),
         acao: z.string().optional(),
-        dataInicio: z.string().datetime().optional().transform((val) => (val ? new Date(val) : undefined)),
-        dataFim: z.string().datetime().optional().transform((val) => (val ? new Date(val) : undefined)),
+        dataInicio: z
+          .string()
+          .datetime()
+          .optional()
+          .transform((val) => (val ? new Date(val) : undefined)),
+        dataFim: z
+          .string()
+          .datetime()
+          .optional()
+          .transform((val) => (val ? new Date(val) : undefined)),
       });
 
       const queryResult = querySchema.safeParse(request.query ?? {});
@@ -710,10 +735,7 @@ export async function registerSuppliersRoutes(
         custoFinalPeca: Number(ficha.custoFinalPeca),
         createdAt: ficha.createdAt.toISOString(),
         updatedAt: ficha.updatedAt.toISOString(),
-        valorFornecedor: ficha.insumos.reduce(
-          (sum, insumo) => sum + Number(insumo.custoTotal),
-          0,
-        ),
+        valorFornecedor: ficha.insumos.reduce((sum, insumo) => sum + Number(insumo.custoTotal), 0),
       })),
       total,
       pagina,
@@ -773,24 +795,27 @@ export async function registerSuppliersRoutes(
     });
 
     // Agrupar por descrição
-    const agrupados = insumos.reduce((acc, insumo) => {
-      const descricao = insumo.descricao;
-      if (!acc[descricao]) {
-        acc[descricao] = {
-          descricao,
-          tipo: insumo.tipo,
-          insumos: [],
-          precos: [],
-          quantidadeTotal: 0,
-          valorTotal: 0,
-        };
-      }
-      acc[descricao].insumos.push(insumo);
-      acc[descricao].precos.push(Number(insumo.custoUnitario));
-      acc[descricao].quantidadeTotal += Number(insumo.quantidade);
-      acc[descricao].valorTotal += Number(insumo.custoTotal);
-      return acc;
-    }, {} as Record<string, any>);
+    const agrupados = insumos.reduce(
+      (acc, insumo) => {
+        const descricao = insumo.descricao;
+        if (!acc[descricao]) {
+          acc[descricao] = {
+            descricao,
+            tipo: insumo.tipo,
+            insumos: [],
+            precos: [],
+            quantidadeTotal: 0,
+            valorTotal: 0,
+          };
+        }
+        acc[descricao].insumos.push(insumo);
+        acc[descricao].precos.push(Number(insumo.custoUnitario));
+        acc[descricao].quantidadeTotal += Number(insumo.quantidade);
+        acc[descricao].valorTotal += Number(insumo.custoTotal);
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
 
     const resultado = Object.values(agrupados).map((grupo: any) => {
       const precos = grupo.precos.sort((a: number, b: number) => a - b);
@@ -1087,15 +1112,25 @@ export async function registerSuppliersRoutes(
     const novoSupplier = await deps.supplierRepository.create(
       {
         orgId: tenant.orgId,
-        name: bodyResult.success && bodyResult.data?.name ? bodyResult.data.name : `${supplier.name} (Cópia)`,
-        email: bodyResult.success && bodyResult.data?.email !== undefined ? bodyResult.data.email : supplier.email,
-        phone: bodyResult.success && bodyResult.data?.phone !== undefined ? bodyResult.data.phone : supplier.phone,
+        name:
+          bodyResult.success && bodyResult.data?.name
+            ? bodyResult.data.name
+            : `${supplier.name} (Cópia)`,
+        email:
+          bodyResult.success && bodyResult.data?.email !== undefined
+            ? bodyResult.data.email
+            : supplier.email,
+        phone:
+          bodyResult.success && bodyResult.data?.phone !== undefined
+            ? bodyResult.data.phone
+            : supplier.phone,
         document: supplier.document,
         address: supplier.address,
         city: supplier.city,
         state: supplier.state,
         zipCode: supplier.zipCode,
-        status: bodyResult.success && bodyResult.data?.status ? bodyResult.data.status : supplier.status,
+        status:
+          bodyResult.success && bodyResult.data?.status ? bodyResult.data.status : supplier.status,
         notes: supplier.notes,
         createdBy: request.auth.userId,
         updatedBy: request.auth.userId,
@@ -1131,10 +1166,12 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const tenant = getTenant(request);
-      const body = z.object({
-        name: z.string().min(1),
-        color: z.string().optional().nullable(),
-      }).parse(request.body);
+      const body = z
+        .object({
+          name: z.string().min(1),
+          color: z.string().optional().nullable(),
+        })
+        .parse(request.body);
       const tag = await auditDeps.tagRepository.create({
         orgId: tenant.orgId,
         name: body.name,
@@ -1149,10 +1186,12 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const body = z.object({
-        name: z.string().min(1).optional(),
-        color: z.string().optional().nullable(),
-      }).parse(request.body);
+      const body = z
+        .object({
+          name: z.string().min(1).optional(),
+          color: z.string().optional().nullable(),
+        })
+        .parse(request.body);
       const tag = await auditDeps.tagRepository.update(id, body);
       return reply.send(tag);
     });
@@ -1172,10 +1211,12 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, tagId } = z.object({
-        id: z.string(),
-        tagId: z.string(),
-      }).parse(request.params);
+      const { id, tagId } = z
+        .object({
+          id: z.string(),
+          tagId: z.string(),
+        })
+        .parse(request.params);
       await auditDeps.tagRepository.addTagToSupplier(id, tagId);
       return reply.status(204).send();
     });
@@ -1185,10 +1226,12 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, tagId } = z.object({
-        id: z.string(),
-        tagId: z.string(),
-      }).parse(request.params);
+      const { id, tagId } = z
+        .object({
+          id: z.string(),
+          tagId: z.string(),
+        })
+        .parse(request.params);
       await auditDeps.tagRepository.removeTagFromSupplier(id, tagId);
       return reply.status(204).send();
     });
@@ -1214,10 +1257,12 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const body = z.object({
-        nota: z.number().min(1).max(5),
-        comentario: z.string().optional().nullable(),
-      }).parse(request.body);
+      const body = z
+        .object({
+          nota: z.number().min(1).max(5),
+          comentario: z.string().optional().nullable(),
+        })
+        .parse(request.body);
       const avaliacao = await auditDeps.avaliacaoRepository.create({
         supplierId: id,
         userId: request.auth.userId,
@@ -1259,15 +1304,17 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const body = z.object({
-        insumoId: z.string().optional().nullable(),
-        insumoNome: z.string().min(1),
-        preco: z.number().positive(),
-        quantidade: z.number().positive().optional().nullable(),
-        unidade: z.string().optional().nullable(),
-        fichaCustoId: z.string().optional().nullable(),
-        dataCompra: z.string().datetime(),
-      }).parse(request.body);
+      const body = z
+        .object({
+          insumoId: z.string().optional().nullable(),
+          insumoNome: z.string().min(1),
+          preco: z.number().positive(),
+          quantidade: z.number().positive().optional().nullable(),
+          unidade: z.string().optional().nullable(),
+          fichaCustoId: z.string().optional().nullable(),
+          dataCompra: z.string().datetime(),
+        })
+        .parse(request.body);
       const historico = await auditDeps.historicoPrecoRepository.create({
         supplierId: id,
         insumoId: body.insumoId || null,
@@ -1287,11 +1334,13 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const query = z.object({
-        insumoId: z.string().optional(),
-        dataInicio: z.string().datetime().optional(),
-        dataFim: z.string().datetime().optional(),
-      }).parse(request.query || {});
+      const query = z
+        .object({
+          insumoId: z.string().optional(),
+          dataInicio: z.string().datetime().optional(),
+          dataFim: z.string().datetime().optional(),
+        })
+        .parse(request.query || {});
       const historicos = await auditDeps.historicoPrecoRepository.findBySupplierId(id, {
         insumoId: query.insumoId,
         dataInicio: query.dataInicio ? new Date(query.dataInicio) : undefined,
@@ -1306,9 +1355,11 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const query = z.object({
-        insumoId: z.string().optional(),
-      }).parse(request.query || {});
+      const query = z
+        .object({
+          insumoId: z.string().optional(),
+        })
+        .parse(request.query || {});
       const stats = await auditDeps.historicoPrecoRepository.getPriceStats(id, query.insumoId);
       return reply.send(stats);
     });
@@ -1324,12 +1375,14 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const tenant = getTenant(request);
-      const query = z.object({
-        supplierId: z.string().optional(),
-        tipo: z.string().optional(),
-        status: z.string().optional(),
-        lido: z.coerce.boolean().optional(),
-      }).parse(request.query || {});
+      const query = z
+        .object({
+          supplierId: z.string().optional(),
+          tipo: z.string().optional(),
+          status: z.string().optional(),
+          lido: z.coerce.boolean().optional(),
+        })
+        .parse(request.query || {});
       const alertas = await auditDeps.alertaRepository.findByOrgId(tenant.orgId, {
         supplierId: query.supplierId,
         tipo: query.tipo,
@@ -1355,9 +1408,11 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const tenant = getTenant(request);
-      const query = z.object({
-        supplierId: z.string().optional(),
-      }).parse(request.query || {});
+      const query = z
+        .object({
+          supplierId: z.string().optional(),
+        })
+        .parse(request.query || {});
       const count = await auditDeps.alertaRepository.getUnreadCount(tenant.orgId, query.supplierId);
       return reply.send({ count });
     });
@@ -1373,11 +1428,13 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const query = z.object({
-        tipo: z.string().optional(),
-        criadoPor: z.string().optional(),
-        busca: z.string().optional(),
-      }).parse(request.query || {});
+      const query = z
+        .object({
+          tipo: z.string().optional(),
+          criadoPor: z.string().optional(),
+          busca: z.string().optional(),
+        })
+        .parse(request.query || {});
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1409,11 +1466,13 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const body = z.object({
-        titulo: z.string().max(255).optional().nullable(),
-        conteudo: z.string().min(1),
-        tipo: z.enum(["nota", "lembrete", "observacao"]).default("nota").optional(),
-      }).parse(request.body || {});
+      const body = z
+        .object({
+          titulo: z.string().max(255).optional().nullable(),
+          conteudo: z.string().min(1),
+          tipo: z.enum(["nota", "lembrete", "observacao"]).default("nota").optional(),
+        })
+        .parse(request.body || {});
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1447,15 +1506,19 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, notaId } = z.object({
-        id: z.string(),
-        notaId: z.string(),
-      }).parse(request.params);
-      const body = z.object({
-        titulo: z.string().max(255).optional().nullable(),
-        conteudo: z.string().min(1).optional(),
-        tipo: z.enum(["nota", "lembrete", "observacao"]).optional(),
-      }).parse(request.body || {});
+      const { id, notaId } = z
+        .object({
+          id: z.string(),
+          notaId: z.string(),
+        })
+        .parse(request.params);
+      const body = z
+        .object({
+          titulo: z.string().max(255).optional().nullable(),
+          conteudo: z.string().min(1).optional(),
+          tipo: z.enum(["nota", "lembrete", "observacao"]).optional(),
+        })
+        .parse(request.body || {});
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1487,10 +1550,12 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, notaId } = z.object({
-        id: z.string(),
-        notaId: z.string(),
-      }).parse(request.params);
+      const { id, notaId } = z
+        .object({
+          id: z.string(),
+          notaId: z.string(),
+        })
+        .parse(request.params);
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1554,14 +1619,16 @@ export async function registerSuppliersRoutes(
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
       const { id } = z.object({ id: z.string() }).parse(request.params);
-      const body = z.object({
-        name: z.string().min(1),
-        email: z.string().email().optional().nullable(),
-        phone: z.string().optional().nullable(),
-        cargo: z.string().optional().nullable(),
-        isPrincipal: z.boolean().default(false).optional(),
-        notes: z.string().max(500).optional().nullable(),
-      }).parse(request.body || {});
+      const body = z
+        .object({
+          name: z.string().min(1),
+          email: z.string().email().optional().nullable(),
+          phone: z.string().optional().nullable(),
+          cargo: z.string().optional().nullable(),
+          isPrincipal: z.boolean().default(false).optional(),
+          notes: z.string().max(500).optional().nullable(),
+        })
+        .parse(request.body || {});
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1596,18 +1663,22 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, contactId } = z.object({
-        id: z.string(),
-        contactId: z.string(),
-      }).parse(request.params);
-      const body = z.object({
-        name: z.string().min(1).optional(),
-        email: z.string().email().optional().nullable(),
-        phone: z.string().optional().nullable(),
-        cargo: z.string().optional().nullable(),
-        isPrincipal: z.boolean().optional(),
-        notes: z.string().max(500).optional().nullable(),
-      }).parse(request.body || {});
+      const { id, contactId } = z
+        .object({
+          id: z.string(),
+          contactId: z.string(),
+        })
+        .parse(request.params);
+      const body = z
+        .object({
+          name: z.string().min(1).optional(),
+          email: z.string().email().optional().nullable(),
+          phone: z.string().optional().nullable(),
+          cargo: z.string().optional().nullable(),
+          isPrincipal: z.boolean().optional(),
+          notes: z.string().max(500).optional().nullable(),
+        })
+        .parse(request.body || {});
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1639,10 +1710,12 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, contactId } = z.object({
-        id: z.string(),
-        contactId: z.string(),
-      }).parse(request.params);
+      const { id, contactId } = z
+        .object({
+          id: z.string(),
+          contactId: z.string(),
+        })
+        .parse(request.params);
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);
@@ -1674,10 +1747,12 @@ export async function registerSuppliersRoutes(
       if (!request.auth) {
         return reply.status(401).send({ message: "Autenticação necessária" });
       }
-      const { id, contactId } = z.object({
-        id: z.string(),
-        contactId: z.string(),
-      }).parse(request.params);
+      const { id, contactId } = z
+        .object({
+          id: z.string(),
+          contactId: z.string(),
+        })
+        .parse(request.params);
 
       // Verificar se o fornecedor existe e o usuário tem acesso
       const supplier = await deps.supplierRepository.findById(id);

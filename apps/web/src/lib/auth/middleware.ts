@@ -7,8 +7,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { can, type Action, type Resource, type Role, type UserWithPermissions } from "./rbac";
 // import { abacEngine } from "./abac"; // Removed legacy ABAC
+import { IUserRepository } from "@/application/ports";
+import { getContainer } from "@/infrastructure/di/container";
+import { ConsoleLogger } from "@/infrastructure/logger";
+import { isSome } from "@/shared/kernel/types";
 import { SecurityContext, unifiedPolicyEngine } from "@morina/shared-kernel";
 import { verifyAccessToken } from "./jwt";
+const logger = new ConsoleLogger();
 
 export interface AuthContext {
     user: UserWithPermissions;

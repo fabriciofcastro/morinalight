@@ -1,17 +1,14 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { PagarBoletoFichaCustoUseCase } from "../application/use-cases/pagar-boleto-ficha-custo.use-case";
 import type { FichaCustoRepository } from "../domain/repositories/ficha-custo.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;
   eventBus?: DomainEventBus;
 };
 
-export async function registerPagarBoletoFichaCustoRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerPagarBoletoFichaCustoRoute(app: FastifyInstance, deps: Dependencies) {
   app.post(
     "/organizations/:orgId/fichas-custo/:fichaCustoId/boletos/:boletoId/pagar",
     async (
@@ -58,7 +55,10 @@ export async function registerPagarBoletoFichaCustoRoute(
         app.log.error(error, "Erro ao pagar boleto da ficha de custo");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("não pode")) {
@@ -72,15 +72,3 @@ export async function registerPagarBoletoFichaCustoRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

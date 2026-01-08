@@ -7,13 +7,13 @@ type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;
 };
 
-export async function registerListFichasCustoRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerListFichasCustoRoute(app: FastifyInstance, deps: Dependencies) {
   app.get(
     "/organizations/:orgId/fichas-custo",
-    async (request: FastifyRequest<{ Params: { orgId: string }; Querystring: any }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { orgId: string }; Querystring: any }>,
+      reply: FastifyReply,
+    ) => {
       const orgId = request.params.orgId;
 
       if (!orgId) {

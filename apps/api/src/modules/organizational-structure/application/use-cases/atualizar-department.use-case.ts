@@ -1,11 +1,15 @@
 import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { BranchRepository } from "../../domain/repositories/branch-repository";
-import { atualizarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
-import { hasHierarchyLoop, wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
 import type { Department } from "../../domain/entities/department";
+import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
+import type { BranchRepository } from "../../domain/repositories/branch-repository";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import {
+  calculateHierarchyDepth,
+  hasHierarchyLoop,
+  wouldExceedMaxDepth,
+} from "../../domain/utils/hierarchy-validator";
+import { atualizarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -44,10 +48,7 @@ export class AtualizarDepartmentUseCase {
 
     // Verificar se branchId existe (se fornecido)
     if (input.branchId !== undefined && input.branchId !== null && this.deps.branchRepository) {
-      const branch = await this.deps.branchRepository.encontrarPorId(
-        input.orgId,
-        input.branchId,
-      );
+      const branch = await this.deps.branchRepository.encontrarPorId(input.orgId, input.branchId);
 
       if (!branch) {
         throw new Error("Filial não encontrada");
@@ -76,12 +77,16 @@ export class AtualizarDepartmentUseCase {
         input.parentId,
         async (id: string) => {
           const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
-          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
+          return dept
+            ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department)
+            : null;
         },
       );
 
       if (hasLoop) {
-        throw new Error("Não é possível criar hierarquia circular. O departamento pai é descendente deste departamento.");
+        throw new Error(
+          "Não é possível criar hierarquia circular. O departamento pai é descendente deste departamento.",
+        );
       }
 
       // Verificar profundidade máxima
@@ -89,7 +94,9 @@ export class AtualizarDepartmentUseCase {
         department.departmentId,
         async (id: string) => {
           const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
-          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
+          return dept
+            ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department)
+            : null;
         },
       );
 
@@ -98,7 +105,9 @@ export class AtualizarDepartmentUseCase {
         input.parentId,
         async (id: string) => {
           const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
-          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
+          return dept
+            ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department)
+            : null;
         },
       );
 

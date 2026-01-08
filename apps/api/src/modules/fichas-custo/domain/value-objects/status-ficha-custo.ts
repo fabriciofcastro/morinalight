@@ -2,11 +2,7 @@
  * Value Object para Status da Ficha de Custo
  * Representa o workflow obrigatório
  */
-export type StatusFichaCusto =
-  | "rascunho"
-  | "enviada_para_conferencia"
-  | "aprovada"
-  | "reprovada";
+export type StatusFichaCusto = "rascunho" | "enviada_para_conferencia" | "aprovada" | "reprovada";
 
 export class StatusFichaCustoVO {
   private constructor(private readonly status: StatusFichaCusto) {}

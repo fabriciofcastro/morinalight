@@ -14,9 +14,9 @@ import {
     FileText,
     Shield
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/ui/base/button';
 import { GlassCard } from '@morina/ui';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/shared/ui/base/badge';
 import { useCertifications } from '@/hooks/queries/use-certifications';
 import { useCurrentOrganization } from '@/hooks/queries/use-organizations';
 

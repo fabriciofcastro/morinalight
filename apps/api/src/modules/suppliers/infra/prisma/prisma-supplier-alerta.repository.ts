@@ -7,4 +7,3 @@ export class PrismaAlertaSupplierRepositoryImpl extends PrismaAlertaSupplierRepo
     super(prisma);
   }
 }
-

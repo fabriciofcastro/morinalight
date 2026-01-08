@@ -2,8 +2,8 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AtualizarSubdepartmentUseCase } from "../application/use-cases/atualizar-subdepartment.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 import type { BranchRepository } from "../domain/repositories/branch-repository";
+import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -15,7 +15,10 @@ type Dependencies = {
 export async function registerUpdateSubdepartmentRoute(app: FastifyInstance, deps: Dependencies) {
   app.put(
     "/subdepartments/:subdepartmentId",
-    async (request: FastifyRequest<{ Params: { subdepartmentId: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { subdepartmentId: string } }>,
+      reply: FastifyReply,
+    ) => {
       const orgId = request.headers["x-org-id"] as string;
       const userId = (request.auth?.userId ?? request.headers["x-user-id"]) as string;
 
@@ -66,4 +69,3 @@ export async function registerUpdateSubdepartmentRoute(app: FastifyInstance, dep
     },
   );
 }
-

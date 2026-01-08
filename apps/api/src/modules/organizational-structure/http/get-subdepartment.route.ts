@@ -9,7 +9,10 @@ type Dependencies = {
 export async function registerGetSubdepartmentRoute(app: FastifyInstance, deps: Dependencies) {
   app.get(
     "/subdepartments/:subdepartmentId",
-    async (request: FastifyRequest<{ Params: { subdepartmentId: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { subdepartmentId: string } }>,
+      reply: FastifyReply,
+    ) => {
       const orgId = request.headers["x-org-id"] as string;
 
       if (!orgId) {
@@ -57,4 +60,3 @@ export async function registerGetSubdepartmentRoute(app: FastifyInstance, deps: 
     },
   );
 }
-

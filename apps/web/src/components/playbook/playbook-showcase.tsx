@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
+import { AnimatedTechCorners } from "@/shared/ui/base/animated-tech-corners";
 import { GlassCard } from "@morina/ui";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";

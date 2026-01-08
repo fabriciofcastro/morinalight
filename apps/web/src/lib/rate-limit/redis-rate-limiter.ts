@@ -4,8 +4,8 @@
  * Sliding window rate limiting with Redis for multi-instance deployments
  */
 
-import Redis from 'ioredis';
 import { logger } from '@/lib/observability';
+import Redis from 'ioredis';
 
 export interface RateLimitConfig {
     requests: number;
@@ -28,7 +28,7 @@ function parseWindow(window: string): number {
     if (!match) throw new Error(`Invalid window format: ${window}`);
 
     const [, value, unit] = match;
-    const num = parseInt(value, 10);
+    const num = parseInt(value ?? "0", 10);
 
     const multipliers: Record<string, number> = {
         s: 1000,
@@ -37,7 +37,7 @@ function parseWindow(window: string): number {
         d: 24 * 60 * 60 * 1000,
     };
 
-    return num * multipliers[unit];
+    return num * (multipliers[unit ?? 's'] ?? 1000);
 }
 
 /**

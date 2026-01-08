@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 type MemberInfo = {
   membershipId: string;

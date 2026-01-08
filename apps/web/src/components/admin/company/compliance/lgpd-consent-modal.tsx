@@ -9,7 +9,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/shared/ui/base/alert-dialog";
 import { ShieldAlert, BookOpen } from "lucide-react";
 
 interface LGPDConsentModalProps {

@@ -15,10 +15,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerGetUserAuditLogRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerGetUserAuditLogRoute(app: FastifyInstance, deps: Dependencies) {
   app.get("/users/:userId/audit", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;

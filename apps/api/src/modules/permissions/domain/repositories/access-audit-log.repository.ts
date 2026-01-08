@@ -39,16 +39,21 @@ export type AccessAuditLogPage = {
 export interface AccessAuditLogRepository {
   registrar(log: Omit<AccessAuditLog, "id" | "createdAt">): Promise<AccessAuditLog>;
   listar(filtro: AccessAuditLogFilter): Promise<AccessAuditLogPage>;
-  contarAcessosNegados(orgId: string, userId: string, startDate: Date, endDate: Date): Promise<number>;
-  contarAcessosPorPermissao(orgId: string, permission: string, startDate: Date, endDate: Date): Promise<number>;
-  listarIpsSuspeitos(orgId: string, threshold: number, startDate: Date): Promise<Array<{ ipAddress: string; count: number }>>;
+  contarAcessosNegados(
+    orgId: string,
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number>;
+  contarAcessosPorPermissao(
+    orgId: string,
+    permission: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number>;
+  listarIpsSuspeitos(
+    orgId: string,
+    threshold: number,
+    startDate: Date,
+  ): Promise<Array<{ ipAddress: string; count: number }>>;
 }
-
-
-
-
-
-
-
-
-

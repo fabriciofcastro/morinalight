@@ -2,11 +2,14 @@ import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { Subdepartment } from "../../domain/entities/subdepartment";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
-import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import type { BranchRepository } from "../../domain/repositories/branch-repository";
-import { criarSubdepartmentInputSchema, subdepartmentViewSchema } from "../schemas/subdepartment.schema";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import { calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
+import {
+  criarSubdepartmentInputSchema,
+  subdepartmentViewSchema,
+} from "../schemas/subdepartment.schema";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -45,10 +48,7 @@ export class CriarSubdepartmentUseCase {
 
     // Verificar se branchId existe (se fornecido)
     if (input.branchId && this.deps.branchRepository) {
-      const branch = await this.deps.branchRepository.encontrarPorId(
-        input.orgId,
-        input.branchId,
-      );
+      const branch = await this.deps.branchRepository.encontrarPorId(input.orgId, input.branchId);
 
       if (!branch) {
         throw new Error("Filial não encontrada");
@@ -67,13 +67,12 @@ export class CriarSubdepartmentUseCase {
       }
 
       // Verificar profundidade máxima
-      const parentDepth = await calculateHierarchyDepth(
-        input.parentId,
-        async (id: string) => {
-          const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
-          return subdept ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment) : null;
-        },
-      );
+      const parentDepth = await calculateHierarchyDepth(input.parentId, async (id: string) => {
+        const subdept = await this.deps.subdepartmentRepository.encontrarPorId(input.orgId, id);
+        return subdept
+          ? ({ id: subdept.subdepartmentId, parentId: subdept.dados.parentId } as Subdepartment)
+          : null;
+      });
 
       if (parentDepth >= 9) {
         throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");
@@ -157,4 +156,3 @@ export class CriarSubdepartmentUseCase {
     });
   }
 }
-

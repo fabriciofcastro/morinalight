@@ -9,7 +9,16 @@ import { decrypt, encrypt, isEncrypted } from "../encryption/field-encryption.se
 const SENSITIVE_FIELDS: Record<string, string[]> = {
   User: ["cpf", "rg", "phone", "address", "documentNumber"],
   Cliente: ["documento", "email", "telefone", "celular", "endereco", "cidade", "estado", "cep"],
-  Representante: ["documento", "email", "telefone", "celular", "endereco", "cidade", "estado", "cep"],
+  Representante: [
+    "documento",
+    "email",
+    "telefone",
+    "celular",
+    "endereco",
+    "cidade",
+    "estado",
+    "cep",
+  ],
   Organization: ["phone", "address"], // Phone e address da organização
   // Adicionar outros modelos conforme necessário
 };
@@ -20,7 +29,11 @@ const SENSITIVE_FIELDS: Record<string, string[]> = {
 export function registerEncryptionMiddleware(prisma: PrismaClient): void {
   prisma.$use(async (params, next) => {
     // Criptografar antes de salvar
-    if (params.action === "create" || params.action === "update" || params.action === "updateMany") {
+    if (
+      params.action === "create" ||
+      params.action === "update" ||
+      params.action === "updateMany"
+    ) {
       const model = params.model;
       const sensitiveFields = SENSITIVE_FIELDS[model || ""];
 

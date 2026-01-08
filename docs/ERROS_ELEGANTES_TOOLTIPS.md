@@ -331,3 +331,4 @@ Os erros agora aparecem de forma:
 - ✨ **Animada** - Transições suaves e agradáveis
 
 Os usuários têm uma experiência muito mais polida e profissional! 🎉
+

@@ -50,8 +50,8 @@ describe("ProductTemplateService Integration", () => {
 
         // 4. Modify one shouldn't affect the other
         if (pc1 instanceof ProductBundle && pc2 instanceof ProductBundle) {
-            pc1.getItems()[0].price = 9999;
-            expect(pc2.getItems()[0].price).toBe(150); // Original price
+            pc1.getItems()[0]!.price = 9999;
+            expect(pc2.getItems()[0]!.price).toBe(150); // Original price
         }
     });
 

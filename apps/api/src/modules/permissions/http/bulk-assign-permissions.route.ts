@@ -2,19 +2,19 @@
  * Rota HTTP: Bulk Assign Permissions
  */
 
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { BulkAssignPermissionsUseCase } from "../application/use-cases/bulk-assign-permissions.use-case";
 import type { DepartmentRepository } from "../../../organizational-structure/domain/repositories/department-repository";
-import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
 import type { PositionRepository } from "../../../organizational-structure/domain/repositories/position-repository";
+import type { SectorRepository } from "../../../organizational-structure/domain/repositories/sector-repository";
+import { BulkAssignPermissionsUseCase } from "../application/use-cases/bulk-assign-permissions.use-case";
 import type { DepartmentPermissionRepository } from "../domain/repositories/department-permission-repository";
-import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
-import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
-import type { UserPermissionRepository } from "../domain/repositories/user-permission-repository";
 import type { PermissionAuditLogRepository } from "../domain/repositories/permission-audit-log-repository";
 import type { PermissionRepository } from "../domain/repositories/permission-repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
+import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
+import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
+import type { UserPermissionRepository } from "../domain/repositories/user-permission-repository";
 
 type Dependencies = {
   permissionRepository: PermissionRepository;
@@ -29,10 +29,7 @@ type Dependencies = {
   eventBus?: DomainEventBus;
 };
 
-export async function registerBulkAssignPermissionsRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerBulkAssignPermissionsRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/permissions/bulk-assign", async (request: FastifyRequest, reply: FastifyReply) => {
     const orgId = (request.headers["x-org-id"] as string) || (request.body as any).orgId;
     const userId = (request as any).user?.id || (request.headers["x-user-id"] as string);
@@ -76,12 +73,3 @@ export async function registerBulkAssignPermissionsRoute(
     }
   });
 }
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 /**
  * Módulo de Documentação OpenAPI/Swagger
  * Configura documentação automática da API usando @fastify/swagger e @fastify/swagger-ui
- * 
+ *
  * A documentação é gerada automaticamente a partir das rotas registradas no Fastify
  * com seus schemas Zod, proporcionando documentação sempre atualizada.
  */
@@ -29,14 +29,14 @@ export type SwaggerOptions = {
   useStaticSpec?: boolean;
 };
 
-
 /**
  * Configuração base do Swagger
  */
 function getSwaggerConfig() {
-  const baseUrl = env.NODE_ENV === "production" 
-    ? env.FRONTEND_URL?.split(",")[0]?.replace(/\/$/, "") || "https://api.morina.com.br"
-    : `http://localhost:${env.API_PORT}`;
+  const baseUrl =
+    env.NODE_ENV === "production"
+      ? env.FRONTEND_URL?.split(",")[0]?.replace(/\/$/, "") || "https://api.morina.com.br"
+      : `http://localhost:${env.API_PORT}`;
 
   return {
     openapi: {
@@ -105,7 +105,8 @@ Todas as requisições (exceto públicas) devem incluir o header:
             type: "apiKey",
             in: "header",
             name: "x-organization-id",
-            description: "ID da organização (multi-tenancy). Obrigatório em todas as rotas protegidas.",
+            description:
+              "ID da organização (multi-tenancy). Obrigatório em todas as rotas protegidas.",
           },
           actorHeader: {
             type: "apiKey",
@@ -145,10 +146,10 @@ function getSwaggerUIConfig(routePrefix: string = "/docs") {
       tryItOutEnabled: true,
     },
     uiHooks: {
-      onRequest: async function (_request: any, _reply: any) {
+      onRequest: async (_request: any, _reply: any) => {
         // Hook para customizar requisições se necessário
       },
-      preHandler: async function (_request: any, _reply: any) {
+      preHandler: async (_request: any, _reply: any) => {
         // Hook pré-handler se necessário
       },
     },
@@ -168,7 +169,7 @@ function getSwaggerUIConfig(routePrefix: string = "/docs") {
  */
 export async function registerOpenAPIDocs(
   app: FastifyInstance,
-  options: SwaggerOptions = {}
+  options: SwaggerOptions = {},
 ): Promise<void> {
   const { enabled = true, routePrefix = "/docs", useStaticSpec = false } = options;
 
@@ -185,10 +186,12 @@ export async function registerOpenAPIDocs(
     await app.register(fastifySwaggerUi as any, getSwaggerUIConfig(routePrefix));
 
     app.log.info({ routePrefix }, "✅ Documentação Swagger registrada");
-    app.log.info({ url: `http://localhost:${env.API_PORT}${routePrefix}` }, "📚 Acesse a documentação em");
+    app.log.info(
+      { url: `http://localhost:${env.API_PORT}${routePrefix}` },
+      "📚 Acesse a documentação em",
+    );
   } catch (error) {
     app.log.error({ error }, "❌ Erro ao registrar documentação Swagger");
     throw error;
   }
 }
-

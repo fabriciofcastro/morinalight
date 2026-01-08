@@ -5,8 +5,8 @@ import { ArrowUpRight, Layers, NotebookPen, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/shared/ui/base/badge";
+import { Progress } from "@/shared/ui/base/progress";
 import { docChangelog, docSections } from "@/content/docs-index";
 
 const statusPalette: Record<string, string> = {

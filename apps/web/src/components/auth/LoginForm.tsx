@@ -1,20 +1,19 @@
 "use client";
 
+import { useLogin } from "@/presentation/hooks/use-login";
 import { Button, cn, Label, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
 import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-  ShieldCheck,
-  Terminal,
-  RefreshCw,
+    ArrowRight,
+    Eye,
+    EyeOff,
+    Loader2,
+    Lock,
+    Mail,
+    ShieldCheck,
+    Terminal
 } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { authApi } from "@/lib/api/auth";
+import { useEffect, useState } from "react";
 import { MFALogin } from "./mfa-login";
 
 type LoginNoticePayload = {
@@ -48,7 +47,9 @@ export function LoginForm({
   const [honeypot, setHoneypot] = useState(""); // Anti-bot field
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isBotProcessing, setIsBotProcessing] = useState(false);
+  const loginMutation = useLogin();
+  const isLoading = loginMutation.isPending || isBotProcessing;
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [mfaRequired, setMfaRequired] = useState(false);
@@ -105,9 +106,9 @@ export function LoginForm({
     if (honeypot) {
       console.log("🤖 [SECURITY] Bot detected via honeypot");
       // Silently reject (don't give feedback to bot)
-      setIsLoading(true);
+      setIsBotProcessing(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      setIsLoading(false);
+      setIsBotProcessing(false);
       return;
     }
 
@@ -156,26 +157,20 @@ export function LoginForm({
       return;
     }
 
-    console.log("✅ [LOGIN] All validations passed, calling API...");
-    setIsLoading(true);
+    console.log("✅ [LOGIN] All validations passed, calling useLogin...");
 
     try {
-      console.log("🔵 [LOGIN] Calling authApi.login...");
-      const response = await authApi.login({
+      console.log("🔵 [LOGIN] Calling loginMutation...");
+      const user = await loginMutation.mutateAsync({
         email: sanitizedEmail,
         password: sanitizedPassword,
         remember: rememberMe,
-      }, {
-        headers: {
-          "X-CSRF-Token": csrfToken,
-        },
       });
-      console.log("✅ [LOGIN] API response:", response);
+      console.log("✅ [LOGIN] Login successful:", user);
 
-      if (response.requiresTwoFactor) {
+      if (user.requiresTwoFactor) {
         console.log("🔵 [LOGIN] 2FA required");
         setMfaRequired(true);
-        setIsLoading(false);
         return;
       }
 
@@ -184,9 +179,9 @@ export function LoginForm({
 
       console.log("🔵 [LOGIN] Redirecting...");
       // Usar window.location.href para garantir redirecionamento completo
-      if (response.user.mustChangePassword) {
+      if (user.mustChangePassword) {
         window.location.href = "/auth/force-change";
-      } else if (response.organizations && response.organizations.length > 1) {
+      } else if (user.organizations && user.organizations.length > 1) {
         window.location.href = "/select-organization";
       } else {
         window.location.href = "/dashboard";
@@ -445,9 +440,7 @@ export function LoginForm({
           }
       }
     } finally {
-      if (!mfaRequired) {
-        setIsLoading(false);
-      }
+      // isPending handles loading state automatically
     }
   };
 

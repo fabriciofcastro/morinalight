@@ -2,7 +2,7 @@
 
 import { Globe, Settings } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
-import { FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { SectionShell } from "../shared/section-shell";
 
 interface SettingsTabProps {

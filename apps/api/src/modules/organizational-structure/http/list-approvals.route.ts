@@ -40,12 +40,3 @@ export async function registerListApprovalsRoute(
     }
   });
 }
-
-
-
-
-
-
-
-
-

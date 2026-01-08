@@ -3,35 +3,53 @@
  * Verifica permissões antes de executar ações usando CASL
  */
 
-import type { FastifyRequest, FastifyReply } from "fastify";
-import { getPrisma } from "../../infra/database/prisma.service";
-import { extractOrgId } from "../auth/rbac.guards";
-import { CaslAbilityFactory } from "../../modules/permissions/domain/factories/casl-ability.factory";
-import { ResolverPermissoesEfetivasUseCase } from "../../modules/permissions/application/use-cases/resolver-permissoes-efetivas.use-case";
-import { PrismaPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-permission.repository";
-import { PrismaOrganizationRepository } from "../../modules/organizations/infra/prisma/prisma-organization.repository";
-import { PrismaPositionPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-position-permission.repository";
-import { PrismaSectorPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-sector-permission.repository";
-import { PrismaDepartmentPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-department-permission.repository";
-import { PrismaUserPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-user-permission.repository";
-import { PrismaPositionMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position-membership.repository";
-import { PrismaDepartmentMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department-membership.repository";
-import { PrismaPositionRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position.repository";
+import { unifiedPolicyEngine } from "@morina/shared-kernel";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import { AuthenticationError, AuthorizationError, RateLimitError, ServiceUnavailableError } from "../errors/app-error";
+
 import { env } from "../../core/config/env";
+import { getPrisma } from "../../infra/database/prisma.service";
+import { PrismaDepartmentMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department-membership.repository";
+import { PrismaDepartmentRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department.repository";
+import { PrismaPositionMembershipRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position-membership.repository";
+import { PrismaPositionRepository } from "../../modules/organizational-structure/infra/prisma/prisma-position.repository";
+import { PrismaSectorRepository } from "../../modules/organizational-structure/infra/prisma/prisma-sector.repository";
+import { PrismaOrganizationRepository } from "../../modules/organizations/infra/prisma/prisma-organization.repository";
+import { ResolverPermissoesEfetivasUseCase } from "../../modules/permissions/application/use-cases/resolver-permissoes-efetivas.use-case";
+import {
+  CaslAbilityFactory,
+} from "../../modules/permissions/domain/factories/casl-ability.factory";
+import { ImmutableAuditService } from "../../modules/permissions/domain/services/immutable-audit.service";
+import { OpaDecisionProvider } from "../../modules/permissions/infra/opa/opa-decision.provider";
+import { OpaService } from "../../modules/permissions/infra/opa/opa.service";
+import { GovernancePepService } from "../../modules/permissions/services/governance-pep.service";
+import { MlEnsembleService } from "../../modules/permissions/services/ml-ensemble.service";
+import { RiskScoringService } from "../../modules/permissions/services/risk-scoring.service";
+import { UebaService } from "../../modules/permissions/services/ueba.service";
+import { extractOrgId } from "../auth/rbac.guards";
+
+// Restore missing imports for makeResolverPermissoesEfetivas
 import { InMemoryPermissionCacheService } from "../../modules/permissions/infra/cache/in-memory-permission-cache.service";
 import { RedisPermissionCacheService } from "../../modules/permissions/infra/cache/redis-permission-cache.service";
+import { PrismaDepartmentPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-department-permission.repository";
+import { PrismaPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-permission.repository";
+import { PrismaPositionPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-position-permission.repository";
+import { PrismaSectorPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-sector-permission.repository";
+import { PrismaUserPermissionRepository } from "../../modules/permissions/infra/prisma/prisma-user-permission.repository";
 import { PermissionInheritanceServiceImpl } from "../../modules/permissions/infra/services/permission-inheritance.service";
-import { PrismaDepartmentRepository } from "../../modules/organizational-structure/infra/prisma/prisma-department.repository";
-import { PrismaSectorRepository } from "../../modules/organizational-structure/infra/prisma/prisma-sector.repository";
+
+
+
 
 // Instância única de cache para o middleware
 const permissionCache = env.REDIS_URL
   ? new RedisPermissionCacheService()
   : new InMemoryPermissionCacheService();
 
-// Instâncias globais ou lazy-loaded seriam melhores, 
-// mas para manter consistência vamos instanciar sob demanda aproveitando o cache do PrismaService
-function makeResolverPermissoesEfetivas() {
+/**
+ * Instância única do use case de resolução de permissões para evitar instanciamento em cada requisição
+ */
+function createResolverUseCase() {
   const permissionRepo = new PrismaPermissionRepository();
   const orgRepo = new PrismaOrganizationRepository();
   const posPermRepo = new PrismaPositionPermissionRepository();
@@ -42,7 +60,6 @@ function makeResolverPermissoesEfetivas() {
   const depMemRepo = new PrismaDepartmentMembershipRepository();
   const posRepo = new PrismaPositionRepository();
 
-  // Dependências de Herança
   const depRepo = new PrismaDepartmentRepository();
   const secRepo = new PrismaSectorRepository();
 
@@ -53,10 +70,8 @@ function makeResolverPermissoesEfetivas() {
     departmentPermissionRepository: depPermRepo,
     sectorPermissionRepository: secPermRepo,
     positionPermissionRepository: posPermRepo,
-    permissionRepository: permissionRepo
+    permissionRepository: permissionRepo,
   });
-
-  // O cache agora é compartilhado através do singleton acima
 
   return new ResolverPermissoesEfetivasUseCase({
     permissionRepository: permissionRepo,
@@ -69,9 +84,12 @@ function makeResolverPermissoesEfetivas() {
     departmentMembershipRepository: depMemRepo,
     positionRepository: posRepo,
     permissionCacheService: permissionCache,
-    permissionInheritanceService: inheritanceService
+    permissionInheritanceService: inheritanceService,
   });
 }
+
+const resolverPermissoesEfetivasUseCase = createResolverUseCase();
+
 
 type PermissionCheckOptions = {
   permission: string; // ID ou código da permissão (ex: "products:view")
@@ -80,72 +98,163 @@ type PermissionCheckOptions = {
 };
 
 /**
- * Middleware para verificar permissão
+ * Instâncias globais de serviços de segurança avançada
+ */
+const prisma = getPrisma();
+const opaService = new OpaService();
+const opaProvider = new OpaDecisionProvider(opaService);
+const mlEnsemble = new MlEnsembleService(prisma);
+const riskService = new RiskScoringService(mlEnsemble, opaService);
+const immutableAudit = new ImmutableAuditService(prisma);
+const uebaService = new UebaService(prisma);
+const governancePep = new GovernancePepService(prisma);
+
+
+// Registrar OPA no Engine
+unifiedPolicyEngine.registerProvider(opaProvider);
+
+/**
+ * Middleware para verificar permissão (Primary PEP - Policy Enforcement Point)
  */
 export function requirePermission(options: PermissionCheckOptions) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
+    // 1. AuthN (Identity)
     if (!request.auth) {
-      return reply.status(401).send({
-        message: "Autenticação necessária",
-        code: "UNAUTHORIZED",
-      });
+      throw new AuthenticationError("Autenticação necessária");
     }
+
 
     const { permission } = options;
     const userId = request.auth?.userId;
     const orgId = extractOrgId(request);
 
     if (!userId || !orgId) {
-      return reply.status(403).send({
-        message: "Permissão negada (Contexto Inválido)",
-        code: "FORBIDDEN",
-      });
+      throw new AuthorizationError("Permissão negada (Contexto Inválido)");
     }
 
+
     try {
-      // 1. Resolver todas as permissões efetivas do usuário (com cache)
-      const useCase = makeResolverPermissoesEfetivas();
-      const effectivePermissions = await useCase.execute({ orgId, userId });
+      // 2. Security Governance Layer (SGS) - Risk & Behavioral Analysis
+      
+      // 2.1 Behavioral Analysis (UEBA)
+      const uebaResult = await uebaService.analyzeBehavior(userId, orgId, {
+        action: permission,
+        ip: request.ip
+      });
 
-      // 2. Criar Ability do CASL
-      const ability = CaslAbilityFactory.createForUser(effectivePermissions);
+      // 2.2 Risk Scoring (ML + UEBA Adjustment)
+      let baseRiskScore = await riskService.calculateRiskScore(userId, orgId, {
+        ip: request.ip,
+        userAgent: request.headers['user-agent']
+      });
+      
+      const riskScore = Math.min(100, baseRiskScore + uebaResult.riskScoreAdjustment);
 
-      // 3. Traduzir a permissão string (ex: "products:view") para Ação/Sujeito (ex: "read", "Product")
+      // 2.3 Runtime Security Controls (Governance PEP)
+      
+      // Check for Kill Switch
+      if (governancePep.isFeatureDisabled(permission)) {
+        throw new ServiceUnavailableError(
+          "SecurityGovernance",
+          60,
+          "Esta funcionalidade está temporariamente desativada por motivos de segurança"
+        );
+      }
+
+
+      // Check for Rate Limit per permission
+      const withinRateLimit = await governancePep.checkRateLimit(userId, permission);
+      if (!withinRateLimit) {
+        throw new RateLimitError(60, "Limite de frequência excedido para esta ação");
+      }
+
+
+      // Check for Session Quarantine (Extreme Risk or Manual Lock)
+      if (riskScore > 90 || governancePep.isUserQuarantined(userId)) {
+        await immutableAudit.logEvent({
+          orgId, userId, type: 'SECURITY_QUARANTINE',
+          payload: { reason: 'CRITICAL_RISK', score: riskScore, uebaReasons: uebaResult.reasons },
+          metadata: { ip: request.ip, userAgent: request.headers['user-agent'] }
+        });
+        return reply.status(403).send({ 
+          message: "Acesso bloqueado por anomalia de segurança identificada", 
+          code: "SECURITY_QUARANTINE",
+          riskScore 
+        });
+      }
+
+      // 3. Authorization (PBAC + ABAC + TBAC)
+      const effectivePermissions = await resolverPermissoesEfetivasUseCase.execute({ orgId, userId });
+
+      
+      const userContext: any = { // UserContext
+        userId,
+        orgId,
+        riskScore,
+        ipAddress: request.ip,
+        userAgent: request.headers['user-agent'],
+        role: request.auth?.role,
+        isDegraded: riskScore > 60 // "Degraded Access" mode if risk is medium-high
+      };
+
       const { action, subject } = CaslAbilityFactory.parsePermissionKey(permission);
+      
+      // Hybrid OPA Check (Asynchronous)
+      if (action && subject) {
+        const securityContext = {
+           user: { id: userId, role: request.auth?.role || 'member' },
+           environment: { 
+             time: new Date(), 
+             riskScore, 
+             ip: request.ip, 
+             userAgent: request.headers['user-agent'] as string,
+             mfaVerified: false 
+           }
+        };
 
-      if (!action || !subject) {
-        // Se a permissão não pode ser mapeada para o sistema CASL, 
-        // caímos para uma verificação de segurança (negar por padrão ou checar a string crua se suportado)
-        // Por segurança, negamos e logamos.
-        request.log.warn(`Permissão desconhecida solicitada: ${permission}`);
-        return reply.status(403).send({
-          message: "Permissão desconhecida ou inválida",
-          code: "FORBIDDEN",
-          requiredPermission: permission,
-        });
+        const isAllowedByOpa = await unifiedPolicyEngine.evaluateAsync(
+          action, 
+          subject as string, 
+          securityContext
+        );
+
+        if (!isAllowedByOpa) {
+          await immutableAudit.logEvent({
+            orgId, userId, type: 'POLICY_VIOLATION_OPA',
+            payload: { permission, riskScore, action, subject }
+          });
+          throw new AuthorizationError("Acesso negado por governança centralizada");
+        }
+
       }
 
-      // 4. Verificar autorização
-      if (ability.cannot(action, subject)) {
-        return reply.status(403).send({
-          message: "Permissão negada",
-          code: "FORBIDDEN",
-          requiredPermission: permission,
+      // Fine-Grained CASL Check
+      const ability = CaslAbilityFactory.createForUserWithConditions(effectivePermissions, userContext);
+
+      if (!action || !subject || ability.cannot(action, subject)) {
+        await immutableAudit.logEvent({
+          orgId, userId, type: 'POLICY_VIOLATION_CASL',
+          payload: { permission, riskScore }
         });
+        throw new AuthorizationError(`Permissão negada para ${permission}`);
       }
 
-      // Se passou, injetar ability no request para uso posterior nos controllers se necessário
-      // (request as any).ability = ability; 
+
+      // 4. Immutable Forensics (Success Log with Hash Chain)
+      await immutableAudit.logEvent({
+        orgId, userId, type: 'ACCESS_GRANTED',
+        payload: { permission, riskScore, uebaAdjustment: uebaResult.riskScoreAdjustment },
+        metadata: { ip: request.ip, userAgent: request.headers['user-agent'] }
+      });
 
     } catch (error) {
-      request.log.error(error, "Erro ao verificar permissão com CASL");
-      return reply.status(500).send({
-        message: "Erro interno ao verificar permissões",
-        code: "PERMISSION_CHECK_ERROR",
-      });
+      request.log.error(error, "SGS Error during PEP execution");
+      return reply.status(500).send({ message: "Erro de processamento de segurança", code: "SGS_ERROR" });
     }
   };
 }
+
+
 
 /**
  * Helper para verificar múltiplas permissões
@@ -160,7 +269,8 @@ export function requireAnyPermission(permissions: string[]) {
     const userId = request.auth?.userId;
     const orgId = extractOrgId(request);
 
-    if (!userId || !orgId) return reply.status(403).send({ message: "Contexto inválido", code: "FORBIDDEN" });
+    if (!userId || !orgId)
+      return reply.status(403).send({ message: "Contexto inválido", code: "FORBIDDEN" });
 
     try {
       const useCase = makeResolverPermissoesEfetivas();
@@ -189,16 +299,3 @@ export function requireAnyPermission(permissions: string[]) {
     }
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

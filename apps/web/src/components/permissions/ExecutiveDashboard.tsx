@@ -1,10 +1,10 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/shared/ui/base/badge";
+import { Button } from "@/shared/ui/base/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/base/card";
+import { Progress } from "@/shared/ui/base/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/base/tabs";
 import {
     Activity,
     AlertTriangle,

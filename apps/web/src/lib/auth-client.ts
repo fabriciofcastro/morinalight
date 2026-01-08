@@ -101,6 +101,7 @@ export function decodeJwt(token: string): {
       return null;
     }
     const payload = parts[1];
+    if (!payload) return null;
     const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
     return JSON.parse(decoded);
   } catch {
@@ -136,7 +137,7 @@ export function getCurrentOrgId(): string | null {
     try {
       const orgs = JSON.parse(orgsStr) as Array<{ organizationId: string }>;
       if (orgs.length > 0) {
-        return orgs[0].organizationId;
+        return orgs[0]?.organizationId ?? null;
       }
     } catch {
       // Ignorar erro de parsing

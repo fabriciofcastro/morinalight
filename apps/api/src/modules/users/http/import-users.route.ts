@@ -1,8 +1,9 @@
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { BCRYPT_ROUNDS } from "../../../core/config/password-config";
 import type { UserRepository } from "../repositories/user.repository";
 
 type Dependencies = {
@@ -20,10 +21,7 @@ const importUsersSchema = z.object({
   ),
 });
 
-export async function registerImportUsersRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerImportUsersRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/users/import", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -51,8 +49,8 @@ export async function registerImportUsersRoute(
           }
 
           const passwordHash = userData.password
-            ? await bcrypt.hash(userData.password, 10)
-            : await bcrypt.hash(randomUUID(), 10); // Senha aleatória se não fornecida
+            ? await bcrypt.hash(userData.password, BCRYPT_ROUNDS)
+            : await bcrypt.hash(randomUUID(), BCRYPT_ROUNDS); // Senha aleatória se não fornecida
 
           const userId = randomUUID();
           await deps.userRepository.create({
@@ -80,7 +78,9 @@ export async function registerImportUsersRoute(
 
     const imported = results.filter((r) => r.status === "fulfilled" && r.value.success).length;
     const errors = results
-      .map((r) => (r.status === "fulfilled" ? r.value : { success: false, error: "Erro ao processar" }))
+      .map((r) =>
+        r.status === "fulfilled" ? r.value : { success: false, error: "Erro ao processar" },
+      )
       .filter((r) => !r.success);
 
     return reply.send({
@@ -90,6 +90,3 @@ export async function registerImportUsersRoute(
     });
   });
 }
-
-
-

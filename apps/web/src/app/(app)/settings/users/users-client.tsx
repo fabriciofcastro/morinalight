@@ -1,5 +1,11 @@
 "use client";
 
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { useDebounce } from "@/hooks/use-debounce";
+import { getAuthHeadersWithTenant } from "@/lib/auth-client";
+import { useCreateUser } from "@/presentation/hooks/use-create-user";
+import { useUpdateUser } from "@/presentation/hooks/use-update-user";
+import { useUsers } from "@/presentation/hooks/use-users";
 import { Button, GlassCard, Input, Label, Popover, PopoverContent, PopoverTrigger, cn } from "@morina/ui";
 import {
   Download,
@@ -13,13 +19,9 @@ import {
   UserX,
   Users,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { EmptyState, ErrorState, LoadingState } from "@/components/ui";
-import { useDebounce } from "@/hooks/use-debounce";
-import { UserDetailsPanel } from "./user-details-panel";
+import { useEffect, useMemo, useState } from "react";
 import { CreateUserDrawer } from "./create-user-drawer";
+import { UserDetailsPanel } from "./user-details-panel";
 
 type UserData = {
   userId: string;
@@ -70,9 +72,56 @@ type SortState = {
 };
 
 export function UsersClient() {
-  const [loading, setLoading] = useState(true);
+  const { data: allUsers = [], isLoading: loading, error: queryError, refetch } = useUsers();
+  
+  // Clean Arch Hooks
+  const createProduct = useCreateUser(); // typo in variable name in products-client but here create-user
+  const updateUser = useUpdateUser(); 
+  // const deleteUser = useDeleteUser(); // Not implemented yet, bulk actions use update status mostly.
+  
   const [error, setError] = useState<string | null>(null);
   const [users, setUsers] = useState<UserData[]>([]);
+  
+  // Sync Query Data to Local State for filtering (or just derive from data)
+  // detailed logic below:
+  
+  useEffect(() => {
+    if (allUsers) { 
+        // Map DTO to component UserData shape if needed, or update component to use DTO
+        // UserResponseDTO has: id, email, name, role, isActive, createdAt, updatedAt
+        // UserData has: userId, email, displayName, ... 
+        // Need mapping.
+        const mapped: UserData[] = allUsers.map(u => ({
+            userId: u.id,
+            email: u.email,
+            displayName: u.name,
+            avatarUrl: null, // DTO doesn't have it
+            status: u.isActive ? 'active' : 'inactive',
+            lastLogin: null, // DTO doesn't have it
+            createdAt: u.createdAt,
+            updatedAt: u.updatedAt,
+            // defaults
+            cpf: null,
+            phone: null,
+            position: null,
+            department: null
+        }));
+        setUsers(mapped);
+    }
+  }, [allUsers]);
+
+  // Loading/Error handling from hook
+  useEffect(() => {
+    if (queryError) {
+        setError(queryError.message);
+        notificationCenter.add({
+          type: "error",
+          title: "Erro ao carregar usuários",
+          message: queryError.message,
+        });
+    }
+  }, [queryError]);
+
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -98,64 +147,7 @@ export function UsersClient() {
   const [sectors, setSectors] = useState<Array<{ id: string; name: string }>>([]);
   const [positions, setPositions] = useState<Array<{ id: string; name: string }>>([]);
 
-  const loadUsers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const headers = {
-        ...getAuthHeadersWithTenant(),
-        "Content-Type": "application/json",
-      };
-
-      const params = new URLSearchParams();
-      if (search.trim()) params.set("busca", search.trim());
-      if (filters.status !== "all") params.set("status", filters.status);
-      if (filters.department) params.set("departmentId", filters.department);
-      if (filters.sector) params.set("sectorId", filters.sector);
-      if (filters.position) params.set("positionId", filters.position);
-      if (filters.admissionDateRange.from) params.set("admissionDateFrom", filters.admissionDateRange.from);
-      if (filters.admissionDateRange.to) params.set("admissionDateTo", filters.admissionDateRange.to);
-      if (filters.lastAccessRange.from) params.set("lastAccessFrom", filters.lastAccessRange.from);
-      if (filters.lastAccessRange.to) params.set("lastAccessTo", filters.lastAccessRange.to);
-      params.set("sortBy", sort.field);
-      params.set("sortDir", sort.direction);
-      params.set("page", page.toString());
-      params.set("limit", itemsPerPage.toString());
-
-      const response = await fetch(`/api/users?${params.toString()}`, {
-        headers,
-        cache: "no-store",
-      });
-
-      if (response.ok) {
-        const data = (await response.json()) as ListResponse<UserData>;
-        setUsers(data.itens ?? []);
-        setError(null);
-      } else {
-        const errorData = await response.json().catch(() => ({ message: "Erro ao carregar usuários" }));
-        setError(errorData.message || "Não foi possível carregar a lista de usuários.");
-        notificationCenter.add({
-          type: "error",
-          title: "Erro ao carregar usuários",
-          message: errorData.message || "Não foi possível carregar a lista de usuários.",
-        });
-      }
-    } catch (e) {
-      console.error(e);
-      const errorMessage = "Erro inesperado ao carregar usuários.";
-      setError(errorMessage);
-      notificationCenter.add({
-        type: "error",
-        title: "Erro",
-        message: errorMessage,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedSearch, filters, sort, page]);
-
-  useEffect(() => {
-    void loadUsers();
-  }, [loadUsers]);
+  // Manual loadUsers removed in favor of useUsers hook
 
   // Carregar templates de permissões
   useEffect(() => {
@@ -530,20 +522,16 @@ export function UsersClient() {
                           if (!user) return;
 
                           const newStatus = user.status === "active" ? "inactive" : "active";
-                          const response = await fetch(`/api/users/${userId}`, {
-                            method: "PATCH",
-                            headers,
-                            body: JSON.stringify({ status: newStatus }),
+                          // Clean Arch: useUpdateUser
+                          await updateUser.mutateAsync({
+                            id: userId,
+                            isActive: newStatus === 'active'
                           });
-
-                          if (!response.ok) {
-                            throw new Error(`Erro ao atualizar usuário ${user.email}`);
-                          }
                         });
 
                         await Promise.all(promises);
                         setSelectedUserIds(new Set());
-                        void loadUsers();
+                        // void loadUsers(); // Invalidate Queries handled by hook
 
                         notificationCenter.add({
                           type: "success",
@@ -830,7 +818,7 @@ export function UsersClient() {
                               title: "Importação concluída",
                               message: `${data.imported || 0} usuário(s) importado(s) com sucesso. ${data.errors?.length ? `${data.errors.length} erro(s) encontrado(s).` : ""}`,
                             });
-                            void loadUsers();
+                            void refetch();
                           } else {
                             const error = await response.json();
                             notificationCenter.add({
@@ -1470,7 +1458,7 @@ export function UsersClient() {
             updatedAt: selectedUser.updatedAt,
           }}
           onClose={() => setSelectedUserId(null)}
-          onUserUpdated={loadUsers}
+          onUserUpdated={() => void refetch()}
         />
       )}
 
@@ -1481,7 +1469,7 @@ export function UsersClient() {
           onClose={() => setCreateDrawerOpen(false)}
           onUserCreated={() => {
             setCreateDrawerOpen(false);
-            void loadUsers();
+            void refetch();
           }}
         />
       )}

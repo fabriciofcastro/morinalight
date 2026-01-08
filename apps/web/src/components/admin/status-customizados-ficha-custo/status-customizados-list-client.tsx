@@ -2,8 +2,8 @@
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import {
   statusCustomizadoApi,

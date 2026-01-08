@@ -2,11 +2,11 @@ import type { PositionRepository } from "../../../organizational-structure/domai
 import type { DepartmentMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import type { PositionMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-position-membership.repository";
 import type { OrganizationRepository } from "../../../organizations/repositories/organization.repository";
+import type { AccessAuditLogRepository } from "../../domain/repositories/access-audit-log.repository";
 import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
-import type { AccessAuditLogRepository } from "../../domain/repositories/access-audit-log.repository";
 import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
 import { verificarPermissionInputSchema } from "../schemas/user-permission.schema";
 

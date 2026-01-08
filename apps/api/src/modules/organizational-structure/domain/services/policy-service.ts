@@ -1,6 +1,6 @@
 /**
  * PolicyService - Serviço para avaliar políticas PBAC (Policy-Based Access Control)
- * 
+ *
  * Este serviço verifica se ações podem ser executadas baseadas em políticas configuradas,
  * incluindo avaliação de condições e verificação de aprovações necessárias.
  */
@@ -176,7 +176,10 @@ export class PolicyService {
         // $gte: maior ou igual
         if (operators.$gte !== undefined) {
           if (typeof contextValue !== "number" || contextValue < (operators.$gte as number)) {
-            return { met: false, failedCondition: `${key} deve ser maior ou igual a ${operators.$gte}` };
+            return {
+              met: false,
+              failedCondition: `${key} deve ser maior ou igual a ${operators.$gte}`,
+            };
           }
         }
 
@@ -190,7 +193,10 @@ export class PolicyService {
         // $lte: menor ou igual
         if (operators.$lte !== undefined) {
           if (typeof contextValue !== "number" || contextValue > (operators.$lte as number)) {
-            return { met: false, failedCondition: `${key} deve ser menor ou igual a ${operators.$lte}` };
+            return {
+              met: false,
+              failedCondition: `${key} deve ser menor ou igual a ${operators.$lte}`,
+            };
           }
         }
 
@@ -212,7 +218,10 @@ export class PolicyService {
         if (operators.$in !== undefined) {
           const inArray = operators.$in as unknown[];
           if (!inArray.includes(contextValue)) {
-            return { met: false, failedCondition: `${key} deve estar em ${JSON.stringify(inArray)}` };
+            return {
+              met: false,
+              failedCondition: `${key} deve estar em ${JSON.stringify(inArray)}`,
+            };
           }
         }
 
@@ -220,7 +229,10 @@ export class PolicyService {
         if (operators.$nin !== undefined) {
           const ninArray = operators.$nin as unknown[];
           if (ninArray.includes(contextValue)) {
-            return { met: false, failedCondition: `${key} não deve estar em ${JSON.stringify(ninArray)}` };
+            return {
+              met: false,
+              failedCondition: `${key} não deve estar em ${JSON.stringify(ninArray)}`,
+            };
           }
         }
 
@@ -251,7 +263,11 @@ export class PolicyService {
   /**
    * Encontra políticas aplicáveis para um módulo e tipo de flow
    */
-  async findApplicablePolicies(orgId: string, module: string, flowType: string): Promise<WorkflowPolicy[]> {
+  async findApplicablePolicies(
+    orgId: string,
+    module: string,
+    flowType: string,
+  ): Promise<WorkflowPolicy[]> {
     const policies = await this.workflowPolicyRepository.findAll({
       orgId,
       active: true,
@@ -270,4 +286,3 @@ export class PolicyService {
     return policies.length > 0;
   }
 }
-

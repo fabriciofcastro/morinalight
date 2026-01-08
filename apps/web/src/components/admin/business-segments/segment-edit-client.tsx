@@ -10,7 +10,7 @@ import {
   organizationalStructureApi,
   type BusinessSegment,
 } from "@/lib/api/organizational-structure";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { Can } from "@/lib/auth";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 

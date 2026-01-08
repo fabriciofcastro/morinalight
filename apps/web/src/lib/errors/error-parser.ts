@@ -106,7 +106,8 @@ export function parseAxiosError(error: AxiosError<ApiErrorResponse>): AppError {
         context: errorData.context,
         correlationId:
           errorData.correlation?.correlationId || correlation.correlationId,
-        traceId: errorData.correlation?.traceId || correlation.traceId,
+        // Executive Vision: Top-level traceId or nested correlation
+        traceId: errorData.traceId || errorData.correlation?.traceId || correlation.traceId,
         requestId: errorData.correlation?.requestId || correlation.requestId,
         retryAfter,
       },

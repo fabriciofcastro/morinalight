@@ -1,8 +1,8 @@
 "use client";
 
 import { BrazilSalesMap } from "@/components/analytics/brazil-sales-map";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { GridAnimatedBackground } from "@/components/ui/animated-backgrounds";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { GridAnimatedBackground } from "@/shared/ui/base/animated-backgrounds";
 import { analyticsApi, CustomerSegment, InventoryInsight, SalesData, SupplierPerformance } from "@/lib/api/analytics";
 import { Button, cn } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";

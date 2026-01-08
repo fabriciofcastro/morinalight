@@ -1,9 +1,9 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
-import { FuturisticSelect } from "@/components/ui/futuristic-select";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-select";
 import { useUser, type UpdateUserRequest } from "@/hooks/use-user";
 import { organizationalStructureApi } from "@/lib/api/organizational-structure";
 import { Button } from "@morina/ui";

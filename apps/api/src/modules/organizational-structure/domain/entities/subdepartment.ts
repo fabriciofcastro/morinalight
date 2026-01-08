@@ -150,4 +150,3 @@ export class Subdepartment {
     this.props.updatedAt = new Date();
   }
 }
-

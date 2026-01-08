@@ -125,5 +125,3 @@ export class StatusCustomizadoEntity {
     return { ...this.props };
   }
 }
-
-

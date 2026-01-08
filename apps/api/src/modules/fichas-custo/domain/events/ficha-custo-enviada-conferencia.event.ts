@@ -11,5 +11,4 @@ export type FichaCustoEnviadaConferenciaPayload = {
   totalCustos: number;
 };
 
-export type FichaCustoEnviadaConferenciaEvent =
-  DomainEvent<FichaCustoEnviadaConferenciaPayload>;
+export type FichaCustoEnviadaConferenciaEvent = DomainEvent<FichaCustoEnviadaConferenciaPayload>;

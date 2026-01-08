@@ -1,12 +1,12 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { StandardFormPage } from "@/components/templates";
-import { FileUpload } from "@/components/ui/file-upload";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
-import { FuturisticSelect } from "@/components/ui/futuristic-select";
-import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
+import { FileUpload } from "@/shared/ui/base/file-upload";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-select";
+import { FuturisticTextarea } from "@/shared/ui/base/futuristic-textarea";
 import { useUser, type CreateUserRequest } from "@/hooks/use-user";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { companySettingsAPI } from "@/lib/api/company-settings";

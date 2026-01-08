@@ -53,7 +53,10 @@ export async function registerRemoverBoletoFichaCustoRoute(
         app.log.error(error, "Erro ao remover boleto da ficha de custo");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (error.message.includes("não pode") || error.message.includes("apenas")) {
@@ -67,15 +70,3 @@ export async function registerRemoverBoletoFichaCustoRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

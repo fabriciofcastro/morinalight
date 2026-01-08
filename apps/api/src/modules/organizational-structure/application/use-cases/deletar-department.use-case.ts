@@ -3,8 +3,8 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
 import type { DepartmentRepository } from "../../domain/repositories/department-repository";
-import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import type { SectorRepository } from "../../domain/repositories/sector-repository";
+import type { SubdepartmentRepository } from "../../domain/repositories/subdepartment-repository";
 import type { DepartmentMembershipRepository } from "../../infra/prisma/prisma-department-membership.repository";
 
 const deletarDepartmentInputSchema = z.object({

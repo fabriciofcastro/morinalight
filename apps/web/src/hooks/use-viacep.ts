@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { buscarEnderecoPorCep, validarCep, type EnderecoViaCep } from "@/lib/integrations/viacep";
+import { buscarEnderecoPorCep, validarCep, type EnderecoViaCep } from "@/shared/kernel/utils/viacep";
 
 export function useViaCep() {
   const [loading, setLoading] = useState(false);

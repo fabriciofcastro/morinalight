@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface HistoryState<T> {
   past: T[];
@@ -34,7 +34,7 @@ export function useUndoRedo<T>(initialValue: T, maxHistory: number = 50) {
     if (!canUndo) return;
 
     setHistory((current) => {
-      const previous = current.past[current.past.length - 1];
+      const previous = current.past[current.past.length - 1]!;
       const newPast = current.past.slice(0, -1);
       const newFuture = [current.present, ...current.future];
 
@@ -50,7 +50,7 @@ export function useUndoRedo<T>(initialValue: T, maxHistory: number = 50) {
     if (!canRedo) return;
 
     setHistory((current) => {
-      const next = current.future[0];
+      const next = current.future[0]!;
       const newFuture = current.future.slice(1);
       const newPast = [...current.past, current.present];
 
@@ -96,6 +96,7 @@ export function useUndoRedo<T>(initialValue: T, maxHistory: number = 50) {
     reset,
   };
 }
+
 
 
 

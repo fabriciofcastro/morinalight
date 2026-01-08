@@ -22,15 +22,3 @@ export class PreFichaTecnicaId {
     return this.value === other.value;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

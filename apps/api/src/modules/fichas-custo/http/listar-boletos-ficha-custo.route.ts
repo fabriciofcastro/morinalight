@@ -46,7 +46,10 @@ export async function registerListarBoletosFichaCustoRoute(
         app.log.error(error, "Erro ao listar boletos da ficha de custo");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           return reply.status(400).send({ message: error.message });
@@ -57,15 +60,3 @@ export async function registerListarBoletosFichaCustoRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

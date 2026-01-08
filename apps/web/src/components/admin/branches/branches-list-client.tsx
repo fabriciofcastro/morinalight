@@ -22,9 +22,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { organizationsApi, Organization } from "@/lib/api/organizations";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
+import { ViewModeToggle } from "@/shared/ui/base/view-mode-toggle";
 import { Can } from "@/lib/auth";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 

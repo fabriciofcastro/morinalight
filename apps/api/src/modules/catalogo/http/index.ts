@@ -10,7 +10,9 @@ import { registerApproveProductRoute } from "./approve-product.route";
 import { registerCreateCategoryRoute } from "./create-category.route";
 import { registerCreateProductRoute } from "./create-product.route";
 import { registerCreateVariantRoute } from "./create-variant.route";
+import { registerExportProductsRoute } from "./export-products.route";
 import { registerGetProductRoute } from "./get-product.route";
+import { registerImportProductsRoute } from "./import-products.route";
 import { registerListAuditRoute } from "./list-audit.route";
 import { registerListAuditFeedRoute } from "./list-audit-feed.route";
 import { registerListCategoriesRoute } from "./list-categories.route";
@@ -20,8 +22,6 @@ import { registerRejectProductRoute } from "./reject-product.route";
 import { registerUpdateCategoryRoute } from "./update-category.route";
 import { registerUpdateProductRoute } from "./update-product.route";
 import { registerUpdateVariantRoute } from "./update-variant.route";
-import { registerExportProductsRoute } from "./export-products.route";
-import { registerImportProductsRoute } from "./import-products.route";
 
 type RegisterCatalogoHttpOptions = {
   produtoRepository: ProdutoRepository;

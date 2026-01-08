@@ -1,14 +1,16 @@
 import * as Prisma from "@prisma/client";
 import * as Sentry from "@sentry/node";
 import { env } from "../../core/config/env";
-import { registerTenantFilterMiddleware } from "../../core/database/tenant-filter.middleware";
 import { registerEncryptionMiddleware } from "../../core/database/encryption.middleware";
+import { registerTenantFilterMiddleware } from "../../core/database/tenant-filter.middleware";
+import { SecurityPrismaExtension } from "./security-prisma.extension";
 
-// Extendendo o Client padrão para incluir a extensão de monitoramento
-// Using the actual PrismaClient type which includes all generated models
-type ExtendedPrismaClient = Prisma.PrismaClient;
 
+// Export constant instance
 let prisma: ExtendedPrismaClient | null = null;
+let prismaRead: Prisma.PrismaClient | null = null;
+
+export type ExtendedPrismaClient = ReturnType<typeof getPrisma>;
 
 export function getPrisma() {
   if (!prisma) {
@@ -30,21 +32,13 @@ export function getPrisma() {
     }
 
     if (!databaseUrl) {
-      throw new Error(
-        "DATABASE_URL não configurada. Verifique se o arquivo .env existe na raiz do projeto e contém DATABASE_URL",
-      );
+      throw new Error("DATABASE_URL not configured");
     }
 
-    const prismaOptions: Prisma.Prisma.PrismaClientOptions = {
+    const baseClient = new Prisma.PrismaClient({
       log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
-      datasources: {
-        db: {
-          url: databaseUrl,
-        },
-      },
-    };
-
-    const baseClient = new Prisma.PrismaClient(prismaOptions);
+      datasources: { db: { url: databaseUrl } },
+    });
 
     // Registrar middlewares LEGADOS do Prisma (antes de estender)
     if (env.NODE_ENV !== "test") {
@@ -52,10 +46,10 @@ export function getPrisma() {
       registerEncryptionMiddleware(baseClient);
     }
 
-    // Aplicar Extensão de Monitoramento Sentry
-    // Usamos $extends para interceptar queries de forma moderna
-    const extendedClient = baseClient.$extends({
-      name: 'sentry-monitoring',
+    // Aplicar Extensões de Segurança e Monitoramento
+    prisma = baseClient.$extends(SecurityPrismaExtension).$extends({
+      name: "sentry-monitoring",
+
       query: {
         $allModels: {
           async $allOperations({ model, operation, args, query }) {
@@ -98,7 +92,7 @@ export function getPrisma() {
 
               return result;
             } catch (error) {
-              // Erros já são capturados pelo Sentry globalmente, 
+              // Erros já são capturados pelo Sentry globalmente,
               // mas podemos adicionar contexto extra aqui se necessário
               throw error;
             }
@@ -106,32 +100,25 @@ export function getPrisma() {
         },
       },
     });
-
-    // Cast para manter compatibilidade com o tipo PrismaClient esperado pelo resto do app
-    // O ExtendedClient é compatível, mas o TS pode reclamar se não for exato
-    prisma = extendedClient as unknown as ExtendedPrismaClient;
   }
+
 
   return prisma;
 }
 
 // Separate Prisma client for read operations (replica)
-let prismaRead: Prisma.PrismaClient | null = null;
-
 export function getPrismaRead() {
   if (!prismaRead) {
     const replicaUrl = process.env.DATABASE_REPLICA_URL || env.DATABASE_URL;
+    if (!replicaUrl) throw new Error("REPLICA_URL not configured");
 
-    prismaRead = new Prisma.PrismaClient({
-      datasources: {
-        db: {
-          url: replicaUrl,
-        },
-      },
+    const baseReplica = new Prisma.PrismaClient({
+      datasources: { db: { url: replicaUrl } },
       log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
     });
-  }
 
+    prismaRead = baseReplica.$extends(SecurityPrismaExtension);
+  }
   return prismaRead;
 }
 

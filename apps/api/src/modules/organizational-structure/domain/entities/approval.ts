@@ -36,7 +36,10 @@ export class Approval {
   }
 
   static criar(
-    input: Omit<ApprovalProps, "id" | "status" | "approvedAt" | "rejectedAt" | "createdAt" | "updatedAt"> & {
+    input: Omit<
+      ApprovalProps,
+      "id" | "status" | "approvedAt" | "rejectedAt" | "createdAt" | "updatedAt"
+    > & {
       id?: string;
       status?: ApprovalStatus;
     },
@@ -97,12 +100,3 @@ export class Approval {
     this.props.updatedAt = new Date();
   }
 }
-
-
-
-
-
-
-
-
-

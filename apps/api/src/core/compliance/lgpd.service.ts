@@ -42,7 +42,10 @@ export async function deleteUserData(userId: string, orgId: string): Promise<voi
  * Portabilidade de Dados (Art. 18, V da LGPD)
  * Exporta todos os dados do usuário em formato estruturado
  */
-export async function exportUserData(userId: string, orgId: string): Promise<{
+export async function exportUserData(
+  userId: string,
+  orgId: string,
+): Promise<{
   user: unknown;
   organizations: unknown[];
   activities: unknown[];

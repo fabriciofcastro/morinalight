@@ -1,6 +1,6 @@
 "use client";
 
-import { GridAnimatedBackground } from "@/components/ui/animated-backgrounds";
+import { GridAnimatedBackground } from "@/shared/ui/base/animated-backgrounds";
 import { animate, motion, useMotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Play, Sparkles } from "lucide-react";
 import Link from "next/link";

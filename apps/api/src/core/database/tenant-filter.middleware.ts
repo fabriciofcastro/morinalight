@@ -3,7 +3,6 @@
  * Garante isolamento de dados multi-tenant em todas as queries
  */
 
-import type { Prisma } from "@prisma/client";
 import type { PrismaClient } from "@prisma/client";
 
 // Modelos que requerem filtro por orgId
@@ -55,26 +54,43 @@ export function registerTenantFilterMiddleware(prisma: PrismaClient): void {
       return next(params);
     }
 
+
     // Verificar se o modelo requer filtro por tenant
-    if (!params.model || !TENANT_MODELS.includes(params.model as any)) {
+    if (!params.model || !TENANT_MODELS.includes(params.model as (typeof TENANT_MODELS)[number])) {
       return next(params);
     }
 
+    // interface para tipar os args que sabemos que existem nos modelos TENANT_MODELS
+    interface TenantAwareArgs {
+      where?: { orgId?: string };
+      data?: { orgId?: string };
+    }
+
+    const tenantArgs = params.args as TenantAwareArgs;
+
     // Adicionar filtro orgId automaticamente
-    if (params.action === "findUnique" || params.action === "findFirst" || params.action === "findMany") {
+    if (
+      params.action === "findUnique" ||
+      params.action === "findFirst" ||
+      params.action === "findMany"
+    ) {
       if (!params.args.where) {
         params.args.where = {};
       }
 
       // Adicionar orgId ao where
-      (params.args.where as any).orgId = currentTenantOrgId;
+      if (tenantArgs.where) {
+          tenantArgs.where.orgId = currentTenantOrgId;
+      }
     }
 
     // Para create, update, delete, também validar orgId
     if (params.action === "create") {
       if (params.args.data && typeof params.args.data === "object") {
         // Garantir que orgId está definido
-        (params.args.data as any).orgId = currentTenantOrgId;
+        if (tenantArgs.data) {
+             tenantArgs.data.orgId = currentTenantOrgId;
+        }
       }
     }
 
@@ -83,7 +99,9 @@ export function registerTenantFilterMiddleware(prisma: PrismaClient): void {
         params.args.where = {};
       }
       // Adicionar orgId ao where para garantir que só atualiza recursos do tenant
-      (params.args.where as any).orgId = currentTenantOrgId;
+      if (tenantArgs.where) {
+          tenantArgs.where.orgId = currentTenantOrgId;
+      }
     }
 
     if (params.action === "delete" || params.action === "deleteMany") {
@@ -91,10 +109,11 @@ export function registerTenantFilterMiddleware(prisma: PrismaClient): void {
         params.args.where = {};
       }
       // Adicionar orgId ao where para garantir que só deleta recursos do tenant
-      (params.args.where as any).orgId = currentTenantOrgId;
+      if (tenantArgs.where) {
+          tenantArgs.where.orgId = currentTenantOrgId;
+      }
     }
 
     return next(params);
   });
 }
-

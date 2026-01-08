@@ -1,10 +1,10 @@
 import { useAbility } from "@/lib/auth/CaslContext";
 import { parsePermissionKey } from "@/lib/auth/ability";
+import { DEPARTMENTS } from "@/widgets/EnterpriseSidebar/EnterpriseSidebar.constants";
 import type { SidebarItemDefinition } from "@morina/ui";
 import { BarChart3, LayoutDashboard, LogOut, Settings, User } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DEPARTMENTS } from "../components/EnterpriseSidebar/EnterpriseSidebar.constants";
 
 export function useEnterpriseSidebar() {
   const pathname = usePathname();

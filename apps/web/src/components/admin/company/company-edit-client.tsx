@@ -4,7 +4,7 @@ import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 import { cn } from "@morina/ui";
 import { CompanyAnimatedBackground } from "@/components/animations/company-animated-background";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { companySettingsAPI } from "@/lib/api/company-settings";
 import {
   Building2,

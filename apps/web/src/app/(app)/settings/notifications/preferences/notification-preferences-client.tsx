@@ -12,7 +12,7 @@ import {
   TestTube,
 } from "lucide-react";
 import { useState } from "react";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 type NotificationCategory = {
   id: string;

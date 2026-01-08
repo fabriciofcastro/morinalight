@@ -2,10 +2,13 @@
  * Prisma Approval Repository Implementation
  */
 
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../../../../infra/prisma/client";
 import { Approval } from "../../domain/entities/approval";
-import type { ApprovalFiltro, ApprovalRepository } from "../../domain/repositories/approval-repository";
+import type {
+  ApprovalFiltro,
+  ApprovalRepository,
+} from "../../domain/repositories/approval-repository";
 
 function toDomain(record: {
   id: string;
@@ -143,12 +146,3 @@ export class PrismaApprovalRepository implements ApprovalRepository {
     });
   }
 }
-
-
-
-
-
-
-
-
-

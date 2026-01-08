@@ -1,33 +1,32 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
-
 import { env } from "../../core/config/env";
-import { RedisEventBus } from "../../infra/events/redis-event-bus";
 import { registerTenantHook } from "../../core/tenant/tenant.middleware";
 import { extractOrgIdFromParams } from "../../core/tenant/tenant.utils";
+import { RedisEventBus } from "../../infra/events/redis-event-bus";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
 import type { FichaCustoRepository } from "./domain/repositories/ficha-custo.repository";
 import {
-  registerCreateFichaCustoRoute,
-  registerListFichasCustoRoute,
-  registerGetFichaCustoRoute,
-  registerUpdateFichaCustoRoute,
-  registerEnviarConferenciaFichaCustoRoute,
-  registerApproveFichaCustoRoute,
-  registerRejectFichaCustoRoute,
   registerAnexarBoletoFichaCustoRoute,
+  registerApproveFichaCustoRoute,
+  registerCreateFichaCustoRoute,
+  registerCreateStatusCustomizadoRoute,
+  registerDeleteStatusCustomizadoRoute,
+  registerEnviarConferenciaFichaCustoRoute,
+  registerGetFichaCustoRoute,
   registerListarAuditoriaFichaCustoRoute,
   registerListarBoletosFichaCustoRoute,
   registerListarVersoesFichaCustoRoute,
-  registerPagarBoletoFichaCustoRoute,
-  registerRemoverBoletoFichaCustoRoute,
-  registerUploadFichaCustoRoute,
+  registerListFichasCustoRoute,
   registerListStatusCustomizadoRoute,
-  registerCreateStatusCustomizadoRoute,
+  registerPagarBoletoFichaCustoRoute,
+  registerRejectFichaCustoRoute,
+  registerRemoverBoletoFichaCustoRoute,
+  registerUpdateFichaCustoRoute,
   registerUpdateStatusCustomizadoRoute,
-  registerDeleteStatusCustomizadoRoute,
+  registerUploadFichaCustoRoute,
 } from "./http";
 import { PrismaFichaCustoRepository } from "./infra/prisma/prisma-ficha-custo.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 export type FichasCustoModuleOptions = {
   fichaCustoRepository?: FichaCustoRepository;

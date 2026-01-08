@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { passwordResetService } from '../lib/auth/password-reset';
 
 // Mock DB Client
@@ -58,7 +58,7 @@ describe('Password Recovery Flow', () => {
 
             expect(mockPrisma.passwordResetToken.create).toHaveBeenCalled();
             // Verify expiry is set
-            const createArgs = mockPrisma.passwordResetToken.create.mock.calls[0][0];
+            const createArgs = vi.mocked(mockPrisma.passwordResetToken.create).mock.calls[0]![0];
             expect(createArgs.data.expiresAt).toBeDefined();
         });
 

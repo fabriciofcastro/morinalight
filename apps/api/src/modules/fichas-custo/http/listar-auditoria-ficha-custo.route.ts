@@ -58,20 +58,9 @@ export async function registerListarAuditoriaFichaCustoRoute(
         pagina: query.pagina,
         tamanhoPagina: query.tamanhoPagina,
         totalPaginas: 0,
-        mensagem: "Consulta de auditoria - em desenvolvimento. Use os eventos de domínio publicados.",
+        mensagem:
+          "Consulta de auditoria - em desenvolvimento. Use os eventos de domínio publicados.",
       });
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

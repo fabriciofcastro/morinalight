@@ -92,19 +92,19 @@ export function PageBackground({ children, className, variant }: PageBackgroundP
       } else if (
         pathname.startsWith("/users") ||
         pathname.startsWith("/team") ||
-        pathname.startsWith("/clientes") ||
+        pathname.startsWith("/admin/clients") ||
         pathname.startsWith("/clients")
       ) {
         setBgType("nodes");
       } else if (pathname.startsWith("/settings")) {
         setBgType("circuit");
       } else if (
-        pathname.startsWith("/catalog") ||
-        pathname.startsWith("/products") ||
+        pathname.startsWith("/admin/catalog") ||
+        pathname.startsWith("/admin/products") ||
         pathname.startsWith("/produtos")
       ) {
         setBgType("forge");
-      } else if (pathname.startsWith("/fichas-custo")) {
+      } else if (pathname.startsWith("/admin/cost-sheets")) {
         setBgType("fichas-custo");
       } else {
         setBgType("terminal"); // Default: secure terminal for dashboard/home

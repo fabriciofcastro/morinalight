@@ -2,10 +2,13 @@ import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import { Department } from "../../domain/entities/department";
 import type { OrganizationalStructureAuditLogRepository } from "../../domain/repositories";
-import type { DepartmentRepository } from "../../domain/repositories/department-repository";
 import type { BranchRepository } from "../../domain/repositories/branch-repository";
+import type { DepartmentRepository } from "../../domain/repositories/department-repository";
+import {
+  calculateHierarchyDepth,
+  wouldExceedMaxDepth,
+} from "../../domain/utils/hierarchy-validator";
 import { criarDepartmentInputSchema, departmentViewSchema } from "../schemas/department.schema";
-import { wouldExceedMaxDepth, calculateHierarchyDepth } from "../../domain/utils/hierarchy-validator";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;
@@ -33,10 +36,7 @@ export class CriarDepartmentUseCase {
 
     // Verificar se branchId existe (se fornecido)
     if (input.branchId && this.deps.branchRepository) {
-      const branch = await this.deps.branchRepository.encontrarPorId(
-        input.orgId,
-        input.branchId,
-      );
+      const branch = await this.deps.branchRepository.encontrarPorId(input.orgId, input.branchId);
 
       if (!branch) {
         throw new Error("Filial não encontrada");
@@ -55,13 +55,12 @@ export class CriarDepartmentUseCase {
       }
 
       // Verificar profundidade máxima
-      const parentDepth = await calculateHierarchyDepth(
-        input.parentId,
-        async (id: string) => {
-          const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
-          return dept ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department) : null;
-        },
-      );
+      const parentDepth = await calculateHierarchyDepth(input.parentId, async (id: string) => {
+        const dept = await this.deps.departmentRepository.encontrarPorId(input.orgId, id);
+        return dept
+          ? ({ id: dept.departmentId, parentId: dept.dados.parentId } as Department)
+          : null;
+      });
 
       if (parentDepth >= 9) {
         throw new Error("Profundidade máxima da hierarquia seria excedida. Limite: 10 níveis.");

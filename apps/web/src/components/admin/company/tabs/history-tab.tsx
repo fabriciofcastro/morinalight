@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { Download, Clock, Search, X, AlertCircle, History, Save, RotateCcw } from "lucide-react";
 import { companyAuditAPI } from "@/lib/api/company-audit";
 import { companyVersionsAPI, CompanyVersion } from "@/lib/api/company-versions";
@@ -10,7 +10,7 @@ import type { CompanyAuditLog } from "@/types/audit";
 import { SectionShell } from "../shared/section-shell";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { SensitiveActionConfirmDialog } from "../compliance/sensitive-action-confirm-dialog";
 
 export function HistoryTab() {

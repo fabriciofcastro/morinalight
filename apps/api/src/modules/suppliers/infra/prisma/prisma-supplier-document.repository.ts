@@ -102,8 +102,3 @@ export class PrismaSupplierDocumentRepository implements DocumentoSupplierReposi
     };
   }
 }
-
-
-
-
-

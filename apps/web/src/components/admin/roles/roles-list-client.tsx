@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useDebounce } from "@/hooks/use-debounce";
 import { type Role, permissionsApi } from "@/lib/api/permissions";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 import { Can } from "@/lib/auth";
 

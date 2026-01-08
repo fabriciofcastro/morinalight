@@ -251,3 +251,4 @@ try {
 - Logs são assíncronos e não bloqueiam requisições
 - Em produção, considere usar níveis de log apropriados (info ou warn)
 - Logs muito verbosos podem impactar performance do Loki
+

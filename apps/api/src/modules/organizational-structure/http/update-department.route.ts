@@ -2,8 +2,8 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AtualizarDepartmentUseCase } from "../application/use-cases/atualizar-department.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
 import type { BranchRepository } from "../domain/repositories/branch-repository";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
 
 type Dependencies = {
   departmentRepository: DepartmentRepository;

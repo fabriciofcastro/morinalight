@@ -8,7 +8,6 @@ import { PrismaOrganizationAuditLogRepository } from "../organizations/infra/pri
 import type { OrganizationAuditLogRepository } from "../organizations/repositories/organization-audit-log.repository";
 import { PrismaPrefichaRepository } from "../preficha/infra/prisma/prisma-preficha.repository";
 import { PrismaPrefichaAuditoriaRepository } from "../preficha/infra/prisma/prisma-preficha-auditoria.repository";
-import { PrismaNotificationRepository } from "./infra/prisma/prisma-notification.repository";
 import {
   registerBulkActionNotificationsRoute,
   registerCreateNotificationRoute,
@@ -25,6 +24,7 @@ import {
   registerUpdateNotificationPreferencesRoute,
   registerUpdateNotificationRoute,
 } from "./http";
+import { PrismaNotificationRepository } from "./infra/prisma/prisma-notification.repository";
 import { registerNotificationsRoutes } from "./notifications.routes";
 
 export type NotificationsModuleOptions = {

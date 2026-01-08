@@ -10,4 +10,7 @@ export interface CreateUserDTO {
   name: string;
   password: string;
   role?: string;
+  sendInvite?: boolean;
+  mustChangePassword?: boolean;
+  avatarUrl?: string | null;
 }

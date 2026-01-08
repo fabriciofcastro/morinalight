@@ -1,6 +1,6 @@
+import { resolve } from "node:path";
 import { config as loadEnv } from "dotenv";
 import { z } from "zod";
-import { resolve } from "node:path";
 
 // Carregar .env da raiz do projeto
 // Tentar múltiplos caminhos para garantir que encontre o .env

@@ -4,7 +4,7 @@ import { Button, GlassCard, Input, Label, cn } from "@morina/ui";
 import { Download, FileText, GitCompare, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 type AuditLog = {
   id: string;

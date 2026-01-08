@@ -29,43 +29,43 @@ export const APP_ROUTES = {
     DASHBOARD: '/dashboard',
 
     // Produtos
-    PRODUCTS: '/products',
-    PRODUCTS_NEW: '/products/new',
-    PRODUCTS_EDIT: (id: string) => `/products/${id}/edit`,
+    PRODUCTS: '/admin/products/list',
+    PRODUCTS_NEW: '/admin/products/new',
+    PRODUCTS_EDIT: (id: string) => `/admin/products/${id}/edit`,
 
     // Catálogo
-    CATALOG: '/catalogo/auditoria',
+    CATALOG: '/admin/catalog/auditoria',
 
     // Fichas Técnicas
-    PRE_FICHAS: '/pre-fichas-tecnicas',
-    PRE_FICHAS_NEW: '/pre-fichas-tecnicas/new',
+    PRE_FICHAS: '/admin/pre-technical-sheets',
+    PRE_FICHAS_NEW: '/admin/pre-technical-sheets/new',
 
     // Fichas de Custo
-    FICHAS_CUSTO: '/fichas-custo',
-    FICHAS_CUSTO_LIST: '/fichas-custo/list',
-    FICHAS_CUSTO_NEW: '/fichas-custo/new',
-    FICHAS_CUSTO_STATUS: '/fichas-custo/status-customizados',
+    FICHAS_CUSTO: '/admin/cost-sheets',
+    FICHAS_CUSTO_LIST: '/admin/cost-sheets/list',
+    FICHAS_CUSTO_NEW: '/admin/cost-sheets/new',
+    FICHAS_CUSTO_STATUS: '/admin/cost-sheets/status-customizados',
 
     // Clientes
-    CLIENTS: '/clientes',
-    CLIENTS_NEW: '/clientes/new',
-    CLIENTS_EDIT: (id: string) => `/clientes/${id}/edit`,
+    CLIENTS: '/admin/clients',
+    CLIENTS_NEW: '/admin/clients/new',
+    CLIENTS_EDIT: (id: string) => `/admin/clients/${id}/edit`,
 
     // Fornecedores
-    SUPPLIERS: '/fornecedores',
-    SUPPLIERS_LIST: '/fornecedores/list',
-    SUPPLIERS_NEW: '/fornecedores/new',
-    SUPPLIERS_EDIT: (id: string) => `/fornecedores/${id}/edit`,
-    SUPPLIERS_IMPORT: '/fornecedores/import',
+    SUPPLIERS: '/admin/suppliers',
+    SUPPLIERS_LIST: '/admin/suppliers/list',
+    SUPPLIERS_NEW: '/admin/suppliers/new',
+    SUPPLIERS_EDIT: (id: string) => `/admin/suppliers/${id}/edit`,
+    SUPPLIERS_IMPORT: '/admin/suppliers/import',
 
     // Representantes
-    REPRESENTATIVES: '/representantes',
+    REPRESENTATIVES: '/admin/representatives',
 
     // Vendas
-    SALES: '/sales',
+    SALES: '/admin/sales',
 
     // Comissões
-    COMMISSIONS: '/comissoes',
+    COMMISSIONS: '/admin/commissions',
 
     // Relatórios
     REPORTS: '/reports',

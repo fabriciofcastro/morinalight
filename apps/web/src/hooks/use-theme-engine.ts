@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
-  type CompanyThemeSettings,
-  type ThemeMode,
-  type ThemeName,
-  themeConfig,
+    type CompanyThemeSettings,
+    type ThemeMode,
+    type ThemeName,
+    themeConfig,
 } from "@/config/theme.config";
 import { type NormalizedCompanySettings, normalizeCompanySettings } from "@/lib/company-settings";
 
@@ -83,9 +83,9 @@ const hexToHsl = (value: string | undefined | null): string | null => {
   const match = hex.match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
   if (!match) return null;
 
-  const r = parseInt(match[1], 16) / 255;
-  const g = parseInt(match[2], 16) / 255;
-  const b = parseInt(match[3], 16) / 255;
+  const r = parseInt(match[1]!, 16) / 255;
+  const g = parseInt(match[2]!, 16) / 255;
+  const b = parseInt(match[3]!, 16) / 255;
 
   const max = Math.max(r, g, b);
   const min = Math.min(r, g, b);

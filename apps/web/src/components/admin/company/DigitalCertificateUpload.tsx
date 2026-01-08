@@ -5,7 +5,7 @@ import { Upload, X, CheckCircle2, AlertCircle, Loader2, Shield, Lock, Calendar, 
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@morina/ui";
 import { formatFileSize } from "@/lib/utils/image-processing";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 interface DigitalCertificateData {
   type: "A1" | "A3";

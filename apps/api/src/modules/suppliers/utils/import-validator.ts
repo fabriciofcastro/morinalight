@@ -128,7 +128,7 @@ function validateCEP(cep: string): boolean {
 export function validateSupplierRow(
   row: SupplierImportRow,
   rowIndex: number,
-  options: { checkDuplicates?: boolean; existingDocuments?: Set<string> } = {}
+  options: { checkDuplicates?: boolean; existingDocuments?: Set<string> } = {},
 ): ValidationResult {
   const errors: ValidationError[] = [];
   const warnings: ValidationError[] = [];
@@ -146,7 +146,7 @@ export function validateSupplierRow(
   // Document validation (CNPJ/CPF)
   if (row.document) {
     const cleanDocument = row.document.replace(/\D/g, "");
-    
+
     if (cleanDocument.length === 14) {
       // CNPJ
       if (!validateCNPJ(row.document)) {
@@ -246,7 +246,10 @@ export function validateSupplierRow(
 
   // Prazo pagamento validation
   if (row.prazoPagamento !== undefined) {
-    const prazo = typeof row.prazoPagamento === "string" ? parseInt(row.prazoPagamento, 10) : row.prazoPagamento;
+    const prazo =
+      typeof row.prazoPagamento === "string"
+        ? parseInt(row.prazoPagamento, 10)
+        : row.prazoPagamento;
     if (isNaN(prazo) || prazo < 0 || prazo > 365) {
       errors.push({
         row: rowIndex + 1,
@@ -259,7 +262,8 @@ export function validateSupplierRow(
 
   // Limite crédito validation
   if (row.limiteCredito !== undefined) {
-    const limite = typeof row.limiteCredito === "string" ? parseFloat(row.limiteCredito) : row.limiteCredito;
+    const limite =
+      typeof row.limiteCredito === "string" ? parseFloat(row.limiteCredito) : row.limiteCredito;
     if (isNaN(limite) || limite < 0) {
       errors.push({
         row: rowIndex + 1,
@@ -282,7 +286,7 @@ export function validateSupplierRow(
  */
 export function validateSupplierRows(
   rows: SupplierImportRow[],
-  options: { checkDuplicates?: boolean; existingDocuments?: Set<string> } = {}
+  options: { checkDuplicates?: boolean; existingDocuments?: Set<string> } = {},
 ): ValidationResult[] {
   return rows.map((row, index) => validateSupplierRow(row, index, options));
 }
@@ -292,7 +296,7 @@ export function validateSupplierRows(
  */
 export function mapToSupplierRow(
   rawRow: Record<string, string | number | undefined>,
-  columnMapping: Record<string, string>
+  columnMapping: Record<string, string>,
 ): SupplierImportRow {
   const mapped: SupplierImportRow = {};
 
@@ -327,10 +331,11 @@ export function mapToSupplierRow(
     const columnName = reverseMapping[field];
     if (columnName && rawRow[columnName] !== undefined) {
       const value = rawRow[columnName];
-      
+
       // Convert to appropriate type
       if (field === "prazoPagamento" || field === "limiteCredito") {
-        const numValue = typeof value === "string" ? parseFloat(value.replace(",", ".")) : Number(value);
+        const numValue =
+          typeof value === "string" ? parseFloat(value.replace(",", ".")) : Number(value);
         if (!isNaN(numValue)) {
           mapped[field] = numValue;
         }
@@ -342,12 +347,3 @@ export function mapToSupplierRow(
 
   return mapped;
 }
-
-
-
-
-
-
-
-
-

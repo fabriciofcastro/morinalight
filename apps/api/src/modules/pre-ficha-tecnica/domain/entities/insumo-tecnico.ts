@@ -81,15 +81,3 @@ export class InsumoTecnico {
     return new InsumoTecnico(props);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

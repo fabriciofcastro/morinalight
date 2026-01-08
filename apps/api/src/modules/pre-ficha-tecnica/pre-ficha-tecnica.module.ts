@@ -53,14 +53,3 @@ export async function registerPreFichaTecnicaModule(
     eventBus,
   };
 }
-
-
-
-
-
-
-
-
-
-
-

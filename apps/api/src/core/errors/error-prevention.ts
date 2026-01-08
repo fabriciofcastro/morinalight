@@ -1,12 +1,12 @@
 /**
  * Sistema de Prevenção de Erros
- * 
+ *
  * Detecção preditiva e prevenção proativa de erros.
  */
 
 import type { AppError } from "./app-error";
-import { ErrorCodes, getErrorCategory, type ErrorCode } from "./error-codes";
 import { ErrorAnalyticsManager } from "./error-analytics";
+import { type ErrorCode, ErrorCodes, getErrorCategory } from "./error-codes";
 
 /**
  * Padrão de erro para detecção
@@ -46,7 +46,7 @@ export class ErrorPreventionManager {
    * Registrar regra de prevenção
    */
   static registerRule(rule: PreventionRule): void {
-    this.rules.set(rule.id, rule);
+    ErrorPreventionManager.rules.set(rule.id, rule);
   }
 
   /**
@@ -60,16 +60,16 @@ export class ErrorPreventionManager {
     action?: ErrorPattern["action"];
     reason?: string;
   } {
-    for (const rule of this.rules.values()) {
+    for (const rule of ErrorPreventionManager.rules.values()) {
       if (!rule.enabled) continue;
 
       // Verificar se erro corresponde ao padrão
-      if (!this.matchesPattern(error, context, rule.pattern)) {
+      if (!ErrorPreventionManager.matchesPattern(error, context, rule.pattern)) {
         continue;
       }
 
       // Verificar threshold
-      const count = this.getErrorCount(rule.pattern, rule.pattern.timeWindow);
+      const count = ErrorPreventionManager.getErrorCount(rule.pattern, rule.pattern.timeWindow);
       if (count >= rule.pattern.threshold) {
         rule.lastTriggered = Date.now();
         rule.triggerCount++;
@@ -101,7 +101,7 @@ export class ErrorPreventionManager {
     // Verificar condições
     for (const condition of pattern.conditions) {
       const value = context[condition.field];
-      if (!this.matchesCondition(value, condition)) {
+      if (!ErrorPreventionManager.matchesCondition(value, condition)) {
         return false;
       }
     }
@@ -135,18 +135,15 @@ export class ErrorPreventionManager {
   /**
    * Obter contagem de erros
    */
-  private static getErrorCount(
-    pattern: ErrorPattern,
-    timeWindow: number,
-  ): number {
+  private static getErrorCount(pattern: ErrorPattern, timeWindow: number): number {
     const key = `${pattern.code}:${JSON.stringify(pattern.conditions)}`;
-    const errors = this.errorCounts.get(key) || [];
+    const errors = ErrorPreventionManager.errorCounts.get(key) || [];
     const now = Date.now();
     const cutoff = now - timeWindow;
 
     // Filtrar erros dentro da janela
     const recentErrors = errors.filter((e) => e.timestamp >= cutoff);
-    this.errorCounts.set(key, recentErrors);
+    ErrorPreventionManager.errorCounts.set(key, recentErrors);
 
     return recentErrors.length;
   }
@@ -154,14 +151,11 @@ export class ErrorPreventionManager {
   /**
    * Registrar ocorrência de erro
    */
-  static recordErrorOccurrence(
-    error: AppError,
-    context: Record<string, unknown>,
-  ): void {
+  static recordErrorOccurrence(error: AppError, context: Record<string, unknown>): void {
     const category = getErrorCategory(error.code as ErrorCode);
     const key = `${error.code}:${category}`;
 
-    const errors = this.errorCounts.get(key) || [];
+    const errors = ErrorPreventionManager.errorCounts.get(key) || [];
     errors.push({ timestamp: Date.now() });
 
     // Manter apenas últimas 1000 ocorrências
@@ -169,14 +163,14 @@ export class ErrorPreventionManager {
       errors.shift();
     }
 
-    this.errorCounts.set(key, errors);
+    ErrorPreventionManager.errorCounts.set(key, errors);
   }
 
   /**
    * Obter regras ativas
    */
   static getActiveRules(): PreventionRule[] {
-    return Array.from(this.rules.values()).filter((r) => r.enabled);
+    return Array.from(ErrorPreventionManager.rules.values()).filter((r) => r.enabled);
   }
 
   /**
@@ -184,12 +178,12 @@ export class ErrorPreventionManager {
    */
   static cleanup(maxAge: number = 3600000): void {
     const now = Date.now();
-    for (const [key, errors] of this.errorCounts.entries()) {
+    for (const [key, errors] of ErrorPreventionManager.errorCounts.entries()) {
       const filtered = errors.filter((e) => now - e.timestamp < maxAge);
       if (filtered.length === 0) {
-        this.errorCounts.delete(key);
+        ErrorPreventionManager.errorCounts.delete(key);
       } else {
-        this.errorCounts.set(key, filtered);
+        ErrorPreventionManager.errorCounts.set(key, filtered);
       }
     }
   }
@@ -223,12 +217,3 @@ ErrorPreventionManager.registerRule({
     action: "degrade",
   },
 });
-
-
-
-
-
-
-
-
-

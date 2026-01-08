@@ -5,7 +5,7 @@ import { Upload, X, CheckCircle2, AlertCircle, Loader2, Image as ImageIcon, Zoom
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@morina/ui";
 import { processImage, validateImage, getImageDimensions, type ProcessedImage, formatFileSize } from "@/lib/utils/image-processing";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { ConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 interface AdvancedLogoUploadProps {
   value?: string | null;

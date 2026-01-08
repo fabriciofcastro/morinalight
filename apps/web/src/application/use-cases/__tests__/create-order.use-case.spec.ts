@@ -2,9 +2,9 @@ import { ProductEntity } from '@/domain/entities';
 import { InventoryService, OrderPricingService } from '@/domain/services';
 import { Some } from '@/shared/kernel/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CreateOrderDTO } from '../../dto';
+import { IEventBus, ILogger, IOrderRepository, IProductRepository, IUnitOfWork } from '../../ports';
 import { CreateOrderUseCase } from '../create-order.use-case';
-import { CreateOrderDTO } from '../dto';
-import { IEventBus, ILogger, IOrderRepository, IProductRepository, IUnitOfWork } from '../ports';
 
 describe('CreateOrderUseCase Integration (with UoW)', () => {
   let useCase: CreateOrderUseCase;

@@ -58,7 +58,9 @@ export class PermissionInheritanceServiceImpl implements PermissionInheritanceSe
         const permission = await this.deps.permissionRepository.encontrarPorId(perm.permissionId);
         if (permission) {
           // Verificar se já existe uma permissão mais próxima (override)
-          const existingIndex = inherited.findIndex((p) => p.permissionKey === permission.permissionKey);
+          const existingIndex = inherited.findIndex(
+            (p) => p.permissionKey === permission.permissionKey,
+          );
           if (existingIndex === -1 || inherited[existingIndex].inheritedFrom.level > level) {
             if (existingIndex !== -1) {
               inherited.splice(existingIndex, 1);
@@ -121,7 +123,9 @@ export class PermissionInheritanceServiceImpl implements PermissionInheritanceSe
         const permission = await this.deps.permissionRepository.encontrarPorId(perm.permissionId);
         if (permission) {
           // Verificar se já existe uma permissão mais próxima (override)
-          const existingIndex = inherited.findIndex((p) => p.permissionKey === permission.permissionKey);
+          const existingIndex = inherited.findIndex(
+            (p) => p.permissionKey === permission.permissionKey,
+          );
           if (existingIndex === -1 || inherited[existingIndex].inheritedFrom.level > level) {
             if (existingIndex !== -1) {
               inherited.splice(existingIndex, 1);
@@ -269,12 +273,3 @@ export class PermissionInheritanceServiceImpl implements PermissionInheritanceSe
     };
   }
 }
-
-
-
-
-
-
-
-
-

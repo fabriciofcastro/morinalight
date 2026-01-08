@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import { FuturisticFunnelChart } from "@/components/charts/FuturisticFunnelChart"
 import { FuturisticTreemap } from "@/components/charts/FuturisticTreemap"
 import { Certification } from "./types"
-import { Card } from "@/components/ui/card"
+import { Card } from "@/shared/ui/base/card"
 
 interface CertificationsAnalyticsProps {
     certifications: Certification[]

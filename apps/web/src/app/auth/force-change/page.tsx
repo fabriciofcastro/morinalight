@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FuturisticInput } from '@/components/ui/futuristic-input';
-import { Button } from '@/components/ui/button';
+import { FuturisticInput } from '@/shared/ui/base/futuristic-input';
+import { Button } from '@/shared/ui/base/button';
 import { toast } from 'sonner';
 import { updatePasswordAction } from '@/app/actions/auth-security';
 import { PasswordStrengthMeter } from '@/components/auth/password-strength';

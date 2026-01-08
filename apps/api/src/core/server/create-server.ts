@@ -1,14 +1,13 @@
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
-import fastify, { type FastifyLoggerOptions, type FastifyRequest, type FastifyReply, type FastifyError } from "fastify";
+import fastify, { type FastifyError, type FastifyRequest } from "fastify";
 import { serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
-import { registerHttp, type HttpModulesOptions } from "../../app/http/routes";
+import { type HttpModulesOptions, registerHttp } from "../../app/http/routes";
 import { env } from "../config/env";
-import { sanitizeInputs } from "../middleware/sanitize.middleware";
-import { rateLimits } from "../middleware/rate-limit-redis.middleware";
+import { registerCsrfProtection } from "../middleware/csrf.middleware";
 import { ipBlockMiddleware } from "../middleware/ip-block.middleware";
-import { registerCSRFProtection } from "../middleware/csrf-protection.middleware";
-import { registerLoginRateLimitHook } from "../middleware/login-rate-limit.middleware";
+import { rateLimits } from "../middleware/rate-limit-redis.middleware";
+import { sanitizeInputs } from "../middleware/sanitize.middleware";
 import { setupHttpMetrics } from "../observability/metrics";
 
 type CreateServerOptions = {
@@ -53,6 +52,24 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
 
   const app = fastify({
     logger: loggerConfig,
+    bodyLimit: 1048576, // 1MB - Proteção contra DoS via Payload enorme
+  });
+
+  // Proteção contra HTTP Parameter Pollution (HPP)
+  app.addHook("onRequest", async (request, reply) => {
+    const query = request.query as Record<string, unknown>;
+    if (query) {
+      for (const key in query) {
+        if (Array.isArray(query[key])) {
+          // Se não é esperado ser array e veio array, rejeitamos (tentativa de HPP)
+          // Nota: Pode ser refinado por rota se necessário
+          return reply.status(400).send({
+            message: "Duplicate query parameters not allowed",
+            code: "HPP_PROTECTION",
+          });
+        }
+      }
+    }
   });
 
   app.setValidatorCompiler(validatorCompiler);
@@ -98,16 +115,22 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'", "'unsafe-eval'"], // Necessário para Next.js em desenvolvimento
+        scriptSrc:
+          env.NODE_ENV === "production"
+            ? ["'self'"] // Bloquear eval em produção
+            : ["'self'", "'unsafe-eval'"], // Necessário para Next.js em desenvolvimento
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "ws:", "wss:"],
+        connectSrc: ["'self'", "ws:", "wss:", "https:"],
         fontSrc: ["'self'", "data:"],
         objectSrc: ["'none'"],
         mediaSrc: ["'self'"],
         frameSrc: ["'none'"],
+        frameAncestors: ["'none'"], // Previne clickjacking
+        formAction: ["'self'"], // Previne envio de forms para domínios externos
+        upgradeInsecureRequests: [], // Força HTTPS
       },
     },
-    crossOriginEmbedderPolicy: false, // Pode ser necessário para algumas integrações
+    crossOriginEmbedderPolicy: false,
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
@@ -124,12 +147,13 @@ export async function createServer({ registerDocs = false, modules }: CreateServ
   });
 
   // Structured Logging - Adicionar contexto estruturado aos logs
-  const { structuredLoggingMiddleware, logResponse } = await import("../logging/structured-logging.middleware");
+  const { structuredLoggingMiddleware, logResponse } = await import(
+    "../logging/structured-logging.middleware"
+  );
   app.addHook("onRequest", structuredLoggingMiddleware);
   app.addHook("onResponse", logResponse);
 
-  // CSRF Protection
-  const { registerCsrfProtection } = await import("../middleware/csrf.middleware");
+  // CSRF Protection (Consolidated Hardened Version)
   registerCsrfProtection(app);
 
   // Validação de tenant obrigatória (após autenticação, antes do rate limiting)

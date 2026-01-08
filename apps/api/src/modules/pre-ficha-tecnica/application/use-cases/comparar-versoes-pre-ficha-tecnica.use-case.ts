@@ -1,5 +1,5 @@
-import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { PreFichaTecnicaId } from "../../domain/value-objects/pre-ficha-tecnica-id";
 
 type Dependencies = {
@@ -70,7 +70,10 @@ export class CompararVersoesPreFichaTecnicaUseCase {
     };
   }
 
-  private compararDados(dados1: any, dados2: any): Array<{
+  private compararDados(
+    dados1: any,
+    dados2: any,
+  ): Array<{
     campo: string;
     valorAnterior: any;
     valorNovo: any;
@@ -83,10 +86,7 @@ export class CompararVersoesPreFichaTecnicaUseCase {
       tipo: "alterado" | "adicionado" | "removido";
     }> = [];
 
-    const campos = new Set([
-      ...Object.keys(dados1 || {}),
-      ...Object.keys(dados2 || {}),
-    ]);
+    const campos = new Set([...Object.keys(dados1 || {}), ...Object.keys(dados2 || {})]);
 
     for (const campo of campos) {
       const valor1 = dados1?.[campo];
@@ -129,15 +129,3 @@ export class CompararVersoesPreFichaTecnicaUseCase {
     return diff;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

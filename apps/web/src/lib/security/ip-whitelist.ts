@@ -4,9 +4,9 @@
  * Sistema de whitelist de IPs para endpoints sensíveis
  */
 
-import { NextRequest, NextResponse } from "next/server";
 import { auditService } from "@/lib/audit/audit-service";
 import { logger } from "@/lib/observability";
+import { NextRequest, NextResponse } from "next/server";
 
 export interface IPWhitelistRule {
     id: string;
@@ -88,10 +88,10 @@ export class IPWhitelistService {
      */
     private isIPInCIDR(ip: string, cidr: string): boolean {
         const [range, bits] = cidr.split("/");
-        const mask = ~(2 ** (32 - parseInt(bits)) - 1);
+        const mask = ~(2 ** (32 - parseInt(bits ?? "32")) - 1);
 
         const ipInt = this.ipToInt(ip);
-        const rangeInt = this.ipToInt(range);
+        const rangeInt = this.ipToInt(range ?? "0.0.0.0");
 
         return (ipInt & mask) === (rangeInt & mask);
     }
@@ -119,7 +119,7 @@ export const ipWhitelistService = new IPWhitelistService();
 export function requireIPWhitelist() {
     return async function middleware(request: NextRequest): Promise<NextResponse | null> {
         const ip =
-            request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+            (request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "") ||
             request.headers.get("x-real-ip") ||
             "unknown";
 

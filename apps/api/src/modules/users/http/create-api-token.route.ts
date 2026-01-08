@@ -1,8 +1,8 @@
+import { createHash, randomBytes } from "node:crypto";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { randomBytes, createHash } from "node:crypto";
 import { z } from "zod";
-import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { getPrisma } from "../../../infra/database/prisma.service";
 
 const createApiTokenSchema = z.object({
   name: z.string().min(1).max(255),
@@ -76,14 +76,3 @@ export async function registerCreateApiTokenRoute(app: FastifyInstance) {
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-

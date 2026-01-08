@@ -2,7 +2,7 @@
 
 import { Button, cn, GlassCard } from "@morina/ui";
 import { useState, useTransition } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/ui/base/badge";
 import type { OrganizationInvite } from "@/types/organization";
 
 type TeamInvitesProps = {

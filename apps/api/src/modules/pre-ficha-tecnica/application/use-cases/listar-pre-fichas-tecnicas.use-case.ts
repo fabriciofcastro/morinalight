@@ -1,5 +1,8 @@
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
-import { listarPreFichasTecnicasFiltroSchema, paginacaoSchema } from "../schemas/pre-ficha-tecnica.schema";
+import {
+  listarPreFichasTecnicasFiltroSchema,
+  paginacaoSchema,
+} from "../schemas/pre-ficha-tecnica.schema";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -40,15 +43,3 @@ export class ListarPreFichasTecnicasUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

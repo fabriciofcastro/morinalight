@@ -4,9 +4,9 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
 import { Mail, Building, Send, CheckCircle2, Sparkles } from "lucide-react";
 import { GlassCard } from "@morina/ui";
-import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
+import { AnimatedTechCorners } from "@/shared/ui/base/animated-tech-corners";
 import { EnergyRings } from "@/components/login/energy-rings";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
 
 export function PlaybookCTA() {
     const ref = useRef(null);

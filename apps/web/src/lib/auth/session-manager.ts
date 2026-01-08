@@ -1,67 +1,82 @@
 /**
  * Session Management
  * 
- * Gerenciamento robusto de sessões de usuário
+ * Gerenciamento robusto de sessões de usuário com integração real Prisma
  */
 
-import crypto from "crypto";
 import { auditService } from "@/lib/audit/audit-service";
+import prisma from "@/lib/prisma";
 
 export interface UserSession {
     id: string;
     userId: string;
-    deviceId: string;
-    deviceName: string;
+    deviceId: string | null;
     ipAddress: string;
     userAgent: string;
+    country: string | null;
+    city: string | null;
     createdAt: Date;
-    lastActivityAt: Date;
+    lastActivity: Date;
     expiresAt: Date;
-    active: boolean;
+    isActive: boolean;
 }
 
 export class SessionManager {
+    /**
+     * Limite máximo de sessões simultâneas por usuário
+     * Recomendado: 5
+     */
     private readonly MAX_SESSIONS_PER_USER = 5;
+    
+    /**
+     * Timeout de inatividade (sessão é revogada se não houver atividade)
+     * Recomendado: 30 minutos
+     */
     private readonly SESSION_TIMEOUT_MINUTES = 30;
+    
+    /**
+     * Validade absoluta do token de sessão
+     * Recomendado: 7 dias
+     */
     private readonly SESSION_ABSOLUTE_TIMEOUT_DAYS = 7;
 
     /**
-     * Cria nova sessão
+     * Cria nova sessão e persiste no banco de dados
      */
     async createSession(
         userId: string,
         deviceInfo: {
             deviceId?: string;
-            deviceName: string;
             ipAddress: string;
             userAgent: string;
+            country?: string;
+            city?: string;
+            token: string;
         },
     ): Promise<UserSession> {
-        // Gerar device ID se não fornecido
-        const deviceId = deviceInfo.deviceId || crypto.randomUUID();
-
-        // Verificar limite de sessões
+        // 1. Verificar limite de sessões e revogar a mais antiga se necessário
         await this.enforceSessionLimit(userId);
 
-        const session: UserSession = {
-            id: crypto.randomUUID(),
-            userId,
-            deviceId,
-            deviceName: deviceInfo.deviceName,
-            ipAddress: deviceInfo.ipAddress,
-            userAgent: deviceInfo.userAgent,
-            createdAt: new Date(),
-            lastActivityAt: new Date(),
-            expiresAt: new Date(
-                Date.now() + this.SESSION_ABSOLUTE_TIMEOUT_DAYS * 24 * 60 * 60 * 1000,
-            ),
-            active: true,
-        };
+        // 2. Criar a sessão no banco
+        const expiresAt = new Date(
+            Date.now() + this.SESSION_ABSOLUTE_TIMEOUT_DAYS * 24 * 60 * 60 * 1000,
+        );
 
-        // Salvar sessão
-        // await prisma.session.create({ data: session });
+        const session = await prisma.userSession.create({
+            data: {
+                userId,
+                token: deviceInfo.token,
+                deviceId: deviceInfo.deviceId || null,
+                ipAddress: deviceInfo.ipAddress,
+                userAgent: deviceInfo.userAgent,
+                country: deviceInfo.country || null,
+                city: deviceInfo.city || null,
+                expiresAt,
+                isActive: true,
+            },
+        });
 
-        // Audit log
+        // 3. Registrar auditoria
         await auditService.log({
             action: "session_created",
             userId,
@@ -69,6 +84,10 @@ export class SessionManager {
             resourceId: session.id,
             ipAddress: deviceInfo.ipAddress,
             userAgent: deviceInfo.userAgent,
+            metadata: { 
+                city: deviceInfo.city,
+                country: deviceInfo.country 
+            },
             success: true,
         });
 
@@ -76,71 +95,67 @@ export class SessionManager {
     }
 
     /**
-     * Valida sessão
+     * Valida sessão verificando status, expiração e timeout de inatividade
      */
-    async validateSession(sessionId: string): Promise<UserSession | null> {
-        // const session = await prisma.session.findUnique({
-        //   where: { id: sessionId },
-        // });
+    async validateSession(token: string): Promise<UserSession | null> {
+        const session = await prisma.userSession.findUnique({
+            where: { token },
+        });
 
-        const session = null as any as UserSession | null; // TODO: buscar real
-
-        if (!session || !session.active) {
+        if (!session || !session.isActive) {
             return null;
         }
 
-        // Verificar se expirou (timeout de inatividade)
+        // 1. Verificar timeout absoluto
+        if (session.expiresAt < new Date()) {
+            await this.terminateSession(session.id, "expired");
+            return null;
+        }
+
+        // 2. Verificar timeout de inatividade
         const inactiveMinutes =
-            (Date.now() - session.lastActivityAt.getTime()) / (1000 * 60);
+            (Date.now() - session.lastActivity.getTime()) / (1000 * 60);
 
         if (inactiveMinutes > this.SESSION_TIMEOUT_MINUTES) {
-            await this.terminateSession(sessionId, "timeout");
+            await this.terminateSession(session.id, "inactivity_timeout");
             return null;
         }
 
-        // Verificar se expirou (timeout absoluto)
-        if (session.expiresAt < new Date()) {
-            await this.terminateSession(sessionId, "expired");
-            return null;
-        }
-
-        // Atualizar última atividade
-        await this.updateActivity(sessionId);
+        // 3. Atualizar última atividade
+        await this.updateActivity(session.id);
 
         return session;
     }
 
     /**
-     * Atualiza atividade da sessão
+     * Atualiza o timestamp de última atividade da sessão
      */
     private async updateActivity(sessionId: string): Promise<void> {
-        // await prisma.session.update({
-        //   where: { id: sessionId },
-        //   data: { lastActivityAt: new Date() },
-        // });
+        await prisma.userSession.update({
+            where: { id: sessionId },
+            data: { lastActivity: new Date() },
+        });
     }
 
     /**
-     * Termina sessão
+     * Revoga uma sessão específica
      */
     async terminateSession(
         sessionId: string,
         reason: string = "user_logout",
     ): Promise<void> {
-        // const session = await prisma.session.findUnique({
-        //   where: { id: sessionId },
-        // });
-
-        // await prisma.session.update({
-        //   where: { id: sessionId },
-        //   data: { active: false },
-        // });
-
-        const mockUserId = "user-123";
+        const session = await prisma.userSession.update({
+            where: { id: sessionId },
+            data: { 
+                isActive: false,
+                revokedAt: new Date(),
+                revokedBy: reason
+            },
+        });
 
         await auditService.log({
             action: "session_terminated",
-            userId: mockUserId,
+            userId: session.userId,
             resource: "session",
             resourceId: sessionId,
             metadata: { reason },
@@ -149,20 +164,24 @@ export class SessionManager {
     }
 
     /**
-     * Termina todas as sessões do usuário
+     * Revoga todas as sessões ativas do usuário
      */
     async terminateAllUserSessions(
         userId: string,
         exceptSessionId?: string,
     ): Promise<void> {
-        // await prisma.session.updateMany({
-        //   where: {
-        //     userId,
-        //     active: true,
-        //     id: exceptSessionId ? { not: exceptSessionId } : undefined,
-        //   },
-        //   data: { active: false },
-        // });
+        await prisma.userSession.updateMany({
+            where: {
+                userId,
+                isActive: true,
+                id: exceptSessionId ? { not: exceptSessionId } : undefined,
+            },
+            data: { 
+                isActive: false,
+                revokedAt: new Date(),
+                revokedBy: "all_sessions_revocation"
+            },
+        });
 
         await auditService.log({
             action: "all_sessions_terminated",
@@ -174,62 +193,55 @@ export class SessionManager {
     }
 
     /**
-     * Lista sessões ativas do usuário
+     * Retorna todas as sessões ativas de um usuário (para a tela de segurança)
      */
     async getUserSessions(userId: string): Promise<UserSession[]> {
-        // return prisma.session.findMany({
-        //   where: {
-        //     userId,
-        //     active: true,
-        //   },
-        //   orderBy: { lastActivityAt: 'desc' },
-        // });
-
-        return [];
+        return prisma.userSession.findMany({
+            where: {
+                userId,
+                isActive: true,
+            },
+            orderBy: { lastActivity: 'desc' },
+        });
     }
 
     /**
-     * Limita número de sessões por usuário
+     * Garante que o usuário não ultrapasse o limite de sessões ativas
      */
     private async enforceSessionLimit(userId: string): Promise<void> {
-        const sessions = await this.getUserSessions(userId);
+        const activeSessions = await this.getUserSessions(userId);
 
-        if (sessions.length >= this.MAX_SESSIONS_PER_USER) {
-            // Terminar sessão mais antiga
-            const oldestSession = sessions[sessions.length - 1];
-            await this.terminateSession(oldestSession.id, "session_limit");
+        if (activeSessions.length >= this.MAX_SESSIONS_PER_USER) {
+            // Ordenar por atividade e pegar as excedentes (as mais antigas)
+            const sessionsToRevoke = activeSessions.slice(this.MAX_SESSIONS_PER_USER - 1);
+            
+            for (const sess of sessionsToRevoke) {
+                await this.terminateSession(sess.id, "session_limit_exceeded");
+            }
         }
     }
 
     /**
-     * Detecta sessão suspeita
+     * Compara a sessão atual com atividades anteriores para detectar comportamentos anômalos
      */
     async detectSuspiciousSession(
-        userId: string,
-        newSession: {
-            ipAddress: string;
-            deviceName: string;
-        },
+        session: UserSession,
+        newContext: { ipAddress: string; country?: string; city?: string }
     ): Promise<boolean> {
-        const recentSessions = await this.getUserSessions(userId);
-
-        // Verificar se IP mudou drasticamente
-        const recentIPs = recentSessions.map((s) => s.ipAddress);
-        const uniqueIPs = new Set(recentIPs);
-
-        if (uniqueIPs.size > 0 && !uniqueIPs.has(newSession.ipAddress)) {
-            // IP novo - pode ser suspeito
+        // 1. Mudança brusca de localização (Impossible Travel)
+        if (session.country && newContext.country && session.country !== newContext.country) {
             await auditService.log({
-                action: "suspicious_session_detected",
-                userId,
+                action: "suspicious_location_change",
+                userId: session.userId,
                 resource: "session",
+                resourceId: session.id,
                 metadata: {
-                    newIP: newSession.ipAddress,
-                    recentIPs: Array.from(uniqueIPs),
+                    oldCountry: session.country,
+                    newCountry: newContext.country,
+                    ip: newContext.ipAddress
                 },
-                success: true,
+                severity: "high"
             });
-
             return true;
         }
 
@@ -237,26 +249,29 @@ export class SessionManager {
     }
 
     /**
-     * Limpa sessões expiradas (cron job)
+     * Job de limpeza para o sistema (pode ser chamado via cron)
      */
     async cleanupExpiredSessions(): Promise<number> {
-        // const result = await prisma.session.updateMany({
-        //   where: {
-        //     OR: [
-        //       { expiresAt: { lt: new Date() } },
-        //       {
-        //         lastActivityAt: {
-        //           lt: new Date(Date.now() - this.SESSION_TIMEOUT_MINUTES * 60 * 1000),
-        //         },
-        //       },
-        //     ],
-        //     active: true,
-        //   },
-        //   data: { active: false },
-        // });
+        const result = await prisma.userSession.updateMany({
+            where: {
+                isActive: true,
+                OR: [
+                    { expiresAt: { lt: new Date() } },
+                    {
+                        lastActivity: {
+                            lt: new Date(Date.now() - this.SESSION_TIMEOUT_MINUTES * 60 * 1000),
+                        },
+                    },
+                ],
+            },
+            data: { 
+                isActive: false,
+                revokedAt: new Date(),
+                revokedBy: "automated_cleanup"
+            },
+        });
 
-        // return result.count;
-        return 0;
+        return result.count;
     }
 }
 

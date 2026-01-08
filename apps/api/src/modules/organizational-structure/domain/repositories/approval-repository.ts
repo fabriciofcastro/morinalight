@@ -21,12 +21,3 @@ export interface ApprovalRepository {
   countByWorkflowId(workflowId: string, workflowType: string, status: "APPROVED"): Promise<number>;
   delete(id: string): Promise<void>;
 }
-
-
-
-
-
-
-
-
-

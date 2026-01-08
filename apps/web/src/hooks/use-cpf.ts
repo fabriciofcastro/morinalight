@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { buscarCpf, type CpfData, validarCpf } from "@/lib/integrations/cpf";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 /**
  * Hook para validação e busca de CPF

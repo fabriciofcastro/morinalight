@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { encryptionService } from '../lib/crypto/encryption';
+import { describe, expect, it } from 'vitest';
+import * as encryptionService from '../lib/crypto/encryption';
 
 describe('Encryption Service', () => {
     const testData = 'Sensitive data 123';
@@ -65,8 +65,8 @@ describe('Encryption Service', () => {
         });
 
         it('should create fixed-length hashes', () => {
-            const hash = encryptionService.hash(testData);
-            expect(hash.length).toBe(64); // SHA-256 hex = 64 chars
+            const h = encryptionService.hash(testData);
+            expect(h.length).toBe(64); // SHA-256 hex = 64 chars
         });
     });
 });

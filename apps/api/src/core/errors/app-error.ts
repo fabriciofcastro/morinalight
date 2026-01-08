@@ -123,12 +123,10 @@ export class RateLimitError extends AppError {
   public readonly retryAfter: number;
 
   constructor(retryAfter: number, message?: string, context?: Record<string, unknown>) {
-    super(
-      "RATE_LIMIT_EXCEEDED",
-      message || "Too many requests. Please try again later.",
-      429,
-      { isOperational: true, context },
-    );
+    super("RATE_LIMIT_EXCEEDED", message || "Too many requests. Please try again later.", 429, {
+      isOperational: true,
+      context,
+    });
     this.retryAfter = retryAfter;
   }
 
@@ -288,15 +286,10 @@ export class PayloadTooLargeError extends AppError {
   public readonly actualSize: number;
 
   constructor(maxSize: number, actualSize: number, context?: Record<string, unknown>) {
-    super(
-      "PAYLOAD_TOO_LARGE",
-      `Request payload exceeds maximum size of ${maxSize} bytes`,
-      413,
-      {
-        isOperational: true,
-        context: { maxSize, actualSize, ...context },
-      },
-    );
+    super("PAYLOAD_TOO_LARGE", `Request payload exceeds maximum size of ${maxSize} bytes`, 413, {
+      isOperational: true,
+      context: { maxSize, actualSize, ...context },
+    });
     this.maxSize = maxSize;
     this.actualSize = actualSize;
   }
@@ -309,15 +302,10 @@ export class UnsupportedMediaTypeError extends AppError {
   public readonly contentType: string;
 
   constructor(contentType: string, context?: Record<string, unknown>) {
-    super(
-      "UNSUPPORTED_MEDIA_TYPE",
-      `Content type ${contentType} is not supported`,
-      415,
-      {
-        isOperational: true,
-        context: { contentType, ...context },
-      },
-    );
+    super("UNSUPPORTED_MEDIA_TYPE", `Content type ${contentType} is not supported`, 415, {
+      isOperational: true,
+      context: { contentType, ...context },
+    });
     this.contentType = contentType;
   }
 }
@@ -337,15 +325,10 @@ export class TooManyRequestsError extends AppError {
     message?: string,
     context?: Record<string, unknown>,
   ) {
-    super(
-      "TOO_MANY_REQUESTS",
-      message || "Too many requests. Please try again later.",
-      429,
-      {
-        isOperational: true,
-        context: { retryAfter, limit, remaining, ...context },
-      },
-    );
+    super("TOO_MANY_REQUESTS", message || "Too many requests. Please try again later.", 429, {
+      isOperational: true,
+      context: { retryAfter, limit, remaining, ...context },
+    });
     this.retryAfter = retryAfter;
     this.limit = limit;
     this.remaining = remaining;
@@ -369,7 +352,10 @@ export class TooManyRequestsError extends AppError {
  * Internal server error - for unexpected server errors
  */
 export class InternalServerError extends AppError {
-  constructor(message: string = "An internal server error occurred", context?: Record<string, unknown>) {
+  constructor(
+    message: string = "An internal server error occurred",
+    context?: Record<string, unknown>,
+  ) {
     super("INTERNAL_SERVER_ERROR", message, 500, {
       isOperational: false,
       context,
@@ -384,15 +370,10 @@ export class BadGatewayError extends AppError {
   public readonly upstream: string;
 
   constructor(upstream: string, message?: string, context?: Record<string, unknown>) {
-    super(
-      "BAD_GATEWAY",
-      message || `Bad gateway to upstream service: ${upstream}`,
-      502,
-      {
-        isOperational: false,
-        context: { upstream, ...context },
-      },
-    );
+    super("BAD_GATEWAY", message || `Bad gateway to upstream service: ${upstream}`, 502, {
+      isOperational: false,
+      context: { upstream, ...context },
+    });
     this.upstream = upstream;
   }
 }
@@ -410,15 +391,10 @@ export class ServiceUnavailableError extends AppError {
     message?: string,
     context?: Record<string, unknown>,
   ) {
-    super(
-      "SERVICE_UNAVAILABLE",
-      message || `Service ${service} is temporarily unavailable`,
-      503,
-      {
-        isOperational: true,
-        context: { service, retryAfter, ...context },
-      },
-    );
+    super("SERVICE_UNAVAILABLE", message || `Service ${service} is temporarily unavailable`, 503, {
+      isOperational: true,
+      context: { service, retryAfter, ...context },
+    });
     this.service = service;
     this.retryAfter = retryAfter;
   }
@@ -444,15 +420,10 @@ export class GatewayTimeoutError extends AppError {
   public readonly upstream: string;
 
   constructor(upstream: string, timeout: number, context?: Record<string, unknown>) {
-    super(
-      "GATEWAY_TIMEOUT",
-      `Gateway timeout after ${timeout}ms for ${upstream}`,
-      504,
-      {
-        isOperational: false,
-        context: { upstream, timeout, ...context },
-      },
-    );
+    super("GATEWAY_TIMEOUT", `Gateway timeout after ${timeout}ms for ${upstream}`, 504, {
+      isOperational: false,
+      context: { upstream, timeout, ...context },
+    });
     this.timeout = timeout;
     this.upstream = upstream;
   }
@@ -465,12 +436,7 @@ export class NetworkError extends AppError {
   public readonly host?: string;
   public readonly port?: number;
 
-  constructor(
-    message: string,
-    host?: string,
-    port?: number,
-    context?: Record<string, unknown>,
-  ) {
+  constructor(message: string, host?: string, port?: number, context?: Record<string, unknown>) {
     super("NETWORK_ERROR", message, 503, {
       isOperational: false,
       context: { host, port, ...context },
@@ -487,15 +453,10 @@ export class ConfigurationError extends AppError {
   public readonly configKey: string;
 
   constructor(configKey: string, message?: string, context?: Record<string, unknown>) {
-    super(
-      "CONFIGURATION_ERROR",
-      message || `Configuration error for key: ${configKey}`,
-      500,
-      {
-        isOperational: false,
-        context: { configKey, ...context },
-      },
-    );
+    super("CONFIGURATION_ERROR", message || `Configuration error for key: ${configKey}`, 500, {
+      isOperational: false,
+      context: { configKey, ...context },
+    });
     this.configKey = configKey;
   }
 }
@@ -513,15 +474,10 @@ export class ResourceExhaustedError extends AppError {
     message?: string,
     context?: Record<string, unknown>,
   ) {
-    super(
-      "RESOURCE_EXHAUSTED",
-      message || `Resource ${resource} exhausted. Limit: ${limit}`,
-      429,
-      {
-        isOperational: true,
-        context: { resource, limit, ...context },
-      },
-    );
+    super("RESOURCE_EXHAUSTED", message || `Resource ${resource} exhausted. Limit: ${limit}`, 429, {
+      isOperational: true,
+      context: { resource, limit, ...context },
+    });
     this.resource = resource;
     this.limit = limit;
   }
@@ -532,15 +488,10 @@ export class ResourceExhaustedError extends AppError {
  */
 export class NotImplementedError extends AppError {
   constructor(feature: string, context?: Record<string, unknown>) {
-    super(
-      "NOT_IMPLEMENTED",
-      `Feature ${feature} is not implemented`,
-      501,
-      {
-        isOperational: true,
-        context: { feature, ...context },
-      },
-    );
+    super("NOT_IMPLEMENTED", `Feature ${feature} is not implemented`, 501, {
+      isOperational: true,
+      context: { feature, ...context },
+    });
   }
 }
 
@@ -551,26 +502,10 @@ export class MaintenanceModeError extends AppError {
   public readonly estimatedDuration?: number;
 
   constructor(estimatedDuration?: number, context?: Record<string, unknown>) {
-    super(
-      "MAINTENANCE_MODE",
-      "Service is currently under maintenance",
-      503,
-      {
-        isOperational: true,
-        context: { estimatedDuration, ...context },
-      },
-    );
+    super("MAINTENANCE_MODE", "Service is currently under maintenance", 503, {
+      isOperational: true,
+      context: { estimatedDuration, ...context },
+    });
     this.estimatedDuration = estimatedDuration;
   }
 }
-
-
-
-
-
-
-
-
-
-
-

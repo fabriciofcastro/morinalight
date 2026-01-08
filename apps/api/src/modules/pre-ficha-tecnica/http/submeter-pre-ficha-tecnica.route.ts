@@ -1,7 +1,7 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { SubmeterPreFichaTecnicaUseCase } from "../application/use-cases/submeter-pre-ficha-tecnica.use-case";
 import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -53,15 +53,3 @@ export async function registerSubmeterPreFichaTecnicaRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

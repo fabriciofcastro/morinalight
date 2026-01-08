@@ -34,10 +34,7 @@ export interface FichaCustoRepository {
   /**
    * Buscar por número sequencial
    */
-  buscarPorNumeroSequencial(
-    numero: number,
-    orgId: string,
-  ): Promise<FichaCusto | null>;
+  buscarPorNumeroSequencial(numero: number, orgId: string): Promise<FichaCusto | null>;
 
   /**
    * Buscar por referência da peça
@@ -47,7 +44,11 @@ export interface FichaCustoRepository {
   /**
    * Listar fichas com filtros e paginação
    */
-  listar(filtro: FichaCustoFiltro, pagina: number, tamanhoPagina: number): Promise<FichaCustoPagina>;
+  listar(
+    filtro: FichaCustoFiltro,
+    pagina: number,
+    tamanhoPagina: number,
+  ): Promise<FichaCustoPagina>;
 
   /**
    * Obter próximo número sequencial para uma organização

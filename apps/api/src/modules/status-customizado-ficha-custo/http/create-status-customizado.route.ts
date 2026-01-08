@@ -33,7 +33,11 @@ export async function registerCreateStatusCustomizadoRoute(
 
         const input = createStatusCustomizadoSchema.parse(request.body);
 
-        const useCase = new CriarStatusCustomizadoUseCase(deps.statusCustomizadoRepository, orgId, actorId);
+        const useCase = new CriarStatusCustomizadoUseCase(
+          deps.statusCustomizadoRepository,
+          orgId,
+          actorId,
+        );
         const resultado = await useCase.execute(input);
 
         return reply.status(201).send({
@@ -58,5 +62,3 @@ export async function registerCreateStatusCustomizadoRoute(
     },
   );
 }
-
-

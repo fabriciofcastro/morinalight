@@ -7,13 +7,13 @@ import type {
 import { registerAssinarComissaoRoute } from "./assinar-comissao.route";
 import { registerCreateClienteRoute } from "./create-cliente.route";
 import { registerCreateRepresentanteRoute } from "./create-representante.route";
+import { registerExportClientesRoute } from "./export-clientes.route";
+import { registerImportClientesRoute } from "./import-clientes.route";
 import { registerListClientesRoute } from "./list-clientes.route";
 import { registerListComissoesRoute } from "./list-comissoes.route";
 import { registerListRepresentantesRoute } from "./list-representantes.route";
 import { registerPagarComissaoRoute } from "./pagar-comissao.route";
 import { registerUpdateClienteRoute } from "./update-cliente.route";
-import { registerExportClientesRoute } from "./export-clientes.route";
-import { registerImportClientesRoute } from "./import-clientes.route";
 
 type ClientesHttpDeps = {
   clienteRepository: ClienteRepository;

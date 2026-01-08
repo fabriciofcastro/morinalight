@@ -6,17 +6,17 @@
 
 "use client";
 
-import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@morina/ui";
-import { AlertCircle, XCircle, AlertTriangle, Info } from "lucide-react";
-import { parseError, type AppError } from "@/lib/errors";
+import { parseError } from "@/lib/errors";
 import { getUserFriendlyMessage } from "@/lib/errors/user-messages";
 import { cn } from "@/lib/utils";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@morina/ui";
+import { AlertCircle, AlertTriangle, Info, XCircle } from "lucide-react";
+import React from "react";
 
 interface ErrorTooltipProps {
   error: unknown;
@@ -57,13 +57,33 @@ export function ErrorTooltip({
 
   // Cores baseadas na severidade
   const colorMap = {
-    critical: "border-red-500/30 bg-red-500/10 text-red-300",
-    error: "border-red-500/30 bg-red-500/10 text-red-300",
-    warning: "border-yellow-500/30 bg-yellow-500/10 text-yellow-300",
-    info: "border-blue-500/30 bg-blue-500/10 text-blue-300",
+    critical: {
+      text: "text-red-300",
+      border: "border-red-500/40",
+      bg: "bg-[#1a0505]/95",
+      accent: "border-red-500/60"
+    },
+    error: {
+      text: "text-red-300",
+      border: "border-red-500/40",
+      bg: "bg-[#1a0505]/95",
+      accent: "border-red-500/60"
+    },
+    warning: {
+      text: "text-amber-300",
+      border: "border-amber-500/40",
+      bg: "bg-[#1a1505]/95",
+      accent: "border-amber-500/60"
+    },
+    info: {
+      text: "text-[#4d73ff]",
+      border: "border-[#2957ff]/40",
+      bg: "bg-[#050a1a]/95",
+      accent: "border-[#2957ff]/60"
+    },
   };
 
-  const colors = colorMap[friendly.severity] || colorMap.error;
+  const theme = colorMap[friendly.severity] || colorMap.error;
 
   return (
     <TooltipProvider delayDuration={delayDuration}>
@@ -72,7 +92,7 @@ export function ErrorTooltip({
           <div className={cn("inline-flex items-center", className)}>
             {children}
             {showIcon && (
-              <Icon className="ml-1.5 h-4 w-4 shrink-0 text-red-400" />
+              <Icon className={cn("ml-1.5 h-4 w-4 shrink-0", theme.text)} />
             )}
           </div>
         </TooltipTrigger>
@@ -80,36 +100,47 @@ export function ErrorTooltip({
           side={side}
           align={align}
           className={cn(
-            "max-w-xs border shadow-lg backdrop-blur-sm",
-            colors,
+            "max-w-xs border-2 shadow-xl backdrop-blur-md p-0 overflow-hidden",
+            theme.border,
+            theme.bg,
             className
           )}
         >
-          <div className="space-y-1.5">
-            <div className="flex items-start gap-2">
-              <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+          {/* HUD Corner Decorations */}
+          <div className={cn("absolute top-0 left-0 w-2 h-2 border-t border-l", theme.accent)} />
+          <div className={cn("absolute bottom-0 right-0 w-2 h-2 border-b border-r", theme.accent)} />
+
+          <div className="p-3 space-y-1.5 font-mono">
+            <div className="flex items-start gap-2.5">
+              <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", theme.text)} />
               <div className="flex-1">
-                <p className="font-semibold">{friendly.title}</p>
-                <p className="mt-1 text-xs opacity-90 whitespace-pre-line">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white leading-tight">
+                    {friendly.title}
+                </p>
+                <div className="flex items-center gap-1 mt-1 mb-2 opacity-30">
+                    <div className={cn("h-px w-3 bg-current", theme.text)} />
+                    <span className="text-[8px] uppercase tracking-tighter">Diagnostic_Trace</span>
+                </div>
+                <p className="text-[10px] opacity-70 lowercase leading-relaxed">
                   {friendly.message}
                 </p>
               </div>
             </div>
             {appError.fields && appError.fields.length > 0 && (
-              <div className="mt-2 border-t border-current/20 pt-2">
-                <p className="mb-1 text-xs font-semibold">Campos com erro:</p>
-                <ul className="space-y-0.5 text-xs opacity-90">
+              <div className="mt-3 border-t border-white/5 pt-2">
+                <p className="mb-2 text-[9px] uppercase tracking-[0.2em] text-white/30">Trace_Registry:</p>
+                <ul className="space-y-1 text-[9px] opacity-60 lowercase">
                   {appError.fields.slice(0, 3).map((field, index) => (
-                    <li key={index} className="flex items-start gap-1.5">
-                      <span className="mt-0.5">•</span>
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-red-500">»</span>
                       <span>
-                        <strong>{field.field}:</strong> {field.message}
+                        <strong className="text-white/60">{field.field}:</strong> {field.message}
                       </span>
                     </li>
                   ))}
                   {appError.fields.length > 3 && (
-                    <li className="text-xs opacity-70">
-                      +{appError.fields.length - 3} mais
+                    <li className="text-[8px] opacity-40 ml-4 py-1">
+                      +[EXTENDED_DATA_OMITTED]
                     </li>
                   )}
                 </ul>
@@ -270,6 +301,7 @@ export function InlineErrorIndicator({
     </ErrorTooltip>
   );
 }
+
 
 
 

@@ -5,132 +5,132 @@ import { getPrisma } from "../../../infra/database/prisma.service";
 const prisma = getPrisma();
 
 export type MagicLinkToken = {
-    token: string;
-    expiresAt: Date;
-    email: string;
+  token: string;
+  expiresAt: Date;
+  email: string;
 };
 
 export class MagicLinkService {
-    private readonly TOKEN_TTL_MS = 15 * 60 * 1000; // 15 minutos
-    private readonly MAX_REQUESTS_PER_HOUR = 3;
+  private readonly TOKEN_TTL_MS = 15 * 60 * 1000; // 15 minutos
+  private readonly MAX_REQUESTS_PER_HOUR = 3;
 
-    async generateMagicLink(email: string, baseUrl: string): Promise<MagicLinkToken> {
-        // 1. Verificar rate limiting
-        const recentRequests = await prisma.magicLinkToken.count({
-            where: {
-                email: email.toLowerCase(),
-                createdAt: {
-                    gte: new Date(Date.now() - 60 * 60 * 1000), // última hora
-                },
-            },
-        });
+  async generateMagicLink(email: string, baseUrl: string): Promise<MagicLinkToken> {
+    // 1. Verificar rate limiting
+    const recentRequests = await prisma.magicLinkToken.count({
+      where: {
+        email: email.toLowerCase(),
+        createdAt: {
+          gte: new Date(Date.now() - 60 * 60 * 1000), // última hora
+        },
+      },
+    });
 
-        if (recentRequests >= this.MAX_REQUESTS_PER_HOUR) {
-            throw new Error("RATE_LIMIT_EXCEEDED");
-        }
-
-        // 2. Verificar se usuário existe
-        const user = await prisma.user.findUnique({
-            where: { email: email.toLowerCase() },
-        });
-
-        if (!user) {
-            throw new Error("USER_NOT_FOUND");
-        }
-
-        // 3. Gerar token único
-        const token = randomBytes(32).toString("hex");
-        const expiresAt = new Date(Date.now() + this.TOKEN_TTL_MS);
-
-        // 4. Salvar no banco
-        await prisma.magicLinkToken.create({
-            data: {
-                token,
-                email: email.toLowerCase(),
-                userId: user.id,
-                expiresAt,
-                used: false,
-            },
-        });
-
-        // 5. Retornar link completo
-        const magicLink = `${baseUrl}/auth/magic-link/verify?token=${token}`;
-
-        console.log(`✨ [MAGIC_LINK] Token gerado para ${email}, expira em 15 minutos`);
-
-        return {
-            token: magicLink,
-            expiresAt,
-            email: email.toLowerCase(),
-        };
+    if (recentRequests >= this.MAX_REQUESTS_PER_HOUR) {
+      throw new Error("RATE_LIMIT_EXCEEDED");
     }
 
-    async validateMagicLink(token: string): Promise<{ userId: string; email: string }> {
-        // 1. Buscar token no banco
-        const magicLinkToken = await prisma.magicLinkToken.findUnique({
-            where: { token },
-        });
+    // 2. Verificar se usuário existe
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
 
-        if (!magicLinkToken) {
-            throw new Error("INVALID_TOKEN");
-        }
-
-        // 2. Verificar se já foi usado
-        if (magicLinkToken.used) {
-            throw new Error("TOKEN_ALREADY_USED");
-        }
-
-        // 3. Verificar expiração
-        if (new Date() > magicLinkToken.expiresAt) {
-            throw new Error("TOKEN_EXPIRED");
-        }
-
-        // 4. Marcar como usado (single-use)
-        await prisma.magicLinkToken.update({
-            where: { token },
-            data: { used: true, usedAt: new Date() },
-        });
-
-        console.log(`✅ [MAGIC_LINK] Token validado para ${magicLinkToken.email}`);
-
-        return {
-            userId: magicLinkToken.userId,
-            email: magicLinkToken.email,
-        };
+    if (!user) {
+      throw new Error("USER_NOT_FOUND");
     }
 
-    async sendMagicLinkEmail(email: string, magicLink: string): Promise<void> {
-        try {
-            const nodemailer = await import("nodemailer");
+    // 3. Gerar token único
+    const token = randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + this.TOKEN_TTL_MS);
 
-            const transporter = nodemailer.createTransport({
-                host: process.env.SMTP_HOST,
-                port: parseInt(process.env.SMTP_PORT || "587", 10),
-                secure: process.env.SMTP_PORT === "465",
-                auth: {
-                    user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_PASSWORD,
-                },
-            });
+    // 4. Salvar no banco
+    await prisma.magicLinkToken.create({
+      data: {
+        token,
+        email: email.toLowerCase(),
+        userId: user.id,
+        expiresAt,
+        used: false,
+      },
+    });
 
-            const htmlContent = this.generateMagicLinkEmailHTML(magicLink);
+    // 5. Retornar link completo
+    const magicLink = `${baseUrl}/auth/magic-link/verify?token=${token}`;
 
-            await transporter.sendMail({
-                from: process.env.ALERT_EMAIL_FROM || "noreply@morina.ai",
-                to: email,
-                subject: "🔐 Seu link de acesso ao Morina",
-                html: htmlContent,
-            });
+    console.log(`✨ [MAGIC_LINK] Token gerado para ${email}, expira em 15 minutos`);
 
-            console.log(`📧 [MAGIC_LINK] Email enviado para ${email}`);
-        } catch (error) {
-            console.error("Error sending magic link email:", error);
-            throw new Error("EMAIL_SEND_FAILED");
-        }
+    return {
+      token: magicLink,
+      expiresAt,
+      email: email.toLowerCase(),
+    };
+  }
+
+  async validateMagicLink(token: string): Promise<{ userId: string; email: string }> {
+    // 1. Buscar token no banco
+    const magicLinkToken = await prisma.magicLinkToken.findUnique({
+      where: { token },
+    });
+
+    if (!magicLinkToken) {
+      throw new Error("INVALID_TOKEN");
     }
 
-    private generateMagicLinkEmailHTML(magicLink: string): string {
-        return `
+    // 2. Verificar se já foi usado
+    if (magicLinkToken.used) {
+      throw new Error("TOKEN_ALREADY_USED");
+    }
+
+    // 3. Verificar expiração
+    if (new Date() > magicLinkToken.expiresAt) {
+      throw new Error("TOKEN_EXPIRED");
+    }
+
+    // 4. Marcar como usado (single-use)
+    await prisma.magicLinkToken.update({
+      where: { token },
+      data: { used: true, usedAt: new Date() },
+    });
+
+    console.log(`✅ [MAGIC_LINK] Token validado para ${magicLinkToken.email}`);
+
+    return {
+      userId: magicLinkToken.userId,
+      email: magicLinkToken.email,
+    };
+  }
+
+  async sendMagicLinkEmail(email: string, magicLink: string): Promise<void> {
+    try {
+      const nodemailer = await import("nodemailer");
+
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || "587", 10),
+        secure: process.env.SMTP_PORT === "465",
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      });
+
+      const htmlContent = this.generateMagicLinkEmailHTML(magicLink);
+
+      await transporter.sendMail({
+        from: process.env.ALERT_EMAIL_FROM || "noreply@morina.ai",
+        to: email,
+        subject: "🔐 Seu link de acesso ao Morina",
+        html: htmlContent,
+      });
+
+      console.log(`📧 [MAGIC_LINK] Email enviado para ${email}`);
+    } catch (error) {
+      console.error("Error sending magic link email:", error);
+      throw new Error("EMAIL_SEND_FAILED");
+    }
+  }
+
+  private generateMagicLinkEmailHTML(magicLink: string): string {
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -235,31 +235,31 @@ export class MagicLinkService {
 </body>
 </html>
     `;
-    }
+  }
 
-    async cleanupExpiredTokens(): Promise<void> {
-        try {
-            const deleted = await prisma.magicLinkToken.deleteMany({
-                where: {
-                    expiresAt: {
-                        lt: new Date(),
-                    },
-                },
-            });
+  async cleanupExpiredTokens(): Promise<void> {
+    try {
+      const deleted = await prisma.magicLinkToken.deleteMany({
+        where: {
+          expiresAt: {
+            lt: new Date(),
+          },
+        },
+      });
 
-            console.log(`🧹 [MAGIC_LINK] ${deleted.count} tokens expirados removidos`);
-        } catch (error) {
-            console.error("Error cleaning up expired tokens:", error);
-        }
+      console.log(`🧹 [MAGIC_LINK] ${deleted.count} tokens expirados removidos`);
+    } catch (error) {
+      console.error("Error cleaning up expired tokens:", error);
     }
+  }
 }
 
 // Singleton instance
 let magicLinkServiceInstance: MagicLinkService | null = null;
 
 export function getMagicLinkService(): MagicLinkService {
-    if (!magicLinkServiceInstance) {
-        magicLinkServiceInstance = new MagicLinkService();
-    }
-    return magicLinkServiceInstance;
+  if (!magicLinkServiceInstance) {
+    magicLinkServiceInstance = new MagicLinkService();
+  }
+  return magicLinkServiceInstance;
 }

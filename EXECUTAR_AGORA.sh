@@ -29,3 +29,4 @@ echo "✅ Pronto! Os serviços devem reconectar automaticamente."
 
 
 
+

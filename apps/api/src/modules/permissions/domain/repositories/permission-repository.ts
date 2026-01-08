@@ -1,5 +1,5 @@
+import type { ObjectAccessEntry, SecurityPolicy } from "@morina/shared-kernel";
 import type { Permission } from "../entities/permission";
-import type { SecurityPolicy, ObjectAccessEntry } from "@morina/shared-kernel";
 
 export type PermissionFiltro = {
   module?: string;

@@ -2,11 +2,12 @@ import bcrypt from "bcryptjs";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { BCRYPT_ROUNDS, passwordSchema } from "../../../core/config/password-config";
 import type { UserRepository } from "../../users/repositories/user.repository";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(8),
-  newPassword: z.string().min(8),
+  newPassword: passwordSchema, // ✅ Validar senha forte para nova senha
 });
 
 type ChangeProfilePasswordDeps = {
@@ -62,7 +63,7 @@ export async function registerChangeProfilePasswordRoute(
       });
     }
 
-    const passwordHash = await bcrypt.hash(body.newPassword, 10);
+    const passwordHash = await bcrypt.hash(body.newPassword, BCRYPT_ROUNDS); // ✅ Usar 12 rounds
     const updated = await deps.userRepository.update({
       userId,
       passwordHash,

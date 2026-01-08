@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { BCRYPT_ROUNDS } from "../../../core/config/password-config";
 import type { UserRepository } from "../repositories/user.repository";
 
 const createUserSchema = z.object({
@@ -12,8 +13,30 @@ const createUserSchema = z.object({
   status: z.enum(["active", "pending", "suspended"]).default("active"),
   cpf: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
-  birthDate: z.string().datetime().optional().nullable().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable()),
-  admissionDate: z.string().datetime().optional().nullable().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable()),
+  birthDate: z
+    .string()
+    .datetime()
+    .optional()
+    .nullable()
+    .or(
+      z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional()
+        .nullable(),
+    ),
+  admissionDate: z
+    .string()
+    .datetime()
+    .optional()
+    .nullable()
+    .or(
+      z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional()
+        .nullable(),
+    ),
   observations: z.string().optional().nullable(),
   avatarUrl: z.string().url().optional().nullable(),
   departmentId: z.string().optional(),
@@ -50,7 +73,7 @@ export async function registerCreateUserRoute(app: FastifyInstance, deps: Create
       });
     }
 
-    const passwordHash = await bcrypt.hash(body.password, 10);
+    const passwordHash = await bcrypt.hash(body.password, BCRYPT_ROUNDS); // ✅ Usar 12 rounds
     const userId = randomUUID();
 
     // Parse dates from strings

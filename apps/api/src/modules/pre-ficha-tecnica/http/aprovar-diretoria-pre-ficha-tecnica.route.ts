@@ -1,7 +1,7 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AprovarDiretoriaPreFichaTecnicaUseCase } from "../application/use-cases/aprovar-diretoria-pre-ficha-tecnica.use-case";
 import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -56,20 +56,10 @@ export async function registerAprovarDiretoriaPreFichaTecnicaRoute(
           return reply.status(400).send({ message: error.message });
         }
 
-        return reply.status(500).send({ message: "Erro ao aprovar pela diretoria pré-ficha técnica" });
+        return reply
+          .status(500)
+          .send({ message: "Erro ao aprovar pela diretoria pré-ficha técnica" });
       }
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

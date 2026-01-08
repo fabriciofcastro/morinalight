@@ -9,8 +9,8 @@
  */
 
 import { Comissao } from "../../domain/entities/comissao";
-import { Venda } from "../../domain/entities/venda";
 import type { VendaStatus } from "../../domain/entities/venda";
+import { Venda } from "../../domain/entities/venda";
 import type { ClienteRepository } from "../../domain/repositories/cliente-repository";
 import type { ComissaoRepository } from "../../domain/repositories/comissao-repository";
 import type { ContratoRepository } from "../../domain/repositories/contrato-repository";

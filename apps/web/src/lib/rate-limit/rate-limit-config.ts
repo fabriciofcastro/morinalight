@@ -50,7 +50,11 @@ export function getRateLimitConfig(path: string): RateLimitConfig {
         .sort((a, b) => b.length - a.length);
 
     if (sortedPaths.length > 0) {
-        return RATE_LIMIT_CONFIG[sortedPaths[0]];
+        const matchedPath = sortedPaths[0];
+        if (matchedPath) {
+            const config = RATE_LIMIT_CONFIG[matchedPath];
+            if (config) return config;
+        }
     }
 
     // Default fallback

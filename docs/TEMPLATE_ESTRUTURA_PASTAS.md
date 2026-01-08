@@ -116,3 +116,4 @@ Ao criar novo módulo:
 ---
 
 **Última atualização:** 2025-01-19
+

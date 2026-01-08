@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useMemo, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface Node {
     id: number;
@@ -23,7 +23,9 @@ export function NetworkBackground({
     const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
 
     // Generate network nodes
-    const nodes = useMemo<Node[]>(() => {
+    const [nodes, setNodes] = useState<Node[]>([]);
+
+    useEffect(() => {
         const nodeCount = 25;
         const generated: Node[] = [];
 
@@ -48,7 +50,7 @@ export function NetworkBackground({
             generated.push(node);
         }
 
-        return generated;
+        setNodes(generated);
     }, []);
 
     // Color schemes per variant

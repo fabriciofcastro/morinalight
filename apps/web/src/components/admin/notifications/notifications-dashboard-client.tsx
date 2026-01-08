@@ -23,9 +23,9 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { notificationsApi, NotificationChannel, NotificationTemplate, NotificationLog } from "@/lib/api/notifications";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { useRealtimeNotifications } from "@/hooks/use-realtime-notifications";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/base/tabs";
 
 const TAB_OPTIONS = [
     { id: 'dashboard', label: 'Visão Geral', icon: BarChart },

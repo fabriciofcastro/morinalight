@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TrendingUp, Target, Activity, Zap, AlertCircle } from "lucide-react";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
 import {
     CircularProgressbar,
     buildStyles,

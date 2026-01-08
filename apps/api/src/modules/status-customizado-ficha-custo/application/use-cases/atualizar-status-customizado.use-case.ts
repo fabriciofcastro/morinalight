@@ -1,5 +1,5 @@
-import type { StatusCustomizadoRepository } from "../../domain/repositories/status-customizado.repository";
 import { StatusCustomizadoEntity } from "../../domain/entities/status-customizado";
+import type { StatusCustomizadoRepository } from "../../domain/repositories/status-customizado.repository";
 import type { UpdateStatusCustomizadoInput } from "../schemas/status-customizado.schema";
 
 export class AtualizarStatusCustomizadoUseCase {
@@ -9,7 +9,10 @@ export class AtualizarStatusCustomizadoUseCase {
     private readonly actorId: string,
   ) {}
 
-  async execute(id: string, input: UpdateStatusCustomizadoInput): Promise<{ status: StatusCustomizadoEntity }> {
+  async execute(
+    id: string,
+    input: UpdateStatusCustomizadoInput,
+  ): Promise<{ status: StatusCustomizadoEntity }> {
     const statusExistente = await this.statusCustomizadoRepository.buscarPorId(id, this.orgId);
     if (!statusExistente) {
       throw new Error("Status customizado não encontrado");
@@ -17,7 +20,10 @@ export class AtualizarStatusCustomizadoUseCase {
 
     // Se está mudando o nome, verificar se não existe outro com mesmo nome
     if (input.nome && input.nome !== statusExistente.nome) {
-      const existente = await this.statusCustomizadoRepository.buscarPorNome(this.orgId, input.nome);
+      const existente = await this.statusCustomizadoRepository.buscarPorNome(
+        this.orgId,
+        input.nome,
+      );
       if (existente && existente.id !== id) {
         throw new Error(`Já existe um status customizado com o nome "${input.nome}"`);
       }
@@ -40,5 +46,3 @@ export class AtualizarStatusCustomizadoUseCase {
     };
   }
 }
-
-

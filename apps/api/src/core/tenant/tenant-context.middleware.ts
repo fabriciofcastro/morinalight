@@ -4,8 +4,8 @@
  */
 
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { extractOrgId } from "../auth/rbac.guards";
 import { getPrisma } from "../../infra/database/prisma.service";
+import { extractOrgId } from "../auth/rbac.guards";
 import type { TenantContext } from "./tenant.types";
 
 const prisma = getPrisma();
@@ -88,7 +88,7 @@ export function requireTenantContext() {
         code: "UNAUTHORIZED",
       });
     }
-    
+
     request.tenant = {
       orgId,
       userId,
@@ -145,11 +145,7 @@ export function validateResourceOwnership(resourceModel: string, resourceIdParam
     } catch (error) {
       // Se o modelo não existir ou não tiver orgId, logar e continuar
       // (alguns recursos podem não precisar dessa validação)
-      console.warn(
-        `Validação de ownership não aplicável para modelo '${resourceModel}':`,
-        error,
-      );
+      console.warn(`Validação de ownership não aplicável para modelo '${resourceModel}':`, error);
     }
   };
 }
-

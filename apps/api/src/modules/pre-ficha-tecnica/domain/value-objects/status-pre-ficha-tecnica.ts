@@ -106,8 +106,7 @@ export class StatusPreFichaTecnicaVO {
 
   podeReprovar(): boolean {
     return (
-      this.status === "em_revisao_ficha_tecnica" ||
-      this.status === "aguardando_aval_diretoria"
+      this.status === "em_revisao_ficha_tecnica" || this.status === "aguardando_aval_diretoria"
     );
   }
 
@@ -147,15 +146,3 @@ export class StatusPreFichaTecnicaVO {
     return this.status === other.status;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

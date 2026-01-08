@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useUser } from "@/hooks/use-user";
 import { useUserSessions } from "@/hooks/use-user-sessions";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { ConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface UserSessionsClientProps {

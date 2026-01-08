@@ -11,8 +11,8 @@ import {
     Zap
 } from "lucide-react";
 import { GlassCard } from "@morina/ui";
-import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
-import { Progress } from "@/components/ui/progress";
+import { AnimatedTechCorners } from "@/shared/ui/base/animated-tech-corners";
+import { Progress } from "@/shared/ui/base/progress";
 
 interface Milestone {
     id: string;

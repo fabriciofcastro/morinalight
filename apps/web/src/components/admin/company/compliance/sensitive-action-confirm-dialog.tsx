@@ -9,9 +9,9 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/shared/ui/base/alert-dialog";
 import { Lock, Smartphone } from "lucide-react";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { useState } from "react";
 
 interface SensitiveActionConfirmDialogProps {

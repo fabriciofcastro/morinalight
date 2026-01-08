@@ -120,7 +120,7 @@ export function requireOrganizationAccess(
           userId: request.auth?.userId,
           orgId,
           requiredRole,
-          actualRole: access.role
+          actualRole: access.role,
         });
         Sentry.captureMessage(`Access Denied: ${access.error || "Insufficient Permissions"}`);
       });

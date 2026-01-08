@@ -128,16 +128,3 @@ export class AtribuirPermissaoUsuarioUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

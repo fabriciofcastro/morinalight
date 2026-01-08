@@ -2,9 +2,9 @@ import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { CriarSubdepartmentUseCase } from "../application/use-cases/criar-subdepartment.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
-import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
-import type { DepartmentRepository } from "../domain/repositories/department-repository";
 import type { BranchRepository } from "../domain/repositories/branch-repository";
+import type { DepartmentRepository } from "../domain/repositories/department-repository";
+import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 
 type Dependencies = {
   subdepartmentRepository: SubdepartmentRepository;
@@ -56,4 +56,3 @@ export async function registerCreateSubdepartmentRoute(app: FastifyInstance, dep
     }
   });
 }
-

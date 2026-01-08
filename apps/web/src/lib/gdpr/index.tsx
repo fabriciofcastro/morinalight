@@ -9,11 +9,10 @@
  */
 
 export {
-    dataPortabilityService as gdprDataPortability,
-    dataDeletionService as gdprDataDeletion, // Alias para clareza
+    dataDeletionService as gdprDataDeletion, dataPortabilityService as gdprDataPortability
 } from '../lgpd';
 
 export {
-    CookieConsentBanner as GDPRCookieConsentBanner,
-    useCookieConsent as useGDPRConsent,
-} from '../lgpd/cookie-consent';
+    useCookieConsent as useGDPRConsent
+} from '../lgpd/hooks';
+

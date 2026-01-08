@@ -29,5 +29,3 @@ export interface StatusCustomizadoRepository {
   buscarPorNome(orgId: string, nome: string): Promise<StatusCustomizado | null>;
   contarPorOrg(orgId: string, ativo?: boolean): Promise<number>;
 }
-
-

@@ -21,6 +21,7 @@ export interface UserProps {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  password?: string;
 }
 
 export class UserEntity {
@@ -35,12 +36,14 @@ export class UserEntity {
     id: string;
     email: string;
     name: string;
+    password?: string;
     role?: string;
   }): UserEntity {
     return new UserEntity({
       id: params.id,
       email: Email.create(params.email),
       name: params.name,
+      password: params.password,
       role: params.role ? UserRole.create(params.role) : UserRole.user(),
       createdAt: new Date(),
       updatedAt: new Date(),

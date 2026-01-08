@@ -1,10 +1,10 @@
 'use client';
 
-import { Alert } from '@/components/ui/Alert';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Alert } from '@/shared/ui/base/Alert';
+import { Button } from '@/shared/ui/base/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/base/dialog';
+import { Input } from '@/shared/ui/base/input';
+import { Label } from '@/shared/ui/base/label';
 import { Check, Copy, Loader2, Shield } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';

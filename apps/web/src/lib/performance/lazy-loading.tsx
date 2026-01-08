@@ -4,8 +4,8 @@
  * Utilitários para lazy loading de componentes e rotas
  */
 
-import { lazy, ComponentType, LazyExoticComponent } from "react";
 import { Loader2 } from "lucide-react";
+import { ComponentType, lazy, LazyExoticComponent } from "react";
 
 /**
  * Componente de loading padrão
@@ -156,7 +156,8 @@ export function useLazyLoadOnViewport(
 
         const observer = new IntersectionObserver(
             (entries) => {
-                if (entries[0].isIntersecting) {
+                const entry = entries[0];
+                if (entry?.isIntersecting) {
                     componentImport();
                     observer.disconnect();
                 }

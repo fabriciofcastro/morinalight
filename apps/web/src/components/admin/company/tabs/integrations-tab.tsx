@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { Plus, Key, Webhook, Loader2, Copy, Trash2, Globe, Shield, RefreshCw, CheckCircle2, X, Plug, Play, AlertCircle } from "lucide-react";
 import { SectionShell } from "../shared/section-shell";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { cn } from "@morina/ui";
 import { companySettingsAPI } from "@/lib/api/company-settings";
 

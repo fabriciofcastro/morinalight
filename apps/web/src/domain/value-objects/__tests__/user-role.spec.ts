@@ -1,5 +1,5 @@
+import { ValidationError } from '@/domain/errors';
 import { describe, expect, it } from 'vitest';
-import { ValidationError } from '../errors';
 import { UserRole, UserRoleType } from '../user-role';
 
 describe('UserRole Value Object', () => {

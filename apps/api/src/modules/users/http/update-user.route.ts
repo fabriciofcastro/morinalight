@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { BCRYPT_ROUNDS } from "../../../core/config/password-config";
 import type { UserRepository } from "../repositories/user.repository";
 
 const updateUserSchema = z.object({
@@ -11,8 +12,30 @@ const updateUserSchema = z.object({
   password: z.string().min(6).optional(),
   cpf: z.string().optional().nullable(),
   phone: z.string().optional().nullable(),
-  birthDate: z.string().datetime().optional().nullable().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable()),
-  admissionDate: z.string().datetime().optional().nullable().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable()),
+  birthDate: z
+    .string()
+    .datetime()
+    .optional()
+    .nullable()
+    .or(
+      z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional()
+        .nullable(),
+    ),
+  admissionDate: z
+    .string()
+    .datetime()
+    .optional()
+    .nullable()
+    .or(
+      z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/)
+        .optional()
+        .nullable(),
+    ),
   observations: z.string().optional().nullable(),
   avatarUrl: z.string().url().optional().nullable(),
 });
@@ -85,7 +108,7 @@ export async function registerUpdateUserRoute(app: FastifyInstance, deps: Update
     if (body.displayName !== undefined) updateData.displayName = body.displayName;
     if (body.status !== undefined) updateData.status = body.status;
     if (body.password !== undefined) {
-      updateData.passwordHash = await bcrypt.hash(body.password, 10);
+      updateData.passwordHash = await bcrypt.hash(body.password, BCRYPT_ROUNDS); // ✅ Usar 12 rounds
     }
     if (body.cpf !== undefined) updateData.cpf = body.cpf;
     if (body.phone !== undefined) updateData.phone = body.phone;

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import dynamicImport from "next/dynamic";
 
 import { SettingsLayout } from "@/components/settings/SettingsLayout";
-import { LoadingState } from "@/components/ui";
+import { LoadingState } from "@/shared/ui/base";
 
 // Lazy load do componente pesado de usuários
 const UsersClient = dynamicImport(() => import("./users-client").then((mod) => ({ default: mod.UsersClient })), {

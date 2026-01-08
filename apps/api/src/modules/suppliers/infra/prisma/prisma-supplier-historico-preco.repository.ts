@@ -7,4 +7,3 @@ export class PrismaHistoricoPrecoSupplierRepositoryImpl extends PrismaHistoricoP
     super(prisma);
   }
 }
-

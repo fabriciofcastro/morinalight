@@ -1,13 +1,14 @@
-import { GetUserByIdQuery, ListUsersQuery } from '@/application/queries';
+import { GetUserByIdQuery, ListOrdersQuery, ListUsersQuery } from '@/application/queries';
 import { UserEventHandlers } from '@/application/services/user-event-handlers';
-import { CreateOrderUseCase, CreateProductUseCase, CreateUserUseCase } from '@/application/use-cases';
+import { CancelOrderUseCase, CreateOrderUseCase, CreateProductUseCase, CreateUserUseCase, DeleteProductUseCase, LoginUseCase, LogoutUseCase, UpdateProductUseCase, UpdateUserUseCase } from '@/application/use-cases';
 import { InventoryService, OrderPricingService } from '@/domain/services';
+import { NextAuthService } from '@/infrastructure/auth/next-auth.service';
 import {
-    PrismaOrderRepository,
-    PrismaOutboxRepository,
-    PrismaProductRepository,
-    PrismaUnitOfWork,
-    PrismaUserRepository
+  PrismaOrderRepository,
+  PrismaOutboxRepository,
+  PrismaProductRepository,
+  PrismaUnitOfWork,
+  PrismaUserRepository
 } from '@/infrastructure/database';
 import { InMemoryEventBus, OutboxWorker } from '@/infrastructure/events';
 import { ConsoleLogger } from '@/infrastructure/logger';
@@ -58,6 +59,18 @@ export function getContainer(): DIContainer {
   // Use Cases
   const createUserUseCase = new CreateUserUseCase(userRepository, eventBus, logger);
   const createProductUseCase = new CreateProductUseCase(productRepository, unitOfWork, eventBus, logger);
+  const updateProductUseCase = new UpdateProductUseCase(productRepository, eventBus, logger);
+  const deleteProductUseCase = new DeleteProductUseCase(productRepository, eventBus, logger);
+
+  // ... existing code ...
+
+  container.register('CreateUserUseCase', createUserUseCase);
+  container.register('CreateProductUseCase', createProductUseCase);
+  container.register('UpdateProductUseCase', updateProductUseCase);
+  container.register('DeleteProductUseCase', deleteProductUseCase);
+  
+  const updateUserUseCase = new UpdateUserUseCase(userRepository, eventBus, logger);
+  container.register('UpdateUserUseCase', updateUserUseCase);
   const createOrderUseCase = new CreateOrderUseCase(
     orderRepository,
     productRepository,
@@ -67,10 +80,27 @@ export function getContainer(): DIContainer {
     eventBus,
     logger
   );
+  const cancelOrderUseCase = new CancelOrderUseCase(orderRepository, eventBus, logger);
 
   // Queries
   const getUserByIdQuery = new GetUserByIdQuery(userRepository);
+
+  // ... existing code ...
+
+  container.register('CreateOrderUseCase', createOrderUseCase);
+  container.register('CancelOrderUseCase', cancelOrderUseCase);
+  container.register('GetUserByIdQuery', getUserByIdQuery);
   const listUsersQuery = new ListUsersQuery(userRepository);
+
+  // Auth
+  const authService = new NextAuthService(); // Note: NextAuthService (client/server stub) doesn't need deps here if using global NextAuth
+  const loginUseCase = new LoginUseCase(authService, logger);
+  const logoutUseCase = new LogoutUseCase(authService, logger);
+
+  // Registration
+  container.register('AuthService', authService);
+  container.register('LoginUseCase', loginUseCase);
+  container.register('LogoutUseCase', logoutUseCase);
 
   // Registration
   container.register('Prisma', prisma);
@@ -89,6 +119,9 @@ export function getContainer(): DIContainer {
   container.register('CreateOrderUseCase', createOrderUseCase);
   container.register('GetUserByIdQuery', getUserByIdQuery);
   container.register('ListUsersQuery', listUsersQuery);
+  
+  const listOrdersQuery = new ListOrdersQuery(orderRepository);
+  container.register('ListOrdersQuery', listOrdersQuery);
 
   // Start Background Workers
   if (typeof window === 'undefined') {

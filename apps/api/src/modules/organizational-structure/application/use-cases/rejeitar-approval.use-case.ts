@@ -5,7 +5,7 @@
 import { randomUUID } from "node:crypto";
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { ApprovalRepository } from "../../domain/repositories/approval-repository";
-import { rejeitarApprovalInputSchema, approvalViewSchema } from "../schemas/approval.schema";
+import { approvalViewSchema, rejeitarApprovalInputSchema } from "../schemas/approval.schema";
 
 type Dependencies = {
   approvalRepository: ApprovalRepository;
@@ -64,12 +64,3 @@ export class RejeitarApprovalUseCase {
     });
   }
 }
-
-
-
-
-
-
-
-
-

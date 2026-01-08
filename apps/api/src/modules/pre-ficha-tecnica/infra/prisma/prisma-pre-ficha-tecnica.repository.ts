@@ -1,16 +1,16 @@
 import { randomUUID } from "crypto";
 import { getPrisma } from "../../../../infra/database/prisma.service";
-import { PreFichaTecnica } from "../../domain/entities/pre-ficha-tecnica";
-import { Tecido } from "../../domain/entities/tecido";
+import type { InsumoTecnicoProps } from "../../domain/entities/insumo-tecnico";
 import { InsumoTecnico } from "../../domain/entities/insumo-tecnico";
+import type { PreFichaTecnicaProps } from "../../domain/entities/pre-ficha-tecnica";
+import { PreFichaTecnica } from "../../domain/entities/pre-ficha-tecnica";
+import type { TecidoProps } from "../../domain/entities/tecido";
+import { Tecido } from "../../domain/entities/tecido";
 import type {
   PreFichaTecnicaFiltro,
   PreFichaTecnicaPagina,
   PreFichaTecnicaRepository,
 } from "../../domain/repositories/pre-ficha-tecnica.repository";
-import type { PreFichaTecnicaProps } from "../../domain/entities/pre-ficha-tecnica";
-import type { TecidoProps } from "../../domain/entities/tecido";
-import type { InsumoTecnicoProps } from "../../domain/entities/insumo-tecnico";
 
 const prisma = getPrisma();
 
@@ -239,10 +239,7 @@ export class PrismaPreFichaTecnicaRepository implements PreFichaTecnicaRepositor
     return toDomain(record);
   }
 
-  async buscarPorNumeroSequencial(
-    numero: number,
-    orgId: string,
-  ): Promise<PreFichaTecnica | null> {
+  async buscarPorNumeroSequencial(numero: number, orgId: string): Promise<PreFichaTecnica | null> {
     const record = await prisma.preFichaTecnica.findFirst({
       where: { numeroSequencial: numero, orgId },
       include: {
@@ -385,15 +382,3 @@ export class PrismaPreFichaTecnicaRepository implements PreFichaTecnicaRepositor
     });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

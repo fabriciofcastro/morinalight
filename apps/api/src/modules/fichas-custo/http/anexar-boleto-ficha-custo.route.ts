@@ -1,7 +1,7 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AnexarBoletoFichaCustoUseCase } from "../application/use-cases/anexar-boleto-ficha-custo.use-case";
 import type { FichaCustoRepository } from "../domain/repositories/ficha-custo.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;
@@ -51,7 +51,10 @@ export async function registerAnexarBoletoFichaCustoRoute(
         app.log.error(error, "Erro ao anexar boleto à ficha de custo");
 
         if (error instanceof Error) {
-          if (error.message.includes("não encontrada") || error.message.includes("não encontrado")) {
+          if (
+            error.message.includes("não encontrada") ||
+            error.message.includes("não encontrado")
+          ) {
             return reply.status(404).send({ message: error.message });
           }
           if (
@@ -69,15 +72,3 @@ export async function registerAnexarBoletoFichaCustoRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,6 +2,8 @@
 @import "./theme.css";
 @import "tw-animate-css";
 @import "../styles/themes/clean-vibrant.css";
+/* Import accessibility styles from UI package */
+@import "@morina/ui/styles/accessibility.css";
 
 @custom-variant dark (&:is(.dark *));
 

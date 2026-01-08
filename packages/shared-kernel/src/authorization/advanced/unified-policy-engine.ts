@@ -1,6 +1,6 @@
-import { SecurityContext, SecurityPolicy, TimeWindow, ObjectAccessEntry } from "./types";
 import { PolicyCompiler } from "./policy-compiler";
 import { TemporalEvaluator } from "./temporal-evaluator";
+import { DecisionProvider, ObjectAccessEntry, SecurityContext, SecurityPolicy, TimeWindow } from "./types";
 
 /**
  * UnifiedPolicyEngine
@@ -10,6 +10,14 @@ export class UnifiedPolicyEngine {
     private policies: SecurityPolicy[] = [];
     private timeWindows: TimeWindow[] = [];
     private aclEntries: ObjectAccessEntry[] = [];
+    private providers: DecisionProvider[] = [];
+
+    /**
+     * Register an external decision provider (e.g. OPA)
+     */
+    registerProvider(provider: DecisionProvider): void {
+        this.providers.push(provider);
+    }
 
     /**
      * Set global security policies (PBAC)
@@ -33,10 +41,38 @@ export class UnifiedPolicyEngine {
     }
 
     /**
+     * Asynchronously evaluates if an action on a subject is permitted.
+     * Incorporates external providers (OPA) and risk-based logic.
+     */
+    async evaluateAsync(action: string, subject: string, context: SecurityContext, resource?: any): Promise<boolean> {
+        // 0. Risk-Based Block (Dynamic Risk Scoring)
+        if (context.environment.riskScore !== undefined && context.environment.riskScore > 90) {
+            return false; // Extreme risk: block everything
+        }
+
+        // 1. External Providers (Hybrid OPA)
+        for (const provider of this.providers) {
+            const decision = await provider.evaluate(action, subject, context, resource);
+            if (decision === false) return false; // Fail fast on deny
+            if (decision === true) return true;  // Explicit allow from provider
+        }
+
+        // Fallback to internal synchronous evaluation
+        return this.evaluate(action, subject, context, resource);
+    }
+
+    /**
      * Evaluates if an action on a subject is permitted.
      * Deny wins principle.
      */
     evaluate(action: string, subject: string, context: SecurityContext, resource?: any): boolean {
+        // 0. Risk-Based Restricted (Medium Risk)
+        if (context.environment.riskScore !== undefined && context.environment.riskScore > 70) {
+            // Block sensitive actions if risk is medium-high
+            const sensitiveActions = ['delete', 'manage', 'export', 'publish'];
+            if (sensitiveActions.includes(action)) return false;
+        }
+
         // 1. TBAC Check (Time-Based)
         // Check per-request windows (e.g. user shift) or fallback to global system windows
         const activeTimeWindows = context.environment.timeWindows ?? this.timeWindows;

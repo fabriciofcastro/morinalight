@@ -89,3 +89,4 @@ export const LongText: Story = {
     </TooltipProvider>
   ),
 };
+

@@ -42,7 +42,13 @@ export class InMemoryPermissionCacheService implements PermissionCacheService {
     return `permission:effective:${orgId}:${userId}`;
   }
 
-  private registerKey(key: string, userId: string, orgId: string, permissionId?: string, entityKey?: string) {
+  private registerKey(
+    key: string,
+    userId: string,
+    orgId: string,
+    permissionId?: string,
+    entityKey?: string,
+  ) {
     // Registrar por usuário
     if (!this.userKeys.has(userId)) {
       this.userKeys.set(userId, new Set());
@@ -266,12 +272,3 @@ export class InMemoryPermissionCacheService implements PermissionCacheService {
     }
   }
 }
-
-
-
-
-
-
-
-
-

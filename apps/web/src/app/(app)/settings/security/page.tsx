@@ -1,8 +1,8 @@
 'use client';
 
 import { MFASetupModal } from '@/components/auth/mfa-setup';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/shared/ui/base/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/base/card';
 import { Key, Lock, Shield } from 'lucide-react';
 import { useState } from 'react';
 

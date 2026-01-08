@@ -1,14 +1,15 @@
+import { getPrisma } from "../../infra/database/prisma.service";
+
 import type { FastifyInstance } from "fastify";
-import { PrismaClient } from "@prisma/client";
-import { PrismaStatusCustomizadoRepository } from "./infra/prisma/prisma-status-customizado.repository";
-import {
-  registerCreateStatusCustomizadoRoute,
-  registerListStatusCustomizadosRoute,
-  registerGetStatusCustomizadoRoute,
-  registerUpdateStatusCustomizadoRoute,
-  registerDeleteStatusCustomizadoRoute,
-} from "./http";
 import type { StatusCustomizadoRepository } from "./domain/repositories/status-customizado.repository";
+import {
+    registerCreateStatusCustomizadoRoute,
+    registerDeleteStatusCustomizadoRoute,
+    registerGetStatusCustomizadoRoute,
+    registerListStatusCustomizadosRoute,
+    registerUpdateStatusCustomizadoRoute,
+} from "./http";
+import { PrismaStatusCustomizadoRepository } from "./infra/prisma/prisma-status-customizado.repository";
 
 export type StatusCustomizadoModuleOptions = {
   statusCustomizadoRepository?: StatusCustomizadoRepository;
@@ -20,7 +21,10 @@ export async function registerStatusCustomizadoModule(
 ) {
   const statusCustomizadoRepository =
     options.statusCustomizadoRepository ??
-    (process.env.DATABASE_URL ? new PrismaStatusCustomizadoRepository(new PrismaClient()) : undefined);
+    (process.env.DATABASE_URL
+      ? new PrismaStatusCustomizadoRepository(getPrisma())
+      : undefined);
+
 
   if (statusCustomizadoRepository) {
     await registerCreateStatusCustomizadoRoute(app, { statusCustomizadoRepository });
@@ -36,5 +40,3 @@ export async function registerStatusCustomizadoModule(
     statusCustomizadoRepository,
   };
 }
-
-

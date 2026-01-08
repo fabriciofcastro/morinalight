@@ -1,4 +1,5 @@
-+"use client";
+"use client";
+// forcing client component for react-day-picker compatibility
 
 import type * as React from "react";
 import { DayPicker } from "react-day-picker";

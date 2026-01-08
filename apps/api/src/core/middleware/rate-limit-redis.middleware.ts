@@ -3,11 +3,10 @@
  * Versão distribuída que persiste estado entre restarts
  */
 
-import { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
-import { env } from "../config/env";
-import { extractOrgId } from "../auth/rbac.guards";
-import { getPrisma } from "../../infra/database/prisma.service";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import { getRedisClient, isRedisAvailable } from "../../infra/cache/redis.service";
+import { getPrisma } from "../../infra/database/prisma.service";
+import { extractOrgId } from "../auth/rbac.guards";
 
 const prisma = getPrisma();
 
@@ -165,8 +164,8 @@ async function logRateLimitWarning(
     // Evita erro de foreign key quando orgId é null, undefined ou "system"
     if (!orgId || orgId === "system") {
       console.warn(
-        `[RATE-LIMIT] Warning não registrado - orgId inválido: ${orgId || 'null'} - ` +
-        `key: ${key}, count: ${count}, endpoint: ${request.url}`
+        `[RATE-LIMIT] Warning não registrado - orgId inválido: ${orgId || "null"} - ` +
+          `key: ${key}, count: ${count}, endpoint: ${request.url}`,
       );
       return;
     }
@@ -204,7 +203,7 @@ export const rateLimits = {
   // Limite para autenticação (mais restritivo)
   auth: createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutos
-    max: env.NODE_ENV === "development" ? 100 : 10, // 10 tentativas de login (100 em dev)
+    max: 5, // ✅ Hardened: Reduzido de 10 para 5 em produção
     message: "Muitas tentativas de login. Tente novamente em alguns minutos.",
   }),
 

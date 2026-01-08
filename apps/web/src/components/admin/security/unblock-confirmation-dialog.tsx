@@ -13,7 +13,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "@/shared/ui/base/alert-dialog";
 
 interface UnblockConfirmationDialogProps {
     open: boolean;

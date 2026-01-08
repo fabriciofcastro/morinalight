@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import type { StatusCustomizadoRepository } from "../../domain/repositories/status-customizado.repository";
 import { StatusCustomizadoEntity } from "../../domain/entities/status-customizado";
+import type { StatusCustomizadoRepository } from "../../domain/repositories/status-customizado.repository";
 import type { CreateStatusCustomizadoInput } from "../schemas/status-customizado.schema";
 
 export class CriarStatusCustomizadoUseCase {
@@ -35,5 +35,3 @@ export class CriarStatusCustomizadoUseCase {
     };
   }
 }
-
-

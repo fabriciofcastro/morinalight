@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ConfirmDialog, ConfirmDialogVariant } from "@/components/ui/confirm-dialog";
+import { ConfirmDialog, ConfirmDialogVariant } from "@/shared/ui/base/confirm-dialog";
 
 interface UseConfirmOptions {
     title: string;

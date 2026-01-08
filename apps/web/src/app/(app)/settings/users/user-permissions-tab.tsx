@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 type UserPermissionsTabProps = {
   userId: string;

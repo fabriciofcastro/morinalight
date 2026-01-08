@@ -3,6 +3,7 @@ import { ConnectionProviders } from "@/components/connection-providers";
 import { CookieConsent } from "@/components/legal/cookie-consent";
 import { ThemeShell } from "@/components/theme-shell";
 import { AdvancedErrorBoundary } from "@/lib/errors";
+import { SkipLink } from "@morina/ui";
 import { cn } from "@morina/ui/server";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
@@ -37,6 +38,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className={cn(interSans.variable, poppinsDisplay.variable, "antialiased")}
       >
+        <SkipLink targetId="main-content" />
         <Providers>
           <ThemeProvider
             attribute="data-theme"
@@ -46,7 +48,7 @@ export default function RootLayout({
             enableColorScheme={false}
           >
             <AdvancedErrorBoundary module="root" autoResetDelay={5000}>
-              <ThemeShell>{children}</ThemeShell>
+              <ThemeShell id="main-content">{children}</ThemeShell>
               <ConnectionProviders />
               <CookieConsent />
             </AdvancedErrorBoundary>

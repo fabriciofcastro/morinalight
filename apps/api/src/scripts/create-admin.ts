@@ -1,13 +1,11 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import { config as loadEnv } from "dotenv";
-import { resolve } from "path";
+import { getPrisma } from "../infra/database/prisma.service";
 
 // Carregar variáveis de ambiente da raiz do projeto
 const rootEnv = resolve(process.cwd(), ".env");
 loadEnv({ path: rootEnv, override: false });
 
-const prisma = new PrismaClient();
+const prisma = getPrisma();
+
 
 async function createAdmin() {
   const email = process.env.ADMIN_EMAIL || "admin@morina.ai";

@@ -1,4 +1,4 @@
-import { CreateUserForm } from '@/presentation/components/create-user-form';
+import { CreateUserForm } from '@/features/user-create/create-user-form';
 import Link from 'next/link';
 
 /**

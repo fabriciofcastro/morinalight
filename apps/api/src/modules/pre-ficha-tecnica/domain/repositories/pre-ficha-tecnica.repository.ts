@@ -33,10 +33,7 @@ export interface PreFichaTecnicaRepository {
   /**
    * Buscar por número sequencial
    */
-  buscarPorNumeroSequencial(
-    numero: number,
-    orgId: string,
-  ): Promise<PreFichaTecnica | null>;
+  buscarPorNumeroSequencial(numero: number, orgId: string): Promise<PreFichaTecnica | null>;
 
   /**
    * Buscar por código da peça
@@ -81,15 +78,3 @@ export interface PreFichaTecnicaRepository {
     },
   ): Promise<void>;
 }
-
-
-
-
-
-
-
-
-
-
-
-

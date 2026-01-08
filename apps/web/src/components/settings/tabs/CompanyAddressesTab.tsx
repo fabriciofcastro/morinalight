@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, GlassCard, Input } from "@morina/ui";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/shared/ui/base/label";
 import { MapPin, Plus, Search, Trash2, Map } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";

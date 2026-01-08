@@ -3,16 +3,11 @@
  */
 
 import type {
-  Department,
-  Subdepartment,
-  Sector,
-  Position,
-  CreateDepartmentInput,
-  CreateSubdepartmentInput,
-  CreateSectorInput,
-  CreatePositionInput,
+    Department,
+    Position,
+    Sector,
+    Subdepartment
 } from "@/lib/api/organizational-structure";
-import { organizationalStructureApi } from "@/lib/api/organizational-structure";
 import type { ImportResult } from "./import";
 
 export type CSVRow = {
@@ -36,11 +31,19 @@ export function parseCSV(content: string): CSVRow[] {
     throw new Error("CSV deve ter pelo menos um cabeçalho e uma linha de dados");
   }
 
-  const headers = lines[0].split(",").map((h) => h.trim());
+  const headerLine = lines[0];
+  if (!headerLine) {
+    throw new Error("CSV file is empty");
+  }
+  
+  const headers = headerLine.split(",").map((h) => h.trim());
   const rows: CSVRow[] = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const values = parseCSVLine(lines[i]);
+    const line = lines[i];
+    if (!line) continue;
+    
+    const values = parseCSVLine(line);
     if (values.length !== headers.length) {
       continue; // Skip invalid rows
     }
@@ -253,6 +256,7 @@ export async function importFromCSV(
     };
   }
 }
+
 
 
 

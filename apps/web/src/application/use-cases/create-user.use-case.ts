@@ -4,112 +4,87 @@ import { UserCreatedEvent } from '@/domain/events';
 import { UserRegistrationPolicy } from '@/domain/policies';
 import { Email } from '@/domain/value-objects';
 import { Err, Ok, Result } from '@/shared/kernel/types';
+import { isSome } from '@/shared/kernel/types/option';
 import { generateUUID } from '@/shared/kernel/utils';
 
+import { PerformanceMonitor } from '@/shared/kernel/utils/performance-monitor';
 import { createUserSchema } from '../contracts';
 import type { CreateUserDTO, UserResponseDTO } from '../dto';
 import type { IEventBus, ILogger, IUserRepository } from '../ports';
 
 /**
  * Create User Use Case
- * 
- * Caso de uso para criação de usuário.
- * Orquestra domain entities, policies e ports.
- * 
- * Responsabilidades:
- * 1. Validar entrada (Zod schema)
- * 2. Aplicar regras de negócio (policies)
- * 3. Criar entidade de domínio
- * 4. Persistir via repository
- * 5. Publicar evento de domínio
- * 6. Retornar DTO de resposta
  */
-
 export class CreateUserUseCase {
+  private readonly performanceMonitor: PerformanceMonitor;
+
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly eventBus: IEventBus,
     private readonly logger: ILogger
-  ) {}
+  ) {
+    this.performanceMonitor = new PerformanceMonitor(logger);
+  }
 
   async execute(dto: CreateUserDTO): Promise<Result<UserResponseDTO>> {
-    try {
-      // 1. Validação de entrada com Zod
-      const validation = createUserSchema.safeParse(dto);
-      if (!validation.success) {
-        const firstIssue = validation.error.issues[0];
-        const message = firstIssue?.message || validation.error.message;
-        const path = firstIssue?.path.join('.') || 'body';
-        return Err(new ValidationError(message, path, dto));
-      }
+    return this.performanceMonitor.measure(
+      'CreateUserUseCase',
+      async () => {
+        try {
+          const validation = createUserSchema.safeParse(dto);
+          if (!validation.success) {
+            const firstIssue = validation.error.issues[0];
+            return Err(new ValidationError(`${firstIssue?.path.join('.')}: ${firstIssue?.message}`));
+          }
 
-      const validatedData = validation.data;
+          const emailResult = Email.create(dto.email);
+          if (!emailResult) {
+            return Err(new ValidationError('Email inválido'));
+          }
 
-      // 2. Criar value objects
-      const email = Email.create(validatedData.email);
+          const existingUser = await this.userRepository.findByEmail(emailResult);
+          if (isSome(existingUser)) return Err(new BusinessRuleError('Email já está em uso'));
 
-      // 3. Aplicar políticas de negócio
-      UserRegistrationPolicy.validateRegistration(email);
+          if (!UserRegistrationPolicy.canRegister(emailResult)) {
+            return Err(new BusinessRuleError(`Email domain ${emailResult.getDomain()} is not allowed for registration`));
+          }
 
-      // 4. Verificar unicidade do email
-      const existingUser = await this.userRepository.findByEmail(email);
-      if (existingUser) {
-        return Err(
-          new BusinessRuleError(
-            'A user with this email already exists',
-            'email_already_exists'
-          )
-        );
-      }
+          const user = UserEntity.create({
+            id: generateUUID(),
+            name: dto.name,
+            email: emailResult.getValue(),
+            password: dto.password || '',
+            role: dto.role,
+          });
 
-      // 5. Criar entidade de domínio
-      const user = UserEntity.create({
-        id: generateUUID(),
-        email: validatedData.email,
-        name: validatedData.name,
-        role: validatedData.role,
-      });
+          await this.userRepository.save(user);
 
-      // 6. Persistir
-      await this.userRepository.save(user);
+          const event = new UserCreatedEvent(
+            user.id,
+            user.email.getValue(),
+            user.name,
+            user.role.getValue()
+          );
+          await this.eventBus.publish(event);
 
-      // 7. Publicar evento de domínio
-      const event = new UserCreatedEvent(
-        user.id,
-        user.email.getValue(),
-        user.name,
-        user.role.getValue()
-      );
-      await this.eventBus.publish(event);
+          this.logger.info('User created successfully', { userId: user.id });
 
-      // 8. Log de sucesso
-      this.logger.info('User created successfully', {
-        userId: user.id,
-        email: user.email.getValue(),
-      });
-
-      // 9. Retornar DTO de resposta
-      const response: UserResponseDTO = {
-        id: user.id,
-        email: user.email.getValue(),
-        name: user.name,
-        role: user.role.getValue(),
-        isActive: user.isActive,
-        createdAt: user.createdAt.toISOString(),
-        updatedAt: user.updatedAt.toISOString(),
-      };
-
-      return Ok(response);
-    } catch (error) {
-      // Log de erro
-      this.logger.error('Failed to create user', error as Error, { dto });
-
-      // Retornar erro
-      if (error instanceof ValidationError || error instanceof BusinessRuleError) {
-        return Err(error);
-      }
-
-      return Err(error as Error);
-    }
+          return Ok({
+            id: user.id,
+            name: user.name,
+            email: user.email.getValue(),
+            role: user.role.getValue() as any,
+            isActive: user.isActive,
+            createdAt: user.createdAt.toISOString(),
+            updatedAt: user.updatedAt.toISOString(),
+          });
+        } catch (error) {
+          const actualError = error instanceof Error ? error : new Error(String(error));
+          this.logger.error('Failed to create user', actualError);
+          return Err(new Error(actualError.message));
+        }
+      },
+      { email: dto.email, role: dto.role }
+    );
   }
 }

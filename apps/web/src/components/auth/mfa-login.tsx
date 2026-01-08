@@ -9,8 +9,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MFAVerificationInput } from "./mfa-verification-input";
-import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/shared/ui/base/button";
+import { Alert } from "@/shared/ui/base/Alert";
 import { Shield, AlertCircle } from "lucide-react";
 
 interface MFALoginProps {

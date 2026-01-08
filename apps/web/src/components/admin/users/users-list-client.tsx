@@ -1,8 +1,8 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { PageHeader } from "@/components/ui/page-header";
-import { ViewModeToggle, type ViewMode } from "@/components/ui/view-mode-toggle";
+import { PageHeader } from "@/shared/ui/base/page-header";
+import { ViewModeToggle, type ViewMode } from "@/shared/ui/base/view-mode-toggle";
 import { useBulkActions } from "@/hooks/use-bulk-actions";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useUsers, type User } from "@/hooks/use-users";

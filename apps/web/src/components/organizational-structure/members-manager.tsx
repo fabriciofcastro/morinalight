@@ -1,6 +1,6 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/auth-client";
 import { Button, cn, FormSelect, GlassCard, Input } from "@morina/ui";
 import { Plus, Search, User, X } from "lucide-react";

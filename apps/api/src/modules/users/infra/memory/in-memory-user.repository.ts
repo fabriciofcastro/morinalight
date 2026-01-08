@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import type {
+  AuditContext,
   CreateUserInput,
   UpdateUserInput,
   UserRecord,
@@ -32,7 +33,7 @@ export class InMemoryUserRepository implements UserRepository {
       .map((user) => ({ ...user }));
   }
 
-  async create(input: CreateUserInput): Promise<UserRecord> {
+  async create(input: CreateUserInput, context?: AuditContext): Promise<UserRecord> {
     const now = new Date();
     const record: UserRecord = {
       userId: input.userId ?? randomUUID(),
@@ -49,14 +50,14 @@ export class InMemoryUserRepository implements UserRepository {
     return { ...record };
   }
 
-  async setLastLogin(userId: string, date: Date): Promise<void> {
+  async setLastLogin(userId: string, date: Date, context?: AuditContext): Promise<void> {
     const existing = this.users.get(userId);
     if (existing) {
       this.users.set(userId, { ...existing, lastLoginAt: date, updatedAt: date });
     }
   }
 
-  async update(input: UpdateUserInput): Promise<UserRecord | null> {
+  async update(input: UpdateUserInput, context?: AuditContext): Promise<UserRecord | null> {
     const existing = this.users.get(input.userId);
     if (!existing) return null;
 
@@ -80,7 +81,7 @@ export class InMemoryUserRepository implements UserRepository {
     return { ...updated };
   }
 
-  async delete(userId: string): Promise<void> {
+  async delete(userId: string, context?: AuditContext): Promise<void> {
     this.users.delete(userId);
   }
 }

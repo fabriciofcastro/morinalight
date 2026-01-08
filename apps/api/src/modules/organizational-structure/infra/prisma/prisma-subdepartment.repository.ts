@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { SubdepartmentProps, SubdepartmentStatus } from "../../domain/entities/subdepartment";
 import { Subdepartment } from "../../domain/entities/subdepartment";
-import type { SubdepartmentStatus, SubdepartmentProps } from "../../domain/entities/subdepartment";
 import type {
   SubdepartmentListaFiltro,
   SubdepartmentListaPagina,
@@ -211,4 +211,3 @@ function decodeCursor(cursor: string) {
     throw new Error("Cursor inválido");
   }
 }
-

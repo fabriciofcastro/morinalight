@@ -22,7 +22,14 @@ function toDomain(record: {
   return {
     id: record.id,
     orgId: record.orgId,
-    entityType: record.entityType as "unit" | "department" | "team" | "branch" | "sector" | "position" | "subdepartment",
+    entityType: record.entityType as
+      | "unit"
+      | "department"
+      | "team"
+      | "branch"
+      | "sector"
+      | "position"
+      | "subdepartment",
     entityId: record.entityId,
     action: record.action,
     actorId: record.actorId,

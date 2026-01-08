@@ -1,7 +1,5 @@
 import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance } from "fastify";
-import type { PermissionCacheService } from "../domain/services/permission-cache.service";
-import type { PermissionInheritanceService } from "../domain/services/permission-inheritance.service";
 import type { DepartmentRepository } from "../../organizational-structure/domain/repositories/department-repository";
 import type { PositionRepository } from "../../organizational-structure/domain/repositories/position-repository";
 import type { SectorRepository } from "../../organizational-structure/domain/repositories/sector-repository";
@@ -17,21 +15,22 @@ import type { PermissionTemplateRepository } from "../domain/repositories/permis
 import type { PositionPermissionRepository } from "../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../domain/repositories/user-permission-repository";
-import { registerDepartmentPermissionsRoute } from "./department-permissions.route";
-import { registerListUserPermissionsRoute } from "./list-user-permissions.route";
-import { registerPermissionAuditLogRoute } from "./permission-audit-log.route";
-import { registerPermissionAuditRoute } from "./permission-audit.route";
+import type { PermissionCacheService } from "../domain/services/permission-cache.service";
+import type { PermissionInheritanceService } from "../domain/services/permission-inheritance.service";
+import { AccessAuditInterceptor } from "../infra/interceptors/access-audit.interceptor";
 import { registerAccessAuditLogRoute } from "./access-audit-log.route";
+import { registerBulkAssignPermissionsRoute } from "./bulk-assign-permissions.route";
+import { registerDepartmentPermissionsRoute } from "./department-permissions.route";
+import { registerGetPermissionMatrixRoute } from "./get-permission-matrix.route";
+import { registerListUserPermissionsRoute } from "./list-user-permissions.route";
+import { registerPermissionAuditRoute } from "./permission-audit.route";
+import { registerPermissionAuditLogRoute } from "./permission-audit-log.route";
 import { registerPermissionChangeRequestsRoute } from "./permission-change-requests.route";
 import { registerPermissionTemplatesRoute } from "./permission-templates.route";
 import { registerPositionPermissionsRoute } from "./position-permissions.route";
 import { registerSectorPermissionsRoute } from "./sector-permissions.route";
 import { registerUserCustomPermissionsRoute } from "./user-custom-permissions.route";
 import { registerUserEffectivePermissionsRoute } from "./user-effective-permissions.route";
-import { registerBulkAssignPermissionsRoute } from "./bulk-assign-permissions.route";
-
-import { registerGetPermissionMatrixRoute } from "./get-permission-matrix.route";
-import { AccessAuditInterceptor } from "../infra/interceptors/access-audit.interceptor";
 
 type PermissionsHttpDeps = {
   permissionRepository: PermissionRepository;

@@ -1,6 +1,8 @@
 import type { Prisma, UserStatus } from "@prisma/client";
+import { UnifiedAuditService } from "../../../../core/security/unified-audit.service";
 import { getPrisma } from "../../../../infra/database/prisma.service";
 import type {
+  AuditContext,
   CreateUserInput,
   UpdateUserInput,
   UserRecord,
@@ -38,7 +40,7 @@ export class PrismaUserRepository implements UserRepository {
     return users.map(mapUser);
   }
 
-  async create(input: CreateUserInput): Promise<UserRecord> {
+  async create(input: CreateUserInput, context?: AuditContext): Promise<UserRecord> {
     const user = await prisma.user.create({
       data: {
         id: input.userId,
@@ -52,14 +54,26 @@ export class PrismaUserRepository implements UserRepository {
         birthDate: input.birthDate ?? null,
         admissionDate: input.admissionDate ?? null,
         observations: input.observations ?? null,
-        observations: input.observations ?? null,
         mustChangePassword: input.mustChangePassword ?? false,
       },
     });
+
+    if (context) {
+      await UnifiedAuditService.log("CREATE", {
+        entityType: "User",
+        entityId: user.id,
+        newValue: user,
+        context: {
+          ...context,
+          userId: context.actorId,
+        },
+      });
+    }
+
     return mapUser(user);
   }
 
-  async setLastLogin(userId: string, date: Date): Promise<void> {
+  async setLastLogin(userId: string, date: Date, context?: AuditContext): Promise<void> {
     await prisma.user.update({
       where: { id: userId },
       data: {
@@ -68,7 +82,10 @@ export class PrismaUserRepository implements UserRepository {
     });
   }
 
-  async update(input: UpdateUserInput): Promise<UserRecord | null> {
+  async update(input: UpdateUserInput, context?: AuditContext): Promise<UserRecord | null> {
+    // 1. Obter estado anterior (Immutable Traceability)
+    const oldUser = await prisma.user.findUnique({ where: { id: input.userId } });
+
     const updateData: Prisma.UserUpdateInput = {};
 
     if (input.email !== undefined) updateData.email = input.email.toLowerCase();
@@ -81,25 +98,56 @@ export class PrismaUserRepository implements UserRepository {
     if (input.birthDate !== undefined) updateData.birthDate = input.birthDate;
     if (input.admissionDate !== undefined) updateData.admissionDate = input.admissionDate;
     if (input.observations !== undefined) updateData.observations = input.observations;
+    if (input.mustChangePassword !== undefined)
+      updateData.mustChangePassword = input.mustChangePassword;
 
     const user = await prisma.user.update({
       where: { id: input.userId },
       data: updateData,
     });
 
+    // 2. Logar Auditoria com Diffs (Zero Mocks)
+    if (context) {
+      await UnifiedAuditService.log("UPDATE", {
+        entityType: "User",
+        entityId: user.id,
+        oldValue: oldUser,
+        newValue: user,
+        context: {
+          ...context,
+          userId: context.actorId,
+        },
+      });
+    }
+
     return mapUser(user);
   }
 
-  async delete(userId: string): Promise<void> {
-    // Deletar memberships primeiro
+  async delete(userId: string, context?: AuditContext): Promise<void> {
+    // 1. Snapshot antes de deletar
+    const oldUser = await prisma.user.findUnique({ where: { id: userId } });
+
+    // 2. Deletar memberships e usuário
     await prisma.organizationMembership.deleteMany({
       where: { userId },
     });
 
-    // Deletar usuário
     await prisma.user.delete({
       where: { id: userId },
     });
+
+    // 3. Auditoria
+    if (context && oldUser) {
+      await UnifiedAuditService.log("DELETE", {
+        entityType: "User",
+        entityId: userId,
+        oldValue: oldUser,
+        context: {
+          ...context,
+          userId: context.actorId,
+        },
+      });
+    }
   }
 }
 

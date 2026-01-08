@@ -4,8 +4,8 @@
  * Testes automatizados de acessibilidade WCAG 2.1 AA
  */
 
-import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { expect, test } from "@playwright/test";
 
 /**
  * Teste de acessibilidade para página de login
@@ -115,7 +115,7 @@ test.describe("Accessibility - Dashboard", () => {
  */
 test.describe("Accessibility - Forms", () => {
     test("should have proper form labels", async ({ page }) => {
-        await page.goto("/users/new");
+        await page.goto("/admin/users/new");
 
         const accessibilityScanResults = await new AxeBuilder({ page })
             .withTags(["wcag2a"])
@@ -129,7 +129,7 @@ test.describe("Accessibility - Forms", () => {
     });
 
     test("should show error messages accessibly", async ({ page }) => {
-        await page.goto("/users/new");
+        await page.goto("/admin/users/new");
 
         // Submeter formulário vazio
         await page.click('button[type="submit"]');

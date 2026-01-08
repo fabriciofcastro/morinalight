@@ -7,4 +7,3 @@ export class PrismaSupplierTagRepositoryImpl extends PrismaSupplierTagRepository
     super(prisma);
   }
 }
-

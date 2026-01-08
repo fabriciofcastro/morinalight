@@ -97,16 +97,3 @@ export class PrismaUserPermissionRepository implements UserPermissionRepository 
     });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

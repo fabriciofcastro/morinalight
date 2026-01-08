@@ -3,133 +3,139 @@ import type { AnomalyDetectionResult, LoginAnomalyEvent } from "./login-anomaly-
 export type AlertChannel = "slack" | "email" | "both";
 
 export type AlertConfig = {
-    slackWebhookUrl?: string;
-    emailFrom?: string;
-    emailTo?: string[];
-    smtpHost?: string;
-    smtpPort?: number;
-    smtpUser?: string;
-    smtpPassword?: string;
+  slackWebhookUrl?: string;
+  emailFrom?: string;
+  emailTo?: string[];
+  smtpHost?: string;
+  smtpPort?: number;
+  smtpUser?: string;
+  smtpPassword?: string;
 };
 
 export class AlertService {
-    private config: AlertConfig;
+  private config: AlertConfig;
 
-    constructor(config: AlertConfig) {
-        this.config = config;
+  constructor(config: AlertConfig) {
+    this.config = config;
+  }
+
+  async sendAlert(
+    event: LoginAnomalyEvent,
+    anomaly: AnomalyDetectionResult,
+    channel: AlertChannel = "both",
+  ): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    if ((channel === "slack" || channel === "both") && this.config.slackWebhookUrl) {
+      promises.push(this.sendSlackAlert(event, anomaly));
     }
 
-    async sendAlert(
-        event: LoginAnomalyEvent,
-        anomaly: AnomalyDetectionResult,
-        channel: AlertChannel = "both"
-    ): Promise<void> {
-        const promises: Promise<void>[] = [];
-
-        if ((channel === "slack" || channel === "both") && this.config.slackWebhookUrl) {
-            promises.push(this.sendSlackAlert(event, anomaly));
-        }
-
-        if ((channel === "email" || channel === "both") && this.config.emailTo) {
-            promises.push(this.sendEmailAlert(event, anomaly));
-        }
-
-        await Promise.allSettled(promises);
+    if ((channel === "email" || channel === "both") && this.config.emailTo) {
+      promises.push(this.sendEmailAlert(event, anomaly));
     }
 
-    private async sendSlackAlert(event: LoginAnomalyEvent, anomaly: AnomalyDetectionResult): Promise<void> {
-        try {
-            const { IncomingWebhook } = await import("@slack/webhook");
-            const webhook = new IncomingWebhook(this.config.slackWebhookUrl!);
+    await Promise.allSettled(promises);
+  }
 
-            const color = this.getSeverityColor(anomaly.severity);
-            const emoji = this.getSeverityEmoji(anomaly.severity);
+  private async sendSlackAlert(
+    event: LoginAnomalyEvent,
+    anomaly: AnomalyDetectionResult,
+  ): Promise<void> {
+    try {
+      const { IncomingWebhook } = await import("@slack/webhook");
+      const webhook = new IncomingWebhook(this.config.slackWebhookUrl!);
 
-            await webhook.send({
-                text: `${emoji} *Anomalia de Segurança Detectada*`,
-                attachments: [
-                    {
-                        color,
-                        fields: [
-                            {
-                                title: "Severidade",
-                                value: anomaly.severity.toUpperCase(),
-                                short: true,
-                            },
-                            {
-                                title: "Usuário",
-                                value: event.email,
-                                short: true,
-                            },
-                            {
-                                title: "IP",
-                                value: event.ip,
-                                short: true,
-                            },
-                            {
-                                title: "Status",
-                                value: event.success ? "✅ Sucesso" : "❌ Falha",
-                                short: true,
-                            },
-                            {
-                                title: "Razão",
-                                value: anomaly.reason || "N/A",
-                                short: false,
-                            },
-                            {
-                                title: "Ação Recomendada",
-                                value: anomaly.shouldBlock
-                                    ? "🔒 *BLOQUEIO AUTOMÁTICO ATIVADO*"
-                                    : "⚠️ Monitorar atividade",
-                                short: false,
-                            },
-                        ],
-                        footer: "Morina Security System",
-                        ts: Math.floor(event.timestamp.getTime() / 1000).toString(),
-                    },
-                ],
-            });
+      const color = this.getSeverityColor(anomaly.severity);
+      const emoji = this.getSeverityEmoji(anomaly.severity);
 
-            console.log("✅ [ALERT] Slack notification sent successfully");
-        } catch (error) {
-            console.error("❌ [ALERT] Failed to send Slack notification:", error);
-        }
+      await webhook.send({
+        text: `${emoji} *Anomalia de Segurança Detectada*`,
+        attachments: [
+          {
+            color,
+            fields: [
+              {
+                title: "Severidade",
+                value: anomaly.severity.toUpperCase(),
+                short: true,
+              },
+              {
+                title: "Usuário",
+                value: event.email,
+                short: true,
+              },
+              {
+                title: "IP",
+                value: event.ip,
+                short: true,
+              },
+              {
+                title: "Status",
+                value: event.success ? "✅ Sucesso" : "❌ Falha",
+                short: true,
+              },
+              {
+                title: "Razão",
+                value: anomaly.reason || "N/A",
+                short: false,
+              },
+              {
+                title: "Ação Recomendada",
+                value: anomaly.shouldBlock
+                  ? "🔒 *BLOQUEIO AUTOMÁTICO ATIVADO*"
+                  : "⚠️ Monitorar atividade",
+                short: false,
+              },
+            ],
+            footer: "Morina Security System",
+            ts: Math.floor(event.timestamp.getTime() / 1000).toString(),
+          },
+        ],
+      });
+
+      console.log("✅ [ALERT] Slack notification sent successfully");
+    } catch (error) {
+      console.error("❌ [ALERT] Failed to send Slack notification:", error);
     }
+  }
 
-    private async sendEmailAlert(event: LoginAnomalyEvent, anomaly: AnomalyDetectionResult): Promise<void> {
-        try {
-            const nodemailer = await import("nodemailer");
+  private async sendEmailAlert(
+    event: LoginAnomalyEvent,
+    anomaly: AnomalyDetectionResult,
+  ): Promise<void> {
+    try {
+      const nodemailer = await import("nodemailer");
 
-            const transporter = nodemailer.createTransport({
-                host: this.config.smtpHost,
-                port: this.config.smtpPort,
-                secure: this.config.smtpPort === 465,
-                auth: {
-                    user: this.config.smtpUser,
-                    pass: this.config.smtpPassword,
-                },
-            });
+      const transporter = nodemailer.createTransport({
+        host: this.config.smtpHost,
+        port: this.config.smtpPort,
+        secure: this.config.smtpPort === 465,
+        auth: {
+          user: this.config.smtpUser,
+          pass: this.config.smtpPassword,
+        },
+      });
 
-            const htmlContent = this.generateEmailHTML(event, anomaly);
+      const htmlContent = this.generateEmailHTML(event, anomaly);
 
-            await transporter.sendMail({
-                from: this.config.emailFrom,
-                to: this.config.emailTo,
-                subject: `🚨 [${anomaly.severity.toUpperCase()}] Anomalia de Segurança Detectada`,
-                html: htmlContent,
-            });
+      await transporter.sendMail({
+        from: this.config.emailFrom,
+        to: this.config.emailTo,
+        subject: `🚨 [${anomaly.severity.toUpperCase()}] Anomalia de Segurança Detectada`,
+        html: htmlContent,
+      });
 
-            console.log("✅ [ALERT] Email notification sent successfully");
-        } catch (error) {
-            console.error("❌ [ALERT] Failed to send email notification:", error);
-        }
+      console.log("✅ [ALERT] Email notification sent successfully");
+    } catch (error) {
+      console.error("❌ [ALERT] Failed to send email notification:", error);
     }
+  }
 
-    private generateEmailHTML(event: LoginAnomalyEvent, anomaly: AnomalyDetectionResult): string {
-        const severityColor = this.getSeverityColor(anomaly.severity);
-        const emoji = this.getSeverityEmoji(anomaly.severity);
+  private generateEmailHTML(event: LoginAnomalyEvent, anomaly: AnomalyDetectionResult): string {
+    const severityColor = this.getSeverityColor(anomaly.severity);
+    const emoji = this.getSeverityEmoji(anomaly.severity);
 
-        return `
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -250,10 +256,11 @@ export class AlertService {
 
     <div class="action-box">
       <strong>${anomaly.shouldBlock ? "🔒 BLOQUEIO AUTOMÁTICO ATIVADO" : "⚠️ Ação Recomendada"}:</strong><br>
-      ${anomaly.shouldBlock
-                ? "A conta foi bloqueada automaticamente. Contate o usuário para verificação."
-                : "Monitore a atividade deste usuário. Considere contato direto se o comportamento persistir."
-            }
+      ${
+        anomaly.shouldBlock
+          ? "A conta foi bloqueada automaticamente. Contate o usuário para verificação."
+          : "Monitore a atividade deste usuário. Considere contato direto se o comportamento persistir."
+      }
     </div>
 
     <div class="footer">
@@ -264,53 +271,53 @@ export class AlertService {
 </body>
 </html>
     `;
-    }
+  }
 
-    private getSeverityColor(severity: string): string {
-        switch (severity) {
-            case "critical":
-                return "#dc3545";
-            case "high":
-                return "#fd7e14";
-            case "medium":
-                return "#ffc107";
-            case "low":
-                return "#17a2b8";
-            default:
-                return "#6c757d";
-        }
+  private getSeverityColor(severity: string): string {
+    switch (severity) {
+      case "critical":
+        return "#dc3545";
+      case "high":
+        return "#fd7e14";
+      case "medium":
+        return "#ffc107";
+      case "low":
+        return "#17a2b8";
+      default:
+        return "#6c757d";
     }
+  }
 
-    private getSeverityEmoji(severity: string): string {
-        switch (severity) {
-            case "critical":
-                return "🚨";
-            case "high":
-                return "⚠️";
-            case "medium":
-                return "⚡";
-            case "low":
-                return "ℹ️";
-            default:
-                return "📊";
-        }
+  private getSeverityEmoji(severity: string): string {
+    switch (severity) {
+      case "critical":
+        return "🚨";
+      case "high":
+        return "⚠️";
+      case "medium":
+        return "⚡";
+      case "low":
+        return "ℹ️";
+      default:
+        return "📊";
     }
+  }
 }
 
 // Singleton instance
 let alertServiceInstance: AlertService | null = null;
 
 export function getAlertService(): AlertService {
-    if (!alertServiceInstance) {
-        alertServiceInstance = new AlertService({
-            slackWebhookUrl: process.env.SLACK_WEBHOOK_URL,
-            emailFrom: process.env.ALERT_EMAIL_FROM || "security@morina.ai",
-            emailTo: process.env.ALERT_EMAIL_TO?.split(",") || [],
-            smtpHost: process.env.SMTP_HOST,
-            smtpPort: parseInt(process.env.SMTP_PORT || "587", 10),
-            smtpUser: process.env.SMTP_USER,
-            smtpPassword: process.env.SMTP_PASSWORD,
-        });
-    }
-    return alertServiceInstance;
+  if (!alertServiceInstance) {
+    alertServiceInstance = new AlertService({
+      slackWebhookUrl: process.env.SLACK_WEBHOOK_URL,
+      emailFrom: process.env.ALERT_EMAIL_FROM || "security@morina.ai",
+      emailTo: process.env.ALERT_EMAIL_TO?.split(",") || [],
+      smtpHost: process.env.SMTP_HOST,
+      smtpPort: parseInt(process.env.SMTP_PORT || "587", 10),
+      smtpUser: process.env.SMTP_USER,
+      smtpPassword: process.env.SMTP_PASSWORD,
+    });
+  }
+  return alertServiceInstance;
 }

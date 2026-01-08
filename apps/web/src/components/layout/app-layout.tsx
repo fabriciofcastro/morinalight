@@ -1,14 +1,14 @@
 "use client";
 
-import { EnterpriseHeader as AppHeader } from "@/presentation/components/EnterpriseHeader";
-import { EnterpriseSidebar as AppSidebar } from "@/presentation/components/EnterpriseSidebar";
+import { AppBackgroundAdvanced } from "@/components/layout/app-background-advanced";
+
+import { EnterpriseHeader as AppHeader } from "@/widgets/EnterpriseHeader";
+import { EnterpriseSidebar as AppSidebar } from "@/widgets/EnterpriseSidebar";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ConnectionStatusIndicator } from "../connection-status-indicator";
 import { RealtimeNotificationsProvider } from "../notifications/realtime-notifications-provider";
 import { OfflineSyncNotification } from "../offline-sync-notification";
-import { SessionTimeoutWarning } from "../session/session-timeout-warning";
-import { AppBackgroundAdvanced } from "./app-background-advanced";
 import { AppFooter } from "./app-footer";
 
 type AppLayoutProps = {
@@ -21,7 +21,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   // Páginas que não devem ter o layout completo
   const publicRoutes = ["/login", "/invite"];
-  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+  const isPublicRoute = publicRoutes.some((route) => (pathname ?? "").startsWith(route));
 
   type CSSVarProps = React.CSSProperties & Record<`--${string}`, string>;
 
@@ -39,7 +39,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     return "on";
   }
 
-  const routePreset = getRouteDefaultPreset(pathname);
+  const routePreset = getRouteDefaultPreset(pathname ?? "");
   const cinematicPreset: CinematicPreset =
     cinematicPreference === "auto" ? routePreset : cinematicPreference;
 
@@ -113,25 +113,19 @@ export function AppLayout({ children }: AppLayoutProps) {
     <div
       className="relative flex h-screen overflow-hidden"
       data-cinematic={cinematicPreset}
-      data-cinematic-pref={cinematicPreference}
       style={cinematicVars as any}
     >
-      {/* Background animado fixo avançado */}
       <AppBackgroundAdvanced />
-
+       
       {/* Sidebar Container - Explicit Width Reservation */}
       <aside className="hidden lg:flex w-[80px] flex-col shrink-0 z-50">
-          <AppSidebar />
+        <AppSidebar />
       </aside>
 
-      {/* Main content area */}
       <div className="relative z-10 flex flex-1 flex-col overflow-hidden min-w-0">
-        {/* Header */}
         <AppHeader />
 
-        {/* Main content */}
         <main className="relative z-10 flex-1 overflow-y-auto px-4 py-6 lg:px-10">
-          {/* Trilho luminoso superior e contorno */}
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute inset-x-0 top-0 h-px bg-[radial-gradient(circle_at_center,color-mix(in_oklab,hsl(var(--primary))_55%,transparent)_0%,transparent_70%)] opacity-60" />
             <div
@@ -141,40 +135,18 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary))/0.06,transparent_55%),radial-gradient(circle_at_80%_60%,hsl(var(--accent))/0.06,transparent_55%)] mix-blend-screen opacity-70" />
           </div>
 
-          {/* Conteúdo */}
           <div className="relative flex-1">
             <div className="pointer-events-none absolute inset-x-0 top-4 h-px bg-[linear-gradient(90deg,transparent,hsla(var(--accent)/0.35),transparent)] blur-[1px]" />
             {children}
           </div>
         </main>
 
-        {/* Footer */}
         <AppFooter />
       </div>
 
-      {/* Status de conexão */}
       <ConnectionStatusIndicator position="fixed" className="bottom-4 right-4" />
-
-      {/* Notificação de sincronização offline */}
       <OfflineSyncNotification />
-
-      {/* Provider de notificações em tempo real */}
       <RealtimeNotificationsProvider />
-
-      {/* Session Timeout Warning */}
-      <SessionTimeoutWarning
-        sessionDurationMinutes={30}
-        warningBeforeMinutes={5}
-        onSessionExpire={() => {
-          // Redirecionar para login
-          window.location.href = '/login';
-        }}
-        onSessionRenew={async () => {
-          // Renovar token/sessão
-          // Em produção, fazer chamada à API
-          console.log('Session renewed');
-        }}
-      />
     </div>
   );
 }

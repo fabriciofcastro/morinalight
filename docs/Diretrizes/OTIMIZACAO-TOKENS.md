@@ -41,3 +41,4 @@
 - Antes: ~50k tokens/sessão
 - Meta: ~30k tokens/sessão (-40%)
 - Estratégia: Focar em tarefas <500 linhas
+

@@ -59,6 +59,12 @@ export type AppSubjects =
     | Record<string, any>;
 
 /**
+ * Subset of AppSubjects excluding the generic Record type for stricter strict typing
+ * Used in detectSubjectType to satisfy CASL constraints
+ */
+export type AppSubjectType = Exclude<AppSubjects, Record<string, any>>;
+
+/**
  * Tipo principal da Ability do CASL
  */
 export type AppAbility = Ability<[AppActions, AppSubjects], MongoQuery>;

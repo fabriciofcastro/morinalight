@@ -24,6 +24,7 @@ import { registerGetPositionRoute } from "./get-position.route";
 import { registerGetSectorRoute } from "./get-sector.route";
 import { registerGetSubdepartmentRoute } from "./get-subdepartment.route";
 import { registerListDepartmentsRoute } from "./list-departments.route";
+import { registerListOrganizationalStructureAuditLogRoute } from "./list-organizational-structure-audit-log.route";
 import { registerListPositionsRoute } from "./list-positions.route";
 import { registerListSectorsRoute } from "./list-sectors.route";
 import { registerListSubdepartmentsRoute } from "./list-subdepartments.route";
@@ -31,7 +32,6 @@ import { registerUpdateDepartmentRoute } from "./update-department.route";
 import { registerUpdatePositionRoute } from "./update-position.route";
 import { registerUpdateSectorRoute } from "./update-sector.route";
 import { registerUpdateSubdepartmentRoute } from "./update-subdepartment.route";
-import { registerListOrganizationalStructureAuditLogRoute } from "./list-organizational-structure-audit-log.route";
 
 type OrganizationalStructureHttpDeps = {
   departmentRepository: DepartmentRepository;

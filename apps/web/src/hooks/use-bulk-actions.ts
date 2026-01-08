@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 
 interface BulkActionOptions {
     onSuccess?: () => void;

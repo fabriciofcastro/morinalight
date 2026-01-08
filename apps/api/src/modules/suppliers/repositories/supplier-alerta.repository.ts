@@ -39,7 +39,10 @@ export interface AlertaSupplierRepository {
   update(id: string, input: UpdateAlertaSupplierInput): Promise<AlertaSupplierRecord>;
   delete(id: string): Promise<void>;
   findById(id: string): Promise<AlertaSupplierRecord | null>;
-  findByOrgId(orgId: string, filters?: { supplierId?: string; tipo?: string; status?: string; lido?: boolean }): Promise<AlertaSupplierRecord[]>;
+  findByOrgId(
+    orgId: string,
+    filters?: { supplierId?: string; tipo?: string; status?: string; lido?: boolean },
+  ): Promise<AlertaSupplierRecord[]>;
   findBySupplierId(supplierId: string): Promise<AlertaSupplierRecord[]>;
   markAsRead(id: string, userId: string): Promise<AlertaSupplierRecord>;
   getUnreadCount(orgId: string, supplierId?: string): Promise<number>;
@@ -119,10 +122,7 @@ export class PrismaAlertaSupplierRepository implements AlertaSupplierRepository 
 
     const alertas = await this.prisma.alertaSupplier.findMany({
       where,
-      orderBy: [
-        { prioridade: "desc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ prioridade: "desc" }, { createdAt: "desc" }],
     });
     return alertas.map(this.mapToRecord);
   }
@@ -130,10 +130,7 @@ export class PrismaAlertaSupplierRepository implements AlertaSupplierRepository 
   async findBySupplierId(supplierId: string): Promise<AlertaSupplierRecord[]> {
     const alertas = await this.prisma.alertaSupplier.findMany({
       where: { supplierId },
-      orderBy: [
-        { prioridade: "desc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ prioridade: "desc" }, { createdAt: "desc" }],
     });
     return alertas.map(this.mapToRecord);
   }
@@ -195,5 +192,3 @@ export class PrismaAlertaSupplierRepository implements AlertaSupplierRepository 
     };
   }
 }
-
-

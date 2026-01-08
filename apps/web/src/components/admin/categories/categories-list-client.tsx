@@ -13,7 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useMemo } from "react";
 import { catalogApi, Category } from "@/lib/api/catalog";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { PageBackground } from "@/components/layout/PageBackground";
 
 const CategoryCard = ({ category }: { category: Category }) => {

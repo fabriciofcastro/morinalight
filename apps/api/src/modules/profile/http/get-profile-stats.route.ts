@@ -6,7 +6,10 @@ type GetProfileStatsDeps = {
   userRepository: UserRepository;
 };
 
-export async function registerGetProfileStatsRoute(app: FastifyInstance, deps: GetProfileStatsDeps) {
+export async function registerGetProfileStatsRoute(
+  app: FastifyInstance,
+  deps: GetProfileStatsDeps,
+) {
   app.get("/profile/stats", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -39,15 +42,3 @@ export async function registerGetProfileStatsRoute(app: FastifyInstance, deps: G
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

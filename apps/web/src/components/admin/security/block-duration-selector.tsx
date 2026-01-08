@@ -11,9 +11,9 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@/shared/ui/base/select';
+import { Input } from '@/shared/ui/base/input';
+import { Label } from '@/shared/ui/base/label';
 import { Clock } from 'lucide-react';
 
 export interface BlockDuration {

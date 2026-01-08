@@ -51,15 +51,3 @@ export async function registerGetProfileActivityRoute(
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

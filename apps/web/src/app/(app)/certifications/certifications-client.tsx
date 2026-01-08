@@ -14,10 +14,10 @@ import { useCertifications } from '@/hooks/queries/use-certifications';
 import { useCurrentOrganization } from '@/hooks/queries/use-organizations';
 import { CertificationsFilters } from '@/components/certifications/CertificationsFilters';
 import { CertificationsAnalytics } from '@/components/certifications/CertificationsAnalytics';
-import { FilterValue } from '@/components/ui/advanced-filter';
-import { Button } from '@/components/ui/button';
+import { FilterValue } from '@/shared/ui/base/advanced-filter';
+import { Button } from '@/shared/ui/base/button';
 import { Mail, Settings } from 'lucide-react';
-import { ThemeCustomizer } from '@/components/ui/theme-customizer';
+import { ThemeCustomizer } from '@/shared/ui/base/theme-customizer';
 
 export const CertificationsClient = () => {
     const { data: currentOrg } = useCurrentOrganization();

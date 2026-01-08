@@ -2,8 +2,8 @@
  * Use Case: Listar Access Audit Log
  */
 
-import type { AccessAuditLogRepository } from "../../domain/repositories/access-audit-log.repository";
 import { z } from "zod";
+import type { AccessAuditLogRepository } from "../../domain/repositories/access-audit-log.repository";
 
 const listarAccessAuditLogInputSchema = z
   .object({
@@ -12,8 +12,16 @@ const listarAccessAuditLogInputSchema = z
     permission: z.string().optional(),
     granted: z.boolean().optional(),
     ipAddress: z.string().optional(),
-    startDate: z.string().datetime().optional().transform((val) => (val ? new Date(val) : undefined)),
-    endDate: z.string().datetime().optional().transform((val) => (val ? new Date(val) : undefined)),
+    startDate: z
+      .string()
+      .datetime()
+      .optional()
+      .transform((val) => (val ? new Date(val) : undefined)),
+    endDate: z
+      .string()
+      .datetime()
+      .optional()
+      .transform((val) => (val ? new Date(val) : undefined)),
     cursor: z.string().optional(),
     limit: z.number().int().min(1).max(100).optional(),
   })
@@ -44,12 +52,3 @@ export class ListarAccessAuditLogUseCase {
     });
   }
 }
-
-
-
-
-
-
-
-
-

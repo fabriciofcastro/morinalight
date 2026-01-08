@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { getQueueStats } from "@/lib/offline-queue";
-import { createAutoSync, type SyncProgress, syncOfflineOperations } from "@/lib/offline-sync";
+import { createAutoSync, syncOfflineOperations, type SyncProgress } from "@/lib/offline-sync";
+import { useCallback, useEffect, useState } from "react";
 import { useConnectionStatus } from "./use-connection-status";
 
 export function useOfflineSync() {
@@ -71,6 +71,7 @@ export function useOfflineSync() {
         autoSync.stop();
       };
     }
+    return undefined;
   }, [backendOnline, isOnline, isSyncing, sync]);
 
   return {

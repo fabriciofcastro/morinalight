@@ -1,11 +1,11 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
+import { InsumoTecnico } from "../../domain/entities/insumo-tecnico";
+import { Tecido } from "../../domain/entities/tecido";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { PreFichaTecnicaId } from "../../domain/value-objects/pre-ficha-tecnica-id";
 import { criarPreFichaTecnicaSchema } from "../schemas/pre-ficha-tecnica.schema";
-import type { DomainEventBus } from "@morina/shared-kernel";
-import { InsumoTecnico } from "../../domain/entities/insumo-tecnico";
-import { Tecido } from "../../domain/entities/tecido";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -16,7 +16,10 @@ type Dependencies = {
 
 const atualizarPreFichaTecnicaSchema = criarPreFichaTecnicaSchema.partial().extend({
   id: z.string().uuid(),
-  motivoAlteracao: z.string().min(10, "Motivo da alteração deve ter pelo menos 10 caracteres").optional(),
+  motivoAlteracao: z
+    .string()
+    .min(10, "Motivo da alteração deve ter pelo menos 10 caracteres")
+    .optional(),
 });
 
 export class AtualizarPreFichaTecnicaUseCase {
@@ -60,34 +63,51 @@ export class AtualizarPreFichaTecnicaUseCase {
     }
 
     // Atualizar dados básicos
-    if (input.codigoPeca || input.nomePecaPiloto || input.categoria !== undefined || 
-        input.fotoPecaUrl !== undefined || input.fotoPecaStorageKey !== undefined ||
-        input.gradeTamanhos !== undefined || input.observacoesTecnicas !== undefined ||
-        input.observacoesOficina !== undefined) {
-      preFichaExistente.atualizarDadosBasicos({
-        codigoPeca: input.codigoPeca,
-        nomePecaPiloto: input.nomePecaPiloto,
-        categoria: input.categoria,
-        fotoPecaUrl: input.fotoPecaUrl,
-        fotoPecaStorageKey: input.fotoPecaStorageKey,
-        gradeTamanhos: input.gradeTamanhos,
-        observacoesTecnicas: input.observacoesTecnicas,
-        observacoesOficina: input.observacoesOficina,
-      }, this.deps.userId);
+    if (
+      input.codigoPeca ||
+      input.nomePecaPiloto ||
+      input.categoria !== undefined ||
+      input.fotoPecaUrl !== undefined ||
+      input.fotoPecaStorageKey !== undefined ||
+      input.gradeTamanhos !== undefined ||
+      input.observacoesTecnicas !== undefined ||
+      input.observacoesOficina !== undefined
+    ) {
+      preFichaExistente.atualizarDadosBasicos(
+        {
+          codigoPeca: input.codigoPeca,
+          nomePecaPiloto: input.nomePecaPiloto,
+          categoria: input.categoria,
+          fotoPecaUrl: input.fotoPecaUrl,
+          fotoPecaStorageKey: input.fotoPecaStorageKey,
+          gradeTamanhos: input.gradeTamanhos,
+          observacoesTecnicas: input.observacoesTecnicas,
+          observacoesOficina: input.observacoesOficina,
+        },
+        this.deps.userId,
+      );
     }
 
     // Atualizar responsáveis
-    if (input.estilistaId !== undefined || input.estilistaNome !== undefined ||
-        input.modelistaId !== undefined || input.modelistaNome !== undefined ||
-        input.piloteiroId !== undefined || input.piloteiroNome !== undefined) {
-      preFichaExistente.atualizarResponsaveis({
-        estilistaId: input.estilistaId,
-        estilistaNome: input.estilistaNome,
-        modelistaId: input.modelistaId,
-        modelistaNome: input.modelistaNome,
-        piloteiroId: input.piloteiroId,
-        piloteiroNome: input.piloteiroNome,
-      }, this.deps.userId);
+    if (
+      input.estilistaId !== undefined ||
+      input.estilistaNome !== undefined ||
+      input.modelistaId !== undefined ||
+      input.modelistaNome !== undefined ||
+      input.piloteiroId !== undefined ||
+      input.piloteiroNome !== undefined
+    ) {
+      preFichaExistente.atualizarResponsaveis(
+        {
+          estilistaId: input.estilistaId,
+          estilistaNome: input.estilistaNome,
+          modelistaId: input.modelistaId,
+          modelistaNome: input.modelistaNome,
+          piloteiroId: input.piloteiroId,
+          piloteiroNome: input.piloteiroNome,
+        },
+        this.deps.userId,
+      );
     }
 
     // Flags de alteração serão atualizadas quando criarNovaVersao() for chamado
@@ -151,15 +171,3 @@ export class AtualizarPreFichaTecnicaUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

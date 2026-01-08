@@ -5,12 +5,12 @@ import { Save, Layers } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { organizationalStructureApi, type Sector, type CreateSectorInput, type UpdateSectorInput } from "@/lib/api/organizational-structure";
-import { FuturisticInput } from "@/components/ui/futuristic-input";
-import { FuturisticSelect } from "@/components/ui/futuristic-select";
-import { FuturisticTextarea } from "@/components/ui/futuristic-textarea";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-input";
+import { FuturisticSelect } from "@/shared/ui/base/futuristic-select";
+import { FuturisticTextarea } from "@/shared/ui/base/futuristic-textarea";
 import { StandardFormPage } from "@/components/templates";
 import { useAutoSave } from "@/hooks/useAutoSave";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
 
 interface SectorFormClientProps {

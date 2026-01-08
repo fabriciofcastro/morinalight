@@ -2,9 +2,12 @@
  * Rota HTTP: Criar Approval
  */
 
-import type { FastifyInstance } from "fastify";
 import type { DomainEventBus } from "@morina/shared-kernel";
-import { criarApprovalInputSchema, approvalViewSchema } from "../application/schemas/approval.schema";
+import type { FastifyInstance } from "fastify";
+import {
+  approvalViewSchema,
+  criarApprovalInputSchema,
+} from "../application/schemas/approval.schema";
 import { CriarApprovalUseCase } from "../application/use-cases/criar-approval.use-case";
 import type { ApprovalRepository } from "../domain/repositories/approval-repository";
 
@@ -43,12 +46,3 @@ export async function registerCreateApprovalRoute(
     }
   });
 }
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,6 @@
 /**
  * Sistema de Contextualização Avançada de Erros
- * 
+ *
  * Captura contexto rico para debug e análise.
  */
 
@@ -14,7 +14,7 @@ import type { ErrorCorrelationContext } from "./error-correlation";
 export interface RichErrorContext {
   // Contexto básico
   correlation: ErrorCorrelationContext;
-  
+
   // Request context
   request: {
     method: string;
@@ -61,7 +61,7 @@ export interface RichErrorContext {
 
   // Stack trace
   stack?: string;
-  
+
   // Breadcrumbs (user actions leading to error)
   breadcrumbs: Array<{
     timestamp: number;
@@ -87,7 +87,7 @@ export class ErrorContextManager {
     message: string,
     data?: Record<string, unknown>,
   ): void {
-    const breadcrumbs = this.breadcrumbs.get(correlationId) || [];
+    const breadcrumbs = ErrorContextManager.breadcrumbs.get(correlationId) || [];
     breadcrumbs.push({
       timestamp: Date.now(),
       category,
@@ -96,11 +96,11 @@ export class ErrorContextManager {
     });
 
     // Limitar número de breadcrumbs
-    if (breadcrumbs.length > this.MAX_BREADCRUMBS) {
+    if (breadcrumbs.length > ErrorContextManager.MAX_BREADCRUMBS) {
       breadcrumbs.shift();
     }
 
-    this.breadcrumbs.set(correlationId, breadcrumbs);
+    ErrorContextManager.breadcrumbs.set(correlationId, breadcrumbs);
   }
 
   /**
@@ -111,12 +111,10 @@ export class ErrorContextManager {
     request: FastifyRequest,
     correlationContext: ErrorCorrelationContext,
   ): RichErrorContext {
-    const breadcrumbs = this.breadcrumbs.get(
-      correlationContext.correlationId,
-    ) || [];
+    const breadcrumbs = ErrorContextManager.breadcrumbs.get(correlationContext.correlationId) || [];
 
     // Limpar breadcrumbs após uso
-    this.breadcrumbs.delete(correlationContext.correlationId);
+    ErrorContextManager.breadcrumbs.delete(correlationContext.correlationId);
 
     return {
       correlation: correlationContext,
@@ -126,8 +124,8 @@ export class ErrorContextManager {
         path: (request as any).routerPath || request.url.split("?")[0]!,
         query: request.query as Record<string, unknown>,
         params: request.params as Record<string, unknown>,
-        headers: this.sanitizeHeaders(request.headers as Record<string, string>),
-        body: this.sanitizeBody(request.body),
+        headers: ErrorContextManager.sanitizeHeaders(request.headers as Record<string, string>),
+        body: ErrorContextManager.sanitizeBody(request.body),
         ip: request.ip,
         userAgent: request.headers["user-agent"],
       },
@@ -163,9 +161,7 @@ export class ErrorContextManager {
   /**
    * Sanitizar headers (remover sensíveis)
    */
-  private static sanitizeHeaders(
-    headers: Record<string, string>,
-  ): Record<string, string> {
+  private static sanitizeHeaders(headers: Record<string, string>): Record<string, string> {
     const sensitive = ["authorization", "cookie", "x-api-key", "x-auth-token"];
     const sanitized = { ...headers };
 
@@ -190,9 +186,7 @@ export class ErrorContextManager {
     const sanitized = { ...body } as Record<string, unknown>;
 
     for (const key of Object.keys(sanitized)) {
-      if (
-        sensitive.some((s) => key.toLowerCase().includes(s.toLowerCase()))
-      ) {
+      if (sensitive.some((s) => key.toLowerCase().includes(s.toLowerCase()))) {
         sanitized[key] = "[REDACTED]";
       }
     }
@@ -205,20 +199,11 @@ export class ErrorContextManager {
    */
   static cleanup(maxAge: number = 3600000): void {
     const now = Date.now();
-    for (const [correlationId, breadcrumbs] of this.breadcrumbs.entries()) {
+    for (const [correlationId, breadcrumbs] of ErrorContextManager.breadcrumbs.entries()) {
       const oldest = breadcrumbs[0]?.timestamp || now;
       if (now - oldest > maxAge) {
-        this.breadcrumbs.delete(correlationId);
+        ErrorContextManager.breadcrumbs.delete(correlationId);
       }
     }
   }
 }
-
-
-
-
-
-
-
-
-

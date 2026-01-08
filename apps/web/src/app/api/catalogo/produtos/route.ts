@@ -1,3 +1,6 @@
+import { CreateProductUseCase } from "@/application/use-cases";
+import { getContainer } from "@/infrastructure/di/container";
+import { isOk } from "@/shared/kernel/types";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { apiUrl } from "@/lib/env";
@@ -38,20 +41,23 @@ export async function POST(request: NextRequest, context: { params: unknown }) {
 
   const body = await request.json();
 
-  const response = await fetch(`${apiUrl}/catalogo/produtos`, {
-    method: "POST",
-    headers: await buildAuthHeaders({ "Content-Type": "application/json" }),
-    body: JSON.stringify(body),
-  });
+  try {
+    const container = getContainer();
+    const createProductUseCase = container.resolve<CreateProductUseCase>('CreateProductUseCase');
+    
+    const result = await createProductUseCase.execute(body);
 
-  if (!response.ok) {
-    const error = await response.json();
-    return NextResponse.json(
-      { message: error.message || "Erro ao criar produto" },
-      { status: response.status },
-    );
+    if (!isOk(result)) {
+      // Map error to appropriate status code
+      return NextResponse.json({ 
+        message: result.error.message,
+        // Add error details/code if available in your error classes
+      }, { status: 400 });
+    }
+
+    return NextResponse.json(result.value, { status: 201 });
+  } catch (err: any) {
+    console.error("Error creating product:", err);
+    return NextResponse.json({ message: err.message || "Erro ao criar produto" }, { status: 500 });
   }
-
-  const data = await response.json();
-  return NextResponse.json(data, { status: 201 });
 }

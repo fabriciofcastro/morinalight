@@ -9,15 +9,3 @@ export class PreFichaTecnicaLiberadaProducaoPiloto {
     public readonly timestamp: Date = new Date(),
   ) {}
 }
-
-
-
-
-
-
-
-
-
-
-
-

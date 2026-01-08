@@ -9,15 +9,3 @@ export class PreFichaTecnicaSubmetida {
     public readonly timestamp: Date = new Date(),
   ) {}
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
-import { getPrisma } from "../../../infra/database/prisma.service";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
+import { getPrisma } from "../../../infra/database/prisma.service";
 import type { UserRepository } from "../repositories/user.repository";
 
 const prisma = getPrisma();
@@ -10,10 +10,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerDisable2FARoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerDisable2FARoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/users/:userId/disable-2fa", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -52,15 +49,3 @@ export async function registerDisable2FARoute(
     });
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-

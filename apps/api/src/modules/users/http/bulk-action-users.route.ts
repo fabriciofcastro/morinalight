@@ -12,10 +12,7 @@ type Dependencies = {
   userRepository: UserRepository;
 };
 
-export async function registerBulkActionUsersRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerBulkActionUsersRoute(app: FastifyInstance, deps: Dependencies) {
   app.post("/users/bulk-action", async (request: FastifyRequest, reply: FastifyReply) => {
     await requireAuth()(request, reply);
     if (reply.sent) return;
@@ -69,13 +66,13 @@ export async function registerBulkActionUsersRoute(
       }),
     );
 
-    const successCount = results.filter(
-      (r) => r.status === "fulfilled" && r.value.success,
-    ).length;
+    const successCount = results.filter((r) => r.status === "fulfilled" && r.value.success).length;
     const failureCount = results.length - successCount;
 
     return reply.send({
-      results: results.map((r) => (r.status === "fulfilled" ? r.value : { success: false, error: "Erro ao processar" })),
+      results: results.map((r) =>
+        r.status === "fulfilled" ? r.value : { success: false, error: "Erro ao processar" },
+      ),
       summary: {
         total: results.length,
         success: successCount,
@@ -84,6 +81,3 @@ export async function registerBulkActionUsersRoute(
     });
   });
 }
-
-
-

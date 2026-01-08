@@ -4,7 +4,7 @@ import { Button, FormField, FormTextarea, GlassCard, Input } from "@morina/ui";
 import { Building2, Edit, Eye, Plus, Search, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { useOfflineSync } from "@/hooks/use-offline-sync";
 import { getAuthHeaders } from "@/lib/auth-client";
 import { offlineApi } from "@/lib/offline-api";

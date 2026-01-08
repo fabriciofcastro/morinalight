@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { useCallback, useState } from "react";
 import { ZodSchema, z } from "zod";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type UseSmartFormProps<T> = {
     schema: ZodSchema<T>;
@@ -48,7 +48,7 @@ export function useSmartForm<T>({
         } catch (e) {
             if (e instanceof z.ZodError) {
                 const fieldErrors: Partial<Record<keyof T, string>> = {};
-                e.errors.forEach((err) => {
+                (e as z.ZodError<any>).issues.forEach((err: z.ZodIssue) => {
                     if (err.path[0]) {
                         fieldErrors[err.path[0] as keyof T] = err.message;
                     }

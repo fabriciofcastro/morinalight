@@ -1,18 +1,14 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-
 import { ReprovarFichaCustoUseCase } from "../application/use-cases/reprovar-ficha-custo.use-case";
 import type { FichaCustoRepository } from "../domain/repositories/ficha-custo.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   fichaCustoRepository: FichaCustoRepository;
   eventBus?: DomainEventBus;
 };
 
-export async function registerRejectFichaCustoRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerRejectFichaCustoRoute(app: FastifyInstance, deps: Dependencies) {
   app.post(
     "/organizations/:orgId/fichas-custo/:fichaCustoId/reject",
     async (
@@ -59,7 +55,10 @@ export async function registerRejectFichaCustoRoute(
           if (error.message.includes("obrigatória")) {
             return reply.status(400).send({ message: error.message });
           }
-          if (error.message.includes("não pode ser reprovada") || error.message.includes("Status atual")) {
+          if (
+            error.message.includes("não pode ser reprovada") ||
+            error.message.includes("Status atual")
+          ) {
             return reply.status(403).send({ message: error.message });
           }
           return reply.status(400).send({ message: error.message });

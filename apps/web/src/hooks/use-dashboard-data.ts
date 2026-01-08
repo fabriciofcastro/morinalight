@@ -1,18 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSecurityWebSocket } from "@/hooks/use-security-websocket";
 import {
     analyticsApi,
-    RevenueData,
     CategorySales,
+    DateRangeParams,
     DeviceDistribution,
-    DateRangeParams
+    RevenueData
 } from "@/lib/api/analytics";
+import { useAbility } from "@/lib/auth/CaslContext";
+import { useEffect, useState } from "react";
 
 interface DashboardData {
     revenue: RevenueData[];
     salesByCategory: CategorySales[];
     deviceDistribution: DeviceDistribution[];
+    // New fields for extended charts
+    performanceHistory: { name: string; vendas: number; lucro: number; custos: number }[];
+    metricsRadar: { metric: string; value: number; fullMark: number }[];
+    categoryDistribution: { 
+        name: string; 
+        data: { x: number; y: number; z: number; category: string }[]; 
+        color: string; 
+    }[];
 }
 
 interface UseDashboardDataReturn {
@@ -26,6 +36,10 @@ export function useDashboardData(
     orgId: string,
     dateRange?: DateRangeParams
 ): UseDashboardDataReturn {
+    // Security Context
+    const { socket } = useSecurityWebSocket({ orgId });
+    const ability = useAbility();
+
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
@@ -52,6 +66,9 @@ export function useDashboardData(
                         revenue,
                         salesByCategory,
                         deviceDistribution,
+                        performanceHistory: [],
+                        metricsRadar: [],
+                        categoryDistribution: [],
                     });
                 }
             } catch (err) {
@@ -85,6 +102,45 @@ export function useDashboardData(
                             { name: "Mobile", value: 300, color: "#8b5cf6" },
                             { name: "Tablet", value: 200, color: "#ec4899" },
                         ],
+                        // Enhanced Mock Data
+                        performanceHistory: [
+                            { name: "Jan", vendas: 4000, lucro: 2400, custos: 1600 },
+                            { name: "Fev", vendas: 3000, lucro: 1398, custos: 1602 },
+                            { name: "Mar", vendas: 5000, lucro: 3800, custos: 1200 },
+                            { name: "Abr", vendas: 2780, lucro: 3908, custos: -1128 },
+                            { name: "Mai", vendas: 1890, lucro: 4800, custos: -2910 },
+                            { name: "Jun", vendas: 2390, lucro: 3800, custos: -1410 },
+                        ],
+                        metricsRadar: [
+                            { metric: "Qualidade", value: 85, fullMark: 100 },
+                            { metric: "Velocidade", value: 75, fullMark: 100 },
+                            { metric: "Eficiência", value: 90, fullMark: 100 },
+                            { metric: "Satisfação", value: 80, fullMark: 100 },
+                            { metric: "Inovação", value: 70, fullMark: 100 },
+                            { metric: "Custo", value: 65, fullMark: 100 },
+                        ],
+                        categoryDistribution: [
+                            {
+                                name: "Categoria A",
+                                data: [
+                                    { x: 100, y: 200, z: 200, category: "A" },
+                                    { x: 120, y: 100, z: 260, category: "A" },
+                                    { x: 170, y: 300, z: 400, category: "A" },
+                                    { x: 140, y: 250, z: 280, category: "A" },
+                                ],
+                                color: "#3b82f6",
+                            },
+                            {
+                                name: "Categoria B",
+                                data: [
+                                    { x: 200, y: 260, z: 240, category: "B" },
+                                    { x: 240, y: 290, z: 220, category: "B" },
+                                    { x: 190, y: 290, z: 250, category: "B" },
+                                    { x: 198, y: 250, z: 210, category: "B" },
+                                ],
+                                color: "#10b981",
+                            },
+                        ]
                     });
                 }
             } finally {
@@ -99,7 +155,36 @@ export function useDashboardData(
         return () => {
             isMounted = false;
         };
-    }, [orgId, dateRange?.period, dateRange?.startDate, dateRange?.endDate, refreshKey]);
+    }, [orgId, dateRange?.period, dateRange?.startDate, dateRange?.endDate, refreshKey, ability]); // Added ability to dependencies
+
+    // Real-time updates via Socket.io
+    useEffect(() => {
+        if (!socket || !data) return;
+
+        socket.on('stats:update', (newStats: any) => {
+            console.log("⚡ [Dashboard] Real-time update received:", newStats);
+            // Example: Update revenue in real-time if we have a matching payload
+            if (newStats.revenue) {
+                setData(prev => {
+                    if (!prev) return null;
+                    return {
+                        ...prev,
+                        // This is a simplified update logic. Real world would be more complex merging.
+                        revenue: prev.revenue.map((item, index, arr) => {
+                             if (index === arr.length - 1) { // Apply to latest month
+                                 return { ...item, value: parseFloat(newStats.revenue) };
+                             }
+                             return item;
+                        })
+                    };
+                });
+            }
+        });
+
+        return () => {
+            socket.off('stats:update');
+        };
+    }, [socket, data]);
 
     const refetch = () => {
         setRefreshKey((prev) => prev + 1);

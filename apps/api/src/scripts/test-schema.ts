@@ -25,16 +25,3 @@ try {
     console.error("Erro:", error);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

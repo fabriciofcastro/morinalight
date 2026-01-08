@@ -1,5 +1,5 @@
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { BoletoPagoFichaEvent } from "../../domain/events/boleto-pago-ficha.event";
 import type { FichaCustoRepository } from "../../domain/repositories/ficha-custo.repository";
 import { pagarBoletoFichaCustoSchema } from "../schemas/ficha-custo.schema";

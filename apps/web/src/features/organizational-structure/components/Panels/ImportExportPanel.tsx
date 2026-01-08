@@ -1,6 +1,6 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { downloadFile, exportToCSV, exportToJSON } from "@/lib/organizational-structure/export";
 import { importFromJSON, readFileAsText, type ImportResult } from "@/lib/organizational-structure/import";
 import { importFromCSV } from "@/lib/organizational-structure/import-csv";

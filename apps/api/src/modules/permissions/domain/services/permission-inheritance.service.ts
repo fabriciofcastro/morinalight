@@ -51,12 +51,3 @@ export interface PermissionInheritanceService {
     permissionKey: string,
   ): Promise<{ inherited: boolean; source?: InheritedPermission["inheritedFrom"] }>;
 }
-
-
-
-
-
-
-
-
-

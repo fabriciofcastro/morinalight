@@ -1,8 +1,8 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { CodeValidator } from "@/components/ui/code-validator";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { CodeValidator } from "@/shared/ui/base/code-validator";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { CreateDepartmentInput, organizationalStructureApi } from "@/lib/api/organizational-structure";
 import { Button, cn } from "@morina/ui";
 import {

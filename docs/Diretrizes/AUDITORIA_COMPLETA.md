@@ -287,3 +287,4 @@ Os seguintes índices foram criados para otimizar consultas:
 1. Verifique se os índices estão sendo usados
 2. Considere adicionar índices adicionais se necessário
 3. Use filtros de data para limitar escopo
+

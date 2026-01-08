@@ -1,7 +1,7 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { AprovarTecnicamentePreFichaTecnicaUseCase } from "../application/use-cases/aprovar-tecnicamente-pre-ficha-tecnica.use-case";
 import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -56,20 +56,10 @@ export async function registerAprovarTecnicamentePreFichaTecnicaRoute(
           return reply.status(400).send({ message: error.message });
         }
 
-        return reply.status(500).send({ message: "Erro ao aprovar tecnicamente pré-ficha técnica" });
+        return reply
+          .status(500)
+          .send({ message: "Erro ao aprovar tecnicamente pré-ficha técnica" });
       }
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

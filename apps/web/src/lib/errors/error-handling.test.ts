@@ -4,10 +4,10 @@
  * Testes para o sistema de error handling
  */
 
-import { describe, it, expect } from "vitest";
+import { AppError, ErrorCode } from "@/lib/errors";
 import { parseError } from "@/lib/errors/error-parser";
 import { getUserFriendlyMessage } from "@/lib/errors/user-messages";
-import { AppError, ErrorCode } from "@/lib/errors";
+import { describe, expect, it } from "vitest";
 
 describe("parseError", () => {
     it("should parse AppError correctly", () => {
@@ -79,7 +79,7 @@ describe("AppError", () => {
         expect(error.message).toBe("Invalid input");
         expect(error.statusCode).toBe(400);
         expect(error.fields).toHaveLength(1);
-        expect(error.fields![0].field).toBe("email");
+        expect(error.fields?.[0]?.field).toBe("email");
     });
 
     it("should determine if error is retryable", () => {

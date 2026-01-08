@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
+import type { DomainEventBus } from "@morina/shared-kernel";
 import { z } from "zod";
 import type { PreFichaTecnicaRepository } from "../../domain/repositories/pre-ficha-tecnica.repository";
 import { PreFichaTecnicaId } from "../../domain/value-objects/pre-ficha-tecnica-id";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
@@ -68,15 +68,3 @@ export class AtualizarChecklistTecnicoUseCase {
     };
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

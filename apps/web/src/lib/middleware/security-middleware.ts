@@ -4,11 +4,14 @@
  * Sistema de middleware modular para segurança de rotas API
  */
 
+import { IUserRepository } from "@/application/ports";
+import { getContainer } from "@/infrastructure/di/container";
 import { verifyAccessToken } from "@/lib/auth/jwt";
 import { logger } from "@/lib/observability";
 import { getRateLimitConfig } from "@/lib/rate-limit/rate-limit-config";
 import { redisRateLimiter } from "@/lib/rate-limit/redis-rate-limiter";
 import { intrusionDetector } from "@/lib/security/intrusion-detection";
+import { isSome } from "@/shared/kernel/types";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
 export interface AuthenticatedUser {

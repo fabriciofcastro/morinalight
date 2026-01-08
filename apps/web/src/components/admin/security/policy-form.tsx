@@ -5,7 +5,7 @@ import {
     GlassCard,
     GlassInput,
     GlassSelect
-} from "@/components/ui/futuristic";
+} from "@/shared/ui/base/futuristic";
 import { PolicyEffect, SecurityPolicy } from "@morina/shared-kernel";
 import {
     AlertCircle,

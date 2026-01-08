@@ -13,8 +13,8 @@ import {
     Users
 } from "lucide-react";
 import { GlassCard } from "@morina/ui";
-import { AnimatedTechCorners } from "@/components/ui/animated-tech-corners";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { AnimatedTechCorners } from "@/shared/ui/base/animated-tech-corners";
+import { HoverBorderGradient } from "@/shared/ui/base/hover-border-gradient";
 
 interface Feature {
     id: string;

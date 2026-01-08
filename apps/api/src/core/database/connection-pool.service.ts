@@ -3,7 +3,7 @@
  * Provides connection pooling management and monitoring
  */
 
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { env } from "../config/env";
 
 export interface ConnectionPoolConfig {
@@ -35,22 +35,20 @@ export function getPrismaClientOptions(config?: ConnectionPoolConfig): Prisma.Pr
   // Add connection pool parameters to PostgreSQL URL
   if (connectionString.includes("postgresql://") || connectionString.includes("postgres://")) {
     const url = new URL(connectionString);
-    
+
     // Connection pool parameters
     url.searchParams.set("connection_limit", String(poolConfig.maxConnections));
     url.searchParams.set("pool_timeout", String(poolConfig.connectionTimeout / 1000));
     url.searchParams.set("connect_timeout", "10");
-    
+
     // PostgreSQL-specific optimizations
     url.searchParams.set("pgbouncer", "true"); // If using PgBouncer
-    
+
     connectionString = url.toString();
   }
 
   return {
-    log: env.NODE_ENV === "development" 
-      ? ["query", "error", "warn", "info"]
-      : ["error"],
+    log: env.NODE_ENV === "development" ? ["query", "error", "warn", "info"] : ["error"],
     datasources: {
       db: {
         url: connectionString,
@@ -135,14 +133,3 @@ export function getReadReplicaOptions(replicaUrl?: string): Prisma.PrismaClientO
     },
   };
 }
-
-
-
-
-
-
-
-
-
-
-

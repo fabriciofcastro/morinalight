@@ -1,6 +1,6 @@
 "use client";
 
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import type { DraftVersion } from "@/hooks/use-draft-history";
 import { Button, GlassCard } from "@morina/ui";
 import { AnimatePresence, motion } from "framer-motion";

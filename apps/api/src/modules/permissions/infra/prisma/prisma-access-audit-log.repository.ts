@@ -2,7 +2,8 @@
  * Prisma Access Audit Log Repository Implementation
  */
 
-import { Prisma } from "@prisma/client";
+import { randomUUID } from "node:crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "../../../../infra/prisma/client";
 import type {
   AccessAuditLog,
@@ -10,7 +11,6 @@ import type {
   AccessAuditLogPage,
   AccessAuditLogRepository,
 } from "../../domain/repositories/access-audit-log.repository";
-import { randomUUID } from "node:crypto";
 
 function toDomain(record: {
   id: string;
@@ -187,12 +187,3 @@ export class PrismaAccessAuditLogRepository implements AccessAuditLogRepository 
       .sort((a, b) => b.count - a.count);
   }
 }
-
-
-
-
-
-
-
-
-

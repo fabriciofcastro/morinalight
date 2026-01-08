@@ -1,17 +1,14 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { CriarPreFichaTecnicaUseCase } from "../application/use-cases/criar-pre-ficha-tecnica.use-case";
 import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
   eventBus?: DomainEventBus;
 };
 
-export async function registerCreatePreFichaTecnicaRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerCreatePreFichaTecnicaRoute(app: FastifyInstance, deps: Dependencies) {
   app.post(
     "/organizations/:orgId/pre-fichas-tecnicas",
     async (request: FastifyRequest<{ Params: { orgId: string } }>, reply: FastifyReply) => {
@@ -54,15 +51,3 @@ export async function registerCreatePreFichaTecnicaRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,173 @@
+
+> web@0.1.0 type-check
+> tsc --project tsconfig.json --noEmit
+
+src/__tests__/intrusion-detection.test.ts(50,79): error TS2554: Expected 2 arguments, but got 4.
+src/__tests__/mfa.test.ts(78,57): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/__tests__/recovery-flow.test.ts(61,32): error TS2532: Object is possibly 'undefined'.
+src/app/(app)/admin/branches/branches-list-client.tsx(29,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/admin/branches/dashboard/page.tsx(34,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/clientes/clientes-client.tsx(61,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fichas-custo/fichas-custo-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fichas-custo/list/fichas-custo-list-client.tsx(5,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fichas-custo/status-customizados/status-customizados-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/[id]/contatos-tab.tsx(6,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/[id]/edit/fornecedor-edit-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/[id]/fornecedor-detail-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/fornecedores-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/import/supplier-import-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/list/fornecedores-list-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/fornecedores/new/fornecedor-form-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/insumos/new/insumo-form-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/notifications/notifications-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/orders/create-order-dialog.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/pre-fichas-tecnicas/components/modals/HistoricoVersoesModal.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/pre-fichas-tecnicas/components/modals/PreFichaDetailModal.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/pre-fichas-tecnicas/pre-fichas-tecnicas-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/profile/tabs/preferences-tab.tsx(18,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/profile/tabs/profile-tab.tsx(24,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/profile/tabs/security-tab.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/representantes/representantes-client.tsx(30,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/invites/invites-client.tsx(20,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/notifications/history/notification-history-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/notifications/preferences/notification-preferences-client.tsx(15,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/organizational-structure/organizational-command-center.tsx(27,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/profiles/profiles-client.tsx(19,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/team/team-client.tsx(19,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/users/create-user-drawer.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/users/user-audit-tab.tsx(14,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/users/user-organization-tab.tsx(16,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/users/user-permissions-tab.tsx(17,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/users/user-profile-tab.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/(app)/settings/users/users-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/organizations/organizations-client.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/app/suppliers/suppliers-client.tsx(17,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-order.integration.spec.ts(121,5): error TS2532: Object is possibly 'undefined'.
+src/application/use-cases/__tests__/create-order.integration.spec.ts(126,19): error TS2339: Property 'error' does not exist on type 'Result<OrderResponseDTO, Error>'.
+  Property 'error' does not exist on type '{ success: true; value: OrderResponseDTO; }'.
+src/application/use-cases/__tests__/create-order.integration.spec.ts(127,19): error TS2339: Property 'error' does not exist on type 'Result<OrderResponseDTO, Error>'.
+  Property 'error' does not exist on type '{ success: true; value: OrderResponseDTO; }'.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(28,45): error TS2554: Expected 0 arguments, but got 1.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(30,15): error TS2554: Expected 7 arguments, but got 6.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(54,11): error TS2739: Type '{ customerId: string; customerName: string; customerEmail: string; items: never[]; }' is missing the following properties from type 'CreateOrderDTO': paymentMethod, shippingAddress, billingAddress
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(74,11): error TS2739: Type '{ customerId: string; customerName: string; customerEmail: string; items: never[]; }' is missing the following properties from type 'CreateOrderDTO': paymentMethod, shippingAddress, billingAddress
+src/application/use-cases/__tests__/create-order.use-case.spec.ts(6,32): error TS2307: Cannot find module '../dto' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-order.use-case.spec.ts(7,87): error TS2307: Cannot find module '../ports' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(3,47): error TS2307: Cannot find module '@/domain/repositories' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(10,9): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(11,14): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(15,10): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(15,19): error TS7006: Parameter 'callback' implicitly has an 'any' type.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(16,11): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(17,13): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(18,16): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(27,5): error TS2708: Cannot use namespace 'jest' as a value.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(51,19): error TS2339: Property 'isOk' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isOk' does not exist on type '{ success: true; value: ProductResponseDTO; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(52,16): error TS2339: Property 'isOk' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isOk' does not exist on type '{ success: true; value: ProductResponseDTO; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(53,21): error TS2339: Property 'value' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'value' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(54,21): error TS2339: Property 'value' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'value' does not exist on type '{ success: false; error: Error; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(67,46): error TS2694: Namespace 'global.jest' has no exported member 'Mock'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(80,19): error TS2339: Property 'isErr' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isErr' does not exist on type '{ success: true; value: ProductResponseDTO; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(81,16): error TS2339: Property 'isErr' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'isErr' does not exist on type '{ success: true; value: ProductResponseDTO; }'.
+src/application/use-cases/__tests__/create-product.integration.spec.ts(82,23): error TS2339: Property 'error' does not exist on type 'Result<ProductResponseDTO, Error>'.
+  Property 'error' does not exist on type '{ success: true; value: ProductResponseDTO; }'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(21,15): error TS2554: Expected 4 arguments, but got 3.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(41,7): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(57,27): error TS2339: Property 'price' does not exist on type 'ProductResponseDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(57,43): error TS2339: Property 'price' does not exist on type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(78,7): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-user.integration.spec.ts(25,5): error TS2739: Type '{ publish: Mock<Procedure>; subscribe: Mock<Procedure>; }' is missing the following properties from type 'IEventBus': unsubscribe, clear
+src/application/use-cases/__tests__/create-user.use-case.integration.test.ts(46,39): error TS2345: Argument of type '() => void' is not assignable to parameter of type 'EventHandler<BaseDomainEvent>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/application/use-cases/__tests__/create-user.use-case.spec.ts(5,53): error TS2307: Cannot find module '../ports' or its corresponding type declarations.
+src/application/use-cases/__tests__/update-product.use-case.spec.ts(3,35): error TS2307: Cannot find module '@/domain/repositories' or its corresponding type declarations.
+src/components/admin/branches/branch-form-client.tsx(11,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/branches/branch-form.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/branches/branch-form.tsx(8,51): error TS2307: Cannot find module '@/lib/integrations/viacep' or its corresponding type declarations.
+src/components/admin/branches/branches-list-client.tsx(25,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/branches/documents-tab.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/business-segments/business-segment-form.tsx(16,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/business-segments/business-segments-list-client.tsx(18,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/business-segments/segment-form-client.tsx(11,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/categories/categories-list-client.tsx(16,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/clients/client-form.tsx(20,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/clients/clients-export-client.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/clients/clients-import-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/clients/clients-list-client.tsx(23,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/CompanyDocumentsManager.tsx(8,36): error TS2307: Cannot find module '../../notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/ThemeExportImport.tsx(7,36): error TS2307: Cannot find module '../../notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/company-edit-client.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/intelligence/smart-upload-zone.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/tabs/address-tab.tsx(6,51): error TS2307: Cannot find module '@/lib/integrations/viacep' or its corresponding type declarations.
+src/components/admin/company/tabs/analytics-tab.tsx(8,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/tabs/general-tab.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/tabs/governance-tab.tsx(9,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/tabs/history-tab.tsx(13,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/company/tabs/integrations-tab.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/departments/department-form-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/departments/department-form.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/departments/departments-list-client.tsx(27,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/notifications/notification-rule-form.tsx(16,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/notifications/notifications-dashboard-client.tsx(26,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/notifications/notifications-list-client.tsx(16,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/positions/position-form-client.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/positions/position-form.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/positions/positions-list-client.tsx(19,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/products/product-form.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/products/products-export-client.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/products/products-import-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/products/products-list-client.tsx(22,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/roles/role-form-client.tsx(12,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/sectors/sector-form-client.tsx(13,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/sectors/sector-form.tsx(16,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/sectors/sectors-list-client.tsx(19,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/status-customizados-ficha-custo/status-customizado-form-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/status-customizados-ficha-custo/status-customizados-list-client.tsx(5,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/subdepartments/subdepartment-form-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/suppliers/supplier-form.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/suppliers/suppliers-list-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/users/user-permissions-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/users/user-sessions-client.tsx(10,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/users/users-edit-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/users/users-export-client.tsx(8,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/users/users-form-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/users/users-import-client.tsx(8,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/admin/workflow-policies/workflow-form-client.tsx(12,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/analytics/analytics-dashboard-client.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/analytics/reports-management.tsx(21,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/branches/BranchAuditPanel.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/certifications/CertificationModal.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/clientes/draft-history-modal.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/dashboard/executive-dashboard-client.tsx(23,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/fichas-custo/SupplierSearchField.tsx(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/organizational-structure/members-manager.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/components/settings/tabs/CompanyAuditTab.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/domain/value-objects/__tests__/cpf.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/domain/value-objects/__tests__/email.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/domain/value-objects/__tests__/user-role.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/features/organizational-structure/components/Panels/AuditPanel.tsx(7,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/features/organizational-structure/components/Panels/ImportExportPanel.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/queries/use-users.test.tsx(12,26): error TS2307: Cannot find module '../utils' or its corresponding type declarations.
+src/hooks/use-bulk-actions.ts(4,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/use-cnpj.ts(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/use-cpf.ts(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/use-fornecedores-bulk-actions.ts(5,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/use-logout.ts(5,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/use-smart-form.ts(1,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/hooks/use-viacep.ts(2,71): error TS2307: Cannot find module '@/lib/integrations/viacep' or its corresponding type declarations.
+src/lib/errors/error-handling.test.ts(82,16): error TS2532: Object is possibly 'undefined'.
+src/lib/errors/hooks.ts(12,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/lib/patterns/__tests__/integration.test.ts(53,13): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/integration.test.ts(54,20): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/patterns.test.ts(185,16): error TS2532: Object is possibly 'undefined'.
+src/presentation/components/Products/use-products-client.ts(2,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/presentation/components/__tests__/create-user-form.spec.tsx(4,32): error TS2307: Cannot find module '../create-user-form' or its corresponding type declarations.
+src/shared/ui/base/audit-log-modal.tsx(3,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.
+src/widgets/EnterpriseHeader/components/HeaderActions.tsx(1,36): error TS2307: Cannot find module '@/components/notifications/notification-center' or its corresponding type declarations.

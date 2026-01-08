@@ -8,14 +8,15 @@ import type { DepartmentRepository } from "../organizational-structure/domain/re
 import type { PositionRepository } from "../organizational-structure/domain/repositories/position-repository";
 import type { SectorRepository } from "../organizational-structure/domain/repositories/sector-repository";
 import type { WorkflowPolicyRepository } from "../organizational-structure/domain/repositories/workflow-policy-repository";
+import type { DepartmentMembershipRepository } from "../organizational-structure/infra/prisma/prisma-department-membership.repository";
+import { PrismaDepartmentMembershipRepository } from "../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import type { PositionMembershipRepository } from "../organizational-structure/infra/prisma/prisma-position-membership.repository";
 import { PrismaWorkflowPolicyRepository } from "../organizational-structure/infra/prisma/prisma-workflow-policy.repository";
 import type { OrganizationRepository } from "../organizations/repositories/organization.repository";
-import type { UserRepository } from "../users/repositories/user.repository";
 import { PrismaUserRepository } from "../users/infra/prisma/prisma-user.repository";
-import type { DepartmentMembershipRepository } from "../organizational-structure/infra/prisma/prisma-department-membership.repository";
-import { PrismaDepartmentMembershipRepository } from "../organizational-structure/infra/prisma/prisma-department-membership.repository";
+import type { UserRepository } from "../users/repositories/user.repository";
 import type {
+  AccessAuditLogRepository,
   DepartmentPermissionRepository,
   PermissionAuditLogRepository,
   PermissionChangeRequestRepository,
@@ -25,8 +26,9 @@ import type {
   RoleRepository,
   SectorPermissionRepository,
   UserPermissionRepository,
-  AccessAuditLogRepository,
 } from "./domain/repositories";
+import type { PermissionCacheService } from "./domain/services/permission-cache.service";
+import type { PermissionInheritanceService } from "./domain/services/permission-inheritance.service";
 import { registerPermissionsHttpRoutes } from "./http";
 import { registerCreatePermissionRoute } from "./http/create-permission.route";
 import { registerCreateRoleRoute } from "./http/create-role.route";
@@ -38,6 +40,8 @@ import { registerListPermissionsRoute } from "./http/list-permissions.route";
 import { registerListRolesRoute } from "./http/list-roles.route";
 import { registerUpdatePermissionRoute } from "./http/update-permission.route";
 import { registerUpdateRoleRoute } from "./http/update-role.route";
+import { InMemoryPermissionCacheService } from "./infra/cache/in-memory-permission-cache.service";
+import { RedisPermissionCacheService } from "./infra/cache/redis-permission-cache.service";
 import { PrismaAccessAuditLogRepository } from "./infra/prisma/prisma-access-audit-log.repository";
 import { PrismaDepartmentPermissionRepository } from "./infra/prisma/prisma-department-permission.repository";
 import { PrismaPermissionRepository } from "./infra/prisma/prisma-permission.repository";
@@ -48,11 +52,7 @@ import { PrismaPositionPermissionRepository } from "./infra/prisma/prisma-positi
 import { PrismaRoleRepository } from "./infra/prisma/prisma-role.repository";
 import { PrismaSectorPermissionRepository } from "./infra/prisma/prisma-sector-permission.repository";
 import { PrismaUserPermissionRepository } from "./infra/prisma/prisma-user-permission.repository";
-import { InMemoryPermissionCacheService } from "./infra/cache/in-memory-permission-cache.service";
-import { RedisPermissionCacheService } from "./infra/cache/redis-permission-cache.service";
 import { PermissionInheritanceServiceImpl } from "./infra/services/permission-inheritance.service";
-import type { PermissionCacheService } from "./domain/services/permission-cache.service";
-import type { PermissionInheritanceService } from "./domain/services/permission-inheritance.service";
 
 export type PermissionsModuleOptions = {
   permissionRepository?: PermissionRepository;
@@ -119,34 +119,34 @@ export async function registerPermissionsModule(
     (process.env.DATABASE_URL ? new PrismaAccessAuditLogRepository() : undefined);
 
   const userRepository =
-    options.userRepository ??
-    (process.env.DATABASE_URL ? new PrismaUserRepository() : undefined);
+    options.userRepository ?? (process.env.DATABASE_URL ? new PrismaUserRepository() : undefined);
 
   const departmentMembershipRepository =
     options.departmentMembershipRepository ??
     (process.env.DATABASE_URL ? new PrismaDepartmentMembershipRepository() : undefined);
 
   const permissionCacheService =
-    options.permissionCacheService ?? (env.REDIS_URL ? new RedisPermissionCacheService() : new InMemoryPermissionCacheService());
+    options.permissionCacheService ??
+    (env.REDIS_URL ? new RedisPermissionCacheService() : new InMemoryPermissionCacheService());
 
   const permissionInheritanceService =
     options.permissionInheritanceService ??
     (options.departmentRepository &&
-      options.sectorRepository &&
-      options.positionRepository &&
-      departmentPermissionRepository &&
-      sectorPermissionRepository &&
-      positionPermissionRepository &&
-      permissionRepository
+    options.sectorRepository &&
+    options.positionRepository &&
+    departmentPermissionRepository &&
+    sectorPermissionRepository &&
+    positionPermissionRepository &&
+    permissionRepository
       ? new PermissionInheritanceServiceImpl({
-        departmentRepository: options.departmentRepository,
-        sectorRepository: options.sectorRepository,
-        positionRepository: options.positionRepository,
-        departmentPermissionRepository,
-        sectorPermissionRepository,
-        positionPermissionRepository,
-        permissionRepository,
-      })
+          departmentRepository: options.departmentRepository,
+          sectorRepository: options.sectorRepository,
+          positionRepository: options.positionRepository,
+          departmentPermissionRepository,
+          sectorPermissionRepository,
+          positionPermissionRepository,
+          permissionRepository,
+        })
       : undefined);
 
   const templateRepository =

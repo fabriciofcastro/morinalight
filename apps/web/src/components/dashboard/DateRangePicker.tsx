@@ -28,12 +28,12 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/10"
+                className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/10 group active:scale-95"
             >
-                <Calendar className="h-4 w-4 text-white/50" />
-                <span className="text-sm text-white/70">{selectedPreset?.label}</span>
+                <Calendar className="h-3.5 w-3.5 text-white/50 group-hover:text-white/80 transition-colors" />
+                <span className="text-xs font-medium text-white/70 group-hover:text-white transition-colors uppercase tracking-wide">{selectedPreset?.label}</span>
                 <ChevronDown
-                    className={`h-4 w-4 text-white/50 transition-transform ${isOpen ? "rotate-180" : ""
+                    className={`h-3.5 w-3.5 text-white/50 transition-transform group-hover:text-white/80 ${isOpen ? "rotate-180" : ""
                         }`}
                 />
             </button>

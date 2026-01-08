@@ -1,5 +1,5 @@
+import { ValidationError } from '@/domain/errors';
 import { describe, expect, it } from 'vitest';
-import { ValidationError } from '../errors';
 import { CPF } from '../cpf';
 
 describe('CPF Value Object', () => {

@@ -1,3 +1,4 @@
+import { IOrderRepository } from '@/application/ports/order-repository.port';
 import { OrderEntity, OrderStatus, PaymentStatus } from '@/domain/entities';
 import { None, Option, Some } from '@/shared/kernel/types';
 import { PrismaClient } from '@prisma/client';
@@ -95,7 +96,7 @@ export class PrismaOrderRepository extends BasePrismaRepository implements IOrde
       orderBy: { createdAt: 'desc' },
     });
 
-    return orders.map((o) => this.toDomain(o));
+    return orders.map((o: any) => this.toDomain(o));
   }
 
   async findByCustomer(customerId: string): Promise<OrderEntity[]> {
@@ -105,7 +106,7 @@ export class PrismaOrderRepository extends BasePrismaRepository implements IOrde
       orderBy: { createdAt: 'desc' },
     });
 
-    return orders.map((o) => this.toDomain(o));
+    return orders.map((o: any) => this.toDomain(o));
   }
 
   async delete(id: string): Promise<void> {

@@ -1,12 +1,12 @@
 import type { Prisma, PrismaClient, Supplier } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
-import type { AuditoriaSupplierRepository } from "../../repositories/supplier-audit-log.repository";
 import type {
   CreateSupplierInput,
   SupplierRecord,
   SupplierRepository,
   UpdateSupplierInput,
 } from "../../repositories/supplier.repository";
+import type { AuditoriaSupplierRepository } from "../../repositories/supplier-audit-log.repository";
 import type { VersaoSupplierRepository } from "../../repositories/supplier-version.repository";
 
 type AuditContext = {
@@ -80,7 +80,14 @@ export class PrismaSupplierRepository implements SupplierRepository {
     }
 
     // Busca geral (quando não há filtros específicos)
-    if (filters?.busca && !filters.documento && !filters.cidade && !filters.estado && !filters.email && !filters.telefone) {
+    if (
+      filters?.busca &&
+      !filters.documento &&
+      !filters.cidade &&
+      !filters.estado &&
+      !filters.email &&
+      !filters.telefone
+    ) {
       where.OR = [
         { name: { contains: filters.busca, mode: "insensitive" } },
         { email: { contains: filters.busca, mode: "insensitive" } },
@@ -189,7 +196,11 @@ export class PrismaSupplierRepository implements SupplierRepository {
     return this.mapToRecord(supplier);
   }
 
-  async update(id: string, input: UpdateSupplierInput, context?: AuditContext): Promise<SupplierRecord> {
+  async update(
+    id: string,
+    input: UpdateSupplierInput,
+    context?: AuditContext,
+  ): Promise<SupplierRecord> {
     // Buscar estado anterior para auditoria e versionamento
     const estadoAnterior = await this.prisma.supplier.findUnique({ where: { id } });
     if (!estadoAnterior) {
@@ -245,7 +256,7 @@ export class PrismaSupplierRepository implements SupplierRepository {
     if (this.auditRepository && context) {
       try {
         const camposAlterados = this.identificarCamposAlterados(estadoAnterior, supplier);
-        
+
         // Registrar uma auditoria por campo alterado ou uma geral
         if (camposAlterados.length > 0) {
           for (const campo of camposAlterados) {

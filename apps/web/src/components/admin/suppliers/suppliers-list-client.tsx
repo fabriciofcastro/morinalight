@@ -1,9 +1,9 @@
 "use client";
 
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { notificationCenter } from "@/components/notifications/notification-center";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ViewModeToggle } from "@/components/ui/view-mode-toggle";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
+import { ViewModeToggle } from "@/shared/ui/base/view-mode-toggle";
 import { useCurrentUser } from "@/hooks/queries/use-auth";
 import { ListSuppliersQuery, Supplier, suppliersApi } from "@/lib/api/suppliers";
 import { Can } from "@/lib/auth";

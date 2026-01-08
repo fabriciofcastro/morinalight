@@ -1,6 +1,6 @@
 /**
  * Rotas de Analytics de Erros
- * 
+ *
  * Endpoints para visualizar e analisar erros.
  */
 
@@ -66,12 +66,3 @@ export async function errorAnalyticsRoutes(app: FastifyInstance) {
     return reply.send({ success: true });
   });
 }
-
-
-
-
-
-
-
-
-

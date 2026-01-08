@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { AdvancedFilter, FilterField, FilterValue, FilterConfiguration } from "@/components/ui/advanced-filter"
+import { AdvancedFilter, FilterField, FilterValue, FilterConfiguration } from "@/shared/ui/base/advanced-filter"
 import { motion } from "framer-motion"
 
 interface CertificationsFiltersProps {

@@ -3,23 +3,22 @@
  */
 
 // Cookie Consent
+// Cookie Consent
 export {
-    useCookieConsent,
-    CookieConsentBanner,
-    useAnalytics,
-    type CookieConsent,
-} from "./cookie-consent";
+    useAnalytics, useCookieConsent, type CookieConsent
+} from "./hooks";
 
 // Data Deletion
 export {
     DataDeletionService,
     dataDeletionService,
-    type DataDeletionRequest,
+    type DataDeletionRequest
 } from "./data-deletion";
 
 // Data Portability
 export {
     DataPortabilityService,
     dataPortabilityService,
-    type UserDataExport,
+    type UserDataExport
 } from "./data-portability";
+

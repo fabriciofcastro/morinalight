@@ -1,19 +1,16 @@
+import type { DomainEventBus } from "@morina/shared-kernel";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { requireAuth } from "../../../core/auth/jwt.middleware";
-import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
-import type { DomainEventBus } from "@morina/shared-kernel";
 import { AtualizarPreFichaTecnicaUseCase } from "../application/use-cases/atualizar-pre-ficha-tecnica.use-case";
+import type { PreFichaTecnicaRepository } from "../domain/repositories/pre-ficha-tecnica.repository";
 
 type Dependencies = {
   preFichaTecnicaRepository: PreFichaTecnicaRepository;
   eventBus?: DomainEventBus;
 };
 
-export async function registerUpdatePreFichaTecnicaRoute(
-  app: FastifyInstance,
-  deps: Dependencies,
-) {
+export async function registerUpdatePreFichaTecnicaRoute(app: FastifyInstance, deps: Dependencies) {
   app.put(
     "/organizations/:orgId/pre-fichas-tecnicas/:id",
     async (
@@ -72,15 +69,3 @@ export async function registerUpdatePreFichaTecnicaRoute(
     },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-

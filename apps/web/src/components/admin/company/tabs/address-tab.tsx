@@ -2,8 +2,8 @@
 
 import { Loader2, MapPin } from "lucide-react";
 import { useCallback, useState } from "react";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
-import { buscarEnderecoPorCep, formatarCep } from "@/lib/integrations/viacep";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-ui";
+import { buscarEnderecoPorCep, formatarCep } from "@/shared/kernel/utils/viacep";
 import { SectionShell } from "../shared/section-shell";
 
 interface AddressTabProps {

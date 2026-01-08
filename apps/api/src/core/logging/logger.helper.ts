@@ -3,8 +3,7 @@
  * Utilitários para logging contextualizado
  */
 
-import type { FastifyRequest } from "fastify";
-import type { FastifyLoggerInstance } from "fastify";
+import type { FastifyLoggerInstance, FastifyRequest } from "fastify";
 
 /**
  * Obtém logger contextualizado do request
@@ -102,11 +101,3 @@ export function logAccess(
     `Access ${granted ? "granted" : "denied"}: ${action} on ${resource}${reason ? ` - ${reason}` : ""}`,
   );
 }
-
-
-
-
-
-
-
-

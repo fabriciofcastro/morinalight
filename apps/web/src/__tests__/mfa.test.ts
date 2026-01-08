@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { mfaService } from '../lib/auth/mfa';
 
 describe('MFA Service', () => {
@@ -75,7 +75,7 @@ describe('MFA Service', () => {
             const codes = mfaService.generateBackupCodes();
             const hashedCodes = codes.map(code => mfaService.hashBackupCode(code));
 
-            const isValid = mfaService.verifyBackupCode(codes[0], hashedCodes);
+            const isValid = mfaService.verifyBackupCode(codes[0]!, hashedCodes);
             expect(isValid).toBe(true);
         });
 

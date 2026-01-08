@@ -2,17 +2,17 @@ import type { PositionRepository } from "../../../organizational-structure/domai
 import type { DepartmentMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-department-membership.repository";
 import type { PositionMembershipRepository } from "../../../organizational-structure/infra/prisma/prisma-position-membership.repository";
 import type { OrganizationRepository } from "../../../organizations/repositories/organization.repository";
+import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { DepartmentPermissionRepository } from "../../domain/repositories/department-permission-repository";
 import type { PermissionRepository } from "../../domain/repositories/permission-repository";
 import type { PositionPermissionRepository } from "../../domain/repositories/position-permission-repository";
 import type { SectorPermissionRepository } from "../../domain/repositories/sector-permission-repository";
 import type { UserPermissionRepository } from "../../domain/repositories/user-permission-repository";
-import type { UserRepository } from "../../../users/repositories/user.repository";
 import type { PermissionCacheService } from "../../domain/services/permission-cache.service";
 import type { PermissionInheritanceService } from "../../domain/services/permission-inheritance.service";
 import {
+  type ResolverPermissoesEfetivasResultado,
   resolverPermissoesEfetivasInputSchema,
-  ResolverPermissoesEfetivasResultado,
   resolverPermissoesEfetivasResultadoSchema,
 } from "../schemas/effective-permissions.schema";
 
@@ -32,7 +32,7 @@ type Dependencies = {
 };
 
 export class ResolverPermissoesEfetivasUseCase {
-  constructor(private readonly deps: Dependencies) { }
+  constructor(private readonly deps: Dependencies) {}
 
   async execute(rawInput: unknown) {
     const input = resolverPermissoesEfetivasInputSchema.parse(rawInput);
@@ -66,7 +66,9 @@ export class ResolverPermissoesEfetivasUseCase {
       input.userId,
     );
 
-    const user = this.deps.userRepository ? await this.deps.userRepository.findById(input.userId) : null;
+    const user = this.deps.userRepository
+      ? await this.deps.userRepository.findById(input.userId)
+      : null;
 
     if (!membership) {
       return resolverPermissoesEfetivasResultadoSchema.parse({
@@ -149,35 +151,38 @@ export class ResolverPermissoesEfetivasUseCase {
     const positionIds = positionMemberships.map((m: any) => m.positionId);
 
     // Parallel Fetching - Phase 2: Entity Permissions & Details
-    const [
-      departmentPermissions,
-      positionPermissions,
-      positionsDetails
-    ] = await Promise.all([
+    const [departmentPermissions, positionPermissions, positionsDetails] = await Promise.all([
       // Department Permissions
-      (this.deps.departmentPermissionRepository && departmentIds.length > 0)
+      this.deps.departmentPermissionRepository && departmentIds.length > 0
         ? this.deps.departmentPermissionRepository.listarPorDepartments(input.orgId, departmentIds)
         : Promise.resolve([]),
 
       // Position Permissions
-      (this.deps.positionPermissionRepository && positionIds.length > 0)
+      this.deps.positionPermissionRepository && positionIds.length > 0
         ? this.deps.positionPermissionRepository.listarPorPositions(input.orgId, positionIds)
         : Promise.resolve([]),
 
       // Position Details (to get Sector IDs)
-      (this.deps.positionRepository && positionIds.length > 0)
-        ? Promise.all(positionIds.map((id: string) => this.deps.positionRepository!.encontrarPorId(input.orgId, id)))
+      this.deps.positionRepository && positionIds.length > 0
+        ? Promise.all(
+            positionIds.map((id: string) =>
+              this.deps.positionRepository!.encontrarPorId(input.orgId, id),
+            ),
+          )
         : Promise.resolve([]),
     ]);
 
     // Calculate Sector IDs
     const validPositions = positionsDetails.filter((p: any) => p !== null && p !== undefined);
-    const sectorIds = validPositions.map((p: any) => p.dados.sectorId).filter((id: any): id is string => id !== undefined);
+    const sectorIds = validPositions
+      .map((p: any) => p.dados.sectorId)
+      .filter((id: any): id is string => id !== undefined);
 
     // Parallel Fetching - Phase 3: Sector Permissions
-    const sectorPermissions = (this.deps.sectorPermissionRepository && sectorIds.length > 0)
-      ? await this.deps.sectorPermissionRepository.listarPorSectors(input.orgId, sectorIds)
-      : [];
+    const sectorPermissions =
+      this.deps.sectorPermissionRepository && sectorIds.length > 0
+        ? await this.deps.sectorPermissionRepository.listarPorSectors(input.orgId, sectorIds)
+        : [];
 
     // --- Processing Results ---
 
@@ -204,24 +209,29 @@ export class ResolverPermissoesEfetivasUseCase {
 
       // Department Inheritance
       if (this.deps.permissionInheritanceService) {
-        await Promise.all(departmentMemberships.map(async (membership: any) => {
-          const inherited = await this.deps.permissionInheritanceService!.resolveDepartmentInheritedPermissions(
-            input.orgId,
-            membership.departmentId,
-          );
-          for (const perm of inherited) {
-            const existingIndex = departmentGrants.findIndex(
-              (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.departmentId,
-            );
-            if (existingIndex === -1) {
-              departmentGrants.push({
-                permissionKey: perm.permissionKey,
-                granted: perm.granted,
-                sourceEntityId: perm.inheritedFrom.entityId,
-              });
+        await Promise.all(
+          departmentMemberships.map(async (membership: any) => {
+            const inherited =
+              await this.deps.permissionInheritanceService!.resolveDepartmentInheritedPermissions(
+                input.orgId,
+                membership.departmentId,
+              );
+            for (const perm of inherited) {
+              const existingIndex = departmentGrants.findIndex(
+                (g) =>
+                  g.permissionKey === perm.permissionKey &&
+                  g.sourceEntityId === membership.departmentId,
+              );
+              if (existingIndex === -1) {
+                departmentGrants.push({
+                  permissionKey: perm.permissionKey,
+                  granted: perm.granted,
+                  sourceEntityId: perm.inheritedFrom.entityId,
+                });
+              }
             }
-          }
-        }));
+          }),
+        );
       }
     }
 
@@ -238,24 +248,27 @@ export class ResolverPermissoesEfetivasUseCase {
 
       // Sector Inheritance
       if (this.deps.permissionInheritanceService) {
-        await Promise.all(sectorIds.map(async (sectorId: string) => {
-          const inherited = await this.deps.permissionInheritanceService!.resolveSectorInheritedPermissions(
-            input.orgId,
-            sectorId,
-          );
-          for (const perm of inherited) {
-            const existingIndex = sectorGrants.findIndex(
-              (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === sectorId,
-            );
-            if (existingIndex === -1) {
-              sectorGrants.push({
-                permissionKey: perm.permissionKey,
-                granted: perm.granted,
-                sourceEntityId: perm.inheritedFrom.entityId,
-              });
+        await Promise.all(
+          sectorIds.map(async (sectorId: string) => {
+            const inherited =
+              await this.deps.permissionInheritanceService!.resolveSectorInheritedPermissions(
+                input.orgId,
+                sectorId,
+              );
+            for (const perm of inherited) {
+              const existingIndex = sectorGrants.findIndex(
+                (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === sectorId,
+              );
+              if (existingIndex === -1) {
+                sectorGrants.push({
+                  permissionKey: perm.permissionKey,
+                  granted: perm.granted,
+                  sourceEntityId: perm.inheritedFrom.entityId,
+                });
+              }
             }
-          }
-        }));
+          }),
+        );
       }
     }
 
@@ -272,24 +285,29 @@ export class ResolverPermissoesEfetivasUseCase {
 
       // Position Inheritance
       if (this.deps.permissionInheritanceService) {
-        await Promise.all(positionMemberships.map(async (membership: any) => {
-          const inherited = await this.deps.permissionInheritanceService!.resolvePositionInheritedPermissions(
-            input.orgId,
-            membership.positionId,
-          );
-          for (const perm of inherited) {
-            const existingIndex = positionGrants.findIndex(
-              (g) => g.permissionKey === perm.permissionKey && g.sourceEntityId === membership.positionId,
-            );
-            if (existingIndex === -1) {
-              positionGrants.push({
-                permissionKey: perm.permissionKey,
-                granted: perm.granted,
-                sourceEntityId: perm.inheritedFrom.entityId,
-              });
+        await Promise.all(
+          positionMemberships.map(async (membership: any) => {
+            const inherited =
+              await this.deps.permissionInheritanceService!.resolvePositionInheritedPermissions(
+                input.orgId,
+                membership.positionId,
+              );
+            for (const perm of inherited) {
+              const existingIndex = positionGrants.findIndex(
+                (g) =>
+                  g.permissionKey === perm.permissionKey &&
+                  g.sourceEntityId === membership.positionId,
+              );
+              if (existingIndex === -1) {
+                positionGrants.push({
+                  permissionKey: perm.permissionKey,
+                  granted: perm.granted,
+                  sourceEntityId: perm.inheritedFrom.entityId,
+                });
+              }
             }
-          }
-        }));
+          }),
+        );
       }
     }
 

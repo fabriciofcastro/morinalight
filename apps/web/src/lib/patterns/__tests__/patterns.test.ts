@@ -1,5 +1,5 @@
-import { Originator, Caretaker, DocumentEditor } from "../memento-pattern";
 import { AbstractHandler, ChainBuilder } from "../chain-of-responsibility";
+import { Caretaker, DocumentEditor, Originator } from "../memento-pattern";
 
 describe("Memento Pattern", () => {
     it("should save and restore state correctly", () => {
@@ -154,8 +154,8 @@ describe("Caching Decorator", () => {
     });
 });
 
-import { LegacyPaymentSystem, LegacyPaymentAdapter } from "../adapter-pattern";
-import { ProductComponent, ProductBundle } from "../prototype-pattern";
+import { LegacyPaymentAdapter, LegacyPaymentSystem } from "../adapter-pattern";
+import { ProductBundle, ProductComponent } from "../prototype-pattern";
 
 describe("Adapter Pattern", () => {
     it("should adapt legacy system to new interface", async () => {
@@ -181,7 +181,7 @@ describe("Prototype Pattern", () => {
         expect(clonedBundle).not.toBe(bundle);
         expect(clonedBundle.name).toBe("Gaming PC (Copy)");
         // Verifica se itens foram clonados (deep copy)
-        expect(clonedBundle.getItems()[0]).not.toBe(component);
-        expect(clonedBundle.getItems()[0].name).toBe("CPU");
+        expect(clonedBundle.getItems()[0]!).not.toBe(component);
+        expect(clonedBundle.getItems()[0]!.name).toBe("CPU");
     });
 });

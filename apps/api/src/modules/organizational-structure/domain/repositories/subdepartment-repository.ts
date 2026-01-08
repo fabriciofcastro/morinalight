@@ -23,4 +23,3 @@ export interface SubdepartmentRepository {
   contarPorOrg(orgId: string, status?: "ativo" | "inativo" | "arquivado"): Promise<number>;
   deletar(orgId: string, subdepartmentId: string): Promise<void>;
 }
-

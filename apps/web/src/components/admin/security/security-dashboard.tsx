@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Alert } from '@/components/ui/Alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/base/card';
+import { Badge } from '@/shared/ui/base/badge';
+import { Button } from '@/shared/ui/base/button';
+import { Alert } from '@/shared/ui/base/Alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/base/tabs';
 import {
     Shield,
     AlertTriangle,

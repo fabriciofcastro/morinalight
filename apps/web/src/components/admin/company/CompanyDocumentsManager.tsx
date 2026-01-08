@@ -5,8 +5,8 @@ import { Upload, FileText, Calendar, X, CheckCircle2, AlertCircle, Download, Eye
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "../../../lib/utils";
 import { formatFileSize } from "../../../lib/utils/image-processing";
-import { notificationCenter } from "../../notifications/notification-center";
-import { DeleteConfirmDialog } from "@/components/ui/confirm-dialog";
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { DeleteConfirmDialog } from "@/shared/ui/base/confirm-dialog";
 
 interface CompanyDocument {
   id: string;
@@ -340,6 +340,7 @@ export function CompanyDocumentsManager({
     </div>
   );
 }
+
 
 
 

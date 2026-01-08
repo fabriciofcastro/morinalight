@@ -5,10 +5,10 @@ import { Download, ArrowLeft, FileSpreadsheet, FileText, FileDown } from "lucide
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { getAuthHeadersWithTenant } from "@/lib/api/base";
 import { AllowedGuard } from "@/components/auth/allowed-guard";
-import { PageHeader } from "@/components/ui/page-header";
+import { PageHeader } from "@/shared/ui/base/page-header";
 
 export function UsersExportClient() {
   const router = useRouter();

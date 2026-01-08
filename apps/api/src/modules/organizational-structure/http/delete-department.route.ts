@@ -3,8 +3,8 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { DeletarDepartmentUseCase } from "../application/use-cases/deletar-department.use-case";
 import type { OrganizationalStructureAuditLogRepository } from "../domain/repositories";
 import type { DepartmentRepository } from "../domain/repositories/department-repository";
-import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 import type { SectorRepository } from "../domain/repositories/sector-repository";
+import type { SubdepartmentRepository } from "../domain/repositories/subdepartment-repository";
 import type { DepartmentMembershipRepository } from "../infra/prisma/prisma-department-membership.repository";
 
 type Dependencies = {

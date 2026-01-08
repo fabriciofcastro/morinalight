@@ -1,7 +1,9 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { z } from "zod";
 import type { OrganizationRepository } from "../../modules/organizations/repositories/organization.repository";
+import { RequestContextService } from "../context/request-context.service";
 import type { TenantContext } from "./tenant.types";
+
 
 const _headersSchema = z.object({
   "x-user-id": z.string().min(1),
@@ -104,12 +106,16 @@ export function createTenantMiddleware(options: TenantMiddlewareOptions) {
         });
       }
 
-      // Adicionar contexto de tenant à requisição
-      request.tenant = {
+      // Adicionar contexto de tenant à requisição e ao Contexto Global (AsyncLocalStorage)
+      const context = {
         orgId,
         userId,
         role: membership.role as TenantContext["role"],
       };
+      
+      request.tenant = context;
+      RequestContextService.enterWith(context);
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         return reply.status(400).send({
@@ -140,7 +146,7 @@ export function registerTenantHook(
   const validateTenant = createTenantMiddleware(middlewareOptions);
 
   app.addHook("onRequest", async (request, reply) => {
-    const url = request.url.split("?")[0];
+    const url = request.url.split("?")[0] ?? "/";
 
     // Se não houver especificação de rotas, aplicar em todas
     // Caso contrário, verificar se a rota deve ser incluída

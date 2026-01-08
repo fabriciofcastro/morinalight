@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { ApprovalRequest, ApprovalRequestComment, governanceAPI } from "@/lib/api/governance";
-import { FuturisticInput } from "@/components/ui/futuristic-ui";
+import { FuturisticInput } from "@/shared/ui/base/futuristic-ui";
 import { Loader2, Send, User, MessageSquare } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";

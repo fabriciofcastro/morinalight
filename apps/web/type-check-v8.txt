@@ -1,0 +1,30 @@
+
+> web@0.1.0 type-check
+> tsc --project tsconfig.json --noEmit
+
+src/application/use-cases/__tests__/create-order.integration.spec.ts(121,5): error TS2532: Object is possibly 'undefined'.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(28,45): error TS2554: Expected 0 arguments, but got 1.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(30,15): error TS2554: Expected 7 arguments, but got 6.
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(54,11): error TS2739: Type '{ customerId: string; customerName: string; customerEmail: string; items: never[]; }' is missing the following properties from type 'CreateOrderDTO': paymentMethod, shippingAddress, billingAddress
+src/application/use-cases/__tests__/create-order.use-case.integration.test.ts(74,11): error TS2739: Type '{ customerId: string; customerName: string; customerEmail: string; items: never[]; }' is missing the following properties from type 'CreateOrderDTO': paymentMethod, shippingAddress, billingAddress
+src/application/use-cases/__tests__/create-order.use-case.spec.ts(6,32): error TS2307: Cannot find module '../dto' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-order.use-case.spec.ts(7,87): error TS2307: Cannot find module '../ports' or its corresponding type declarations.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(21,15): error TS2554: Expected 4 arguments, but got 3.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(41,7): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(57,27): error TS2339: Property 'price' does not exist on type 'ProductResponseDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(57,43): error TS2339: Property 'price' does not exist on type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-product.use-case.integration.test.ts(78,7): error TS2353: Object literal may only specify known properties, and 'price' does not exist in type 'CreateProductDTO'.
+src/application/use-cases/__tests__/create-user.integration.spec.ts(25,5): error TS2739: Type '{ publish: Mock<Procedure>; subscribe: Mock<Procedure>; }' is missing the following properties from type 'IEventBus': unsubscribe, clear
+src/application/use-cases/__tests__/create-user.use-case.integration.test.ts(46,39): error TS2345: Argument of type '() => void' is not assignable to parameter of type 'EventHandler<BaseDomainEvent>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/application/use-cases/__tests__/create-user.use-case.spec.ts(5,53): error TS2307: Cannot find module '../ports' or its corresponding type declarations.
+src/application/use-cases/__tests__/update-product.use-case.spec.ts(3,35): error TS2307: Cannot find module '@/domain/repositories' or its corresponding type declarations.
+src/domain/value-objects/__tests__/cpf.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/domain/value-objects/__tests__/email.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/domain/value-objects/__tests__/user-role.spec.ts(2,33): error TS2307: Cannot find module '../errors' or its corresponding type declarations.
+src/hooks/queries/use-users.test.tsx(12,26): error TS2307: Cannot find module '../utils' or its corresponding type declarations.
+src/lib/errors/error-handling.test.ts(82,16): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/integration.test.ts(53,13): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/integration.test.ts(54,20): error TS2532: Object is possibly 'undefined'.
+src/lib/patterns/__tests__/patterns.test.ts(185,16): error TS2532: Object is possibly 'undefined'.
+src/presentation/components/__tests__/create-user-form.spec.tsx(4,32): error TS2307: Cannot find module '../create-user-form' or its corresponding type declarations.

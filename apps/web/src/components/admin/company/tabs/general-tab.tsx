@@ -2,9 +2,9 @@
 
 import { Building2, Globe, Loader2, HelpCircle } from "lucide-react";
 import { useCallback, useState } from "react";
-import { FuturisticInput, FuturisticSelect } from "@/components/ui/futuristic-ui";
+import { FuturisticInput, FuturisticSelect } from "@/shared/ui/base/futuristic-ui";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@morina/ui";
-import { notificationCenter } from "@/components/notifications/notification-center";
+import { notificationCenter } from "@/shared/ui/notification-center";
 import { buscarCnpj, formatarCnpj, validarCnpj } from "@/lib/integrations/cnpj";
 import { SectionShell } from "../shared/section-shell";
 import { SmartUploadZone } from "../intelligence/smart-upload-zone";

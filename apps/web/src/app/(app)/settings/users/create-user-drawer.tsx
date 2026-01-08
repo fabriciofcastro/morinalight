@@ -1,10 +1,10 @@
 "use client";
 
+import { notificationCenter } from "@/shared/ui/notification-center";
+import { useCreateUser } from "@/presentation/hooks/use-create-user";
 import { Button, GlassCard, Input, Label } from "@morina/ui";
 import { Copy, RefreshCw, Upload, X } from "lucide-react";
 import { useState } from "react";
-import { getAuthHeadersWithTenant } from "@/lib/auth-client";
-import { notificationCenter } from "@/components/notifications/notification-center";
 
 type CreateUserDrawerProps = {
   open: boolean;
@@ -73,6 +73,8 @@ export function CreateUserDrawer({ open, onClose, onUserCreated }: CreateUserDra
     reader.readAsDataURL(file);
   };
 
+  const createUser = useCreateUser();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -101,57 +103,40 @@ export function CreateUserDrawer({ open, onClose, onUserCreated }: CreateUserDra
 
     setBusy(true);
     try {
-      const headers = {
-        ...getAuthHeadersWithTenant(),
-        "Content-Type": "application/json",
-      };
-
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
+      await createUser.mutateAsync({
           email: formData.email,
-          displayName: formData.displayName,
+          name: formData.displayName,
           password: formData.password,
           sendInvite,
           mustChangePassword,
           avatarUrl: avatarPreview,
-        }),
       });
 
-      if (response.ok) {
-        notificationCenter.add({
-          type: "success",
-          title: "Sucesso",
-          message: `Usuário criado com sucesso.${sendInvite ? " Convite enviado por email." : ""}`,
-        });
-        setFormData({
-          email: "",
-          displayName: "",
-          password: "",
-          confirmPassword: "",
-        });
-        setAvatarPreview(null);
-        setSendInvite(true);
-        setMustChangePassword(true);
-        setShowConfirmation(false);
-        onUserCreated();
-      } else {
-        const error = await response.json().catch(() => ({ message: "Erro ao criar usuário" }));
-        notificationCenter.add({
-          type: "error",
-          title: "Erro",
-          message: error.message || "Não foi possível criar o usuário.",
-        });
-        setShowConfirmation(false);
-      }
-    } catch (e) {
+      notificationCenter.add({
+        type: "success",
+        title: "Sucesso",
+        message: `Usuário criado com sucesso.${sendInvite ? " Convite enviado por email." : ""}`,
+      });
+      setFormData({
+        email: "",
+        displayName: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setAvatarPreview(null);
+      setSendInvite(true);
+      setMustChangePassword(true);
+      setShowConfirmation(false);
+      onUserCreated();
+
+    } catch (e: any) {
       console.error(e);
       notificationCenter.add({
         type: "error",
         title: "Erro",
-        message: "Erro inesperado ao criar usuário.",
+        message: e.message || "Erro inesperado ao criar usuário.",
       });
+      setShowConfirmation(false);
     } finally {
       setBusy(false);
     }

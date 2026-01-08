@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { getPrisma } from "../../../../infra/database/prisma.service";
+import type { DepartmentProps, DepartmentStatus } from "../../domain/entities/department";
 import { Department } from "../../domain/entities/department";
-import type { DepartmentStatus, DepartmentProps } from "../../domain/entities/department";
 import type {
   DepartmentListaFiltro,
   DepartmentListaPagina,

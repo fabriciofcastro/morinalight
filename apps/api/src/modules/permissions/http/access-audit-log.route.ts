@@ -31,7 +31,12 @@ export async function registerAccessAuditLogRoute(app: FastifyInstance, deps: De
         orgId,
         userId: searchParams.get("userId") || undefined,
         permission: searchParams.get("permission") || undefined,
-        granted: searchParams.get("granted") === "true" ? true : searchParams.get("granted") === "false" ? false : undefined,
+        granted:
+          searchParams.get("granted") === "true"
+            ? true
+            : searchParams.get("granted") === "false"
+              ? false
+              : undefined,
         ipAddress: searchParams.get("ipAddress") || undefined,
         startDate: searchParams.get("startDate") || undefined,
         endDate: searchParams.get("endDate") || undefined,
@@ -57,12 +62,3 @@ export async function registerAccessAuditLogRoute(app: FastifyInstance, deps: De
     }
   });
 }
-
-
-
-
-
-
-
-
-

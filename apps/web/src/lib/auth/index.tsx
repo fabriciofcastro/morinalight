@@ -2,34 +2,12 @@
  * Auth Index - Updated with All Auth Modules
  */
 
-// RBAC
-export {
-    ROLES,
-    RESOURCES,
-    ACTIONS,
-    ROLE_PERMISSIONS,
-    ROLE_HIERARCHY,
-    getPermissions,
-    hasAnyPermission,
-    hasAllPermissions,
-    inheritsFrom,
-    userHasPermission,
-    userCan,
-    type Role,
-    type Resource,
-    type Action,
-    type Permission,
-    type UserWithPermissions,
-} from "./rbac";
-
 // CASL Integration
-export { AbilityContext, Can, useAbility, AbilityProvider } from './CaslContext';
+export { AbilityContext, AbilityProvider, Can, useAbility } from './CaslContext';
 
 // ABAC Helpers
 export {
-    useCanAny,
-    useCanAll,
-    useCanOwn,
+    useCanAll, useCanAny, useCanOwn,
     useCanWithConditions,
     useIsOwner,
     useIsSameDepartment
@@ -37,58 +15,37 @@ export {
 
 // Legacy exports (deprecated)
 export { withPermission } from "./hooks";
-export { hasPermission, can } from "./rbac";
 
-// ABAC
-export {
-    ABACEngine,
-    abacEngine,
-    type ABACPolicy,
-    type ABACCondition,
-    type ABACContext,
-} from "./abac";
-
-// Middleware
-export {
-    requirePermission,
-    requirePolicy,
-    compose,
-    type AuthContext,
-} from "./middleware";
+// Middleware - SERVER ONLY - Import directly from './middleware' in server code
+// export {
+//     requirePermission,
+//     requirePolicy,
+//     compose,
+//     type AuthContext,
+// } from "./middleware";
 
 // Hooks (Frontend)
 export {
-    usePermission,
-    useCan,
-    usePermissions,
+    useCan, usePermission
 } from "./hooks";
 
 // JWT
 export {
-    generateAccessToken,
-    generateRefreshToken,
-    verifyAccessToken,
-    verifyRefreshToken,
-    decodeToken,
-    isTokenExpired,
-    type TokenPayload,
+    decodeToken, generateAccessToken,
+    generateRefreshToken, isTokenExpired, verifyAccessToken,
+    verifyRefreshToken, type TokenPayload
 } from "./jwt";
 
 // MFA
 export {
-    generateMFASecret,
-    generateQRCode,
-    verifyMFAToken,
-    generateBackupCodes,
-    hashBackupCode,
-    verifyBackupCode,
-    MFAService,
-    mfaService,
+    generateBackupCodes, generateMFASecret,
+    generateQRCode, hashBackupCode, MFAService, mfaService, verifyBackupCode, verifyMFAToken
 } from "./mfa";
 
 // Session Management
 export {
     SessionManager,
     sessionManager,
-    type UserSession,
+    type UserSession
 } from "./session-manager";
+

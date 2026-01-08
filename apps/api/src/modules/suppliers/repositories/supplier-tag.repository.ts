@@ -109,7 +109,14 @@ export class PrismaSupplierTagRepository implements SupplierTagRepository {
     return relations.map((r) => this.mapToRecord(r.tag));
   }
 
-  private mapToRecord(tag: { id: string; orgId: string; name: string; color: string | null; createdAt: Date; updatedAt: Date }): SupplierTagRecord {
+  private mapToRecord(tag: {
+    id: string;
+    orgId: string;
+    name: string;
+    color: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }): SupplierTagRecord {
     return {
       id: tag.id,
       orgId: tag.orgId,
@@ -120,5 +127,3 @@ export class PrismaSupplierTagRepository implements SupplierTagRepository {
     };
   }
 }
-
-

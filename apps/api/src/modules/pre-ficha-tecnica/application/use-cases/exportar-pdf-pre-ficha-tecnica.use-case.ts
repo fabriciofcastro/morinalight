@@ -177,8 +177,8 @@ export class ExportarPdfPreFichaTecnicaUseCase {
         <strong>Versão:</strong> ${dados.versaoMolde}
       </div>
       <div>
-        <span class="badge badge-${dados.status.replace(/_/g, '-')}">
-          ${dados.status.replace(/_/g, ' ').toUpperCase()}
+        <span class="badge badge-${dados.status.replace(/_/g, "-")}">
+          ${dados.status.replace(/_/g, " ").toUpperCase()}
         </span>
       </div>
     </div>
@@ -206,40 +206,62 @@ export class ExportarPdfPreFichaTecnicaUseCase {
     </div>
   </div>
 
-  ${dados.estilistaNome || dados.modelistaNome || dados.piloteiroNome ? `
+  ${
+    dados.estilistaNome || dados.modelistaNome || dados.piloteiroNome
+      ? `
   <div class="section">
     <div class="section-title">Responsáveis Técnicos</div>
     <div class="grid">
-      ${dados.estilistaNome ? `
+      ${
+        dados.estilistaNome
+          ? `
       <div class="field">
         <div class="field-label">Estilista</div>
         <div class="field-value">${dados.estilistaNome}</div>
       </div>
-      ` : ''}
-      ${dados.modelistaNome ? `
+      `
+          : ""
+      }
+      ${
+        dados.modelistaNome
+          ? `
       <div class="field">
         <div class="field-label">Modelista</div>
         <div class="field-value">${dados.modelistaNome}</div>
       </div>
-      ` : ''}
-      ${dados.piloteiroNome ? `
+      `
+          : ""
+      }
+      ${
+        dados.piloteiroNome
+          ? `
       <div class="field">
         <div class="field-label">Piloteiro</div>
         <div class="field-value">${dados.piloteiroNome}</div>
       </div>
-      ` : ''}
+      `
+          : ""
+      }
     </div>
   </div>
-  ` : ''}
+  `
+      : ""
+  }
 
-  ${dados.gradeTamanhos && dados.gradeTamanhos.length > 0 ? `
+  ${
+    dados.gradeTamanhos && dados.gradeTamanhos.length > 0
+      ? `
   <div class="section">
     <div class="section-title">Grade de Tamanhos</div>
-    <div class="field-value">${dados.gradeTamanhos.join(', ')}</div>
+    <div class="field-value">${dados.gradeTamanhos.join(", ")}</div>
   </div>
-  ` : ''}
+  `
+      : ""
+  }
 
-  ${dados.tecidos && dados.tecidos.length > 0 ? `
+  ${
+    dados.tecidos && dados.tecidos.length > 0
+      ? `
   <div class="section">
     <div class="section-title">Tecidos (${dados.tecidos.length})</div>
     <table class="table">
@@ -253,7 +275,9 @@ export class ExportarPdfPreFichaTecnicaUseCase {
         </tr>
       </thead>
       <tbody>
-        ${dados.tecidos.map((t: any) => `
+        ${dados.tecidos
+          .map(
+            (t: any) => `
         <tr>
           <td>${t.tipo}</td>
           <td>${t.nome}</td>
@@ -261,13 +285,19 @@ export class ExportarPdfPreFichaTecnicaUseCase {
           <td>${t.largura}</td>
           <td>${t.quantidadePartes || "-"}</td>
         </tr>
-        `).join('')}
+        `,
+          )
+          .join("")}
       </tbody>
     </table>
   </div>
-  ` : ''}
+  `
+      : ""
+  }
 
-  ${dados.insumosTecnicos && dados.insumosTecnicos.length > 0 ? `
+  ${
+    dados.insumosTecnicos && dados.insumosTecnicos.length > 0
+      ? `
   <div class="section">
     <div class="section-title">Insumos Técnicos (${dados.insumosTecnicos.length})</div>
     <table class="table">
@@ -280,58 +310,80 @@ export class ExportarPdfPreFichaTecnicaUseCase {
         </tr>
       </thead>
       <tbody>
-        ${dados.insumosTecnicos.map((i: any) => `
+        ${dados.insumosTecnicos
+          .map(
+            (i: any) => `
         <tr>
           <td>${i.tipo}</td>
           <td>${i.descricao}</td>
           <td>${i.quantidadeBase}</td>
           <td>${i.unidadeMedida}</td>
         </tr>
-        `).join('')}
+        `,
+          )
+          .join("")}
       </tbody>
     </table>
   </div>
-  ` : ''}
+  `
+      : ""
+  }
 
-  ${dados.checklistTecnico ? `
+  ${
+    dados.checklistTecnico
+      ? `
   <div class="section">
     <div class="section-title">Checklist Técnico</div>
     <div class="checklist-item">
-      <input type="checkbox" ${dados.checklistTecnico.moldeVesteCorretamente ? 'checked' : ''} disabled>
+      <input type="checkbox" ${dados.checklistTecnico.moldeVesteCorretamente ? "checked" : ""} disabled>
       <span>Molde veste corretamente</span>
     </div>
     <div class="checklist-item">
-      <input type="checkbox" ${dados.checklistTecnico.costuraViavel ? 'checked' : ''} disabled>
+      <input type="checkbox" ${dados.checklistTecnico.costuraViavel ? "checked" : ""} disabled>
       <span>Costura viável</span>
     </div>
     <div class="checklist-item">
-      <input type="checkbox" ${dados.checklistTecnico.insumosCompatíveis ? 'checked' : ''} disabled>
+      <input type="checkbox" ${dados.checklistTecnico.insumosCompatíveis ? "checked" : ""} disabled>
       <span>Insumos compatíveis</span>
     </div>
     <div class="checklist-item">
-      <input type="checkbox" ${dados.checklistTecnico.pecaPilotoAprovadaVisualmente ? 'checked' : ''} disabled>
+      <input type="checkbox" ${dados.checklistTecnico.pecaPilotoAprovadaVisualmente ? "checked" : ""} disabled>
       <span>Peça piloto aprovada visualmente</span>
     </div>
   </div>
-  ` : ''}
+  `
+      : ""
+  }
 
-  ${dados.observacoesTecnicas || dados.observacoesOficina ? `
+  ${
+    dados.observacoesTecnicas || dados.observacoesOficina
+      ? `
   <div class="section">
     <div class="section-title">Observações</div>
-    ${dados.observacoesTecnicas ? `
+    ${
+      dados.observacoesTecnicas
+        ? `
     <div class="field">
       <div class="field-label">Observações Técnicas</div>
       <div class="field-value">${dados.observacoesTecnicas}</div>
     </div>
-    ` : ''}
-    ${dados.observacoesOficina ? `
+    `
+        : ""
+    }
+    ${
+      dados.observacoesOficina
+        ? `
     <div class="field">
       <div class="field-label">Observações da Oficina</div>
       <div class="field-value">${dados.observacoesOficina}</div>
     </div>
-    ` : ''}
+    `
+        : ""
+    }
   </div>
-  ` : ''}
+  `
+      : ""
+  }
 
   <div class="footer">
     <p>Documento gerado em ${formatDate(new Date())}</p>
@@ -342,15 +394,3 @@ export class ExportarPdfPreFichaTecnicaUseCase {
     `.trim();
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
